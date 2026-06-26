@@ -1,5 +1,6 @@
 import { useRef, useLayoutEffect } from 'react';
 import type { GameState } from './mancalaTypes';
+import type { CaptureAnimInfo } from './MancalaGamePage';
 import { getSelectablePits } from './mancalaRules';
 import { PocketPit, StorePit, GEM_COLORS } from './MancalaPit';
 
@@ -194,6 +195,111 @@ function FloatingCluster({
 }
 
 // ============================================================
+// CaptureFlyingCluster: 捕獲石の塊が穴間を飛ぶ
+// ============================================================
+
+/**
+ * 捕獲アニメーション専用の塊。
+ * - gather フェーズ: oppositePitId → landingPitId へ飛ぶ（相手の石が集まる）
+ * - to-store フェーズ: landingPitId → storeId へ飛ぶ（全石がストアへ）
+ *
+ * key={capturePhase} でフェーズが変わると再マウントし、fromPitId から再スタートする。
+ */
+function CaptureFlyingCluster({
+  fromPitId,
+  toPitId,
+  stoneCount,
+  stepMs,
+  cellRefMap,
+}: {
+  fromPitId: string;
+  toPitId: string;
+  stoneCount: number;
+  stepMs: number;
+  cellRefMap: React.MutableRefObject<Map<string, HTMLElement>>;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    const container = containerRef.current;
+    const fromEl    = cellRefMap.current.get(fromPitId);
+    const toEl      = cellRefMap.current.get(toPitId);
+    if (!container || !fromEl || !toEl) return;
+
+    const fromRect = fromEl.getBoundingClientRect();
+    const toRect   = toEl.getBoundingClientRect();
+    const fromX    = fromRect.left + fromRect.width  / 2;
+    const fromY    = fromRect.top  - 35;
+    const toX      = toRect.left   + toRect.width    / 2;
+    const toY      = toRect.top    - 35;
+
+    // from 位置に瞬間移動（transition なし）
+    container.style.transition = 'none';
+    container.style.left       = `${fromX}px`;
+    container.style.top        = `${fromY}px`;
+    container.style.opacity    = '1';
+    container.style.transform  = 'translateX(-50%) scale(1.0)';
+
+    // 2フレーム後に CSS transition で to 位置へ移動
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      const c = containerRef.current;
+      if (!c) return;
+      c.style.transition = [
+        `left ${stepMs}ms cubic-bezier(0.4, 0, 0.2, 1)`,
+        `top  ${stepMs}ms cubic-bezier(0.4, 0, 0.2, 1)`,
+      ].join(', ');
+      c.style.left = `${toX}px`;
+      c.style.top  = `${toY}px`;
+    }));
+  }, [fromPitId, toPitId, stepMs]);
+
+  const displayCount = Math.min(stoneCount, 10);
+
+  return (
+    <div
+      ref={containerRef}
+      style={{
+        position:       'fixed',
+        left:           -9999,
+        top:            -9999,
+        transform:      'translateX(-50%)',
+        display:        'flex',
+        flexWrap:       'wrap',
+        gap:            3,
+        width:          52,
+        justifyContent: 'center',
+        alignItems:     'center',
+        zIndex:         9998,
+        pointerEvents:  'none',
+        background:     'rgba(80, 30, 0, 0.72)',
+        borderRadius:   10,
+        padding:        '5px 4px',
+        // オレンジの光彩で「捕獲中」を表現
+        boxShadow:      '0 3px 14px rgba(0,0,0,0.60), 0 0 0 1.5px rgba(255,140,30,0.70)',
+      }}
+    >
+      {Array.from({ length: displayCount }).map((_, i) => {
+        // アンバー・ルビー系の色でメイン石と区別する
+        const gem = GEM_COLORS[(i + 5) % GEM_COLORS.length];
+        return (
+          <div
+            key={i}
+            style={{
+              width:        8,
+              height:       8,
+              borderRadius: '50%',
+              background:   `radial-gradient(circle at 32% 28%, ${gem.shine}, ${gem.main})`,
+              boxShadow:    '0 1px 3px rgba(0,0,0,0.65)',
+              flexShrink:   0,
+            }}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+// ============================================================
 // MancalaBoard
 // ============================================================
 
@@ -211,6 +317,12 @@ type MancalaBoardProps = {
   animIdx?: number;
   /** 石 1 個あたりのアニメーション時間（ms） */
   animStepMs?: number;
+  /** 捕獲アニメーション情報 */
+  captureAnimInfo?: CaptureAnimInfo | null;
+  /** 捕獲アニメーションのフェーズ */
+  capturePhase?: 'gather' | 'to-store' | null;
+  /** 捕獲アニメーション 1 フェーズあたりの時間（ms） */
+  captureStepMs?: number;
 };
 
 /**
@@ -223,10 +335,13 @@ type MancalaBoardProps = {
 export function MancalaBoard({
   gameState,
   onPitClick,
-  disabled   = false,
+  disabled    = false,
   animActiveIds,
   animIdx,
-  animStepMs = 400,
+  animStepMs  = 400,
+  captureAnimInfo = null,
+  capturePhase    = null,
+  captureStepMs   = 700,
 }: MancalaBoardProps) {
   // ---- 各穴セル DOM ref map（FloatingCluster / DroppingStone が位置計算に使う） ----
   const cellRefMap = useRef<Map<string, HTMLElement>>(new Map());
@@ -255,22 +370,28 @@ export function MancalaBoard({
     (p) => p.ownerPlayerId === 'player-2' && p.isStore
   )!;
 
-  // ---- アニメーション状態 ----
+  // ---- 通常アニメーション状態 ----
   const hasAnim     = !!(animActiveIds && animActiveIds.length > 0 && animIdx !== undefined);
-  const totalStones = hasAnim ? animActiveIds!.length - 1 : 0; // [0] = source, [1..N] = destinations
+  const totalStones = hasAnim ? animActiveIds!.length - 1 : 0;
   const sourcePitId = hasAnim ? animActiveIds![0] : null;
 
-  // 現在アクティブ（着地先）な穴：step > 0 のみ（step 0 は "source"）
   const curActiveId = (hasAnim && animIdx! > 0)
     ? animActiveIds![Math.min(animIdx!, animActiveIds!.length - 1)]
     : null;
 
-  // FloatingCluster: アニメーション中ずっと表示（石がある間）
   const showCluster = hasAnim && animIdx! <= totalStones;
+  const showDrop    = hasAnim && animIdx! > 0 && animIdx! <= totalStones;
+  const dropPitId   = showDrop ? animActiveIds![animIdx!] : null;
 
-  // DroppingStone: step 1 以降、着地先に石を落とす
-  const showDrop  = hasAnim && animIdx! > 0 && animIdx! <= totalStones;
-  const dropPitId = showDrop ? animActiveIds![animIdx!] : null;
+  // ---- 捕獲アニメーション ----
+  const showCapture = capturePhase !== null && captureAnimInfo !== null;
+
+  const captureFromId = showCapture
+    ? (capturePhase === 'gather' ? captureAnimInfo!.oppositePitId : captureAnimInfo!.landingPitId)
+    : '';
+  const captureToId = showCapture
+    ? (capturePhase === 'gather' ? captureAnimInfo!.landingPitId : captureAnimInfo!.storeId)
+    : '';
 
   return (
     <div className="board-container">
@@ -401,7 +522,7 @@ export function MancalaBoard({
         <div />
       </div>
 
-      {/* ─── アニメーションオーバーレイ ─── */}
+      {/* ─── 通常アニメーションオーバーレイ ─── */}
 
       {/* 石の塊が浮いて横移動 */}
       {showCluster && (
@@ -421,6 +542,20 @@ export function MancalaBoard({
           pitId={dropPitId}
           colorIndex={animIdx! - 1}
           stepMs={animStepMs}
+          cellRefMap={cellRefMap}
+        />
+      )}
+
+      {/* ─── 捕獲アニメーションオーバーレイ ─── */}
+
+      {/* 捕獲石の塊が穴間を飛ぶ（key={capturePhase} でフェーズごとに再マウント） */}
+      {showCapture && (
+        <CaptureFlyingCluster
+          key={capturePhase}
+          fromPitId={captureFromId}
+          toPitId={captureToId}
+          stoneCount={captureAnimInfo!.stoneCount}
+          stepMs={captureStepMs}
           cellRefMap={cellRefMap}
         />
       )}

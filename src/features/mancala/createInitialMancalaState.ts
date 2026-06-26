@@ -1,10 +1,14 @@
-import type { MancalaMode, GameState, Pit, Player } from './mancalaTypes';
+import type { MancalaMode, MancalaConfig, CpuLevel, GameState, Pit, Player } from './mancalaTypes';
+import { getCpuDisplayName } from './mancalaCpu';
 
 const POCKETS_PER_PLAYER = 6; // 各プレイヤーの小さい穴の数
 const INITIAL_STONES = 4;     // ゲーム開始時の1穴あたりの石の数
 
 /**
- * ゲーム開始時の状態を作る
+ * ゲーム開始時の状態を作る。
+ *
+ * 引数は MancalaMode（文字列）か MancalaConfig（オブジェクト）のどちらでも受け付ける。
+ * 文字列を渡すとデフォルト値（難易度 normal、プレイヤー名デフォルト）が使われる。
  *
  * 盤面配列の並び順（この順番で石を反時計回りに配る）：
  *   インデックス  0〜5  : player-1 の小さい穴（p1-pit-0〜5）
@@ -20,17 +24,22 @@ const INITIAL_STONES = 4;     // ゲーム開始時の1穴あたりの石の数
  *   p1-pit-4 ↔ p2-pit-1
  *   p1-pit-5 ↔ p2-pit-0
  */
-export function createInitialMancalaState(mode: MancalaMode): GameState {
+export function createInitialMancalaState(modeOrConfig: MancalaMode | MancalaConfig): GameState {
+  const isConfig = typeof modeOrConfig === 'object';
+  const mode: MancalaMode      = isConfig ? modeOrConfig.mode      : modeOrConfig;
+  const cpuLevel: CpuLevel     = isConfig ? modeOrConfig.cpuLevel  : 'normal';
+  const p1Name: string         = isConfig ? (modeOrConfig.player1Name || 'プレイヤー1') : 'プレイヤー1';
+  const p2NameRaw: string      = isConfig ? modeOrConfig.player2Name : '';
+
   const player1: Player = {
     id: 'player-1',
-    name: 'プレイヤー1',
+    name: p1Name,
     isCpu: false,
   };
 
-  const player2: Player =
-    mode === 'cpu'
-      ? { id: 'player-2', name: 'CPU', isCpu: true }
-      : { id: 'player-2', name: 'プレイヤー2', isCpu: false };
+  const player2: Player = mode === 'cpu'
+    ? { id: 'player-2', name: getCpuDisplayName(cpuLevel), isCpu: true }
+    : { id: 'player-2', name: p2NameRaw || 'プレイヤー2', isCpu: false };
 
   const board: Pit[] = [];
 
@@ -51,7 +60,6 @@ export function createInitialMancalaState(mode: MancalaMode): GameState {
     ownerPlayerId: 'player-1',
     stones: 0,
     isStore: true,
-    // ストアには向かいの穴がないので oppositePitId は設定しない
   });
 
   // player-2 の小さい穴（インデックス 7〜12）

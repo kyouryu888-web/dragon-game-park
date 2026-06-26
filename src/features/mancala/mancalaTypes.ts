@@ -8,6 +8,17 @@ export type PlayerId = 'player-1' | 'player-2';
 /** 対戦モード */
 export type MancalaMode = 'cpu' | 'local-2p';
 
+/** CPU の強さ（5段階） */
+export type CpuLevel = 'very-easy' | 'easy' | 'normal' | 'hard' | 'very-hard';
+
+/** ゲーム開始設定（設定画面 → 対局画面に渡す） */
+export type MancalaConfig = {
+  mode: MancalaMode;
+  cpuLevel: CpuLevel;
+  player1Name: string;
+  player2Name: string; // local-2p のみ使用。cpu 時は cpuLevel から自動生成
+};
+
 /** ゲームの進行状態 */
 export type GameStatus = 'playing' | 'finished';
 

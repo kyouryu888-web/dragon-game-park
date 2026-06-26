@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import type { MancalaMode, GameState, Player } from './mancalaTypes';
+import type { MancalaConfig, GameState } from './mancalaTypes';
 import { createInitialMancalaState } from './createInitialMancalaState';
 import { applyMove } from './mancalaRules';
 import { chooseCpuMove } from './mancalaCpu';
@@ -14,36 +14,44 @@ import { MancalaBoard } from './MancalaBoard';
 /** 石 1 個あたりのアニメーション間隔 (ms) */
 const STONE_ANIM_MS = 400;
 
+/** 捕獲アニメーション 1 フェーズあたりの時間 (ms) */
+const CAPTURE_ANIM_MS = 700;
+
+// ============================================================
+// 捕獲アニメーション情報
+// ============================================================
+
+export type CaptureAnimInfo = {
+  landingPitId: string;   // 最後の石が落ちた穴（捕獲発生穴）
+  oppositePitId: string;  // 向かいの穴（相手の石がある穴）
+  storeId: string;        // 石が入るストア ID
+  stoneCount: number;     // 集まる石の合計数
+};
+
 // ============================================================
 // ヘルパー
 // ============================================================
 
-const MODE_LABELS: Record<MancalaMode, string> = {
+const MODE_LABELS: Record<string, string> = {
   cpu: '人間 vs CPU',
   'local-2p': '人間 vs 人間',
 };
 
-function getDisplayName(player: Player, mode: MancalaMode): string {
-  if (player.isCpu) return 'こどもドラゴンCPU';
-  if (mode === 'cpu' && player.id === 'player-1') return 'あなた';
-  return player.id === 'player-1' ? 'プレイヤー1' : 'プレイヤー2';
-}
-
 /**
  * 石を 1 個ずつ配っていくスナップショット配列と、
  * 各ステップで「アクティブ（今動いている）」穴の ID 配列を返す。
+ * また、このムーブが捕獲を引き起こすか判定して captureInfo も返す。
  *
  * steps[0] / activeIds[0]: 元の穴が空になった瞬間（石を手に取る）
  * steps[N] / activeIds[N]: N 個目の石が配られた瞬間
- *
- * ゲームロジック（mancalaRules.ts）は一切変更しない。
  */
 function computeStoneSteps(state: GameState, pitId: string): {
   steps: GameState[];
   activeIds: string[];
+  captureInfo: CaptureAnimInfo | null;
 } {
   const sourcePit = state.board.find(p => p.id === pitId);
-  if (!sourcePit || sourcePit.stones === 0) return { steps: [], activeIds: [] };
+  if (!sourcePit || sourcePit.stones === 0) return { steps: [], activeIds: [], captureInfo: null };
 
   const playerId = state.currentPlayerId;
   const n = state.board.length;
@@ -57,8 +65,8 @@ function computeStoneSteps(state: GameState, pitId: string): {
     board: state.board.map(p => ({ ...p, stones: stoneMap.get(p.id)! })),
   });
 
-  const steps: GameState[]   = [makeSnapshot()]; // step 0: 元の穴が空
-  const activeIds: string[]  = [pitId];           // step 0: 元の穴がアクティブ
+  const steps: GameState[]  = [makeSnapshot()]; // step 0: 元の穴が空
+  const activeIds: string[] = [pitId];           // step 0: 元の穴がアクティブ
 
   let i = (startIdx + 1) % n;
   let remaining = sourcePit.stones;
@@ -77,7 +85,37 @@ function computeStoneSteps(state: GameState, pitId: string): {
     i = (i + 1) % n;
   }
 
-  return { steps, activeIds };
+  // ---- 捕獲判定 ----
+  // applyMove の結果と比較して捕獲が起きたか判定する。
+  const lastPitId = activeIds[activeIds.length - 1];
+  const lastPit = state.board.find(p => p.id === lastPitId);
+  let captureInfo: CaptureAnimInfo | null = null;
+
+  if (lastPit && !lastPit.isStore && lastPit.ownerPlayerId === state.currentPlayerId) {
+    const oppPitId = lastPit.oppositePitId;
+    if (oppPitId) {
+      const oppBefore = state.board.find(p => p.id === oppPitId)?.stones ?? 0;
+      if (oppBefore > 0) {
+        // applyMove を実行して実際に捕獲が起きたか確認
+        const afterState = applyMove(state, pitId);
+        if (afterState.status === 'playing') {
+          const oppAfter     = afterState.board.find(p => p.id === oppPitId)!;
+          const landingAfter = afterState.board.find(p => p.id === lastPitId)!;
+          if (oppAfter.stones === 0 && landingAfter.stones === 0) {
+            const storeId = state.currentPlayerId === 'player-1' ? 'p1-store' : 'p2-store';
+            captureInfo = {
+              landingPitId: lastPitId,
+              oppositePitId: oppPitId,
+              storeId,
+              stoneCount: 1 + oppBefore,
+            };
+          }
+        }
+      }
+    }
+  }
+
+  return { steps, activeIds, captureInfo };
 }
 
 // ============================================================
@@ -85,28 +123,34 @@ function computeStoneSteps(state: GameState, pitId: string): {
 // ============================================================
 
 type MancalaGamePageProps = {
-  mode: MancalaMode;
+  config: MancalaConfig;
   onBackToSetup: () => void;
   onBackToHome: () => void;
 };
 
-export function MancalaGamePage({ mode, onBackToSetup, onBackToHome }: MancalaGamePageProps) {
+export function MancalaGamePage({ config, onBackToSetup, onBackToHome }: MancalaGamePageProps) {
+  const { mode, cpuLevel } = config;
+
   const [gameState, setGameState] = useState<GameState>(() =>
-    createInitialMancalaState(mode)
+    createInitialMancalaState(config)
   );
   const [isCpuThinking, setIsCpuThinking] = useState(false);
 
-  // ---- アニメーション状態 ----
+  // ---- 通常アニメーション状態 ----
   const [animSteps,     setAnimSteps]     = useState<GameState[]>([]);
   const [animActiveIds, setAnimActiveIds] = useState<string[]>([]);
   const [animIdx,       setAnimIdx]       = useState(0);
   const [pendingMove,   setPendingMove]   = useState<string | null>(null);
 
+  // ---- 捕獲アニメーション状態 ----
+  const [captureAnimInfo,  setCaptureAnimInfo]  = useState<CaptureAnimInfo | null>(null);
+  const [capturePhase, setCapturePhase] = useState<'gather' | 'to-store' | null>(null);
+
   const isAnimating = animSteps.length > 0;
 
   /**
    * 表示用ゲーム状態:
-   *   アニメーション中 → animSteps の各コマ
+   *   アニメーション中 → animSteps の各コマ（捕獲アニメ中も最終コマを維持）
    *   通常時          → 実際のゲーム状態
    */
   const boardDisplayState: GameState = isAnimating
@@ -131,13 +175,18 @@ export function MancalaGamePage({ mode, onBackToSetup, onBackToHome }: MancalaGa
   const p2Score = boardDisplayState.board.find((p) => p.ownerPlayerId === 'player-2' && p.isStore)!.stones;
 
   // ============================================================
-  // アニメーション進行（石が 1 個ずつ着地するタイマー）
+  // 通常アニメーション進行（石が 1 個ずつ着地するタイマー）
   // ============================================================
   useEffect(() => {
-    if (!isAnimating) return;
+    if (!isAnimating || capturePhase !== null) return;
 
     if (animIdx >= animSteps.length) {
-      // 全コマ表示完了 → 実際にゲーム状態に反映
+      if (captureAnimInfo) {
+        // 通常アニメ完了 → 捕獲アニメ開始
+        setCapturePhase('gather');
+        return;
+      }
+      // 捕獲なし → 即座に手を適用
       if (pendingMove) {
         setGameState(prev => applyMove(prev, pendingMove));
         setPendingMove(null);
@@ -150,7 +199,33 @@ export function MancalaGamePage({ mode, onBackToSetup, onBackToHome }: MancalaGa
 
     const id = setTimeout(() => setAnimIdx(prev => prev + 1), STONE_ANIM_MS);
     return () => clearTimeout(id);
-  }, [animIdx, animSteps.length, isAnimating, pendingMove]);
+  }, [animIdx, animSteps.length, isAnimating, pendingMove, captureAnimInfo, capturePhase]);
+
+  // ============================================================
+  // 捕獲アニメーション（gather → to-store → 手を適用）
+  // ============================================================
+  useEffect(() => {
+    if (!capturePhase) return;
+
+    const id = setTimeout(() => {
+      if (capturePhase === 'gather') {
+        setCapturePhase('to-store');
+      } else {
+        // to-store フェーズ完了 → 手を適用して全リセット
+        if (pendingMove) {
+          setGameState(prev => applyMove(prev, pendingMove));
+          setPendingMove(null);
+        }
+        setCaptureAnimInfo(null);
+        setCapturePhase(null);
+        setAnimSteps([]);
+        setAnimActiveIds([]);
+        setAnimIdx(0);
+      }
+    }, CAPTURE_ANIM_MS);
+
+    return () => clearTimeout(id);
+  }, [capturePhase, pendingMove]);
 
   // ============================================================
   // CPU 自動手番
@@ -167,19 +242,19 @@ export function MancalaGamePage({ mode, onBackToSetup, onBackToHome }: MancalaGa
     const id = setTimeout(() => {
       if (cancelled) return;
       const currentState = gameStateRef.current;
-      const pitId = chooseCpuMove(currentState);
+      const pitId = chooseCpuMove(currentState, cpuLevel);
       if (!pitId) {
         setIsCpuThinking(false);
         return;
       }
-      const { steps, activeIds } = computeStoneSteps(currentState, pitId);
+      const { steps, activeIds, captureInfo: ci } = computeStoneSteps(currentState, pitId);
       if (steps.length === 0) {
         setGameState(prev => applyMove(prev, pitId));
         setIsCpuThinking(false);
         return;
       }
-      // アニメーション開始。isCpuThinking はアニメーション完了後も true のまま
-      // → applyMove 完了で currentPlayerId が変わりこの effect が再実行されて false になる
+      setCaptureAnimInfo(ci ?? null);
+      setCapturePhase(null);
       setPendingMove(pitId);
       setAnimSteps(steps);
       setAnimActiveIds(activeIds);
@@ -187,7 +262,7 @@ export function MancalaGamePage({ mode, onBackToSetup, onBackToHome }: MancalaGa
     }, 700);
 
     return () => { cancelled = true; clearTimeout(id); };
-  }, [mode, status, currentPlayerId, turnCount]);
+  }, [mode, cpuLevel, status, currentPlayerId, turnCount]);
 
   // ============================================================
   // 人間プレイヤーの操作
@@ -195,8 +270,10 @@ export function MancalaGamePage({ mode, onBackToSetup, onBackToHome }: MancalaGa
   const handlePitClick = useCallback(
     (pitId: string) => {
       if (isFinished || isCpuThinking || isAnimating) return;
-      const { steps, activeIds } = computeStoneSteps(gameState, pitId);
+      const { steps, activeIds, captureInfo: ci } = computeStoneSteps(gameState, pitId);
       if (steps.length === 0) return;
+      setCaptureAnimInfo(ci ?? null);
+      setCapturePhase(null);
       setPendingMove(pitId);
       setAnimSteps(steps);
       setAnimActiveIds(activeIds);
@@ -211,34 +288,29 @@ export function MancalaGamePage({ mode, onBackToSetup, onBackToHome }: MancalaGa
     setAnimActiveIds([]);
     setAnimIdx(0);
     setPendingMove(null);
-    setGameState(createInitialMancalaState(mode));
+    setCaptureAnimInfo(null);
+    setCapturePhase(null);
+    setGameState(createInitialMancalaState(config));
   }
 
   function getResultMessage() {
     if (gameState.isDraw) return '引き分けです！';
     const winner = gameState.players.find((p) => p.id === gameState.winnerPlayerId);
-    return winner ? `${getDisplayName(winner, mode)}の勝ち！ 🎉` : '';
+    return winner ? `${winner.name}の勝ち！ 🎉` : '';
   }
 
   const isP1Turn = !isFinished && currentPlayerId === 'player-1';
   const isP2Turn = !isFinished && currentPlayerId === 'player-2';
-
-  // ---- 手番バナーのラベルを決定 ----
   const isCpuTurn = mode === 'cpu' && currentPlayerId === 'player-2';
-
   const turnBannerVariant: 'human' | 'cpu' = isCpuTurn ? 'cpu' : 'human';
 
-  const turnBannerLabel: string = isAnimating
+  const turnBannerLabel: string = isAnimating || capturePhase !== null
     ? (isCpuTurn
-        ? '🐉 石を配っています...'
-        : mode === 'cpu'
-        ? '✨ あなたが石を配っています...'
-        : `✨ ${getDisplayName(currentPlayer, mode)}が石を配っています...`)
+        ? `🐉 ${p2Player.name}が石を配っています...`
+        : `✨ ${currentPlayer.name}が石を配っています...`)
     : isCpuTurn
-    ? '🐉 こどもドラゴンCPUが考え中...'
-    : mode === 'cpu'
-    ? '🎮 あなたの番です'
-    : `🎮 ${getDisplayName(currentPlayer, mode)}の番です`;
+    ? `🐉 ${p2Player.name}が考え中...`
+    : `🎮 ${currentPlayer.name}の番です`;
 
   return (
     <Layout>
@@ -259,13 +331,13 @@ export function MancalaGamePage({ mode, onBackToSetup, onBackToHome }: MancalaGa
           <TurnBanner
             variant={turnBannerVariant}
             label={turnBannerLabel}
-            thinking={isAnimating || isCpuTurn}
+            thinking={isAnimating || capturePhase !== null || isCpuTurn}
           />
         )}
 
         {/* P2 プレイヤー名（ボードの上） */}
         <PlayerLabel
-          name={getDisplayName(p2Player, mode)}
+          name={p2Player.name}
           score={p2Score}
           isCurrentTurn={isP2Turn}
           side="top"
@@ -280,12 +352,15 @@ export function MancalaGamePage({ mode, onBackToSetup, onBackToHome }: MancalaGa
             animActiveIds={animActiveIds}
             animIdx={animIdx}
             animStepMs={STONE_ANIM_MS}
+            captureAnimInfo={captureAnimInfo}
+            capturePhase={capturePhase}
+            captureStepMs={CAPTURE_ANIM_MS}
           />
         </div>
 
         {/* P1 プレイヤー名（ボードの下） */}
         <PlayerLabel
-          name={getDisplayName(p1Player, mode)}
+          name={p1Player.name}
           score={p1Score}
           isCurrentTurn={isP1Turn}
           side="bottom"
@@ -297,24 +372,19 @@ export function MancalaGamePage({ mode, onBackToSetup, onBackToHome }: MancalaGa
           <div
             className="result-appear"
             style={{
-              marginTop: 20,
-              padding: '24px 20px',
+              marginTop: 20, padding: '24px 20px',
               background: 'linear-gradient(135deg, #fffbe8, #fdf5d0)',
-              border: '2px solid #e0c060',
-              borderRadius: 22,
-              textAlign: 'center',
+              border: '2px solid #e0c060', borderRadius: 22, textAlign: 'center',
               boxShadow: '0 6px 28px rgba(180, 140, 30, 0.20)',
             }}
           >
             <div style={{ fontSize: 40, marginBottom: 6 }}>🏆</div>
-            <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 6 }}>
-              ゲーム終了！
-            </div>
+            <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 6 }}>ゲーム終了！</div>
             <div style={{ fontSize: 22, fontWeight: 'bold', color: 'var(--brown)', marginBottom: 8 }}>
               {getResultMessage()}
             </div>
             <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 22 }}>
-              {getDisplayName(p1Player, mode)}：{p1Score}石　／　{getDisplayName(p2Player, mode)}：{p2Score}石
+              {p1Player.name}：{p1Score}石　／　{p2Player.name}：{p2Score}石
             </div>
             <div className="game-nav-buttons" style={{ marginTop: 0 }}>
               <Button fullWidth onClick={handleRestart}>
@@ -359,13 +429,9 @@ export function MancalaGamePage({ mode, onBackToSetup, onBackToHome }: MancalaGa
 // ============================================================
 
 function TurnBanner({
-  variant,
-  label,
-  thinking = false,
+  variant, label, thinking = false,
 }: {
-  variant: 'human' | 'cpu';
-  label: string;
-  thinking?: boolean;
+  variant: 'human' | 'cpu'; label: string; thinking?: boolean;
 }) {
   const isCpu = variant === 'cpu';
 
@@ -378,9 +444,7 @@ function TurnBanner({
           ? 'linear-gradient(135deg, #e8f4e8, #d0ecd0)'
           : 'linear-gradient(135deg, #fff8e8, #fdf0d0)',
         border: `1.5px solid ${isCpu ? '#90c890' : '#e8d070'}`,
-        borderRadius: 14,
-        padding: '10px 16px',
-        marginBottom: 12,
+        borderRadius: 14, padding: '10px 16px', marginBottom: 12,
         boxShadow: isCpu
           ? '0 2px 10px rgba(80,160,80,0.12)'
           : '0 2px 10px rgba(200,160,30,0.12)',
@@ -388,11 +452,7 @@ function TurnBanner({
     >
       <div
         className={thinking ? 'cpu-thinking-pulse' : undefined}
-        style={{
-          fontSize: 13,
-          fontWeight: 'bold',
-          color: isCpu ? '#2a6a2a' : '#7a5010',
-        }}
+        style={{ fontSize: 13, fontWeight: 'bold', color: isCpu ? '#2a6a2a' : '#7a5010' }}
       >
         {label}
       </div>
@@ -407,58 +467,38 @@ function TurnBanner({
 function PlayerLabel({
   name, score, isCurrentTurn, side, isCpu,
 }: {
-  name: string;
-  score: number;
-  isCurrentTurn: boolean;
-  side: 'top' | 'bottom';
-  isCpu: boolean;
+  name: string; score: number; isCurrentTurn: boolean; side: 'top' | 'bottom'; isCpu: boolean;
 }) {
   const align = side === 'top' ? 'flex-end' : 'flex-start';
+  const displayName = name || (side === 'bottom' ? 'プレイヤー1' : 'プレイヤー2');
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: align,
-        alignItems: 'center',
-        gap: 6,
-        padding: '5px 8px',
-        marginTop:    side === 'bottom' ? 5 : 0,
-        marginBottom: side === 'top'    ? 5 : 0,
-        borderRadius: 10,
-        background: isCurrentTurn
-          ? 'rgba(255, 200, 50, 0.18)'
-          : 'transparent',
-        transition: 'background 0.2s ease',
-      }}
-    >
+    <div style={{
+      display: 'flex', justifyContent: align, alignItems: 'center', gap: 6,
+      padding: '5px 8px',
+      marginTop:    side === 'bottom' ? 5 : 0,
+      marginBottom: side === 'top'    ? 5 : 0,
+      borderRadius: 10,
+      background: isCurrentTurn ? 'rgba(255, 200, 50, 0.18)' : 'transparent',
+      transition: 'background 0.2s ease',
+    }}>
       {isCurrentTurn && side === 'bottom' && (
         <span style={{ fontSize: 11, color: '#d08010' }}>▶</span>
       )}
-      {isCpu && (
-        <span style={{ fontSize: 15 }}>🐉</span>
-      )}
-      <span
-        style={{
-          fontSize: 12,
-          fontWeight: isCurrentTurn ? 'bold' : 'normal',
-          color: isCurrentTurn ? 'var(--brown)' : 'var(--text-muted)',
-        }}
-      >
-        {name}
+      {isCpu && <span style={{ fontSize: 15 }}>🐉</span>}
+      <span style={{
+        fontSize: 12, fontWeight: isCurrentTurn ? 'bold' : 'normal',
+        color: isCurrentTurn ? 'var(--brown)' : 'var(--text-muted)',
+      }}>
+        {displayName}
       </span>
-      <span
-        style={{
-          fontSize: 12,
-          fontWeight: 'bold',
-          color: 'var(--brown)',
-          background: isCurrentTurn ? '#f5e098' : '#f0e8d4',
-          padding: '2px 10px',
-          borderRadius: 20,
-          border: isCurrentTurn ? '1.5px solid #d4b030' : '1px solid #d8cbb0',
-          transition: 'background 0.2s ease',
-        }}
-      >
+      <span style={{
+        fontSize: 12, fontWeight: 'bold', color: 'var(--brown)',
+        background: isCurrentTurn ? '#f5e098' : '#f0e8d4',
+        padding: '2px 10px', borderRadius: 20,
+        border: isCurrentTurn ? '1.5px solid #d4b030' : '1px solid #d8cbb0',
+        transition: 'background 0.2s ease',
+      }}>
         {score}石
       </span>
       {isCurrentTurn && side === 'top' && (

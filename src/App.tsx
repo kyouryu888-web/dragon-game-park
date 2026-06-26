@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { MancalaMode } from './features/mancala/mancalaTypes';
+import type { MancalaConfig } from './features/mancala/mancalaTypes';
 import { HomePage } from './pages/HomePage';
 import { MancalaSetupPage } from './features/mancala/MancalaSetupPage';
 import { MancalaGamePage } from './features/mancala/MancalaGamePage';
@@ -14,7 +14,12 @@ type AppScreen = 'home' | 'mancala-setup' | 'mancala-game';
 
 export default function App() {
   const [screen, setScreen] = useState<AppScreen>('home');
-  const [mancalaMode, setMancalaMode] = useState<MancalaMode>('cpu');
+  const [mancalaConfig, setMancalaConfig] = useState<MancalaConfig>({
+    mode: 'cpu',
+    cpuLevel: 'normal',
+    player1Name: '',
+    player2Name: '',
+  });
 
   // ゲーム選択画面
   if (screen === 'home') {
@@ -31,8 +36,8 @@ export default function App() {
   if (screen === 'mancala-setup') {
     return (
       <MancalaSetupPage
-        onStart={(mode) => {
-          setMancalaMode(mode);
+        onStart={(config) => {
+          setMancalaConfig(config);
           setScreen('mancala-game');
         }}
         onBack={() => setScreen('home')}
@@ -44,7 +49,7 @@ export default function App() {
   if (screen === 'mancala-game') {
     return (
       <MancalaGamePage
-        mode={mancalaMode}
+        config={mancalaConfig}
         onBackToSetup={() => setScreen('mancala-setup')}
         onBackToHome={() => setScreen('home')}
       />
