@@ -340,7 +340,7 @@ export function MancalaGamePage({ mode, onBackToSetup, onBackToHome }: MancalaGa
             </Button>
             <div className="game-nav-secondary">
               <Button variant="secondary" fullWidth onClick={onBackToSetup}>
-                設定画面へ戻る
+                マンカラ設定画面へ戻る
               </Button>
               <Button variant="secondary" fullWidth onClick={onBackToHome}>
                 ゲーム選択画面へ戻る
