@@ -1,0 +1,330 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+/* =============================================
+   CSS 変数（デザイントークン）
+============================================= */
+:root {
+  /* 背景 */
+  --bg: #f5ede0;
+  --card: #fffdf8;
+
+  /* 木製ボード */
+  --wood-deep:  #3a1e08;
+  --wood-dark:  #5c3010;
+  --wood-mid:   #7a4820;
+  --wood-light: #b87838;
+  --wood-pale:  #e8c890;
+
+  /* ブランドカラー */
+  --brown:   #5a3018;
+  --orange:  #c87028;
+  --green:   #4e8a4e;
+  --gold:    #d8b030;
+
+  /* テキスト */
+  --text:       #3a2518;
+  --text-mid:   #6a4a30;
+  --text-muted: #907060;
+
+  /* ボーダー */
+  --border:       #d8c4a0;
+  --border-light: #ede0c8;
+
+  /* シャドウ */
+  --shadow-sm: 0 2px 8px rgba(58, 37, 24, 0.12);
+  --shadow-md: 0 4px 18px rgba(58, 37, 24, 0.16);
+  --shadow-lg: 0 8px 36px rgba(58, 37, 24, 0.22);
+
+  /* 角丸 */
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 24px;
+
+  /* =============================================
+     レスポンシブ変数
+  ============================================= */
+
+  /* マンカラ盤の寸法（clamp で画面幅に追従） */
+  --board-store-w: clamp(32px, 9.5vw, 44px);
+  --board-gap:     clamp(3px,  1vw,   5px);
+  --board-px:      clamp(6px,  2vw,   10px);
+  --board-py:      clamp(9px,  2.5vw, 14px);
+  --board-radius:  clamp(15px, 4vw,   22px);
+
+  /* ページ余白（スマホ横向きで縮小される） */
+  --hero-pt:      44px;
+  --hero-pb:      30px;
+  --setup-pt:     20px;
+  --game-page-pt: 12px;
+  --game-page-pb: 36px;
+}
+
+/* =============================================
+   ベース
+============================================= */
+body {
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* =============================================
+   ボタン インタラクション（CSS クラス）
+============================================= */
+.btn {
+  transition: transform 0.10s ease, filter 0.12s ease, box-shadow 0.15s ease;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.btn:not(:disabled):active {
+  transform: scale(0.96) translateY(1px) !important;
+}
+.btn-primary:not(:disabled):hover   { filter: brightness(1.10); }
+.btn-secondary:not(:disabled):hover { filter: brightness(0.96); }
+.btn-ghost:not(:disabled):hover {
+  background-color: rgba(200, 160, 100, 0.14) !important;
+  border-color: var(--brown) !important;
+}
+
+/* =============================================
+   穴（ピット）インタラクション
+============================================= */
+.pit-btn {
+  transition: transform 0.10s ease, filter 0.12s ease, box-shadow 0.12s ease;
+}
+.pit-btn.is-selectable:not(:disabled):hover {
+  transform: scale(1.08);
+  filter: brightness(1.10);
+}
+
+/* =============================================
+   アニメーション
+============================================= */
+
+/* CPU 思考中：ゆっくり点滅 */
+@keyframes cpu-thinking-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.45; }
+}
+.cpu-thinking-pulse {
+  animation: cpu-thinking-pulse 1.3s ease-in-out infinite;
+}
+
+/* ドラゴン：ふわふわ浮く */
+@keyframes dragon-float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+.dragon-float {
+  display: inline-block;
+  animation: dragon-float 3s ease-in-out infinite;
+}
+
+/* 結果カード：スケールアップで登場 */
+@keyframes result-appear {
+  from { opacity: 0; transform: scale(0.88) translateY(14px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0); }
+}
+.result-appear {
+  animation: result-appear 0.40s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* 手番バナー：上からスライドイン */
+@keyframes turn-slide {
+  from { opacity: 0; transform: translateY(-5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.turn-slide {
+  animation: turn-slide 0.20s ease both;
+}
+
+/* 石が着地した穴：ぴょんと跳ねる */
+@keyframes pit-active-bounce {
+  0%   { transform: scale(1.00); }
+  40%  { transform: scale(1.15); }
+  100% { transform: scale(1.00); }
+}
+.pit-btn.is-active {
+  animation: pit-active-bounce 0.22s ease-out;
+}
+
+/* 石を拾い上げた穴：へこんで明るくなる */
+@keyframes pit-pickup {
+  0%   { transform: scale(1.00); filter: brightness(1.0); }
+  40%  { transform: scale(0.86); filter: brightness(1.8); }
+  100% { transform: scale(0.90); filter: brightness(1.5); }
+}
+.pit-btn.is-source {
+  animation: pit-pickup 0.25s ease-out forwards;
+}
+
+/* =============================================
+   レスポンシブ レイアウト
+   ※ スマホ縦向き（< 640px）がデフォルト
+============================================= */
+
+/* ---- アプリシェル ---- */
+/*
+  スマホ: 最大520px・余白16px
+  タブレット (640px+): 最大680px・余白24px
+  PC (900px+): 最大800px・余白40px
+*/
+.app-layout {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 0 16px;
+  min-height: 100vh;
+}
+@media (min-width: 640px) {
+  .app-layout {
+    max-width: 680px;
+    padding: 0 24px;
+  }
+}
+@media (min-width: 900px) {
+  .app-layout {
+    max-width: 800px;
+    padding: 0 40px;
+  }
+}
+
+/* ---- ゲームカードグリッド（ホーム画面） ---- */
+/*
+  スマホ: 縦1列
+  680px+: 横2列グリッド（将来ゲームが増えても対応）
+*/
+.game-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+@media (min-width: 680px) {
+  .game-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    align-items: start;
+  }
+}
+
+/* ---- モードカード（設定画面） ---- */
+/*
+  スマホ: 縦並び
+  640px+: 横並び（各カードが均等幅）
+*/
+.mode-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+@media (min-width: 640px) {
+  .mode-cards {
+    flex-direction: row;
+  }
+  .mode-cards > * {
+    flex: 1;
+    min-width: 0; /* flex子要素のはみ出し防止 */
+  }
+}
+
+/* ---- マンカラ盤 ---- */
+/*
+  board-outer: スマホでは-8pxで盤を少し広く使う
+              タブレット+では正位置
+  board-grid:  CSS変数でストア幅・ギャップが自動調整
+  board-count-row: 盤の上下に置く石の個数ラベル行
+    padding = 盤の border(4px) + --board-px に合わせて穴と列を揃える
+*/
+.board-outer {
+  margin: 4px -8px;
+}
+.board-container {
+  max-width: 560px;
+  margin: 0 auto;
+}
+.board-grid {
+  display: grid;
+  grid-template-columns: var(--board-store-w) repeat(6, 1fr) var(--board-store-w);
+  grid-template-rows: auto auto;
+  gap: var(--board-gap);
+  align-items: stretch;
+}
+.board-count-row {
+  display: grid;
+  grid-template-columns: var(--board-store-w) repeat(6, 1fr) var(--board-store-w);
+  gap: var(--board-gap);
+  padding: 0 calc(var(--board-px) + 4px);
+}
+.pit-count {
+  text-align: center;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 1;
+  min-height: 13px;
+}
+@media (min-width: 520px) {
+  /* ネガティブマージン不要になる幅から解除 */
+  .board-outer {
+    margin: 6px 0;
+  }
+}
+@media (min-width: 640px) {
+  .board-outer {
+    margin: 8px 0;
+  }
+}
+
+/* ---- ゲームページ ナビゲーションボタン ---- */
+/*
+  スマホ: 全ボタン縦1列
+  520px+: 「設定へ」「選択へ」を横2列グリッド
+*/
+.game-nav-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 18px;
+}
+.game-nav-secondary {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+@media (min-width: 520px) {
+  .game-nav-secondary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+}
+
+/* ---- スマホ横向き（高さ不足への最低限対応） ---- */
+/*
+  縦余白を圧縮して、スクロールすれば全体を操作できる状態を確保
+*/
+@media (orientation: landscape) and (max-height: 520px) {
+  :root {
+    --board-py:      7px;
+    --board-gap:     3px;
+    --hero-pt:       18px;
+    --hero-pb:       14px;
+    --setup-pt:      10px;
+    --game-page-pt:  6px;
+    --game-page-pb:  20px;
+  }
+}
