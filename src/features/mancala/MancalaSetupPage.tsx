@@ -307,7 +307,8 @@ function PlayerSetupRow({
           placeholder={config.isCpu ? getCpuDisplayName(config.cpuLevel) : `プレイヤー${index + 1}`}
           maxLength={12}
           style={{
-            flex: 1, padding: '6px 10px', borderRadius: 8,
+            flex: 1, minWidth: 0, boxSizing: 'border-box',
+            padding: '6px 10px', borderRadius: 8,
             border: '1.5px solid var(--border)', fontSize: 13, color: 'var(--text)',
             background: '#faf8f5', outline: 'none', fontFamily: 'inherit',
           }}
