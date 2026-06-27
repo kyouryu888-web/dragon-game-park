@@ -138,6 +138,21 @@ export function MancalaOnlineGamePage({
   useEffect(() => {
     let cancelled = false;
 
+    // 最新 game_state を Supabase から取得して適用するユーティリティ
+    const syncLatest = async () => {
+      const { data } = await supabase
+        .from('mancala_rooms')
+        .select('game_state')
+        .eq('room_code', roomCode)
+        .single();
+      if (cancelled || !data?.game_state || isAnimatingRef.current) return;
+      const gs = data.game_state as GameState;
+      setGameState(prev =>
+        !prev || gs.turnCount > prev.turnCount ? gs : prev
+      );
+    };
+
+    // 初回フェッチ
     supabase
       .from('mancala_rooms')
       .select('game_state')
@@ -145,15 +160,13 @@ export function MancalaOnlineGamePage({
       .single()
       .then(({ data, error }) => {
         if (cancelled) return;
-        if (error || !data) {
-          setLoading(false); // エラーでも loading を解除
-          return;
-        }
+        if (error || !data) { setLoading(false); return; }
         const gs = data.game_state as GameState | null;
         if (gs) setGameState(gs);
         setLoading(false);
       });
 
+    // Realtime 購読
     const channel = supabase
       .channel(`online-game-${roomCode}`)
       .on(
@@ -162,16 +175,26 @@ export function MancalaOnlineGamePage({
         (payload) => {
           if (cancelled) return;
           const gs = (payload.new as { game_state: GameState }).game_state;
-          // 自分のアニメーション中は相手更新を遅延させない（ref で最新値を参照）
           if (!isAnimatingRef.current) {
-            setGameState(gs);
+            setGameState(prev =>
+              !prev || gs.turnCount >= prev.turnCount ? gs : prev
+            );
           }
         }
       )
-      .subscribe();
+      .subscribe(async (status) => {
+        // 購読確立後に再フェッチ（購読前に起きたイベントを取りこぼさないため）
+        if (status === 'SUBSCRIBED' && !cancelled) {
+          await syncLatest();
+        }
+      });
+
+    // 定期ポーリング（Realtime 取りこぼしのフォールバック）
+    const poll = setInterval(() => { void syncLatest(); }, 5000);
 
     return () => {
       cancelled = true;
+      clearInterval(poll);
       void supabase.removeChannel(channel);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -194,11 +217,16 @@ export function MancalaOnlineGamePage({
       // アニメーション完了 → Supabase に書き込み
       if (pendingMove && gameStateRef.current) {
         const finalState = applyMove(gameStateRef.current, pendingMove);
-        setGameState(finalState);
-        void supabase
-          .from('mancala_rooms')
-          .update({ game_state: finalState })
-          .eq('room_code', roomCode);
+        if (finalState !== gameStateRef.current) {
+          setGameState(finalState);
+          supabase
+            .from('mancala_rooms')
+            .update({ game_state: finalState })
+            .eq('room_code', roomCode)
+            .then(({ error }) => {
+              if (error) console.error('[online] game_state write failed:', error);
+            });
+        }
         setPendingMove(null);
       }
       setAnimSteps([]);
@@ -224,11 +252,16 @@ export function MancalaOnlineGamePage({
         // 捕獲完了 → Supabase に書き込み
         if (pendingMove && gameStateRef.current) {
           const finalState = applyMove(gameStateRef.current, pendingMove);
-          setGameState(finalState);
-          void supabase
-            .from('mancala_rooms')
-            .update({ game_state: finalState })
-            .eq('room_code', roomCode);
+          if (finalState !== gameStateRef.current) {
+            setGameState(finalState);
+            supabase
+              .from('mancala_rooms')
+              .update({ game_state: finalState })
+              .eq('room_code', roomCode)
+              .then(({ error }) => {
+                if (error) console.error('[online] capture write failed:', error);
+              });
+          }
           setPendingMove(null);
         }
         setCaptureAnimInfo(null);
