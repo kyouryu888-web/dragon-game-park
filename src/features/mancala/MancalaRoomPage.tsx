@@ -192,15 +192,9 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
       }
     }
 
-    // ── UUID不一致 & ゲーム進行中 → 役割選択画面 ──
-    if (row.game_state?.status === 'playing') {
-      setSelectRoleCode(code);
-      setSelectRoleCount(row.player_count);
-      setPageState('select-role');
-      return;
-    }
-
     // ── 新規参加：空きスロットを探す ──
+    // 空きスロットがある場合は新規参加として処理（UUIDを登録）
+    // 空きスロットがない場合のみ「再参加」として役割選択を表示
     let myPlayerId: PlayerId;
     let updatePayload: Record<string, string>;
 
@@ -214,7 +208,14 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
       myPlayerId    = 'player-4';
       updatePayload = { guest3_id: playerId };
     } else {
-      setError('このルームはすでに満員です。ゲームが終了している場合は新しいルームを作成してください。');
+      // 全スロット埋まり & UUID不一致 → ゲーム進行中なら役割選択で再参加
+      if (row.game_state?.status === 'playing') {
+        setSelectRoleCode(code);
+        setSelectRoleCount(row.player_count);
+        setPageState('select-role');
+      } else {
+        setError('このルームはすでに満員です。新しいルームを作成してください。');
+      }
       return;
     }
 
