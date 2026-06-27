@@ -15,7 +15,7 @@ type MancalaRoomPageProps = {
   onBack: () => void;
 };
 
-type PageState = 'menu' | 'creating' | 'waiting';
+type PageState = 'menu' | 'creating' | 'waiting' | 'select-role';
 
 type RoomRow = {
   room_code: string;
@@ -24,6 +24,7 @@ type RoomRow = {
   guest_id: string | null;
   guest2_id: string | null;
   guest3_id: string | null;
+  game_state?: { status: string } | null;
 };
 
 function generateRoomCode(): string {
@@ -68,6 +69,8 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
   const [error,              setError]              = useState('');
   const [myWaitingPlayerId,  setMyWaitingPlayerId]  = useState<PlayerId>('player-1');
   const [joinedCount,        setJoinedCount]        = useState(1);
+  const [selectRoleCode,     setSelectRoleCode]     = useState('');
+  const [selectRoleCount,    setSelectRoleCount]    = useState(2);
   const [waitingPlayerCount, setWaitingPlayerCount] = useState(2);
 
   // ───── ルームを作る ─────
@@ -189,6 +192,14 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
       }
     }
 
+    // ── UUID不一致 & ゲーム進行中 → 役割選択画面 ──
+    if (row.game_state?.status === 'playing') {
+      setSelectRoleCode(code);
+      setSelectRoleCount(row.player_count);
+      setPageState('select-role');
+      return;
+    }
+
     // ── 新規参加：空きスロットを探す ──
     let myPlayerId: PlayerId;
     let updatePayload: Record<string, string>;
@@ -203,7 +214,7 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
       myPlayerId    = 'player-4';
       updatePayload = { guest3_id: playerId };
     } else {
-      setError('このルームはすでに満員です');
+      setError('このルームはすでに満員です。ゲームが終了している場合は新しいルームを作成してください。');
       return;
     }
 
@@ -228,6 +239,40 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
     } else {
       setPageState('waiting');
     }
+  }
+
+  // ───── 役割選択画面（UUID不一致の再参加） ─────
+  if (pageState === 'select-role') {
+    const allRoles: Array<{ pid: PlayerId; label: string }> = [
+      { pid: 'player-1', label: '🏠 ホスト（プレイヤー1）' },
+      { pid: 'player-2', label: '🚪 ゲスト1（プレイヤー2）' },
+      { pid: 'player-3', label: '🚪 ゲスト2（プレイヤー3）' },
+      { pid: 'player-4', label: '🚪 ゲスト3（プレイヤー4）' },
+    ];
+    const roles = allRoles.slice(0, selectRoleCount);
+
+    return (
+      <Layout>
+        <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+          <div style={{ fontSize: 40, marginBottom: 12 }}>🔄</div>
+          <h2 style={{ fontSize: 18, fontWeight: 'bold', color: 'var(--brown)', marginBottom: 8 }}>
+            再入室
+          </h2>
+          <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 24, lineHeight: 1.6 }}>
+            ゲームが進行中のルーム <strong style={{ fontFamily: 'monospace', color: 'var(--brown)' }}>{selectRoleCode}</strong> が見つかりました。<br />
+            あなたはどのプレイヤーでしたか？
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
+            {roles.map(({ pid, label }) => (
+              <Button key={pid} fullWidth onClick={() => onGameStart({ roomCode: selectRoleCode, myPlayerId: pid })}>
+                {label}
+              </Button>
+            ))}
+          </div>
+          <Button variant="ghost" fullWidth onClick={() => setPageState('menu')}>← キャンセル</Button>
+        </div>
+      </Layout>
+    );
   }
 
   // ───── 待機画面 ─────

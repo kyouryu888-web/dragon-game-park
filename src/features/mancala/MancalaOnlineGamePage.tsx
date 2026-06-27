@@ -127,6 +127,9 @@ export function MancalaOnlineGamePage({
   const [captureBannerKey,  setCaptureBannerKey]  = useState(0);
 
   const isAnimating = animSteps.length > 0;
+  // stale closure 対策: Realtime コールバックから最新値を参照するための ref
+  const isAnimatingRef = useRef(false);
+  isAnimatingRef.current = isAnimating;
 
   // ============================================================
   // Supabase: 初回ロード & Realtime 購読
@@ -134,16 +137,20 @@ export function MancalaOnlineGamePage({
   useEffect(() => {
     let cancelled = false;
 
-    void supabase
+    supabase
       .from('mancala_rooms')
       .select('game_state')
       .eq('room_code', roomCode)
       .single()
-      .then(({ data }) => {
-        if (!cancelled && data?.game_state) {
-          setGameState(data.game_state as GameState);
-          setLoading(false);
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        if (error || !data) {
+          setLoading(false); // エラーでも loading を解除
+          return;
         }
+        const gs = data.game_state as GameState | null;
+        if (gs) setGameState(gs);
+        setLoading(false);
       });
 
     const channel = supabase
@@ -154,8 +161,8 @@ export function MancalaOnlineGamePage({
         (payload) => {
           if (cancelled) return;
           const gs = (payload.new as { game_state: GameState }).game_state;
-          // アニメーション中は相手の更新を待つ（自分の手番でない更新のみ適用）
-          if (!isAnimating) {
+          // 自分のアニメーション中は相手更新を遅延させない（ref で最新値を参照）
+          if (!isAnimatingRef.current) {
             setGameState(gs);
           }
         }
@@ -189,7 +196,7 @@ export function MancalaOnlineGamePage({
         setGameState(finalState);
         void supabase
           .from('mancala_rooms')
-          .update({ game_state: finalState, updated_at: new Date().toISOString() })
+          .update({ game_state: finalState })
           .eq('room_code', roomCode);
         setPendingMove(null);
       }
@@ -219,7 +226,7 @@ export function MancalaOnlineGamePage({
           setGameState(finalState);
           void supabase
             .from('mancala_rooms')
-            .update({ game_state: finalState, updated_at: new Date().toISOString() })
+            .update({ game_state: finalState })
             .eq('room_code', roomCode);
           setPendingMove(null);
         }
