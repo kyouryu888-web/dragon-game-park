@@ -64,6 +64,8 @@ const PLAYER_NAMES = ['ホスト', 'ゲスト1', 'ゲスト2', 'ゲスト3'];
 export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
   const [pageState,          setPageState]          = useState<PageState>('menu');
   const [playerCount,        setPlayerCount]        = useState<2 | 3 | 4>(2);
+  // cpuSlots[0]=player-2, cpuSlots[1]=player-3, cpuSlots[2]=player-4
+  const [cpuSlots,           setCpuSlots]           = useState<[boolean, boolean, boolean]>([false, false, false]);
   const [roomCode,           setRoomCode]           = useState('');
   const [inputCode,          setInputCode]          = useState('');
   const [error,              setError]              = useState('');
@@ -72,6 +74,14 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
   const [selectRoleCode,     setSelectRoleCode]     = useState('');
   const [selectRoleCount,    setSelectRoleCount]    = useState(2);
   const [waitingPlayerCount, setWaitingPlayerCount] = useState(2);
+
+  function toggleCpuSlot(idx: number) {
+    setCpuSlots(prev => {
+      const next: [boolean, boolean, boolean] = [...prev] as [boolean, boolean, boolean];
+      next[idx] = !next[idx];
+      return next;
+    });
+  }
 
   // ───── ルームを作る ─────
   async function handleCreate() {
@@ -83,17 +93,24 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
       playerCount,
       players: Array.from({ length: playerCount }, (_, i) => ({
         name:     PLAYER_NAMES[i],
-        isCpu:    false as const,
+        isCpu:    i === 0 ? false : (cpuSlots[i - 1] ?? false),
         cpuLevel: 'normal' as const,
       })),
     };
     const gs = createInitialMancalaState(config);
+
+    // CPUスロットは事前に埋めておく（参加待ち不要）
+    const cpuPreFill: Record<string, string> = {};
+    if (playerCount >= 2 && cpuSlots[0]) cpuPreFill['guest_id']  = 'cpu-player-2';
+    if (playerCount >= 3 && cpuSlots[1]) cpuPreFill['guest2_id'] = 'cpu-player-3';
+    if (playerCount >= 4 && cpuSlots[2]) cpuPreFill['guest3_id'] = 'cpu-player-4';
 
     const { error: err } = await supabase.from('mancala_rooms').insert({
       room_code:    code,
       game_state:   gs,
       player_count: playerCount,
       host_id:      hostId,
+      ...cpuPreFill,
     });
 
     if (err) {
@@ -388,6 +405,44 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
               ))}
             </div>
           </div>
+
+          {/* 3P/4P: CPUスロット選択 */}
+          {playerCount >= 3 && (
+            <div style={{ marginBottom: 14 }}>
+              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>参加者設定：</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {Array.from({ length: playerCount - 1 }, (_, i) => {
+                  const isCpu = cpuSlots[i];
+                  return (
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span style={{ fontSize: 13, color: 'var(--text)' }}>
+                        {PLAYER_NAMES[i + 1]}
+                      </span>
+                      <div style={{ display: 'flex', gap: 4 }}>
+                        {(['人間', 'CPU'] as const).map((role) => {
+                          const isCpuRole  = role === 'CPU';
+                          const isSelected = isCpu === isCpuRole;
+                          return (
+                            <button
+                              key={role}
+                              onClick={() => { if (isCpu !== isCpuRole) toggleCpuSlot(i); }}
+                              style={{
+                                padding: '4px 10px', borderRadius: 8, fontSize: 12, fontWeight: 'bold',
+                                border: `1.5px solid ${isSelected ? (isCpuRole ? '#4e8a4e' : '#c87028') : 'var(--border)'}`,
+                                background: isSelected ? (isCpuRole ? '#e8f4e8' : '#fff3e0') : 'transparent',
+                                color: isSelected ? (isCpuRole ? '#2a6a2a' : '#8a4010') : 'var(--text-muted)',
+                                cursor: 'pointer',
+                              }}
+                            >{role}</button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           <Button fullWidth onClick={handleCreate} disabled={pageState === 'creating'}>
             {pageState === 'creating' ? '作成中...' : 'ルームを作る'}

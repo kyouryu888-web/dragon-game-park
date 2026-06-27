@@ -103,8 +103,7 @@ export function MancalaSetupPage({ onStart, onBack, onOnlinePlay }: MancalaSetup
             マンカラ
           </h1>
           <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.7 }}>
-            木製ボードとカラフルな宝石石で遊ぶ<br />
-            かわいいカラハ式マンカラです
+            木製ボードと石で遊ぶカラハ式マンカラです
           </p>
         </div>
 
@@ -185,7 +184,7 @@ export function MancalaSetupPage({ onStart, onBack, onOnlinePlay }: MancalaSetup
               🌐 オンライン対戦
             </div>
             <div style={{ fontSize: 11, color: '#4a7a9a', marginBottom: 12 }}>
-              ルームコードを使って離れた相手と対戦できます（2人対戦）
+              ルームコードを使って離れた相手と対戦できます
             </div>
             <Button fullWidth variant="secondary" onClick={onOnlinePlay}>
               オンライン対戦を始める

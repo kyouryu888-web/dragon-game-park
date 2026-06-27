@@ -125,16 +125,13 @@ export function HomePage({ onSelectGame }: HomePageProps) {
         >
           ドラゴンゲームパーク
         </h1>
-        <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.7 }}>
-          かわいいドラゴンたちと遊ぶ、ボードゲーム集
-        </p>
       </div>
 
       {/* ドラゴン案内メッセージ */}
       <div
         style={{
           display: 'flex',
-          alignItems: 'flex-start',
+          alignItems: 'center',
           gap: 12,
           background: 'linear-gradient(135deg, #fff8ed, #fdf0d8)',
           border: '1.5px solid #e8c880',
@@ -144,15 +141,10 @@ export function HomePage({ onSelectGame }: HomePageProps) {
           boxShadow: '0 2px 10px rgba(200, 150, 40, 0.12)',
         }}
       >
-        <span style={{ fontSize: 26, flexShrink: 0, marginTop: 1 }}>🐲</span>
-        <div>
-          <p style={{ fontSize: 14, color: '#7a5010', fontWeight: 'bold', marginBottom: 3 }}>
-            まずはマンカラから遊んでみよう！
-          </p>
-          <p style={{ fontSize: 12, color: '#9a7040', lineHeight: 1.6 }}>
-            石を配って、相手より多く集めたほうが勝ち！
-          </p>
-        </div>
+        <span style={{ fontSize: 26, flexShrink: 0 }}>🐲</span>
+        <p style={{ fontSize: 14, color: '#7a5010', fontWeight: 'bold' }}>
+          ゲームを選択してください。
+        </p>
       </div>
 
       {/*

@@ -150,11 +150,11 @@ export function PocketPit({
           ? 'radial-gradient(circle at 40% 35%, #5a3010, #3a1c08)'
           : 'radial-gradient(circle at 40% 35%, #8a5428, #5a2e10)',
         cursor: isSelectable ? 'pointer' : 'default',
+        position: 'relative',
         display: 'flex',
-        flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: showCount ? 'flex-start' : 'center',
-        padding: showCount ? '3px 3px 1px' : 3,
+        justifyContent: 'center',
+        padding: 3,
         boxShadow: isActive
           ? '0 0 0 3px rgba(255,240,80,0.85), 0 0 20px 5px rgba(255,220,0,0.70), inset 0 3px 8px rgba(0,0,0,0.45)'
           : isSource
@@ -168,15 +168,18 @@ export function PocketPit({
       <PocketGems count={pit.stones} />
       {showCount && (
         <span style={{
-          fontSize: 'clamp(10px, 3.2vw, 15px)',
-          fontWeight: 'bold',
+          position: 'absolute',
+          bottom: 1,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          fontSize: 'clamp(9px, 2.4vw, 12px)',
+          fontWeight: '900',
           color: '#fff',
           lineHeight: 1,
-          textShadow: '0 1px 3px rgba(0,0,0,1)',
-          marginTop: 1,
-          background: 'rgba(0,0,0,0.30)',
-          borderRadius: 6,
-          padding: '0 3px',
+          textShadow: '0 0 3px rgba(0,0,0,1), 0 0 6px rgba(0,0,0,0.8)',
+          pointerEvents: 'none',
+          whiteSpace: 'nowrap',
+          zIndex: 1,
         }}>
           {pit.stones}
         </span>

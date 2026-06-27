@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import type { GameState, PlayerId } from './mancalaTypes';
 import { applyMove, getEffectiveOppositePitId } from './mancalaRules';
+import { chooseCpuMove } from './mancalaCpu';
 import type { CaptureAnimInfo } from './MancalaGamePage';
 import { supabase } from '../../lib/supabase';
 import { Layout } from '../../components/Layout';
@@ -265,6 +266,51 @@ export function MancalaOnlineGamePage({
     setAnimActiveIds(activeIds);
     setAnimIdx(0);
   }, [gameState, isAnimating, capturePhase, myPlayerId]);
+
+  // ============================================================
+  // CPU自動手番（ホスト＝player-1のみ実行）
+  // ============================================================
+  useEffect(() => {
+    if (!gameState || isAnimating || capturePhase !== null) return;
+    if (gameState.status !== 'playing') return;
+    if (myPlayerId !== 'player-1') return;
+
+    const currentPlayer = gameState.players.find(p => p.id === gameState.currentPlayerId);
+    if (!currentPlayer?.isCpu) return;
+
+    const cpuId    = gameState.currentPlayerId as PlayerId;
+    const cpuLevel = currentPlayer.cpuLevel;
+
+    const id = setTimeout(() => {
+      const state = gameStateRef.current;
+      if (!state || state.status !== 'playing') return;
+      const cp = state.players.find(p => p.id === state.currentPlayerId);
+      if (!cp?.isCpu || state.currentPlayerId !== cpuId) return;
+
+      const pitId = chooseCpuMove(state, cpuId, cpuLevel);
+      if (!pitId) return;
+
+      const { steps, activeIds, captureInfo: ci, isExtraTurn } =
+        computeStoneSteps(state, pitId);
+      if (steps.length === 0) return;
+
+      if (isExtraTurn) {
+        setExtraTurnKey(k => k + 1);
+        setShowExtraTurn(true);
+        setTimeout(() => setShowExtraTurn(false), 1700);
+      }
+      setCaptureAnimInfo(ci ?? null);
+      setCapturePhase(null);
+      setPendingMove(pitId);
+      setAnimSteps(steps);
+      setAnimActiveIds(activeIds);
+      setAnimIdx(0);
+    }, 700);
+
+    return () => clearTimeout(id);
+  // gameState.turnCount でターンが変わるたびに再評価
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameState?.currentPlayerId, (gameState as GameState | null)?.turnCount, isAnimating, capturePhase, myPlayerId]);
 
   // ============================================================
   // 表示用ゲーム状態（アニメーション中は中間状態を使用）
