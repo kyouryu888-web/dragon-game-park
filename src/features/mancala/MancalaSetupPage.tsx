@@ -1,53 +1,51 @@
 import { useState } from 'react';
-import type { MancalaMode, CpuLevel, MancalaConfig } from './mancalaTypes';
+import type { CpuLevel, MancalaConfig, PlayerConfig } from './mancalaTypes';
 import { getCpuDisplayName } from './mancalaCpu';
 import { Layout } from '../../components/Layout';
 import { Button } from '../../components/Button';
 
-const CONFIG_STORAGE_KEY = 'dragon-game-park:mancala-config';
-
-type SavedConfig = {
-  mode: MancalaMode;
-  cpuLevel: CpuLevel;
-  player1Name: string;
-  player2Name: string;
-};
-
-function loadSavedConfig(): Partial<SavedConfig> {
-  try {
-    const raw = localStorage.getItem(CONFIG_STORAGE_KEY);
-    if (!raw) {
-      // 旧バージョンとの互換性
-      const oldMode = localStorage.getItem('dragon-game-park:mancala-mode');
-      if (oldMode === 'cpu' || oldMode === 'local-2p') return { mode: oldMode };
-      return {};
-    }
-    return JSON.parse(raw) as Partial<SavedConfig>;
-  } catch { return {}; }
-}
-
-function saveConfig(config: SavedConfig): void {
-  try { localStorage.setItem(CONFIG_STORAGE_KEY, JSON.stringify(config)); } catch { /* ignore */ }
-}
+const CONFIG_STORAGE_KEY = 'dragon-game-park:mancala-config-v2';
 
 // ---- CPU 強さ一覧 ----
-const CPU_LEVELS: { level: CpuLevel; label: string; emoji: string; desc: string }[] = [
-  { level: 'very-easy', label: 'とてもかんたん', emoji: '🥚', desc: 'ランダムに動く' },
-  { level: 'easy',      label: 'かんたん',       emoji: '🐣', desc: '追加ターンを狙う' },
-  { level: 'normal',    label: 'ふつう',          emoji: '🐲', desc: '追加ターン・捕獲を狙う' },
-  { level: 'hard',      label: 'むずかしい',      emoji: '🔥', desc: '相手の強手も防ぐ' },
-  { level: 'very-hard', label: 'とてもむずかしい', emoji: '💀', desc: '深く読んで最善手を選ぶ' },
+const CPU_LEVELS: { level: CpuLevel; label: string; emoji: string }[] = [
+  { level: 'very-easy', label: 'とてもかんたん', emoji: '🥚' },
+  { level: 'easy',      label: 'かんたん',       emoji: '🐣' },
+  { level: 'normal',    label: 'ふつう',          emoji: '🐲' },
+  { level: 'hard',      label: 'むずかしい',      emoji: '🔥' },
+  { level: 'very-hard', label: 'とてもむずかしい', emoji: '💀' },
 ];
 
 // ---- ルール ----
 const RULES = [
-  { icon: '👋', text: '自分側の穴を選び、石を1個ずつ隣へ配ります' },
+  { icon: '👋', text: '自分側の穴を選び、石を1個ずつ隣へ時計回りに配ります' },
   { icon: '🔄', text: '最後の石が自分のストアに入ると、もう一度自分の番です' },
-  { icon: '✨', text: '最後の石が自分側の空穴に入ると、向かいの石を捕獲できます' },
-  { icon: '🏁', text: 'どちらかの側の穴が全て空になると終了です' },
+  { icon: '✨', text: '【2人時のみ】最後の石が自分側の空穴に入ると向かいの石を捕獲できます' },
+  { icon: '🏁', text: 'いずれかのプレイヤーの穴が全て空になると終了です' },
 ];
 
-// ---- コンポーネント ----
+function loadSavedConfig(): MancalaConfig | null {
+  try {
+    const raw = localStorage.getItem(CONFIG_STORAGE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as MancalaConfig;
+  } catch { return null; }
+}
+
+function saveConfig(config: MancalaConfig): void {
+  try { localStorage.setItem(CONFIG_STORAGE_KEY, JSON.stringify(config)); } catch { /* ignore */ }
+}
+
+const DEFAULT_PLAYER_CONFIGS: PlayerConfig[] = [
+  { name: '', isCpu: false, cpuLevel: 'normal' },
+  { name: '', isCpu: true,  cpuLevel: 'normal' },
+  { name: '', isCpu: false, cpuLevel: 'normal' },
+  { name: '', isCpu: false, cpuLevel: 'normal' },
+];
+
+// ============================================================
+// メインコンポーネント
+// ============================================================
+
 type MancalaSetupPageProps = {
   onStart: (config: MancalaConfig) => void;
   onBack: () => void;
@@ -56,27 +54,30 @@ type MancalaSetupPageProps = {
 export function MancalaSetupPage({ onStart, onBack }: MancalaSetupPageProps) {
   const saved = loadSavedConfig();
 
-  const [selectedMode,  setSelectedMode]  = useState<MancalaMode>(saved.mode ?? 'cpu');
-  const [selectedLevel, setSelectedLevel] = useState<CpuLevel>(saved.cpuLevel ?? 'normal');
-  const [player1Name,   setPlayer1Name]   = useState(saved.player1Name ?? '');
-  const [player2Name,   setPlayer2Name]   = useState(saved.player2Name ?? '');
-  const [showRules,     setShowRules]     = useState(false);
+  const [playerCount, setPlayerCount] = useState<2 | 3 | 4>(saved?.playerCount ?? 2);
+  const [players, setPlayers] = useState<PlayerConfig[]>(() => {
+    if (saved?.players && saved.players.length >= 4) return saved.players;
+    const base = saved?.players ?? [];
+    return Array.from({ length: 4 }, (_, i) => base[i] ?? DEFAULT_PLAYER_CONFIGS[i]);
+  });
+  const [showRules, setShowRules] = useState(false);
+
+  function updatePlayer(idx: number, patch: Partial<PlayerConfig>) {
+    setPlayers((prev) => prev.map((p, i) => i === idx ? { ...p, ...patch } : p));
+  }
 
   function handleStart() {
     const config: MancalaConfig = {
-      mode: selectedMode,
-      cpuLevel: selectedLevel,
-      player1Name: player1Name.trim(),
-      player2Name: player2Name.trim(),
+      playerCount,
+      players: players.slice(0, playerCount),
     };
-    saveConfig({
-      mode: selectedMode,
-      cpuLevel: selectedLevel,
-      player1Name: player1Name.trim(),
-      player2Name: player2Name.trim(),
-    });
+    saveConfig({ playerCount, players });
     onStart(config);
   }
+
+  const activePlayers = players.slice(0, playerCount);
+  const humanCount = activePlayers.filter((p) => !p.isCpu).length;
+  const cpuCount   = activePlayers.filter((p) => p.isCpu).length;
 
   return (
     <Layout>
@@ -113,89 +114,58 @@ export function MancalaSetupPage({ onStart, onBack }: MancalaSetupPageProps) {
           marginBottom: 18, display: 'flex', flexDirection: 'column', gap: 20,
         }}>
 
-          {/* モード選択 */}
+          {/* プレイヤー数選択 */}
           <section>
             <h2 style={{ fontSize: 13, fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: 12, letterSpacing: 0.5 }}>
-              対戦モード
+              プレイヤー数
             </h2>
-            <div className="mode-cards">
-              <ModeCard
-                mode="cpu" selectedMode={selectedMode} onSelect={setSelectedMode}
-                icon="🐲" label="人間 vs CPU" sublabel="CPU対戦"
-                description="ドラゴンCPUと対戦します。強さは下で選べます！"
-                accentColor="#c87028" accentBg="#fff8ed"
-              />
-              <ModeCard
-                mode="local-2p" selectedMode={selectedMode} onSelect={setSelectedMode}
-                icon="👥" label="人間 vs 人間" sublabel="ローカル2人対戦"
-                description="同じ端末で2人が交互に遊びます。友達や家族と！"
-                accentColor="#4e8a4e" accentBg="#f0f8f0"
-              />
+            <div style={{ display: 'flex', gap: 8 }}>
+              {([2, 3, 4] as const).map((n) => (
+                <button
+                  key={n}
+                  onClick={() => setPlayerCount(n)}
+                  style={{
+                    flex: 1, padding: '10px 0', borderRadius: 12, fontWeight: 'bold',
+                    fontSize: 15, cursor: 'pointer',
+                    border: `2px solid ${playerCount === n ? '#c87028' : 'var(--border)'}`,
+                    background: playerCount === n ? '#fff3e0' : '#faf8f5',
+                    color: playerCount === n ? '#8a4010' : 'var(--text)',
+                    boxShadow: playerCount === n ? '0 2px 10px rgba(200,112,40,0.22)' : 'none',
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  {n}人
+                </button>
+              ))}
+            </div>
+            <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text-muted)', textAlign: 'center' }}>
+              {playerCount === 2 ? '🟦 通常の横長ボード（捕獲ルールあり）'
+               : playerCount === 3 ? '🔺 三角形ボード（捕獲ルールなし）'
+               : '🟥 長方形フレームボード（捕獲ルールなし）'}
             </div>
           </section>
 
-          {/* CPU 強さ選択（cpu モード時のみ） */}
-          {selectedMode === 'cpu' && (
-            <section>
-              <h2 style={{ fontSize: 13, fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: 10, letterSpacing: 0.5 }}>
-                CPUの強さ
-              </h2>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
-                {CPU_LEVELS.map(({ level, label, emoji, desc }) => {
-                  const isSelected = selectedLevel === level;
-                  return (
-                    <button
-                      key={level}
-                      onClick={() => setSelectedLevel(level)}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: 12,
-                        padding: '10px 14px', borderRadius: 12,
-                        border: `2px solid ${isSelected ? '#c87028' : 'var(--border)'}`,
-                        background: isSelected ? '#fff3e0' : '#faf8f5',
-                        cursor: 'pointer', textAlign: 'left',
-                        boxShadow: isSelected ? '0 2px 10px rgba(200,112,40,0.22)' : 'none',
-                        transition: 'border-color 0.15s, background 0.15s',
-                      }}
-                    >
-                      <span style={{ fontSize: 20, flexShrink: 0 }}>{emoji}</span>
-                      <span style={{ flex: 1 }}>
-                        <span style={{ fontWeight: 'bold', fontSize: 13, color: isSelected ? '#8a4010' : 'var(--text)', display: 'block' }}>
-                          {label}
-                        </span>
-                        <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-                          {getCpuDisplayName(level)}　— {desc}
-                        </span>
-                      </span>
-                      {isSelected && (
-                        <span style={{ fontSize: 16, color: '#c87028' }}>✓</span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </section>
-          )}
-
-          {/* プレイヤー名入力 */}
+          {/* プレイヤー個別設定 */}
           <section>
             <h2 style={{ fontSize: 13, fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: 12, letterSpacing: 0.5 }}>
-              プレイヤー名（省略可）
+              プレイヤー設定
             </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <NameInput
-                label={selectedMode === 'cpu' ? 'あなたの名前' : 'プレイヤー1の名前'}
-                placeholder={selectedMode === 'cpu' ? 'あなた' : 'プレイヤー1'}
-                value={player1Name}
-                onChange={setPlayer1Name}
-              />
-              {selectedMode === 'local-2p' && (
-                <NameInput
-                  label="プレイヤー2の名前"
-                  placeholder="プレイヤー2"
-                  value={player2Name}
-                  onChange={setPlayer2Name}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {Array.from({ length: playerCount }, (_, i) => (
+                <PlayerSetupRow
+                  key={i}
+                  index={i}
+                  config={players[i]}
+                  onChange={(patch) => updatePlayer(i, patch)}
                 />
-              )}
+              ))}
+            </div>
+            <div style={{ marginTop: 10, fontSize: 11, color: 'var(--text-muted)', textAlign: 'center' }}>
+              {humanCount > 0 && cpuCount > 0
+                ? `人間 ${humanCount}人 vs CPU ${cpuCount}体`
+                : humanCount === 0
+                ? `CPU ${cpuCount}体だけの対戦`
+                : `人間 ${humanCount}人の対戦`}
             </div>
           </section>
 
@@ -247,81 +217,111 @@ export function MancalaSetupPage({ onStart, onBack }: MancalaSetupPageProps) {
   );
 }
 
-// ---- モード選択カード ----
-type ModeCardProps = {
-  mode: MancalaMode; selectedMode: MancalaMode; onSelect: (mode: MancalaMode) => void;
-  icon: string; label: string; sublabel: string; description: string;
-  accentColor: string; accentBg: string;
-};
+// ============================================================
+// プレイヤー1人分の設定行
+// ============================================================
 
-function ModeCard({ mode, selectedMode, onSelect, icon, label, sublabel, description, accentColor, accentBg }: ModeCardProps) {
-  const isSelected = selectedMode === mode;
+const PLAYER_COLORS = ['#c87028', '#4e8a4e', '#7040a0', '#2060a8'];
+const PLAYER_ICONS  = ['👤', '🐲', '🦊', '🤖'];
 
-  return (
-    <div
-      role="button" tabIndex={0}
-      onClick={() => onSelect(mode)}
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onSelect(mode); }}
-      aria-pressed={isSelected}
-      style={{
-        padding: '16px', borderRadius: 16,
-        border: `2px solid ${isSelected ? accentColor : 'var(--border)'}`,
-        backgroundColor: isSelected ? accentBg : '#faf8f5',
-        cursor: 'pointer',
-        transition: 'border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease',
-        boxShadow: isSelected ? `0 3px 12px ${accentColor}30` : 'none',
-        display: 'flex', alignItems: 'flex-start', gap: 14,
-      }}
-    >
-      <div style={{
-        width: 48, height: 48, borderRadius: 12, flexShrink: 0,
-        backgroundColor: isSelected ? accentColor : '#d8cfc4',
-        display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24,
-        boxShadow: isSelected ? `0 3px 10px ${accentColor}50` : 'none',
-        transition: 'background-color 0.15s ease',
-      }}>
-        {icon}
-      </div>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3, flexWrap: 'wrap' }}>
-          <span style={{ fontWeight: 'bold', fontSize: 15, color: 'var(--text)' }}>{label}</span>
-          {isSelected && (
-            <span style={{
-              fontSize: 10, backgroundColor: accentColor, color: '#fff',
-              padding: '2px 9px', borderRadius: 20, fontWeight: 'bold', letterSpacing: 0.5,
-            }}>選択中</span>
-          )}
-        </div>
-        <div style={{ fontSize: 11, color: accentColor, fontWeight: 'bold', marginBottom: 4 }}>{sublabel}</div>
-        <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6 }}>{description}</div>
-      </div>
-    </div>
-  );
-}
-
-// ---- 名前入力フィールド ----
-function NameInput({ label, placeholder, value, onChange }: {
-  label: string; placeholder: string; value: string; onChange: (v: string) => void;
+function PlayerSetupRow({
+  index, config, onChange,
+}: {
+  index: number;
+  config: PlayerConfig;
+  onChange: (patch: Partial<PlayerConfig>) => void;
 }) {
+  const color = PLAYER_COLORS[index];
+
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-      <label style={{ fontSize: 12, color: 'var(--text-mid)', whiteSpace: 'nowrap', minWidth: 110 }}>
-        {label}
-      </label>
-      <input
-        type="text"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        maxLength={12}
-        style={{
-          flex: 1, padding: '8px 12px', borderRadius: 10,
-          border: '1.5px solid var(--border)', fontSize: 14, color: 'var(--text)',
-          background: '#faf8f5', outline: 'none', fontFamily: 'inherit',
-        }}
-        onFocus={(e) => { e.target.style.borderColor = '#c87028'; }}
-        onBlur={(e) => { e.target.style.borderColor = 'var(--border)'; }}
-      />
+    <div style={{
+      border: `1.5px solid ${config.isCpu ? '#90b090' : 'var(--border)'}`,
+      borderRadius: 14, padding: '12px 14px',
+      background: config.isCpu ? '#f0f8f0' : '#faf8f5',
+      transition: 'all 0.15s',
+    }}>
+      {/* ヘッダー行 */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+        <div style={{
+          width: 28, height: 28, borderRadius: '50%',
+          background: color, display: 'flex', alignItems: 'center',
+          justifyContent: 'center', fontSize: 14, flexShrink: 0,
+        }}>
+          {PLAYER_ICONS[index]}
+        </div>
+        <span style={{ fontWeight: 'bold', fontSize: 13, color: 'var(--text)', flex: 1 }}>
+          プレイヤー{index + 1}
+        </span>
+
+        {/* 人間 / CPU トグル */}
+        <div style={{ display: 'flex', gap: 4 }}>
+          {(['人間', 'CPU'] as const).map((role) => {
+            const isCpuRole = role === 'CPU';
+            const isSelected = config.isCpu === isCpuRole;
+            return (
+              <button
+                key={role}
+                onClick={() => onChange({ isCpu: isCpuRole })}
+                style={{
+                  padding: '4px 10px', borderRadius: 8, fontSize: 12, fontWeight: 'bold',
+                  border: `1.5px solid ${isSelected ? (isCpuRole ? '#4e8a4e' : color) : 'var(--border)'}`,
+                  background: isSelected ? (isCpuRole ? '#e8f4e8' : '#fff3e0') : 'transparent',
+                  color: isSelected ? (isCpuRole ? '#2a6a2a' : '#8a4010') : 'var(--text-muted)',
+                  cursor: 'pointer', transition: 'all 0.12s',
+                }}
+              >
+                {role}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 名前入力 */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: config.isCpu ? 10 : 0 }}>
+        <label style={{ fontSize: 11, color: 'var(--text-muted)', whiteSpace: 'nowrap', minWidth: 50 }}>
+          名前
+        </label>
+        <input
+          type="text"
+          value={config.name}
+          onChange={(e) => onChange({ name: e.target.value })}
+          placeholder={config.isCpu ? getCpuDisplayName(config.cpuLevel) : `プレイヤー${index + 1}`}
+          maxLength={12}
+          style={{
+            flex: 1, padding: '6px 10px', borderRadius: 8,
+            border: '1.5px solid var(--border)', fontSize: 13, color: 'var(--text)',
+            background: '#faf8f5', outline: 'none', fontFamily: 'inherit',
+          }}
+          onFocus={(e) => { e.target.style.borderColor = color; }}
+          onBlur={(e)  => { e.target.style.borderColor = 'var(--border)'; }}
+        />
+      </div>
+
+      {/* CPU 強さ選択 */}
+      {config.isCpu && (
+        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+          {CPU_LEVELS.map(({ level, label, emoji }) => {
+            const isSelected = config.cpuLevel === level;
+            return (
+              <button
+                key={level}
+                onClick={() => onChange({ cpuLevel: level })}
+                style={{
+                  padding: '4px 8px', borderRadius: 8, fontSize: 11, fontWeight: 'bold',
+                  border: `1.5px solid ${isSelected ? '#4e8a4e' : 'var(--border)'}`,
+                  background: isSelected ? '#d0ecd0' : 'transparent',
+                  color: isSelected ? '#1a5a1a' : 'var(--text-muted)',
+                  cursor: 'pointer', transition: 'all 0.12s',
+                  display: 'flex', alignItems: 'center', gap: 3,
+                }}
+              >
+                {emoji} {label}
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

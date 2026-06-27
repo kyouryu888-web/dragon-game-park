@@ -9,9 +9,14 @@ export function getCurrentPlayer(state: GameState) {
   return state.players.find((p) => p.id === state.currentPlayerId)!;
 }
 
-/** 相手のプレイヤーIDを返す */
-export function getOpponentPlayerId(playerId: PlayerId): PlayerId {
-  return playerId === 'player-1' ? 'player-2' : 'player-1';
+/**
+ * 次の手番プレイヤーIDを返す（時計回り）
+ * activePlayerIds の順番に従い、脱落者をスキップして循環する
+ */
+export function getNextPlayerId(state: GameState): PlayerId {
+  const ids = state.activePlayerIds;
+  const idx = ids.indexOf(state.currentPlayerId);
+  return ids[(idx + 1) % ids.length];
 }
 
 /** 指定プレイヤーの小さい穴（ストア以外）を返す */
@@ -24,10 +29,31 @@ export function getPlayerStore(state: GameState, playerId: PlayerId): Pit {
   return state.board.find((p) => p.ownerPlayerId === playerId && p.isStore)!;
 }
 
-/** 指定した穴の向かい側にある穴を返す（ストアの場合はundefined） */
-export function getOppositePit(state: GameState, pit: Pit): Pit | undefined {
-  if (!pit.oppositePitId) return undefined;
-  return state.board.find((p) => p.id === pit.oppositePitId);
+/**
+ * 指定した穴の向かい側にあるピットIDを返す。
+ * - 元々の2人プレイ: pit.oppositePitId を使用
+ * - 多人数から2人に縮小した場合: activePlayerIds を基に動的に計算
+ */
+export function getEffectiveOppositePitId(state: GameState, pit: Pit): string | undefined {
+  if (pit.isStore) return undefined;
+  if (!state.activePlayerIds.includes(pit.ownerPlayerId as PlayerId)) return undefined;
+
+  // 元々の2人プレイ: 静的に設定済みの oppositePitId を使用
+  if (pit.oppositePitId) return pit.oppositePitId;
+
+  // 多人数から実質2人になった場合: 動的に計算
+  if (state.activePlayerIds.length !== 2) return undefined;
+
+  const [p1Id, p2Id] = state.activePlayerIds;
+  const opponentId = pit.ownerPlayerId === p1Id ? p2Id : p1Id;
+
+  const myPits  = state.board.filter(p => p.ownerPlayerId === pit.ownerPlayerId && !p.isStore);
+  const oppPits = state.board.filter(p => p.ownerPlayerId === opponentId && !p.isStore);
+
+  const myIdx = myPits.findIndex(p => p.id === pit.id);
+  if (myIdx === -1 || myIdx >= oppPits.length) return undefined;
+
+  return oppPits[oppPits.length - 1 - myIdx].id;
 }
 
 // ============================================================
@@ -36,13 +62,6 @@ export function getOppositePit(state: GameState, pit: Pit): Pit | undefined {
 
 /**
  * 指定した穴を選択できるか判定する
- *
- * 選べる条件：
- * - ゲームが進行中
- * - 穴が存在する
- * - ストアでない（小さい穴のみ選べる）
- * - 自分の穴
- * - 石が1個以上入っている
  */
 export function canSelectPit(state: GameState, pitId: string): boolean {
   if (state.status !== 'playing') return false;
@@ -66,67 +85,59 @@ export function getSelectablePits(state: GameState): Pit[] {
  *
  * 処理の流れ：
  * 1. 選んだ穴から石を全部取り出す
- * 2. 盤面配列を前に進みながら1個ずつ石を置く（相手のストアはスキップ）
+ * 2. 盤面配列を前に進みながら1個ずつ石を置く
+ *    - 脱落プレイヤーの穴・ストアはスキップ
+ *    - 他の残存プレイヤーのストアもスキップ
  * 3. 追加ターン判定（最後の石が自分のストアに落ちたか）
- * 4. 捕獲判定（最後の石が自分の空の穴に落ちて、向かいに石があるか）
+ * 4. 捕獲判定（実質2人プレイ時のみ）
  * 5. 次の手番プレイヤーを決める
- * 6. ゲーム終了チェック
+ * 6. ゲーム終了チェック（脱落 or 終了）
  */
 export function applyMove(state: GameState, pitId: string): GameState {
-  // 不正な手はそのまま返す
   if (!canSelectPit(state, pitId)) return state;
 
-  // 盤面をコピーする（元の state を直接変えないようにする）
   const board = state.board.map((p) => ({ ...p }));
-
-  const opponentId = getOpponentPlayerId(state.currentPlayerId);
-
-  // コピーした board からストアを取得
   const myStore = board.find((p) => p.ownerPlayerId === state.currentPlayerId && p.isStore)!;
-  const opponentStore = board.find((p) => p.ownerPlayerId === opponentId && p.isStore)!;
 
-  // 選んだ穴から石を全部取り出す
   const startIdx = board.findIndex((p) => p.id === pitId);
   let stones = board[startIdx].stones;
   board[startIdx].stones = 0;
 
-  // 石を1つずつ配る（盤面配列を順番に進む）
-  // ※ 相手のストアには石を置かない
   let idx = startIdx;
   while (stones > 0) {
     idx = (idx + 1) % board.length;
-    if (board[idx].id === opponentStore.id) continue; // 相手のストアはスキップ
+    // 脱落プレイヤーの穴・ストアをスキップ
+    if (!state.activePlayerIds.includes(board[idx].ownerPlayerId as PlayerId)) continue;
+    // 他の残存プレイヤーのストアをスキップ
+    if (board[idx].isStore && board[idx].ownerPlayerId !== state.currentPlayerId) continue;
     board[idx].stones += 1;
     stones -= 1;
   }
 
-  // 最後に石を置いた穴
   const landedPit = board[idx];
-
-  // ---- 追加ターン判定 ----
-  // 最後の石が「自分のストア」に入ったら、同じプレイヤーがもう一度手番を行う
   const isExtraTurn = landedPit.id === myStore.id;
 
-  // ---- 捕獲判定 ----
-  // 最後の石が「自分側の穴」に入り、かつその穴に石が1個だけ（=今置いたばかりで空だった）
-  // そして向かいの相手の穴に石がある場合、両方の石を自分のストアへ
+  // ---- 捕獲判定（実質2人プレイ時のみ） ----
   if (
+    state.activePlayerIds.length === 2 &&
     !isExtraTurn &&
     !landedPit.isStore &&
     landedPit.ownerPlayerId === state.currentPlayerId &&
     landedPit.stones === 1 // 置く前は空だったことを意味する
   ) {
-    const oppositePit = board.find((p) => p.id === landedPit.oppositePitId);
-    if (oppositePit && oppositePit.stones > 0) {
-      // 自分の石 + 向かいの石を全部自分のストアへ
-      myStore.stones += landedPit.stones + oppositePit.stones;
-      landedPit.stones = 0;
-      oppositePit.stones = 0;
+    const originalLandedPit = state.board.find(p => p.id === landedPit.id)!;
+    const oppPitId = getEffectiveOppositePitId(state, originalLandedPit);
+    if (oppPitId) {
+      const oppPit = board.find(p => p.id === oppPitId);
+      if (oppPit && oppPit.stones > 0) {
+        myStore.stones += landedPit.stones + oppPit.stones;
+        landedPit.stones = 0;
+        oppPit.stones = 0;
+      }
     }
   }
 
-  // 次の手番プレイヤーを決める
-  const nextPlayerId = isExtraTurn ? state.currentPlayerId : opponentId;
+  const nextPlayerId = isExtraTurn ? state.currentPlayerId : getNextPlayerId(state);
 
   const nextState: GameState = {
     ...state,
@@ -135,55 +146,99 @@ export function applyMove(state: GameState, pitId: string): GameState {
     turnCount: state.turnCount + 1,
   };
 
-  // ゲーム終了チェックを行って返す
   return checkGameEnd(nextState);
 }
 
 /**
  * ゲーム終了チェック
  *
- * どちらかのプレイヤーの小さい穴が全て空になったら終了。
- * 残っている石は、その石を持つプレイヤーのストアに全て入れる。
- * その後、ストアの石数を比べて勝敗を決める。
+ * 実質2人プレイ（activePlayerIds.length === 2）：
+ *   いずれかのプレイヤーの穴が全て空になったら終了。
+ *   全残存プレイヤーの石をストアに移してスコア比較。
+ *
+ * 3人以上（activePlayerIds.length >= 3）：脱落制
+ *   穴が全て空になったプレイヤーを脱落させる（石をストアへ移す）。
+ *   残り1人になったら終了。
+ *   残り2人になったら次回から2人ルールが適用される。
  */
 export function checkGameEnd(state: GameState): GameState {
   const board = state.board.map((p) => ({ ...p }));
+  let activePlayerIds = [...state.activePlayerIds];
 
-  for (const player of state.players) {
-    const pockets = board.filter((p) => p.ownerPlayerId === player.id && !p.isStore);
-    const allEmpty = pockets.every((p) => p.stones === 0);
+  // ── 実質2人プレイ（標準終了ルール） ──────────────────────────
+  if (activePlayerIds.length === 2) {
+    const anyEmpty = activePlayerIds.some(pid =>
+      board.filter(p => p.ownerPlayerId === pid && !p.isStore).every(p => p.stones === 0)
+    );
 
-    if (allEmpty) {
-      // 全プレイヤーの残り石をそれぞれのストアに集める
-      for (const p of state.players) {
-        const store = board.find((pit) => pit.ownerPlayerId === p.id && pit.isStore)!;
-        const remaining = board.filter((pit) => pit.ownerPlayerId === p.id && !pit.isStore);
-        for (const pocket of remaining) {
-          store.stones += pocket.stones;
-          pocket.stones = 0;
-        }
+    if (anyEmpty) {
+      // 全残存プレイヤーの石をストアへ
+      for (const pid of activePlayerIds) {
+        const store = board.find(pit => pit.ownerPlayerId === pid && pit.isStore)!;
+        board.filter(pit => pit.ownerPlayerId === pid && !pit.isStore)
+          .forEach(pocket => { store.stones += pocket.stones; pocket.stones = 0; });
       }
-
-      // 勝敗判定
-      const p1Score = board.find((p) => p.ownerPlayerId === 'player-1' && p.isStore)!.stones;
-      const p2Score = board.find((p) => p.ownerPlayerId === 'player-2' && p.isStore)!.stones;
-      const isDraw = p1Score === p2Score;
-      const winnerPlayerId: PlayerId | null = isDraw
-        ? null
-        : p1Score > p2Score
-        ? 'player-1'
-        : 'player-2';
-
+      const scores = activePlayerIds.map(pid => ({
+        playerId: pid as PlayerId,
+        stones: board.find(pit => pit.ownerPlayerId === pid && pit.isStore)!.stones,
+      }));
+      const maxScore = Math.max(...scores.map(s => s.stones));
+      const winners = scores.filter(s => s.stones === maxScore);
+      const isDraw = winners.length > 1;
       return {
-        ...state,
-        board,
+        ...state, board, activePlayerIds,
         status: 'finished',
-        winnerPlayerId,
+        winnerPlayerId: isDraw ? null : winners[0].playerId,
         isDraw,
       };
     }
+    return { ...state, board, activePlayerIds };
   }
 
-  // まだ終了していない場合はそのまま返す
-  return { ...state, board };
+  // ── 3人以上：脱落制 ──────────────────────────────────────────
+  const eliminated: PlayerId[] = [];
+  for (const pid of [...activePlayerIds]) {
+    const pockets = board.filter(p => p.ownerPlayerId === pid && !p.isStore);
+    if (pockets.every(p => p.stones === 0)) {
+      // 脱落：残り石をストアへ掃き込む
+      const store = board.find(pit => pit.ownerPlayerId === pid && pit.isStore)!;
+      pockets.forEach(pocket => { store.stones += pocket.stones; pocket.stones = 0; });
+      eliminated.push(pid as PlayerId);
+    }
+  }
+
+  if (eliminated.length > 0) {
+    activePlayerIds = activePlayerIds.filter(id => !eliminated.includes(id));
+
+    if (activePlayerIds.length === 1) {
+      // 最後の1人が勝者（残り石もストアへ）
+      const winnerId = activePlayerIds[0];
+      const store = board.find(pit => pit.ownerPlayerId === winnerId && pit.isStore)!;
+      board.filter(pit => pit.ownerPlayerId === winnerId && !pit.isStore)
+        .forEach(p => { store.stones += p.stones; p.stones = 0; });
+      return {
+        ...state, board, activePlayerIds,
+        status: 'finished', winnerPlayerId: winnerId as PlayerId, isDraw: false,
+      };
+    }
+
+    if (activePlayerIds.length === 0) {
+      return { ...state, board, activePlayerIds, status: 'finished', winnerPlayerId: null, isDraw: true };
+    }
+
+    // currentPlayerId が脱落していた場合、次のアクティブプレイヤーへ
+    let currentPlayerId = state.currentPlayerId;
+    if (!activePlayerIds.includes(currentPlayerId)) {
+      const allIds = state.players.map(p => p.id);
+      const startAt = allIds.indexOf(currentPlayerId);
+      for (let offset = 1; offset <= allIds.length; offset++) {
+        const candidate = allIds[(startAt + offset) % allIds.length] as PlayerId;
+        if (activePlayerIds.includes(candidate)) { currentPlayerId = candidate; break; }
+      }
+    }
+
+    return { ...state, board, activePlayerIds, currentPlayerId };
+  }
+
+  return { ...state, board, activePlayerIds };
 }

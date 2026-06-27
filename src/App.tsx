@@ -15,13 +15,13 @@ type AppScreen = 'home' | 'mancala-setup' | 'mancala-game';
 export default function App() {
   const [screen, setScreen] = useState<AppScreen>('home');
   const [mancalaConfig, setMancalaConfig] = useState<MancalaConfig>({
-    mode: 'cpu',
-    cpuLevel: 'normal',
-    player1Name: '',
-    player2Name: '',
+    playerCount: 2,
+    players: [
+      { name: '', isCpu: false, cpuLevel: 'normal' },
+      { name: '', isCpu: true,  cpuLevel: 'normal' },
+    ],
   });
 
-  // ゲーム選択画面
   if (screen === 'home') {
     return (
       <HomePage
@@ -32,7 +32,6 @@ export default function App() {
     );
   }
 
-  // マンカラ設定画面
   if (screen === 'mancala-setup') {
     return (
       <MancalaSetupPage
@@ -45,7 +44,6 @@ export default function App() {
     );
   }
 
-  // マンカラ対局画面
   if (screen === 'mancala-game') {
     return (
       <MancalaGamePage

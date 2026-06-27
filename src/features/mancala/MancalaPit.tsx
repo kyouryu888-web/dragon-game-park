@@ -1,4 +1,5 @@
 import type { Pit } from './mancalaTypes';
+import type { CSSProperties } from 'react';
 
 // ---- 宝石風の石カラーパレット（MancalaBoard でも使用するためエクスポート） ----
 export const GEM_COLORS = [
@@ -108,10 +109,12 @@ type PocketPitProps = {
   isActive?: boolean;
   /** true: 石を拾い上げた元の穴（くぼみアニメーション） */
   isSource?: boolean;
+  /** true: 穴の下に石数を数字で表示する（3P/4P用） */
+  showCount?: boolean;
 };
 
 export function PocketPit({
-  pit, isSelectable, onClick, isActive = false, isSource = false,
+  pit, isSelectable, onClick, isActive = false, isSource = false, showCount = false,
 }: PocketPitProps) {
   const cls = [
     'pit-btn',
@@ -140,7 +143,7 @@ export function PocketPit({
         background: isActive
           ? 'radial-gradient(circle at 40% 35%, #e8a850, #a06030)'
           : isSource
-          ? 'radial-gradient(circle at 40% 35%, #4a2808, #2a1004)' // 空になった穴は暗め
+          ? 'radial-gradient(circle at 40% 35%, #4a2808, #2a1004)'
           : isSelectable
           ? 'radial-gradient(circle at 40% 35%, #d8884a, #8a4818)'
           : pit.stones === 0
@@ -148,9 +151,10 @@ export function PocketPit({
           : 'radial-gradient(circle at 40% 35%, #8a5428, #5a2e10)',
         cursor: isSelectable ? 'pointer' : 'default',
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
-        padding: 3,
+        justifyContent: showCount ? 'flex-start' : 'center',
+        padding: showCount ? '3px 3px 1px' : 3,
         boxShadow: isActive
           ? '0 0 0 3px rgba(255,240,80,0.85), 0 0 20px 5px rgba(255,220,0,0.70), inset 0 3px 8px rgba(0,0,0,0.45)'
           : isSource
@@ -162,6 +166,18 @@ export function PocketPit({
       }}
     >
       <PocketGems count={pit.stones} />
+      {showCount && (
+        <span style={{
+          fontSize: 'clamp(7px, 1.8vw, 10px)',
+          fontWeight: 'bold',
+          color: 'rgba(255,255,255,0.90)',
+          lineHeight: 1,
+          textShadow: '0 1px 2px rgba(0,0,0,0.9)',
+          marginTop: 1,
+        }}>
+          {pit.stones}
+        </span>
+      )}
     </button>
   );
 }
@@ -172,25 +188,179 @@ export function PocketPit({
 
 type StorePitProps = {
   pit: Pit;
+  /** true: コンパクト表示（3P/4Pの小さいセル用） */
+  compact?: boolean;
 };
 
-export function StorePit({ pit }: StorePitProps) {
+export function StorePit({ pit, compact = false }: StorePitProps) {
   return (
     <div
       style={{
         width: '100%',
         height: '100%',
-        borderRadius: 14,
+        borderRadius: compact ? '50%' : 14,
         background: 'radial-gradient(ellipse at 50% 30%, #6a3818, #3a1c08)',
         border: '2px solid rgba(255,255,255,0.08)',
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
         boxShadow: 'inset 0 4px 14px rgba(0,0,0,0.55), 0 2px 6px rgba(0,0,0,0.3)',
-        padding: 6,
+        padding: compact ? 2 : 6,
+        overflow: 'hidden',
       }}
     >
-      <StoreGems count={pit.stones} />
+      {compact ? (
+        <>
+          <div style={{
+            fontSize: 'clamp(9px, 3vw, 16px)',
+            fontWeight: 'bold',
+            color: '#fff',
+            lineHeight: 1,
+            textShadow: '0 1px 3px rgba(0,0,0,0.7)',
+          }}>
+            {pit.stones}
+          </div>
+          <div style={{ fontSize: 'clamp(5px, 1.5vw, 8px)', color: 'rgba(255,255,255,0.55)', lineHeight: 1, marginTop: 1 }}>
+            石
+          </div>
+        </>
+      ) : (
+        <StoreGems count={pit.stones} />
+      )}
+    </div>
+  );
+}
+
+// ============================================================
+// PlayerPlank（1プレイヤーの横長の板）
+// ============================================================
+
+export type PlayerPlankProps = {
+  pits: Pit[];           // pit-0〜pit-5（board配列順）
+  store: Pit;
+  playerName: string;
+  colorAccent: string;   // プレイヤーカラー（アクセントに使用）
+  isCurrentTurn: boolean;
+  selectableIds: Set<string>;
+  onPitClick: (id: string) => void;
+  curActiveId: string | null;
+  sourcePitId: string | null;
+  animIdx: number | undefined;
+  setCellRef: (id: string) => (el: HTMLElement | null) => void;
+  /** absolute配置時の transform 値（board側で制御） */
+  style?: CSSProperties;
+  /** true: 2Pフェイスツーフェイス専用スタイル（cssクラス使用） */
+  facingMode?: boolean;
+  /** true: ピットの順序を逆にする（2P上プレイヤーなど） */
+  reversed?: boolean;
+  /** 'left': ストアを左に配置（2P上プレイヤー）/ 'right': 右に配置（2P下プレイヤー） */
+  storePosition?: 'left' | 'right';
+  /** 表示用石数ラベルを外部に出さず内部に表示（3P/4P プランクモード） */
+  showCount?: boolean;
+};
+
+export const PLAYER_ACCENT_COLORS = [
+  '#e05030', // P1: 赤系
+  '#2878cc', // P2: 青系
+  '#9b59b6', // P3: 紫系
+  '#27ae60', // P4: 緑系
+];
+
+export function PlayerPlank({
+  pits, store, playerName, colorAccent, isCurrentTurn,
+  selectableIds, onPitClick, curActiveId, sourcePitId,
+  animIdx, setCellRef, style, facingMode = false, reversed = false,
+  storePosition = 'left', showCount = true,
+}: PlayerPlankProps) {
+  const displayPits = reversed ? [...pits].reverse() : pits;
+
+  const pitCells = displayPits.map((pit) => {
+    const isActive = curActiveId === pit.id;
+    const isSource = sourcePitId === pit.id && animIdx === 0;
+    return (
+      <div
+        key={isActive ? `${pit.id}-${animIdx}` : pit.id}
+        ref={setCellRef(pit.id)}
+        className="plank-2p-pit-cell"
+      >
+        <PocketPit
+          pit={pit}
+          isSelectable={selectableIds.has(pit.id)}
+          onClick={() => onPitClick(pit.id)}
+          isActive={isActive}
+          isSource={isSource}
+        />
+      </div>
+    );
+  });
+
+  const storeCell = (
+    <div className="plank-2p-store-cell" ref={setCellRef(store.id)}>
+      <StorePit pit={store} />
+    </div>
+  );
+
+  if (facingMode) {
+    // 2P フェイスツーフェイス専用レイアウト
+    return (
+      <div className="plank-2p" style={style}>
+        {/* アクセントバー */}
+        <div style={{
+          position: 'absolute', top: 0, left: 0, right: 0, height: 3,
+          borderRadius: '9px 9px 0 0',
+          background: colorAccent, opacity: 0.70,
+        }} />
+        {storePosition === 'left' ? (
+          <>{storeCell}{pitCells}</>
+        ) : (
+          <>{pitCells}{storeCell}</>
+        )}
+      </div>
+    );
+  }
+
+  // 4P / 3P 絶対配置モード（style で transform が渡される）
+  return (
+    <div className="player-plank" style={style}>
+      {/* プレイヤーカラーアクセントバー */}
+      <div style={{
+        position: 'absolute', top: 0, left: 0, right: 0, height: 3,
+        borderRadius: '9px 9px 0 0',
+        background: colorAccent,
+        opacity: isCurrentTurn ? 0.90 : 0.50,
+      }} />
+      {/* ピット列 */}
+      <div className="plank-pits">
+        {displayPits.map((pit) => {
+          const isActive = curActiveId === pit.id;
+          const isSource = sourcePitId === pit.id && animIdx === 0;
+          return (
+            <div
+              key={isActive ? `${pit.id}-${animIdx}` : pit.id}
+              ref={setCellRef(pit.id)}
+              className="plank-pit-cell"
+            >
+              <PocketPit
+                pit={pit}
+                isSelectable={selectableIds.has(pit.id)}
+                onClick={() => onPitClick(pit.id)}
+                isActive={isActive}
+                isSource={isSource}
+                showCount={showCount}
+              />
+            </div>
+          );
+        })}
+      </div>
+      {/* ストア */}
+      <div className="plank-store-cell" ref={setCellRef(store.id)}>
+        <StorePit pit={store} compact />
+      </div>
+      {/* プレイヤー名ラベル */}
+      <div className="plank-label" style={{ top: -18, left: 4 }}>
+        {isCurrentTurn ? '▶ ' : ''}{playerName}
+      </div>
     </div>
   );
 }

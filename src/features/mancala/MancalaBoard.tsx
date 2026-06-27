@@ -1,23 +1,115 @@
 import { useRef, useLayoutEffect } from 'react';
-import type { GameState } from './mancalaTypes';
+import type { GameState, PlayerId, Pit } from './mancalaTypes';
 import type { CaptureAnimInfo } from './MancalaGamePage';
 import { getSelectablePits } from './mancalaRules';
-import { PocketPit, StorePit, GEM_COLORS } from './MancalaPit';
+import { PocketPit, StorePit, GEM_COLORS, PlayerPlank, PLAYER_ACCENT_COLORS } from './MancalaPit';
+
+// ============================================================
+// スライドアニメーション用の型と定数
+// ============================================================
+
+const SLIDE_CSS_MS = 520;
+
+export type PlankSlideEntry = {
+  playerId: string;
+  pits: Pit[];
+  store: Pit;
+  playerName: string;
+  colorAccent: string;
+  isCurrentTurn: boolean;
+  sourceLeft: string;
+  sourceTop: string;
+  sourceRot: number;
+  targetLeft: string;
+  targetTop: string;
+  targetRot: number;
+};
+
+/** 各プレイヤー数レイアウトのプランク中心位置（plank-board-outer 内の %） */
+export const PLANK_POSITIONS: Record<string, Array<{ left: string; top: string; rot: number }>> = {
+  '4': [
+    { left: '50%', top: '91%', rot: 0   },  // 下
+    { left: '91%', top: '50%', rot: -90 },  // 右
+    { left: '50%', top: '9%',  rot: 180 },  // 上
+    { left: '9%',  top: '50%', rot: 90  },  // 左
+  ],
+  '3': [
+    { left: '50%', top: '89%', rot: 0    },  // 下
+    { left: '82%', top: '19%', rot: -120 },  // 右上
+    { left: '18%', top: '19%', rot: 120  },  // 左上
+  ],
+  '2': [
+    { left: '50%', top: '75%', rot: 0   },  // 下
+    { left: '50%', top: '25%', rot: 180 },  // 上
+  ],
+};
+
+// ============================================================
+// TransitionPlankBoard: 脱落後のスライドアニメーション用ボード
+// ============================================================
+
+function TransitionPlankBoard({
+  slides, isAtTarget, setCellRef,
+}: {
+  slides: PlankSlideEntry[];
+  isAtTarget: boolean;
+  setCellRef: (id: string) => (el: HTMLElement | null) => void;
+}) {
+  return (
+    <div className="plank-board-outer">
+      <div style={{
+        position: 'absolute', inset: '14%',
+        background: 'linear-gradient(160deg, #7c4a20 0%, #5e3010 22%, #8a5828 44%, #5e3010 66%, #7c4a20 88%, #6a4018 100%)',
+        borderRadius: 16,
+        boxShadow: 'inset 0 4px 16px rgba(0,0,0,0.35)',
+        border: '3px solid #3a1e08',
+      }}>
+        <div className="plank-center-deco">🐉</div>
+      </div>
+      {slides.map(({
+        playerId, pits, store, playerName, colorAccent, isCurrentTurn,
+        sourceLeft, sourceTop, sourceRot, targetLeft, targetTop, targetRot,
+      }) => (
+        <PlayerPlank
+          key={playerId}
+          pits={pits}
+          store={store}
+          playerName={playerName}
+          colorAccent={colorAccent}
+          isCurrentTurn={isCurrentTurn}
+          selectableIds={new Set()}
+          onPitClick={() => {}}
+          curActiveId={null}
+          sourcePitId={null}
+          animIdx={undefined}
+          setCellRef={setCellRef}
+          showCount
+          style={{
+            left:      isAtTarget ? targetLeft : sourceLeft,
+            top:       isAtTarget ? targetTop  : sourceTop,
+            transform: isAtTarget
+              ? `translate(-50%, -50%) rotate(${targetRot}deg)`
+              : `translate(-50%, -50%) rotate(${sourceRot}deg)`,
+            transition: isAtTarget
+              ? [
+                  `left ${SLIDE_CSS_MS}ms cubic-bezier(0.4, 0, 0.2, 1)`,
+                  `top ${SLIDE_CSS_MS}ms cubic-bezier(0.4, 0, 0.2, 1)`,
+                  `transform ${SLIDE_CSS_MS}ms cubic-bezier(0.4, 0, 0.2, 1)`,
+                ].join(', ')
+              : 'none',
+          }}
+        />
+      ))}
+    </div>
+  );
+}
 
 // ============================================================
 // DroppingStone: 塊から1個の石が穴へ落ちる
 // ============================================================
 
-/**
- * FloatingCluster が穴の上空に到達した直後、1個の石が塊から落下する。
- * pitId の穴の上（clusterY = pitTop - 35px）から穴の中心まで落下する。
- * key={animIdx} で毎ステップ再マウントしてアニメーションをリセット。
- */
 function DroppingStone({
-  pitId,
-  colorIndex,
-  stepMs,
-  cellRefMap,
+  pitId, colorIndex, stepMs, cellRefMap,
 }: {
   pitId: string;
   colorIndex: number;
@@ -33,17 +125,15 @@ function DroppingStone({
 
     const rect = pitEl.getBoundingClientRect();
     const cx = rect.left + rect.width / 2;
-
-    // 塊は穴の上端から 35px 上に浮いている
     const fromY = rect.top - 35;
-    const toY   = rect.top + rect.height / 2; // 穴の中心
+    const toY   = rect.top + rect.height / 2;
     const dy    = toY - fromY;
 
     el.style.left = `${cx - 10}px`;
-    el.style.top  = `${fromY - 10}px`; // 石サイズ 20px の半分を引く
+    el.style.top  = `${fromY - 10}px`;
 
-    const delay    = Math.round(stepMs * 0.54); // 塊が到着してから落下開始
-    const duration = Math.round(stepMs * 0.44); // 落下アニメーション時間
+    const delay    = Math.round(stepMs * 0.54);
+    const duration = Math.round(stepMs * 0.44);
 
     el.animate(
       [
@@ -61,16 +151,11 @@ function DroppingStone({
     <div
       ref={ref}
       style={{
-        position:      'fixed',
-        left:          -9999,
-        top:           -9999,
-        width:         20,
-        height:        20,
-        borderRadius:  '50%',
-        background:    `radial-gradient(circle at 32% 28%, ${gem.shine}, ${gem.main})`,
-        boxShadow:     `0 3px 10px rgba(0,0,0,0.70), inset 0 1px 2px rgba(255,255,255,0.50)`,
-        zIndex:        9999,
-        pointerEvents: 'none',
+        position: 'fixed', left: -9999, top: -9999,
+        width: 20, height: 20, borderRadius: '50%',
+        background: `radial-gradient(circle at 32% 28%, ${gem.shine}, ${gem.main})`,
+        boxShadow: `0 3px 10px rgba(0,0,0,0.70), inset 0 1px 2px rgba(255,255,255,0.50)`,
+        zIndex: 9999, pointerEvents: 'none',
       }}
     />
   );
@@ -80,17 +165,8 @@ function DroppingStone({
 // FloatingCluster: 石の塊が宙に浮いて横移動する
 // ============================================================
 
-/**
- * 石を拾い上げたあと、全石が小さな塊として穴の上を漂いながら移動する。
- * animIdx が増えるたびに塊は次の穴へ移動し、DroppingStone が1個落下する。
- * 塊に残っている石数 = totalStones - animIdx（animIdx が増えるほど減る）。
- */
 function FloatingCluster({
-  activeIds,
-  animIdx,
-  totalStones,
-  stepMs,
-  cellRefMap,
+  activeIds, animIdx, totalStones, stepMs, cellRefMap,
 }: {
   activeIds: string[];
   animIdx: number;
@@ -100,8 +176,7 @@ function FloatingCluster({
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // 現在の位置基準となる穴 ID
-  const currentId      = activeIds[Math.min(animIdx, activeIds.length - 1)];
+  const currentId       = activeIds[Math.min(animIdx, activeIds.length - 1)];
   const stonesInCluster = Math.max(0, totalStones - animIdx);
 
   useLayoutEffect(() => {
@@ -111,20 +186,16 @@ function FloatingCluster({
 
     const rect    = el.getBoundingClientRect();
     const targetX = rect.left + rect.width / 2;
-    const targetY = rect.top - 35; // 穴の上端より 35px 上
+    const targetY = rect.top - 35;
 
     if (animIdx === 0) {
-      // ─── Step 0: 元の穴から石の塊が浮き上がる ───────────────
       const pitCenterY = rect.top + rect.height / 2;
-
-      // 初期状態（穴の中心、透明・小さい）を即時セット
       container.style.transition = 'none';
       container.style.left      = `${targetX}px`;
       container.style.top       = `${pitCenterY}px`;
       container.style.opacity   = '0';
       container.style.transform = 'translateX(-50%) scale(0.5)';
 
-      // 2フレーム後にアニメーション開始（transition:none を確実に適用してから）
       requestAnimationFrame(() => requestAnimationFrame(() => {
         const c = containerRef.current;
         if (!c) return;
@@ -139,7 +210,6 @@ function FloatingCluster({
         c.style.transform = 'translateX(-50%) scale(1.0)';
       }));
     } else {
-      // ─── Step 1+: 次の穴へ横移動 ──────────────────────────────
       const moveMs = Math.round(stepMs * 0.60);
       container.style.transition = [
         `left ${moveMs}ms cubic-bezier(0.4, 0, 0.2, 1)`,
@@ -156,38 +226,23 @@ function FloatingCluster({
     <div
       ref={containerRef}
       style={{
-        position:       'fixed',
-        left:           -9999,
-        top:            -9999,
-        transform:      'translateX(-50%)',
-        display:        'flex',
-        flexWrap:       'wrap',
-        gap:            3,
-        width:          46,
-        justifyContent: 'center',
-        alignItems:     'center',
-        zIndex:         9998,
-        pointerEvents:  'none',
-        background:     'rgba(15, 8, 0, 0.55)',
-        borderRadius:   10,
-        padding:        '5px 4px',
-        boxShadow:      '0 3px 14px rgba(0,0,0,0.60), 0 0 0 1px rgba(255,220,80,0.30)',
+        position: 'fixed', left: -9999, top: -9999,
+        transform: 'translateX(-50%)',
+        display: 'flex', flexWrap: 'wrap', gap: 3, width: 46,
+        justifyContent: 'center', alignItems: 'center',
+        zIndex: 9998, pointerEvents: 'none',
+        background: 'rgba(15, 8, 0, 0.55)', borderRadius: 10, padding: '5px 4px',
+        boxShadow: '0 3px 14px rgba(0,0,0,0.60), 0 0 0 1px rgba(255,220,80,0.30)',
       }}
     >
       {Array.from({ length: stonesInCluster }).map((_, i) => {
         const gem = GEM_COLORS[(animIdx + i) % GEM_COLORS.length];
         return (
-          <div
-            key={i}
-            style={{
-              width:        8,
-              height:       8,
-              borderRadius: '50%',
-              background:   `radial-gradient(circle at 32% 28%, ${gem.shine}, ${gem.main})`,
-              boxShadow:    '0 1px 3px rgba(0,0,0,0.65)',
-              flexShrink:   0,
-            }}
-          />
+          <div key={i} style={{
+            width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
+            background: `radial-gradient(circle at 32% 28%, ${gem.shine}, ${gem.main})`,
+            boxShadow: '0 1px 3px rgba(0,0,0,0.65)',
+          }} />
         );
       })}
     </div>
@@ -198,19 +253,8 @@ function FloatingCluster({
 // CaptureFlyingCluster: 捕獲石の塊が穴間を飛ぶ
 // ============================================================
 
-/**
- * 捕獲アニメーション専用の塊。
- * - gather フェーズ: oppositePitId → landingPitId へ飛ぶ（相手の石が集まる）
- * - to-store フェーズ: landingPitId → storeId へ飛ぶ（全石がストアへ）
- *
- * key={capturePhase} でフェーズが変わると再マウントし、fromPitId から再スタートする。
- */
 function CaptureFlyingCluster({
-  fromPitId,
-  toPitId,
-  stoneCount,
-  stepMs,
-  cellRefMap,
+  fromPitId, toPitId, stoneCount, stepMs, cellRefMap,
 }: {
   fromPitId: string;
   toPitId: string;
@@ -233,14 +277,12 @@ function CaptureFlyingCluster({
     const toX      = toRect.left   + toRect.width    / 2;
     const toY      = toRect.top    - 35;
 
-    // from 位置に瞬間移動（transition なし）
     container.style.transition = 'none';
     container.style.left       = `${fromX}px`;
     container.style.top        = `${fromY}px`;
     container.style.opacity    = '1';
     container.style.transform  = 'translateX(-50%) scale(1.0)';
 
-    // 2フレーム後に CSS transition で to 位置へ移動
     requestAnimationFrame(() => requestAnimationFrame(() => {
       const c = containerRef.current;
       if (!c) return;
@@ -259,38 +301,251 @@ function CaptureFlyingCluster({
     <div
       ref={containerRef}
       style={{
-        position:       'fixed',
-        left:           -9999,
-        top:            -9999,
-        transform:      'translateX(-50%)',
-        display:        'flex',
-        flexWrap:       'wrap',
-        gap:            3,
-        width:          52,
-        justifyContent: 'center',
-        alignItems:     'center',
-        zIndex:         9998,
-        pointerEvents:  'none',
-        background:     'rgba(80, 30, 0, 0.72)',
-        borderRadius:   10,
-        padding:        '5px 4px',
-        // オレンジの光彩で「捕獲中」を表現
-        boxShadow:      '0 3px 14px rgba(0,0,0,0.60), 0 0 0 1.5px rgba(255,140,30,0.70)',
+        position: 'fixed', left: -9999, top: -9999,
+        transform: 'translateX(-50%)',
+        display: 'flex', flexWrap: 'wrap', gap: 3, width: 52,
+        justifyContent: 'center', alignItems: 'center',
+        zIndex: 9998, pointerEvents: 'none',
+        background: 'rgba(80, 30, 0, 0.72)', borderRadius: 10, padding: '5px 4px',
+        boxShadow: '0 3px 14px rgba(0,0,0,0.60), 0 0 0 1.5px rgba(255,140,30,0.70)',
       }}
     >
       {Array.from({ length: displayCount }).map((_, i) => {
-        // アンバー・ルビー系の色でメイン石と区別する
         const gem = GEM_COLORS[(i + 5) % GEM_COLORS.length];
         return (
-          <div
-            key={i}
+          <div key={i} style={{
+            width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
+            background: `radial-gradient(circle at 32% 28%, ${gem.shine}, ${gem.main})`,
+            boxShadow: '0 1px 3px rgba(0,0,0,0.65)',
+          }} />
+        );
+      })}
+    </div>
+  );
+}
+
+// ============================================================
+// 共通の prop 型
+// ============================================================
+
+type MancalaBoardProps = {
+  gameState: GameState;
+  onPitClick: (pitId: string) => void;
+  disabled?: boolean;
+  animActiveIds?: string[];
+  animIdx?: number;
+  animStepMs?: number;
+  captureAnimInfo?: CaptureAnimInfo | null;
+  capturePhase?: 'gather' | 'to-store' | null;
+  captureStepMs?: number;
+  /** 現在フェードアウト中の脱落プレイヤーID（Board4P専用） */
+  eliminatingId?: string | null;
+  /** スライドアニメーション用データ（設定されていると TransitionPlankBoard を表示） */
+  transitionSlides?: PlankSlideEntry[] | null;
+  /** true: プランクがターゲット位置に移動中（CSS transition 発火） */
+  slideAtTarget?: boolean;
+};
+
+type InternalBoardProps = {
+  gameState: GameState;
+  selectableIds: Set<string>;
+  onPitClick: (id: string) => void;
+  curActiveId: string | null;
+  sourcePitId: string | null;
+  animIdx: number | undefined;
+  setCellRef: (id: string) => (el: HTMLElement | null) => void;
+};
+
+// ============================================================
+// 3人プレイ：三角形ボード（SVG フレーム + 絶対配置）
+// ============================================================
+
+const TRI_W = 420, TRI_H = 340;
+
+const TRI_PIT_POS_BY_SLOT: [number, number][][] = [
+  [[104,310],[146,310],[189,310],[231,310],[274,310],[316,310]],
+  [[341,267],[320,230],[299,193],[277,156],[256,120],[235,83]],
+  [[185,83], [164,120],[143,157],[121,194],[100,230],[79,267]],
+];
+
+const TRI_STORE_POS_BY_SLOT: [number, number][] = [
+  [366, 310],
+  [210,  40],
+  [ 54, 310],
+];
+
+const PIT_D   = 34;
+const STORE_D = 42;
+
+function Board3P({
+  gameState, selectableIds, onPitClick, curActiveId, sourcePitId, animIdx, setCellRef,
+}: InternalBoardProps) {
+  const slotIds = gameState.activePlayerIds.slice(0, 3) as PlayerId[];
+
+  const pitStyle = (x: number, y: number): React.CSSProperties => ({
+    position: 'absolute',
+    left:   `${(x - PIT_D / 2) / TRI_W * 100}%`,
+    top:    `${(y - PIT_D / 2) / TRI_H * 100}%`,
+    width:  `${PIT_D / TRI_W * 100}%`,
+    aspectRatio: '1',
+  });
+
+  const storeStyle = (x: number, y: number): React.CSSProperties => ({
+    position: 'absolute',
+    left:   `${(x - STORE_D / 2) / TRI_W * 100}%`,
+    top:    `${(y - STORE_D / 2) / TRI_H * 100}%`,
+    width:  `${STORE_D / TRI_W * 100}%`,
+    aspectRatio: '1',
+  });
+
+  return (
+    <div style={{
+      position: 'relative', width: '100%',
+      maxWidth: TRI_W, aspectRatio: `${TRI_W}/${TRI_H}`, margin: '0 auto',
+    }}>
+      <svg
+        viewBox={`0 0 ${TRI_W} ${TRI_H}`}
+        style={{ position: 'absolute', width: '100%', height: '100%', top: 0, left: 0, overflow: 'visible' }}
+      >
+        <defs>
+          <linearGradient id="wood3p" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stopColor="#8a5028"/>
+            <stop offset="45%"  stopColor="#5e3010"/>
+            <stop offset="55%"  stopColor="#7c4820"/>
+            <stop offset="100%" stopColor="#6a3810"/>
+          </linearGradient>
+        </defs>
+        <polygon points="210,40 366,310 54,310" fill="none"
+          stroke="rgba(0,0,0,0.35)" strokeWidth="58" strokeLinejoin="round"
+          style={{ filter: 'blur(4px)' }}
+        />
+        <polygon points="210,40 366,310 54,310" fill="none"
+          stroke="url(#wood3p)" strokeWidth="52" strokeLinejoin="round"
+        />
+        <polygon points="210,40 366,310 54,310" fill="none"
+          stroke="rgba(255,255,255,0.06)" strokeWidth="48" strokeLinejoin="round"
+        />
+        <polygon points="210,40 366,310 54,310" fill="none"
+          stroke="rgba(0,0,0,0.25)" strokeWidth="8" strokeLinejoin="round"
+          style={{ transform: 'scale(0.82)', transformOrigin: '210px 220px' }}
+        />
+        <text x="210" y="200" textAnchor="middle" dominantBaseline="middle"
+          fontSize="52" opacity="0.10" style={{ userSelect: 'none', pointerEvents: 'none' }}>
+          🐉
+        </text>
+      </svg>
+
+      {slotIds.flatMap((playerId, slot) =>
+        gameState.board
+          .filter(p => p.ownerPlayerId === playerId && !p.isStore)
+          .map((pit, i) => {
+            const [x, y] = TRI_PIT_POS_BY_SLOT[slot][i];
+            const isActive = curActiveId === pit.id;
+            const isSource = sourcePitId === pit.id && animIdx === 0;
+            return (
+              <div
+                key={isActive ? `${pit.id}-${animIdx}` : pit.id}
+                ref={setCellRef(pit.id)}
+                style={pitStyle(x, y)}
+              >
+                <PocketPit
+                  pit={pit}
+                  isSelectable={selectableIds.has(pit.id)}
+                  onClick={() => onPitClick(pit.id)}
+                  isActive={isActive}
+                  isSource={isSource}
+                  showCount
+                />
+              </div>
+            );
+          })
+      )}
+
+      {slotIds.map((playerId, slot) => {
+        const store = gameState.board.find(p => p.ownerPlayerId === playerId && p.isStore)!;
+        const [x, y] = TRI_STORE_POS_BY_SLOT[slot];
+        return (
+          <div key={store.id} ref={setCellRef(store.id)} style={storeStyle(x, y)}>
+            <StorePit pit={store} compact />
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ============================================================
+// 4人プレイ：長方形フレーム（4枚のプランク）
+// ============================================================
+
+function Board4P({
+  gameState, selectableIds, onPitClick, curActiveId, sourcePitId, animIdx, setCellRef,
+  eliminatingId,
+}: InternalBoardProps & { eliminatingId?: string | null }) {
+  const ids = gameState.activePlayerIds as PlayerId[];
+  const [id0, id1, id2, id3] = ids;
+
+  const allPlayerIds = gameState.players.map(p => p.id);
+
+  const getPlankData = (playerId: PlayerId) => ({
+    pits: gameState.board.filter(p => p.ownerPlayerId === playerId && !p.isStore),
+    store: gameState.board.find(p => p.ownerPlayerId === playerId && p.isStore)!,
+    playerIdx: allPlayerIds.indexOf(playerId),
+    playerName: gameState.players.find(p => p.id === playerId)!.name,
+    isCurrentTurn: gameState.currentPlayerId === playerId,
+  });
+
+  // コンテナ(min(88vw,400px)) のサイズ比で配置
+  // left/top はコンテナ内の絶対位置(%)、transform: translate(-50%,-50%) で中心を合わせた後に rotate
+  const configs: Array<{ id: PlayerId; left: string; top: string; rot: number }> = [
+    { id: id0, left: '50%',  top: '91%',  rot: 0   }, // 下
+    { id: id1, left: '91%',  top: '50%',  rot: -90 }, // 右
+    { id: id2, left: '50%',  top: '9%',   rot: 180 }, // 上
+    { id: id3, left: '9%',   top: '50%',  rot: 90  }, // 左
+  ];
+
+  return (
+    <div className="plank-board-outer">
+      {/* 木製背景パネル（中央装飾） */}
+      <div style={{
+        position: 'absolute', inset: '14%',
+        background: 'linear-gradient(160deg, #7c4a20 0%, #5e3010 22%, #8a5828 44%, #5e3010 66%, #7c4a20 88%, #6a4018 100%)',
+        borderRadius: 16,
+        boxShadow: 'inset 0 4px 16px rgba(0,0,0,0.35)',
+        border: '3px solid #3a1e08',
+      }}>
+        <div className="plank-center-deco">🐉</div>
+      </div>
+
+      {/* 4枚のプランク */}
+      {configs.map(({ id, left, top, rot }) => {
+        const { pits, store, playerIdx, playerName, isCurrentTurn } = getPlankData(id);
+        const isEliminating = eliminatingId === id;
+        return (
+          <PlayerPlank
+            key={id}
+            pits={pits}
+            store={store}
+            playerName={playerName}
+            colorAccent={PLAYER_ACCENT_COLORS[playerIdx]}
+            isCurrentTurn={isCurrentTurn}
+            selectableIds={selectableIds}
+            onPitClick={onPitClick}
+            curActiveId={curActiveId}
+            sourcePitId={sourcePitId}
+            animIdx={animIdx}
+            setCellRef={setCellRef}
+            showCount
             style={{
-              width:        8,
-              height:       8,
-              borderRadius: '50%',
-              background:   `radial-gradient(circle at 32% 28%, ${gem.shine}, ${gem.main})`,
-              boxShadow:    '0 1px 3px rgba(0,0,0,0.65)',
-              flexShrink:   0,
+              left,
+              top,
+              transform: isEliminating
+                ? `translate(-50%, -50%) rotate(${rot}deg) scale(0.12)`
+                : `translate(-50%, -50%) rotate(${rot}deg)`,
+              opacity: isEliminating ? 0 : 1,
+              transition: isEliminating
+                ? 'opacity 440ms ease, transform 440ms cubic-bezier(0.4, 0, 1, 1)'
+                : undefined,
             }}
           />
         );
@@ -300,80 +555,47 @@ function CaptureFlyingCluster({
 }
 
 // ============================================================
-// MancalaBoard
+// MancalaBoard（エントリーポイント）
 // ============================================================
 
-type MancalaBoardProps = {
-  gameState: GameState;
-  onPitClick: (pitId: string) => void;
-  disabled?: boolean;
-  /**
-   * アニメーション中の穴訪問順 ID 配列。
-   *   [0]   = 石を拾い上げた元の穴
-   *   [1..N] = 石が着地していく各穴（配布順）
-   */
-  animActiveIds?: string[];
-  /** 現在表示中のアニメーションステップ番号 */
-  animIdx?: number;
-  /** 石 1 個あたりのアニメーション時間（ms） */
-  animStepMs?: number;
-  /** 捕獲アニメーション情報 */
-  captureAnimInfo?: CaptureAnimInfo | null;
-  /** 捕獲アニメーションのフェーズ */
-  capturePhase?: 'gather' | 'to-store' | null;
-  /** 捕獲アニメーション 1 フェーズあたりの時間（ms） */
-  captureStepMs?: number;
-};
-
-/**
- * マンカラ盤
- *
- * 見た目（木製ボード横長）:
- *  [P2-store] | P2-pit-5 P2-pit-4 P2-pit-3 P2-pit-2 P2-pit-1 P2-pit-0 | [P1-store]
- *             | P1-pit-0 P1-pit-1 P1-pit-2 P1-pit-3 P1-pit-4 P1-pit-5 |
- */
 export function MancalaBoard({
   gameState,
   onPitClick,
-  disabled    = false,
+  disabled         = false,
   animActiveIds,
   animIdx,
-  animStepMs  = 400,
-  captureAnimInfo = null,
-  capturePhase    = null,
-  captureStepMs   = 700,
+  animStepMs       = 400,
+  captureAnimInfo  = null,
+  capturePhase     = null,
+  captureStepMs    = 700,
+  eliminatingId    = null,
+  transitionSlides = null,
+  slideAtTarget    = false,
 }: MancalaBoardProps) {
-  // ---- 各穴セル DOM ref map（FloatingCluster / DroppingStone が位置計算に使う） ----
   const cellRefMap = useRef<Map<string, HTMLElement>>(new Map());
   const setCellRef = (id: string) => (el: HTMLElement | null) => {
     if (el) cellRefMap.current.set(id, el);
     else    cellRefMap.current.delete(id);
   };
 
-  // ---- 選択可能な穴 ----
+  // スライドアニメーション中: TransitionPlankBoard を表示
+  if (transitionSlides) {
+    return (
+      <TransitionPlankBoard
+        slides={transitionSlides}
+        isAtTarget={slideAtTarget}
+        setCellRef={setCellRef}
+      />
+    );
+  }
+
   const selectableIds = disabled
     ? new Set<string>()
     : new Set(getSelectablePits(gameState).map((p) => p.id));
 
-  // ---- 盤面データ ----
-  const p1Pits = gameState.board.filter(
-    (p) => p.ownerPlayerId === 'player-1' && !p.isStore
-  );
-  const p2PitsDisplay = [...gameState.board.filter(
-    (p) => p.ownerPlayerId === 'player-2' && !p.isStore
-  )].reverse();
-
-  const p1Store = gameState.board.find(
-    (p) => p.ownerPlayerId === 'player-1' && p.isStore
-  )!;
-  const p2Store = gameState.board.find(
-    (p) => p.ownerPlayerId === 'player-2' && p.isStore
-  )!;
-
-  // ---- 通常アニメーション状態 ----
-  const hasAnim     = !!(animActiveIds && animActiveIds.length > 0 && animIdx !== undefined);
-  const totalStones = hasAnim ? animActiveIds!.length - 1 : 0;
-  const sourcePitId = hasAnim ? animActiveIds![0] : null;
+  const hasAnim      = !!(animActiveIds && animActiveIds.length > 0 && animIdx !== undefined);
+  const totalStones  = hasAnim ? animActiveIds!.length - 1 : 0;
+  const sourcePitId  = hasAnim ? animActiveIds![0] : null;
 
   const curActiveId = (hasAnim && animIdx! > 0)
     ? animActiveIds![Math.min(animIdx!, animActiveIds!.length - 1)]
@@ -383,183 +605,117 @@ export function MancalaBoard({
   const showDrop    = hasAnim && animIdx! > 0 && animIdx! <= totalStones;
   const dropPitId   = showDrop ? animActiveIds![animIdx!] : null;
 
-  // ---- 捕獲アニメーション ----
-  const showCapture = capturePhase !== null && captureAnimInfo !== null;
-
+  const showCapture   = capturePhase !== null && captureAnimInfo !== null;
   const captureFromId = showCapture
     ? (capturePhase === 'gather' ? captureAnimInfo!.oppositePitId : captureAnimInfo!.landingPitId)
     : '';
-  const captureToId = showCapture
+  const captureToId   = showCapture
     ? (capturePhase === 'gather' ? captureAnimInfo!.landingPitId : captureAnimInfo!.storeId)
     : '';
 
-  return (
-    <div className="board-container">
+  const internalProps: InternalBoardProps = {
+    gameState, selectableIds, onPitClick, curActiveId, sourcePitId, animIdx, setCellRef,
+  };
 
-      {/* P2 穴の石の数（ボードの上） */}
-      <div className="board-count-row" style={{ marginBottom: 5 }}>
-        <div />
-        {p2PitsDisplay.map(pit => (
-          <div
-            key={pit.id}
-            className="pit-count"
-            style={{ color: pit.stones > 0 ? '#6a3810' : '#c4b0a0' }}
-          >
-            {pit.stones}
-          </div>
-        ))}
-        <div />
-      </div>
-
-      {/* 木製ボード */}
-      <div
-        style={{
-          background:    'linear-gradient(160deg, #7c4a20 0%, #5e3010 22%, #8a5828 44%, #5e3010 66%, #7c4a20 88%, #6a4018 100%)',
-          borderRadius:  'var(--board-radius)',
-          padding:       'var(--board-py) var(--board-px)',
-          position:      'relative',
-          boxShadow:     [
-            '0 8px 32px rgba(0,0,0,0.45)',
-            '0 2px 8px rgba(0,0,0,0.30)',
-            'inset 0 2px 6px rgba(255,255,255,0.07)',
-            'inset 0 -4px 12px rgba(0,0,0,0.32)',
-          ].join(', '),
-          border:        '4px solid #3a1e08',
-          outline:       '1px solid rgba(255,255,255,0.06)',
-        }}
-      >
-        {/* 中央のドラゴン紋章（装飾） */}
-        <div
-          aria-hidden="true"
-          style={{
-            position:      'absolute',
-            top:           '50%',
-            left:          '50%',
-            transform:     'translate(-50%, -50%)',
-            fontSize:      16,
-            opacity:       0.15,
-            pointerEvents: 'none',
-            userSelect:    'none',
-            lineHeight:    1,
-          }}
-        >
-          🐉
-        </div>
-
-        <div className="board-grid">
-          {/* P2 ストア（左端・2行分） */}
-          <div
-            ref={setCellRef('p2-store')}
-            style={{ gridColumn: 1, gridRow: '1 / 3', display: 'flex' }}
-          >
-            <StorePit pit={p2Store} />
-          </div>
-
-          {/* P2 の穴（上の行：左=pit-5、右=pit-0） */}
-          {p2PitsDisplay.map((pit, i) => {
-            const isActive = curActiveId === pit.id;
-            const isSource = sourcePitId === pit.id && animIdx === 0;
-            return (
-              <div
-                ref={setCellRef(pit.id)}
-                key={isActive ? `${pit.id}-${animIdx}` : pit.id}
-                style={{ gridColumn: i + 2, gridRow: 1 }}
-              >
-                <PocketPit
-                  pit={pit}
-                  isSelectable={selectableIds.has(pit.id)}
-                  onClick={() => onPitClick(pit.id)}
-                  isActive={isActive}
-                  isSource={isSource}
-                />
-              </div>
-            );
-          })}
-
-          {/* P1 の穴（下の行：左=pit-0、右=pit-5） */}
-          {p1Pits.map((pit, i) => {
-            const isActive = curActiveId === pit.id;
-            const isSource = sourcePitId === pit.id && animIdx === 0;
-            return (
-              <div
-                ref={setCellRef(pit.id)}
-                key={isActive ? `${pit.id}-${animIdx}` : pit.id}
-                style={{ gridColumn: i + 2, gridRow: 2 }}
-              >
-                <PocketPit
-                  pit={pit}
-                  isSelectable={selectableIds.has(pit.id)}
-                  onClick={() => onPitClick(pit.id)}
-                  isActive={isActive}
-                  isSource={isSource}
-                />
-              </div>
-            );
-          })}
-
-          {/* P1 ストア（右端・2行分） */}
-          <div
-            ref={setCellRef('p1-store')}
-            style={{ gridColumn: 8, gridRow: '1 / 3', display: 'flex' }}
-          >
-            <StorePit pit={p1Store} />
-          </div>
-        </div>
-      </div>
-
-      {/* P1 穴の石の数（ボードの下） */}
-      <div className="board-count-row" style={{ marginTop: 5 }}>
-        <div />
-        {p1Pits.map(pit => (
-          <div
-            key={pit.id}
-            className="pit-count"
-            style={{ color: pit.stones > 0 ? '#6a3810' : '#c4b0a0' }}
-          >
-            {pit.stones}
-          </div>
-        ))}
-        <div />
-      </div>
-
-      {/* ─── 通常アニメーションオーバーレイ ─── */}
-
-      {/* 石の塊が浮いて横移動 */}
+  const animOverlay = (
+    <>
       {showCluster && (
         <FloatingCluster
-          activeIds={animActiveIds!}
-          animIdx={animIdx!}
-          totalStones={totalStones}
-          stepMs={animStepMs}
-          cellRefMap={cellRefMap}
+          activeIds={animActiveIds!} animIdx={animIdx!}
+          totalStones={totalStones} stepMs={animStepMs} cellRefMap={cellRefMap}
         />
       )}
-
-      {/* 1個の石が塊から穴へ落下 */}
       {showDrop && dropPitId && (
-        <DroppingStone
-          key={animIdx}
-          pitId={dropPitId}
-          colorIndex={animIdx! - 1}
-          stepMs={animStepMs}
-          cellRefMap={cellRefMap}
+        <DroppingStone key={animIdx} pitId={dropPitId}
+          colorIndex={animIdx! - 1} stepMs={animStepMs} cellRefMap={cellRefMap}
         />
       )}
+    </>
+  );
 
-      {/* ─── 捕獲アニメーションオーバーレイ ─── */}
+  const activeCount = gameState.activePlayerIds.length;
 
-      {/* 捕獲石の塊が穴間を飛ぶ（key={capturePhase} でフェーズごとに再マウント） */}
+  if (activeCount === 3) {
+    return (
+      <>
+        <Board3P {...internalProps} />
+        {animOverlay}
+      </>
+    );
+  }
+
+  if (activeCount === 4) {
+    return (
+      <>
+        <Board4P {...internalProps} eliminatingId={eliminatingId} />
+        {animOverlay}
+      </>
+    );
+  }
+
+  // ── 2人プレイ：フェイスツーフェイス ──
+  const [bottomId, topId] = gameState.activePlayerIds as [PlayerId, PlayerId];
+  const allPlayerIds = gameState.players.map(p => p.id);
+  const bottomPits     = gameState.board.filter(p => p.ownerPlayerId === bottomId && !p.isStore);
+  const topPits        = gameState.board.filter(p => p.ownerPlayerId === topId && !p.isStore);
+  const bottomStore    = gameState.board.find(p => p.ownerPlayerId === bottomId && p.isStore)!;
+  const topStore       = gameState.board.find(p => p.ownerPlayerId === topId && p.isStore)!;
+  const bottomPlayerIdx = allPlayerIds.indexOf(bottomId);
+  const topPlayerIdx    = allPlayerIds.indexOf(topId);
+  const bottomPlayer    = gameState.players.find(p => p.id === bottomId)!;
+  const topPlayer       = gameState.players.find(p => p.id === topId)!;
+
+  return (
+    <div className="board-container">
+      <div className="board-2p-face">
+        {/* 上プレイヤーのプランク（反転表示: store左, pitsをpit5→pit0の順）*/}
+        <PlayerPlank
+          pits={topPits}
+          store={topStore}
+          playerName={topPlayer.name}
+          colorAccent={PLAYER_ACCENT_COLORS[topPlayerIdx]}
+          isCurrentTurn={gameState.currentPlayerId === topId}
+          selectableIds={selectableIds}
+          onPitClick={onPitClick}
+          curActiveId={curActiveId}
+          sourcePitId={sourcePitId}
+          animIdx={animIdx}
+          setCellRef={setCellRef}
+          facingMode
+          reversed
+          storePosition="left"
+          style={{ borderRadius: '12px 12px 0 0', borderBottom: 'none' }}
+        />
+        {/* 区切りライン */}
+        <div className="board-2p-divider" />
+        {/* 下プレイヤーのプランク（store右, pitsをpit0→pit5の順）*/}
+        <PlayerPlank
+          pits={bottomPits}
+          store={bottomStore}
+          playerName={bottomPlayer.name}
+          colorAccent={PLAYER_ACCENT_COLORS[bottomPlayerIdx]}
+          isCurrentTurn={gameState.currentPlayerId === bottomId}
+          selectableIds={selectableIds}
+          onPitClick={onPitClick}
+          curActiveId={curActiveId}
+          sourcePitId={sourcePitId}
+          animIdx={animIdx}
+          setCellRef={setCellRef}
+          facingMode
+          storePosition="right"
+          style={{ borderRadius: '0 0 12px 12px', borderTop: 'none' }}
+        />
+      </div>
+
+      {animOverlay}
       {showCapture && (
         <CaptureFlyingCluster
           key={capturePhase}
-          fromPitId={captureFromId}
-          toPitId={captureToId}
+          fromPitId={captureFromId} toPitId={captureToId}
           stoneCount={captureAnimInfo!.stoneCount}
-          stepMs={captureStepMs}
-          cellRefMap={cellRefMap}
+          stepMs={captureStepMs} cellRefMap={cellRefMap}
         />
       )}
-
     </div>
   );
 }

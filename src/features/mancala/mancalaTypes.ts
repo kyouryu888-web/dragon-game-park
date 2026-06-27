@@ -2,31 +2,34 @@
 // マンカラ専用の型定義
 // ============================================================
 
-/** プレイヤーID。将来4人対戦に拡張するときはここに追加する */
-export type PlayerId = 'player-1' | 'player-2';
-
-/** 対戦モード */
-export type MancalaMode = 'cpu' | 'local-2p';
+/** プレイヤーID（最大4人） */
+export type PlayerId = 'player-1' | 'player-2' | 'player-3' | 'player-4';
 
 /** CPU の強さ（5段階） */
 export type CpuLevel = 'very-easy' | 'easy' | 'normal' | 'hard' | 'very-hard';
 
+/** 1人分のプレイヤー設定（設定画面から渡す） */
+export type PlayerConfig = {
+  name: string;
+  isCpu: boolean;
+  cpuLevel: CpuLevel;
+};
+
 /** ゲーム開始設定（設定画面 → 対局画面に渡す） */
 export type MancalaConfig = {
-  mode: MancalaMode;
-  cpuLevel: CpuLevel;
-  player1Name: string;
-  player2Name: string; // local-2p のみ使用。cpu 時は cpuLevel から自動生成
+  playerCount: 2 | 3 | 4;
+  players: PlayerConfig[]; // playerCount 人分の配列
 };
 
 /** ゲームの進行状態 */
 export type GameStatus = 'playing' | 'finished';
 
-/** プレイヤー1人分の情報 */
+/** プレイヤー1人分の情報（盤面上の状態） */
 export type Player = {
   id: PlayerId;
   name: string;
   isCpu: boolean;
+  cpuLevel: CpuLevel;
 };
 
 /**
@@ -35,8 +38,7 @@ export type Player = {
  * isStore: true  → ストア（得点穴）
  * isStore: false → ポケット（通常の穴）
  *
- * oppositePitId: 向かい側のポケットのID（捕獲ルール用）
- *   ストアには向かいの穴がないので undefined
+ * oppositePitId: 向かい側のポケットのID（捕獲ルール用・2人プレイのみ）
  */
 export type Pit = {
   id: string;
@@ -50,9 +52,9 @@ export type Pit = {
  * ゲーム全体の状態
  *
  * board: 盤面上の全ての穴を配列で管理する
- *   並び順（この順番で石を配る）：
- *   [p1-pit-0〜5, p1-store, p2-pit-0〜5, p2-store]
- *   ※ 将来オンライン対戦でそのまま共有できる構造
+ *   並び順（石を時計回りに配る順）：
+ *   [p1-pit-0〜5, p1-store, p2-pit-0〜5, p2-store, ...]
+ *   ※ プレイヤー数に応じて繰り返す
  */
 export type GameState = {
   gameId: string;
@@ -63,5 +65,7 @@ export type GameState = {
   winnerPlayerId: PlayerId | null;
   isDraw: boolean;
   turnCount: number;
-  mode: MancalaMode;
+  playerCount: 2 | 3 | 4;
+  /** 現在ゲームに残っているプレイヤーID（脱落するたびに減る） */
+  activePlayerIds: PlayerId[];
 };
