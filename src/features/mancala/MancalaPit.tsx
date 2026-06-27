@@ -168,12 +168,15 @@ export function PocketPit({
       <PocketGems count={pit.stones} />
       {showCount && (
         <span style={{
-          fontSize: 'clamp(7px, 1.8vw, 10px)',
+          fontSize: 'clamp(10px, 3.2vw, 15px)',
           fontWeight: 'bold',
-          color: 'rgba(255,255,255,0.90)',
+          color: '#fff',
           lineHeight: 1,
-          textShadow: '0 1px 2px rgba(0,0,0,0.9)',
+          textShadow: '0 1px 3px rgba(0,0,0,1)',
           marginTop: 1,
+          background: 'rgba(0,0,0,0.30)',
+          borderRadius: 6,
+          padding: '0 3px',
         }}>
           {pit.stones}
         </span>
