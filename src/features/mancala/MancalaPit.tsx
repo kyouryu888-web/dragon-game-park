@@ -290,6 +290,7 @@ export function PlayerPlank({
           onClick={() => onPitClick(pit.id)}
           isActive={isActive}
           isSource={isSource}
+          showCount={showCount}
         />
       </div>
     );

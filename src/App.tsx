@@ -74,7 +74,7 @@ export default function App() {
     return (
       <MancalaOnlineGamePage
         roomCode={onlineRoomInfo.roomCode}
-        myRole={onlineRoomInfo.myRole}
+        myPlayerId={onlineRoomInfo.myPlayerId}
         onBackToHome={() => setScreen('home')}
       />
     );

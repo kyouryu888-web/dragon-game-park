@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import type { GameState, PlayerId } from './mancalaTypes';
 import { applyMove } from './mancalaRules';
 import { supabase } from '../../lib/supabase';
@@ -8,32 +8,35 @@ import { MancalaBoard } from './MancalaBoard';
 
 type MancalaOnlineGamePageProps = {
   roomCode: string;
-  myRole: 'host' | 'guest';
+  myPlayerId: PlayerId;
   onBackToHome: () => void;
 };
 
-/** ホスト = player-1（下）、ゲスト = player-2（上） */
-function roleToPlayerId(role: 'host' | 'guest'): PlayerId {
-  return role === 'host' ? 'player-1' : 'player-2';
-}
-
 export function MancalaOnlineGamePage({
   roomCode,
-  myRole,
+  myPlayerId,
   onBackToHome,
 }: MancalaOnlineGamePageProps) {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [loading,   setLoading]   = useState(true);
-  const [moving,    setMoving]    = useState(false); // Supabase write 中にクリックを防ぐ
+  const [moving,    setMoving]    = useState(false);
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
 
-  const myPlayerId = roleToPlayerId(myRole);
+  // 2P対戦でゲスト（player-2）の場合、自分が下になるよう activePlayerIds を逆順にする
+  const displayGameState = useMemo<GameState | null>(() => {
+    if (!gameState) return null;
+    if (myPlayerId === 'player-1') return gameState;
+    if (gameState.activePlayerIds.length !== 2) return gameState;
+    return {
+      ...gameState,
+      activePlayerIds: [...gameState.activePlayerIds].reverse() as PlayerId[],
+    };
+  }, [gameState, myPlayerId]);
 
-  // --- 初回ロード & Realtime 購読 ---
+  // ───── 初回ロード & Realtime 購読 ─────
   useEffect(() => {
     let cancelled = false;
 
-    // 初回取得
     void supabase
       .from('mancala_rooms')
       .select('game_state')
@@ -46,7 +49,6 @@ export function MancalaOnlineGamePage({
         }
       });
 
-    // Realtime 購読（相手の手番を受け取る）
     const channel = supabase
       .channel(`online-game-${roomCode}`)
       .on(
@@ -70,7 +72,7 @@ export function MancalaOnlineGamePage({
     };
   }, [roomCode]);
 
-  // --- ピットクリック ---
+  // ───── ピットクリック ─────
   async function handlePitClick(pitId: string) {
     if (!gameState || moving) return;
     if (gameState.status !== 'playing') return;
@@ -78,7 +80,6 @@ export function MancalaOnlineGamePage({
 
     setMoving(true);
     const newState = applyMove(gameState, pitId);
-    // 楽観的更新でローカルに反映
     setGameState(newState);
 
     const { error } = await supabase
@@ -87,25 +88,26 @@ export function MancalaOnlineGamePage({
       .eq('room_code', roomCode);
 
     if (error) {
-      // 失敗時は元の状態に戻す
       setGameState(gameState);
       setMoving(false);
     }
-    // 成功時は Realtime が相手側を更新する。こちらは楽観的更新済み。
   }
 
-  // --- ローディング ---
+  // ───── ローディング ─────
   if (loading) {
     return (
       <Layout>
-        <div className="cpu-thinking-pulse" style={{ textAlign: 'center', padding: '60px 20px', fontSize: 15, color: 'var(--text-muted)' }}>
+        <div className="cpu-thinking-pulse" style={{
+          textAlign: 'center', padding: '60px 20px',
+          fontSize: 15, color: 'var(--text-muted)',
+        }}>
           読み込み中...
         </div>
       </Layout>
     );
   }
 
-  if (!gameState) {
+  if (!gameState || !displayGameState) {
     return (
       <Layout>
         <div style={{ textAlign: 'center', padding: '60px 20px' }}>
@@ -119,14 +121,16 @@ export function MancalaOnlineGamePage({
   const isMyTurn   = gameState.currentPlayerId === myPlayerId;
   const isFinished = gameState.status === 'finished';
 
-  // --- ゲーム終了パネル ---
+  // ───── ゲーム終了パネル ─────
   if (isFinished) {
     const sorted = [...gameState.players].sort((a, b) => {
-      const scoreA = gameState.board.find(p => p.ownerPlayerId === a.id && p.isStore)?.stones ?? 0;
-      const scoreB = gameState.board.find(p => p.ownerPlayerId === b.id && p.isStore)?.stones ?? 0;
-      return scoreB - scoreA;
+      const sa = gameState.board.find(p => p.ownerPlayerId === a.id && p.isStore)?.stones ?? 0;
+      const sb = gameState.board.find(p => p.ownerPlayerId === b.id && p.isStore)?.stones ?? 0;
+      return sb - sa;
     });
-    const isWinner = sorted[0].id === myPlayerId;
+    const myRank    = sorted.findIndex(p => p.id === myPlayerId);
+    const isWinner  = myRank === 0;
+    const medals    = ['🥇', '🥈', '🥉', '4位'];
 
     return (
       <Layout>
@@ -143,8 +147,7 @@ export function MancalaOnlineGamePage({
           }}>
             {sorted.map((p, i) => {
               const score = gameState.board.find(pit => pit.ownerPlayerId === p.id && pit.isStore)?.stones ?? 0;
-              const medals = ['🥇', '🥈', '🥉'];
-              const isMe = p.id === myPlayerId;
+              const isMe  = p.id === myPlayerId;
               return (
                 <div key={p.id} style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -154,7 +157,9 @@ export function MancalaOnlineGamePage({
                   fontWeight: isMe ? 'bold' : 'normal',
                 }}>
                   <span>{medals[i] ?? `${i + 1}位`} {p.name}{isMe ? '（あなた）' : ''}</span>
-                  <span style={{ fontSize: 16, fontWeight: 'bold', color: 'var(--brown)' }}>{score}石</span>
+                  <span style={{ fontSize: 16, fontWeight: 'bold', color: 'var(--brown)' }}>
+                    {score}石
+                  </span>
                 </div>
               );
             })}
@@ -165,43 +170,46 @@ export function MancalaOnlineGamePage({
     );
   }
 
-  // --- 対局中 ---
+  // ───── 対局中 ─────
   const currentPlayer = gameState.players.find(p => p.id === gameState.currentPlayerId);
-  const opponentPlayer = gameState.players.find(p => p.id !== myPlayerId);
+  const myPlayer      = gameState.players.find(p => p.id === myPlayerId);
+  const opponents     = gameState.players.filter(p => p.id !== myPlayerId);
 
   return (
     <Layout>
-      {/* ルームコードと状態 */}
+      {/* ヘッダー：ルームコード＋ターン表示 */}
       <div style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         marginBottom: 8, padding: '6px 2px',
       }}>
         <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'monospace' }}>
           ルーム: <strong>{roomCode}</strong>
+          {' '}（{myPlayer?.name ?? 'あなた'}）
         </span>
         <span style={{
-          fontSize: 12, padding: '3px 10px', borderRadius: 20,
+          fontSize: 12, padding: '3px 10px', borderRadius: 20, fontWeight: 'bold',
           background: isMyTurn ? '#e8f5e9' : '#fff3e0',
-          color: isMyTurn ? '#2e7d32' : '#e65100',
-          fontWeight: 'bold',
+          color:      isMyTurn ? '#2e7d32' : '#e65100',
         }}>
           {isMyTurn ? 'あなたの番' : `${currentPlayer?.name ?? '相手'}の番`}
         </span>
       </div>
 
-      {/* ボード */}
+      {/* ボード（displayGameState を使って自分が常に下側） */}
       <MancalaBoard
-        gameState={gameState}
+        gameState={displayGameState}
         onPitClick={handlePitClick}
         disabled={!isMyTurn || moving}
       />
 
-      {/* 相手プレイヤー名 */}
-      <div style={{ textAlign: 'center', marginTop: 10, fontSize: 12, color: 'var(--text-muted)' }}>
-        🌐 対戦相手: <strong>{opponentPlayer?.name ?? (myRole === 'host' ? 'ゲスト' : 'ホスト')}</strong>
+      {/* 対戦相手リスト */}
+      <div style={{
+        textAlign: 'center', marginTop: 10,
+        fontSize: 12, color: 'var(--text-muted)',
+      }}>
+        🌐 対戦相手：{opponents.map(p => p.name).join('、')}
       </div>
 
-      {/* 戻るボタン */}
       <div style={{ marginTop: 16 }}>
         <Button variant="ghost" fullWidth onClick={onBackToHome}>
           ← ホームに戻る
