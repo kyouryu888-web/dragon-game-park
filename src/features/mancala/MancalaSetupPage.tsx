@@ -49,9 +49,10 @@ const DEFAULT_PLAYER_CONFIGS: PlayerConfig[] = [
 type MancalaSetupPageProps = {
   onStart: (config: MancalaConfig) => void;
   onBack: () => void;
+  onOnlinePlay?: () => void;
 };
 
-export function MancalaSetupPage({ onStart, onBack }: MancalaSetupPageProps) {
+export function MancalaSetupPage({ onStart, onBack, onOnlinePlay }: MancalaSetupPageProps) {
   const saved = loadSavedConfig();
 
   const [playerCount, setPlayerCount] = useState<2 | 3 | 4>(saved?.playerCount ?? 2);
@@ -173,6 +174,24 @@ export function MancalaSetupPage({ onStart, onBack }: MancalaSetupPageProps) {
             ゲームスタート！ 🎮
           </Button>
         </div>
+
+        {/* オンライン対戦 */}
+        {onOnlinePlay && (
+          <div style={{
+            background: '#f0f8ff', border: '1.5px solid #b0d4f0',
+            borderRadius: 18, padding: '16px 18px', marginBottom: 0,
+          }}>
+            <div style={{ fontSize: 13, fontWeight: 'bold', color: '#1a5a8a', marginBottom: 4 }}>
+              🌐 オンライン対戦
+            </div>
+            <div style={{ fontSize: 11, color: '#4a7a9a', marginBottom: 12 }}>
+              ルームコードを使って離れた相手と対戦できます（2人対戦）
+            </div>
+            <Button fullWidth variant="secondary" onClick={onOnlinePlay}>
+              オンライン対戦を始める
+            </Button>
+          </div>
+        )}
 
         {/* ルール説明（開閉式） */}
         <div>

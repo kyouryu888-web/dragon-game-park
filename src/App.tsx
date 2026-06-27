@@ -3,14 +3,16 @@ import type { MancalaConfig } from './features/mancala/mancalaTypes';
 import { HomePage } from './pages/HomePage';
 import { MancalaSetupPage } from './features/mancala/MancalaSetupPage';
 import { MancalaGamePage } from './features/mancala/MancalaGamePage';
+import { MancalaRoomPage } from './features/mancala/MancalaRoomPage';
+import type { OnlineRoomInfo } from './features/mancala/MancalaRoomPage';
+import { MancalaOnlineGamePage } from './features/mancala/MancalaOnlineGamePage';
 
-/**
- * アプリ全体の画面状態
- * 'home'          → ゲーム選択画面
- * 'mancala-setup' → マンカラ設定画面
- * 'mancala-game'  → マンカラ対局画面
- */
-type AppScreen = 'home' | 'mancala-setup' | 'mancala-game';
+type AppScreen =
+  | 'home'
+  | 'mancala-setup'
+  | 'mancala-game'
+  | 'mancala-room'
+  | 'mancala-online-game';
 
 export default function App() {
   const [screen, setScreen] = useState<AppScreen>('home');
@@ -21,6 +23,7 @@ export default function App() {
       { name: '', isCpu: true,  cpuLevel: 'normal' },
     ],
   });
+  const [onlineRoomInfo, setOnlineRoomInfo] = useState<OnlineRoomInfo | null>(null);
 
   if (screen === 'home') {
     return (
@@ -40,6 +43,7 @@ export default function App() {
           setScreen('mancala-game');
         }}
         onBack={() => setScreen('home')}
+        onOnlinePlay={() => setScreen('mancala-room')}
       />
     );
   }
@@ -49,6 +53,28 @@ export default function App() {
       <MancalaGamePage
         config={mancalaConfig}
         onBackToSetup={() => setScreen('mancala-setup')}
+        onBackToHome={() => setScreen('home')}
+      />
+    );
+  }
+
+  if (screen === 'mancala-room') {
+    return (
+      <MancalaRoomPage
+        onGameStart={(info) => {
+          setOnlineRoomInfo(info);
+          setScreen('mancala-online-game');
+        }}
+        onBack={() => setScreen('mancala-setup')}
+      />
+    );
+  }
+
+  if (screen === 'mancala-online-game' && onlineRoomInfo) {
+    return (
+      <MancalaOnlineGamePage
+        roomCode={onlineRoomInfo.roomCode}
+        myRole={onlineRoomInfo.myRole}
         onBackToHome={() => setScreen('home')}
       />
     );

@@ -674,7 +674,6 @@ function RankingPanel({
   onBackToHome: () => void;
 }) {
   const winner = rankings[0];
-  const isSolo = rankings.length === 1;
 
   return (
     <div
