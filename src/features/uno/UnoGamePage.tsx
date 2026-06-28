@@ -51,7 +51,7 @@ export function UnoGamePage({ config, onBackToSetup, onBackToHome }: UnoGamePage
   const nextPlayerId = useMemo(() => getNextPlayerId(gameState), [gameState]);
 
   const winner = gameState.winnerPlayerId
-    ? gameState.players.find((p) => p.id === gameState.winnerPlayerId)
+    ? gameState.players.find((p) => p.id === gameState.winnerPlayerId) ?? null
     : null;
 
   const currentIsCpu = currentPlayer?.isCpu ?? false;
