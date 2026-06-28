@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { PlayerId } from './mancalaTypes';
+import type { PlayerId, GameState } from './mancalaTypes';
 import { supabase } from '../../lib/supabase';
 import { createInitialMancalaState } from './createInitialMancalaState';
 import { Layout } from '../../components/Layout';
@@ -24,7 +24,7 @@ type RoomRow = {
   guest_id: string | null;
   guest2_id: string | null;
   guest3_id: string | null;
-  game_state?: { status: string } | null;
+  game_state?: unknown;
 };
 
 function generateRoomCode(): string {
@@ -42,6 +42,14 @@ export function getOnlinePlayerId(): string {
     localStorage.setItem(key, id);
   }
   return id;
+}
+
+function getOnlinePlayerName(): string {
+  return localStorage.getItem('dgp-online-player-name') ?? '';
+}
+
+function saveOnlinePlayerName(name: string): void {
+  localStorage.setItem('dgp-online-player-name', name);
 }
 
 function isRoomReady(row: Partial<RoomRow>): boolean {
@@ -66,6 +74,7 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
   const [playerCount,        setPlayerCount]        = useState<2 | 3 | 4>(2);
   // cpuSlots[0]=player-2, cpuSlots[1]=player-3, cpuSlots[2]=player-4
   const [cpuSlots,           setCpuSlots]           = useState<[boolean, boolean, boolean]>([false, false, false]);
+  const [myName,             setMyName]             = useState<string>(getOnlinePlayerName);
   const [roomCode,           setRoomCode]           = useState('');
   const [inputCode,          setInputCode]          = useState('');
   const [error,              setError]              = useState('');
@@ -83,16 +92,23 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
     });
   }
 
+  function handleNameChange(name: string) {
+    setMyName(name);
+    saveOnlinePlayerName(name);
+  }
+
   // ───── ルームを作る ─────
   async function handleCreate() {
     setError('');
     setPageState('creating');
-    const code     = generateRoomCode();
-    const hostId   = getOnlinePlayerId();
-    const config   = {
+    const code   = generateRoomCode();
+    const hostId = getOnlinePlayerId();
+    const hostName = myName.trim() || PLAYER_NAMES[0];
+
+    const config = {
       playerCount,
       players: Array.from({ length: playerCount }, (_, i) => ({
-        name:     PLAYER_NAMES[i],
+        name:     i === 0 ? hostName : PLAYER_NAMES[i],
         isCpu:    i === 0 ? false : (cpuSlots[i - 1] ?? false),
         cpuLevel: 'normal' as const,
       })),
@@ -210,23 +226,21 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
     }
 
     // ── 新規参加：空きスロットを探す ──
-    // 空きスロットがある場合は新規参加として処理（UUIDを登録）
-    // 空きスロットがない場合のみ「再参加」として役割選択を表示
     let myPlayerId: PlayerId;
-    let updatePayload: Record<string, string>;
+    let slotField: string;
 
     if (!row.guest_id) {
-      myPlayerId    = 'player-2';
-      updatePayload = { guest_id: playerId };
+      myPlayerId = 'player-2';
+      slotField  = 'guest_id';
     } else if (!row.guest2_id && row.player_count >= 3) {
-      myPlayerId    = 'player-3';
-      updatePayload = { guest2_id: playerId };
+      myPlayerId = 'player-3';
+      slotField  = 'guest2_id';
     } else if (!row.guest3_id && row.player_count >= 4) {
-      myPlayerId    = 'player-4';
-      updatePayload = { guest3_id: playerId };
+      myPlayerId = 'player-4';
+      slotField  = 'guest3_id';
     } else {
       // 全スロット埋まり & UUID不一致 → ゲーム進行中なら役割選択で再参加
-      if (row.game_state?.status === 'playing') {
+      if ((row.game_state as { status?: string } | null)?.status === 'playing') {
         setSelectRoleCode(code);
         setSelectRoleCount(row.player_count);
         setPageState('select-role');
@@ -235,6 +249,20 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
       }
       return;
     }
+
+    // スロット登録とプレイヤー名更新を1回の UPDATE でまとめて行う
+    const playerIdx  = ['player-1', 'player-2', 'player-3', 'player-4'].indexOf(myPlayerId);
+    const guestName  = myName.trim() || PLAYER_NAMES[playerIdx];
+    const currentGs  = row.game_state as GameState | null;
+    const updatedGs  = currentGs ? {
+      ...currentGs,
+      players: currentGs.players.map((p, i) =>
+        i === playerIdx ? { ...p, name: guestName } : p
+      ),
+    } : undefined;
+
+    const updatePayload: Record<string, unknown> = { [slotField]: playerId };
+    if (updatedGs) updatePayload['game_state'] = updatedGs;
 
     const { error: updateErr } = await supabase
       .from('mancala_rooms')
@@ -246,7 +274,7 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
       return;
     }
 
-    const updatedRow = { ...row, ...updatePayload } as RoomRow;
+    const updatedRow = { ...row, [slotField]: playerId } as RoomRow;
     setRoomCode(code);
     setMyWaitingPlayerId(myPlayerId);
     setWaitingPlayerCount(row.player_count);
@@ -371,7 +399,35 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
           🌐 オンライン対戦
         </h1>
 
-        {/* ルームを作る */}
+        {/* ── プレイヤー名入力 ── */}
+        <div style={{
+          background: '#fffdf8', border: '1.5px solid var(--border)',
+          borderRadius: 18, padding: '16px 20px', marginBottom: 16,
+        }}>
+          <div style={{ fontSize: 13, fontWeight: 'bold', color: 'var(--brown)', marginBottom: 8 }}>
+            👤 あなたの名前
+          </div>
+          <input
+            type="text"
+            placeholder="例：たろう"
+            maxLength={12}
+            value={myName}
+            onChange={e => handleNameChange(e.target.value)}
+            style={{
+              width: '100%', padding: '10px 14px', fontSize: 15,
+              border: '1.5px solid var(--border)', borderRadius: 10,
+              boxSizing: 'border-box', background: '#faf8f5',
+              color: 'var(--text)', outline: 'none', fontFamily: 'inherit',
+            }}
+            onFocus={e => { e.target.style.borderColor = '#c87028'; }}
+            onBlur={e  => { e.target.style.borderColor = 'var(--border)'; }}
+          />
+          <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 5 }}>
+            空白の場合はデフォルト名（ホスト / ゲスト1 など）が使われます
+          </div>
+        </div>
+
+        {/* ── ルームを作る ── */}
         <div style={{
           background: '#fffdf8', border: '1.5px solid var(--border)',
           borderRadius: 18, padding: '20px', marginBottom: 16,
@@ -449,7 +505,7 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
           </Button>
         </div>
 
-        {/* ルームに参加する */}
+        {/* ── ルームに参加する ── */}
         <div style={{
           background: '#fffdf8', border: '1.5px solid var(--border)',
           borderRadius: 18, padding: '20px', marginBottom: 16,

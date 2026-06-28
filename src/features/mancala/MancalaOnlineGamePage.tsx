@@ -115,7 +115,6 @@ export function MancalaOnlineGamePage({
   const [animSteps,     setAnimSteps]     = useState<GameState[]>([]);
   const [animActiveIds, setAnimActiveIds] = useState<string[]>([]);
   const [animIdx,       setAnimIdx]       = useState(0);
-  const [pendingMove,   setPendingMove]   = useState<string | null>(null);
 
   // ── 捕獲アニメーション ──
   const [captureAnimInfo, setCaptureAnimInfo] = useState<CaptureAnimInfo | null>(null);
@@ -128,9 +127,11 @@ export function MancalaOnlineGamePage({
   const [captureBannerKey,  setCaptureBannerKey]  = useState(0);
 
   const isAnimating = animSteps.length > 0;
-  // stale closure 対策: Realtime コールバックから最新値を参照するための ref
   const isAnimatingRef = useRef(false);
   isAnimatingRef.current = isAnimating;
+
+  // アニメーション完了時に適用する最終状態（クリック時に事前計算）
+  const pendingFinalStateRef = useRef<GameState | null>(null);
 
   // ============================================================
   // Supabase: 初回ロード & Realtime 購読
@@ -138,7 +139,6 @@ export function MancalaOnlineGamePage({
   useEffect(() => {
     let cancelled = false;
 
-    // 最新 game_state を Supabase から取得して適用するユーティリティ
     const syncLatest = async () => {
       const { data } = await supabase
         .from('mancala_rooms')
@@ -183,7 +183,6 @@ export function MancalaOnlineGamePage({
         }
       )
       .subscribe(async (status) => {
-        // 購読確立後に再フェッチ（購読前に起きたイベントを取りこぼさないため）
         if (status === 'SUBSCRIBED' && !cancelled) {
           await syncLatest();
         }
@@ -201,6 +200,47 @@ export function MancalaOnlineGamePage({
   }, [roomCode]);
 
   // ============================================================
+  // 移動開始ヘルパー（クリック時・CPU時共通）
+  // finalState を即座に Supabase に書き込み、アニメーションを開始する
+  // ============================================================
+  const startMove = useCallback((state: GameState, pitId: string) => {
+    const finalState = applyMove(state, pitId);
+    if (finalState === state) return; // canSelectPit が false（無効な手）
+
+    // ★ Supabase に即座に書き込む（アニメーション完了を待たない）
+    supabase
+      .from('mancala_rooms')
+      .update({ game_state: finalState })
+      .eq('room_code', roomCode)
+      .then(({ error }) => {
+        if (error) console.error('[online] write failed:', error);
+      });
+
+    const { steps, activeIds, captureInfo: ci, isExtraTurn } =
+      computeStoneSteps(state, pitId);
+
+    if (steps.length === 0) {
+      // アニメーションなし（通常は起こらない）
+      setGameState(finalState);
+      return;
+    }
+
+    if (isExtraTurn) {
+      setExtraTurnKey(k => k + 1);
+      setShowExtraTurn(true);
+      setTimeout(() => setShowExtraTurn(false), 1700);
+    }
+
+    // アニメーション完了時に適用する最終状態を保存
+    pendingFinalStateRef.current = finalState;
+    setCaptureAnimInfo(ci ?? null);
+    setCapturePhase(null);
+    setAnimSteps(steps);
+    setAnimActiveIds(activeIds);
+    setAnimIdx(0);
+  }, [roomCode]);
+
+  // ============================================================
   // 石アニメーション進行
   // ============================================================
   useEffect(() => {
@@ -214,20 +254,10 @@ export function MancalaOnlineGamePage({
         setTimeout(() => setShowCaptureBanner(false), 2000);
         return;
       }
-      // アニメーション完了 → Supabase に書き込み
-      if (pendingMove && gameStateRef.current) {
-        const finalState = applyMove(gameStateRef.current, pendingMove);
-        if (finalState !== gameStateRef.current) {
-          setGameState(finalState);
-          supabase
-            .from('mancala_rooms')
-            .update({ game_state: finalState })
-            .eq('room_code', roomCode)
-            .then(({ error }) => {
-              if (error) console.error('[online] game_state write failed:', error);
-            });
-        }
-        setPendingMove(null);
+      // アニメーション完了 → ローカル状態を更新（Supabase への書き込みはクリック時に完了済み）
+      if (pendingFinalStateRef.current) {
+        setGameState(pendingFinalStateRef.current);
+        pendingFinalStateRef.current = null;
       }
       setAnimSteps([]);
       setAnimActiveIds([]);
@@ -237,7 +267,7 @@ export function MancalaOnlineGamePage({
 
     const id = setTimeout(() => setAnimIdx(p => p + 1), STONE_ANIM_MS);
     return () => clearTimeout(id);
-  }, [animIdx, animSteps.length, isAnimating, capturePhase, captureAnimInfo, pendingMove, roomCode]);
+  }, [animIdx, animSteps.length, isAnimating, capturePhase, captureAnimInfo]);
 
   // ============================================================
   // 捕獲アニメーション
@@ -249,20 +279,10 @@ export function MancalaOnlineGamePage({
       if (capturePhase === 'gather') {
         setCapturePhase('to-store');
       } else {
-        // 捕獲完了 → Supabase に書き込み
-        if (pendingMove && gameStateRef.current) {
-          const finalState = applyMove(gameStateRef.current, pendingMove);
-          if (finalState !== gameStateRef.current) {
-            setGameState(finalState);
-            supabase
-              .from('mancala_rooms')
-              .update({ game_state: finalState })
-              .eq('room_code', roomCode)
-              .then(({ error }) => {
-                if (error) console.error('[online] capture write failed:', error);
-              });
-          }
-          setPendingMove(null);
+        // 捕獲完了 → ローカル状態を更新（Supabase への書き込みはクリック時に完了済み）
+        if (pendingFinalStateRef.current) {
+          setGameState(pendingFinalStateRef.current);
+          pendingFinalStateRef.current = null;
         }
         setCaptureAnimInfo(null);
         setCapturePhase(null);
@@ -273,7 +293,7 @@ export function MancalaOnlineGamePage({
     }, CAPTURE_ANIM_MS);
 
     return () => clearTimeout(id);
-  }, [capturePhase, pendingMove, roomCode]);
+  }, [capturePhase]);
 
   // ============================================================
   // ピットクリック（自分の手番のみ）
@@ -282,23 +302,8 @@ export function MancalaOnlineGamePage({
     if (!gameState || isAnimating || capturePhase !== null) return;
     if (gameState.status !== 'playing') return;
     if (gameState.currentPlayerId !== myPlayerId) return;
-
-    const { steps, activeIds, captureInfo: ci, isExtraTurn } =
-      computeStoneSteps(gameState, pitId);
-    if (steps.length === 0) return;
-
-    if (isExtraTurn) {
-      setExtraTurnKey(k => k + 1);
-      setShowExtraTurn(true);
-      setTimeout(() => setShowExtraTurn(false), 1700);
-    }
-    setCaptureAnimInfo(ci ?? null);
-    setCapturePhase(null);
-    setPendingMove(pitId);
-    setAnimSteps(steps);
-    setAnimActiveIds(activeIds);
-    setAnimIdx(0);
-  }, [gameState, isAnimating, capturePhase, myPlayerId]);
+    startMove(gameState, pitId);
+  }, [gameState, isAnimating, capturePhase, myPlayerId, startMove]);
 
   // ============================================================
   // CPU自動手番（ホスト＝player-1のみ実行）
@@ -322,28 +327,12 @@ export function MancalaOnlineGamePage({
 
       const pitId = chooseCpuMove(state, cpuId, cpuLevel);
       if (!pitId) return;
-
-      const { steps, activeIds, captureInfo: ci, isExtraTurn } =
-        computeStoneSteps(state, pitId);
-      if (steps.length === 0) return;
-
-      if (isExtraTurn) {
-        setExtraTurnKey(k => k + 1);
-        setShowExtraTurn(true);
-        setTimeout(() => setShowExtraTurn(false), 1700);
-      }
-      setCaptureAnimInfo(ci ?? null);
-      setCapturePhase(null);
-      setPendingMove(pitId);
-      setAnimSteps(steps);
-      setAnimActiveIds(activeIds);
-      setAnimIdx(0);
+      startMove(state, pitId);
     }, 700);
 
     return () => clearTimeout(id);
-  // gameState.turnCount でターンが変わるたびに再評価
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gameState?.currentPlayerId, (gameState as GameState | null)?.turnCount, isAnimating, capturePhase, myPlayerId]);
+  }, [gameState?.currentPlayerId, (gameState as GameState | null)?.turnCount, isAnimating, capturePhase, myPlayerId, startMove]);
 
   // ============================================================
   // 表示用ゲーム状態（アニメーション中は中間状態を使用）
