@@ -55,12 +55,12 @@ export function generateUnoRoomCode(): string {
 }
 
 export function getUnoOnlinePlayerId(): string {
-  let id = localStorage.getItem(UNO_ONLINE_PLAYER_ID_KEY);
+  let id = sessionStorage.getItem(UNO_ONLINE_PLAYER_ID_KEY);
   if (!id) {
     id = typeof crypto !== 'undefined' && crypto.randomUUID
       ? crypto.randomUUID()
       : Math.random().toString(36).slice(2);
-    localStorage.setItem(UNO_ONLINE_PLAYER_ID_KEY, id);
+    sessionStorage.setItem(UNO_ONLINE_PLAYER_ID_KEY, id);
   }
   return id;
 }
