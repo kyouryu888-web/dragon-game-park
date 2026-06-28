@@ -9,10 +9,6 @@ import { Button } from '../../components/Button';
 import { MancalaBoard } from './MancalaBoard';
 import { PLAYER_ACCENT_COLORS } from './MancalaPit';
 
-// ============================================================
-// 定数（オフラインと同じ値）
-// ============================================================
-
 const STONE_ANIM_MS   = 400;
 const CAPTURE_ANIM_MS = 700;
 
@@ -63,8 +59,8 @@ function computeStoneSteps(state: GameState, pitId: string): {
     i = (i + 1) % n;
   }
 
-  const lastPitId  = activeIds[activeIds.length - 1];
-  const myStoreId  = state.board.find(p => p.ownerPlayerId === playerId && p.isStore)!.id;
+  const lastPitId   = activeIds[activeIds.length - 1];
+  const myStoreId   = state.board.find(p => p.ownerPlayerId === playerId && p.isStore)!.id;
   const isExtraTurn = lastPitId === myStoreId;
 
   let captureInfo: CaptureAnimInfo | null = null;
@@ -73,7 +69,7 @@ function computeStoneSteps(state: GameState, pitId: string): {
     if (lastPit && !lastPit.isStore && lastPit.ownerPlayerId === playerId) {
       const oppPitId = getEffectiveOppositePitId(state, lastPit);
       if (oppPitId) {
-        const oppBefore  = state.board.find(p => p.id === oppPitId)?.stones ?? 0;
+        const oppBefore = state.board.find(p => p.id === oppPitId)?.stones ?? 0;
         if (oppBefore > 0) {
           const afterState = applyMove(state, pitId);
           if (afterState.status === 'playing') {
@@ -121,10 +117,14 @@ export function MancalaOnlineGamePage({
   const [capturePhase,    setCapturePhase]    = useState<'gather' | 'to-store' | null>(null);
 
   // ── バナー ──
-  const [showExtraTurn,    setShowExtraTurn]    = useState(false);
-  const [extraTurnKey,     setExtraTurnKey]     = useState(0);
+  const [showExtraTurn,     setShowExtraTurn]     = useState(false);
+  const [extraTurnKey,      setExtraTurnKey]      = useState(0);
   const [showCaptureBanner, setShowCaptureBanner] = useState(false);
   const [captureBannerKey,  setCaptureBannerKey]  = useState(0);
+
+  // ── 名前編集 ──
+  const [editingName, setEditingName] = useState(false);
+  const [nameInput,   setNameInput]   = useState('');
 
   const isAnimating = animSteps.length > 0;
   const isAnimatingRef = useRef(false);
@@ -152,7 +152,6 @@ export function MancalaOnlineGamePage({
       );
     };
 
-    // 初回フェッチ
     supabase
       .from('mancala_rooms')
       .select('game_state')
@@ -166,7 +165,6 @@ export function MancalaOnlineGamePage({
         setLoading(false);
       });
 
-    // Realtime 購読
     const channel = supabase
       .channel(`online-game-${roomCode}`)
       .on(
@@ -188,7 +186,6 @@ export function MancalaOnlineGamePage({
         }
       });
 
-    // 定期ポーリング（Realtime 取りこぼしのフォールバック）
     const poll = setInterval(() => { void syncLatest(); }, 5000);
 
     return () => {
@@ -205,9 +202,8 @@ export function MancalaOnlineGamePage({
   // ============================================================
   const startMove = useCallback((state: GameState, pitId: string) => {
     const finalState = applyMove(state, pitId);
-    if (finalState === state) return; // canSelectPit が false（無効な手）
+    if (finalState === state) return;
 
-    // ★ Supabase に即座に書き込む（アニメーション完了を待たない）
     supabase
       .from('mancala_rooms')
       .update({ game_state: finalState })
@@ -220,7 +216,6 @@ export function MancalaOnlineGamePage({
       computeStoneSteps(state, pitId);
 
     if (steps.length === 0) {
-      // アニメーションなし（通常は起こらない）
       setGameState(finalState);
       return;
     }
@@ -231,7 +226,6 @@ export function MancalaOnlineGamePage({
       setTimeout(() => setShowExtraTurn(false), 1700);
     }
 
-    // アニメーション完了時に適用する最終状態を保存
     pendingFinalStateRef.current = finalState;
     setCaptureAnimInfo(ci ?? null);
     setCapturePhase(null);
@@ -254,7 +248,6 @@ export function MancalaOnlineGamePage({
         setTimeout(() => setShowCaptureBanner(false), 2000);
         return;
       }
-      // アニメーション完了 → ローカル状態を更新（Supabase への書き込みはクリック時に完了済み）
       if (pendingFinalStateRef.current) {
         setGameState(pendingFinalStateRef.current);
         pendingFinalStateRef.current = null;
@@ -279,7 +272,6 @@ export function MancalaOnlineGamePage({
       if (capturePhase === 'gather') {
         setCapturePhase('to-store');
       } else {
-        // 捕獲完了 → ローカル状態を更新（Supabase への書き込みはクリック時に完了済み）
         if (pendingFinalStateRef.current) {
           setGameState(pendingFinalStateRef.current);
           pendingFinalStateRef.current = null;
@@ -324,7 +316,6 @@ export function MancalaOnlineGamePage({
       if (!state || state.status !== 'playing') return;
       const cp = state.players.find(p => p.id === state.currentPlayerId);
       if (!cp?.isCpu || state.currentPlayerId !== cpuId) return;
-
       const pitId = chooseCpuMove(state, cpuId, cpuLevel);
       if (!pitId) return;
       startMove(state, pitId);
@@ -335,21 +326,52 @@ export function MancalaOnlineGamePage({
   }, [gameState?.currentPlayerId, (gameState as GameState | null)?.turnCount, isAnimating, capturePhase, myPlayerId, startMove]);
 
   // ============================================================
-  // 表示用ゲーム状態（アニメーション中は中間状態を使用）
+  // 名前の変更（対局中も可能）
+  // ============================================================
+  const handleSaveName = useCallback(() => {
+    const newName = nameInput.trim();
+    setEditingName(false);
+    if (!gameState || !newName) return;
+    const current = gameState.players.find(p => p.id === myPlayerId);
+    if (newName === current?.name) return;
+
+    localStorage.setItem('dgp-online-player-name', newName);
+
+    const updatedGs: GameState = {
+      ...gameState,
+      players: gameState.players.map(p =>
+        p.id === myPlayerId ? { ...p, name: newName } : p
+      ),
+    };
+    setGameState(updatedGs);
+    supabase
+      .from('mancala_rooms')
+      .update({ game_state: updatedGs })
+      .eq('room_code', roomCode)
+      .then(({ error }) => {
+        if (error) console.error('[online] name update failed:', error);
+      });
+  }, [gameState, myPlayerId, nameInput, roomCode]);
+
+  // ============================================================
+  // 表示用ゲーム状態
+  // activePlayerIds を回転させ、自分（myPlayerId）を常に slot-0（手前）に配置
   // ============================================================
   const boardDisplayState = isAnimating
     ? animSteps[Math.min(animIdx, animSteps.length - 1)]
     : gameState;
 
-  // 2P対戦でゲストの場合、自分が常に下に来るよう activePlayerIds を逆順に
   const displayGameState = useMemo<GameState | null>(() => {
     if (!boardDisplayState) return null;
-    if (myPlayerId === 'player-1') return boardDisplayState;
-    if (boardDisplayState.activePlayerIds.length !== 2) return boardDisplayState;
-    return {
-      ...boardDisplayState,
-      activePlayerIds: [...boardDisplayState.activePlayerIds].reverse() as PlayerId[],
-    };
+    const myIdx = boardDisplayState.activePlayerIds.indexOf(myPlayerId);
+    // すでに手前 or 脱落済み（-1）はそのまま返す
+    if (myIdx <= 0) return boardDisplayState;
+    // myPlayerId が先頭になるよう循環シフト
+    const rotated = [
+      ...boardDisplayState.activePlayerIds.slice(myIdx),
+      ...boardDisplayState.activePlayerIds.slice(0, myIdx),
+    ] as PlayerId[];
+    return { ...boardDisplayState, activePlayerIds: rotated };
   }, [boardDisplayState, myPlayerId]);
 
   // ============================================================
@@ -430,11 +452,11 @@ export function MancalaOnlineGamePage({
   const myPlayer      = gameState.players.find(p => p.id === myPlayerId);
   const opponents     = gameState.players.filter(p => p.id !== myPlayerId);
 
-  // 2P 上下プレイヤー（flip 後の displayGameState を基準）
-  const bottomId     = displayGameState.activePlayerIds[0];
-  const topId        = displayGameState.activePlayerIds[1];
-  const bottomPlayer = gameState.players.find(p => p.id === bottomId);
-  const topPlayer    = gameState.players.find(p => p.id === topId);
+  // 2P 上下ラベル（displayGameState 基準）
+  const bottomId        = displayGameState.activePlayerIds[0];
+  const topId           = displayGameState.activePlayerIds[1];
+  const bottomPlayer    = gameState.players.find(p => p.id === bottomId);
+  const topPlayer       = gameState.players.find(p => p.id === topId);
   const bottomPlayerIdx = gameState.players.findIndex(p => p.id === bottomId);
   const topPlayerIdx    = gameState.players.findIndex(p => p.id === topId);
 
@@ -448,9 +470,44 @@ export function MancalaOnlineGamePage({
     <Layout>
       {/* ヘッダー */}
       <div style={{ textAlign: 'center', marginBottom: 8 }}>
+        {/* 名前表示 / 編集 */}
         <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4, fontFamily: 'monospace' }}>
-          ルーム: <strong>{roomCode}</strong>　あなた: <strong>{myPlayer?.name ?? myPlayerId}</strong>
+          ルーム: <strong>{roomCode}</strong>
+          {editingName ? (
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+              <input
+                autoFocus
+                value={nameInput}
+                maxLength={12}
+                onChange={e => setNameInput(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter') handleSaveName(); if (e.key === 'Escape') setEditingName(false); }}
+                style={{
+                  fontSize: 12, padding: '2px 6px', borderRadius: 6,
+                  border: '1.5px solid var(--orange)', outline: 'none',
+                  fontFamily: 'inherit', width: 80, background: '#fffbe8',
+                }}
+              />
+              <button
+                onClick={handleSaveName}
+                style={{ fontSize: 13, background: 'none', border: 'none', cursor: 'pointer', color: '#2a7a2a', padding: 2 }}
+              >✓</button>
+              <button
+                onClick={() => setEditingName(false)}
+                style={{ fontSize: 13, background: 'none', border: 'none', cursor: 'pointer', color: '#c0392b', padding: 2 }}
+              >✗</button>
+            </span>
+          ) : (
+            <span>
+              あなた: <strong>{myPlayer?.name ?? myPlayerId}</strong>
+              <button
+                onClick={() => { setNameInput(myPlayer?.name ?? ''); setEditingName(true); }}
+                title="名前を変更"
+                style={{ fontSize: 11, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', marginLeft: 4, padding: '0 2px' }}
+              >✏️</button>
+            </span>
+          )}
         </div>
+
         {/* ターンバナー */}
         <div style={{
           fontSize: 13, fontWeight: 'bold', padding: '5px 14px', borderRadius: 20,
@@ -468,10 +525,7 @@ export function MancalaOnlineGamePage({
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           padding: '3px 8px', marginBottom: 2,
         }}>
-          <span style={{
-            fontSize: 11, fontWeight: 'bold',
-            color: PLAYER_ACCENT_COLORS[topPlayerIdx],
-          }}>
+          <span style={{ fontSize: 11, fontWeight: 'bold', color: PLAYER_ACCENT_COLORS[topPlayerIdx] }}>
             {topPlayer.name}{topId === myPlayerId ? '（あなた）' : '（相手）'}
           </span>
           <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
@@ -493,15 +547,8 @@ export function MancalaOnlineGamePage({
           capturePhase={capturePhase}
           captureStepMs={CAPTURE_ANIM_MS}
         />
-
-        {/* 追加ターンバナー */}
-        {showExtraTurn && (
-          <div key={extraTurnKey} className="extra-turn-banner">⭐ 追加ターン！</div>
-        )}
-        {/* 捕獲バナー */}
-        {showCaptureBanner && (
-          <div key={captureBannerKey} className="capture-banner">🔴 捕獲！</div>
-        )}
+        {showExtraTurn    && <div key={extraTurnKey}     className="extra-turn-banner">⭐ 追加ターン！</div>}
+        {showCaptureBanner && <div key={captureBannerKey} className="capture-banner">🔴 捕獲！</div>}
       </div>
 
       {/* 2P: 下プレイヤーラベル */}
@@ -510,10 +557,7 @@ export function MancalaOnlineGamePage({
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           padding: '3px 8px', marginTop: 2,
         }}>
-          <span style={{
-            fontSize: 11, fontWeight: 'bold',
-            color: PLAYER_ACCENT_COLORS[bottomPlayerIdx],
-          }}>
+          <span style={{ fontSize: 11, fontWeight: 'bold', color: PLAYER_ACCENT_COLORS[bottomPlayerIdx] }}>
             {bottomPlayer.name}{bottomId === myPlayerId ? '（あなた）' : '（相手）'}
           </span>
           <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>

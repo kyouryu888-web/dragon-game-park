@@ -80,7 +80,9 @@ body {
 
 button {
   font-family: inherit;
+  touch-action: manipulation; /* タップ遅延（300ms）を防ぐ */
 }
+
 
 /* =============================================
    ボタン インタラクション（CSS クラス）
@@ -109,6 +111,11 @@ button {
 .pit-btn.is-selectable:not(:disabled):hover {
   transform: scale(1.08);
   filter: brightness(1.10);
+}
+.pit-btn.is-selectable:not(:disabled):active {
+  transform: scale(0.92) !important;
+  filter: brightness(1.25) !important;
+  transition: transform 0.06s, filter 0.06s !important;
 }
 
 /* =============================================

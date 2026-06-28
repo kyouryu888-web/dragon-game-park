@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { PlayerId, GameState } from './mancalaTypes';
+import type { PlayerId, GameState, CpuLevel } from './mancalaTypes';
 import { supabase } from '../../lib/supabase';
 import { createInitialMancalaState } from './createInitialMancalaState';
 import { Layout } from '../../components/Layout';
@@ -69,11 +69,20 @@ function countJoined(row: Partial<RoomRow>): number {
 
 const PLAYER_NAMES = ['ホスト', 'ゲスト1', 'ゲスト2', 'ゲスト3'];
 
+const CPU_LEVELS: { level: CpuLevel; label: string }[] = [
+  { level: 'very-easy', label: '易しい' },
+  { level: 'easy',      label: 'かんたん' },
+  { level: 'normal',    label: 'ふつう' },
+  { level: 'hard',      label: '難しい' },
+  { level: 'very-hard', label: '超難しい' },
+];
+
 export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
   const [pageState,          setPageState]          = useState<PageState>('menu');
   const [playerCount,        setPlayerCount]        = useState<2 | 3 | 4>(2);
   // cpuSlots[0]=player-2, cpuSlots[1]=player-3, cpuSlots[2]=player-4
   const [cpuSlots,           setCpuSlots]           = useState<[boolean, boolean, boolean]>([false, false, false]);
+  const [cpuLevels,          setCpuLevels]          = useState<[CpuLevel, CpuLevel, CpuLevel]>(['normal', 'normal', 'normal']);
   const [myName,             setMyName]             = useState<string>(getOnlinePlayerName);
   const [roomCode,           setRoomCode]           = useState('');
   const [inputCode,          setInputCode]          = useState('');
@@ -88,6 +97,14 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
     setCpuSlots(prev => {
       const next: [boolean, boolean, boolean] = [...prev] as [boolean, boolean, boolean];
       next[idx] = !next[idx];
+      return next;
+    });
+  }
+
+  function setCpuLevel(idx: number, level: CpuLevel) {
+    setCpuLevels(prev => {
+      const next: [CpuLevel, CpuLevel, CpuLevel] = [...prev] as [CpuLevel, CpuLevel, CpuLevel];
+      next[idx] = level;
       return next;
     });
   }
@@ -110,7 +127,7 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
       players: Array.from({ length: playerCount }, (_, i) => ({
         name:     i === 0 ? hostName : PLAYER_NAMES[i],
         isCpu:    i === 0 ? false : (cpuSlots[i - 1] ?? false),
-        cpuLevel: 'normal' as const,
+        cpuLevel: i === 0 ? 'normal' as const : (cpuLevels[i - 1] ?? 'normal'),
       })),
     };
     const gs = createInitialMancalaState(config);
@@ -470,29 +487,54 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
                 {Array.from({ length: playerCount - 1 }, (_, i) => {
                   const isCpu = cpuSlots[i];
                   return (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <span style={{ fontSize: 13, color: 'var(--text)' }}>
-                        {PLAYER_NAMES[i + 1]}
-                      </span>
-                      <div style={{ display: 'flex', gap: 4 }}>
-                        {(['人間', 'CPU'] as const).map((role) => {
-                          const isCpuRole  = role === 'CPU';
-                          const isSelected = isCpu === isCpuRole;
-                          return (
-                            <button
-                              key={role}
-                              onClick={() => { if (isCpu !== isCpuRole) toggleCpuSlot(i); }}
-                              style={{
-                                padding: '4px 10px', borderRadius: 8, fontSize: 12, fontWeight: 'bold',
-                                border: `1.5px solid ${isSelected ? (isCpuRole ? '#4e8a4e' : '#c87028') : 'var(--border)'}`,
-                                background: isSelected ? (isCpuRole ? '#e8f4e8' : '#fff3e0') : 'transparent',
-                                color: isSelected ? (isCpuRole ? '#2a6a2a' : '#8a4010') : 'var(--text-muted)',
-                                cursor: 'pointer',
-                              }}
-                            >{role}</button>
-                          );
-                        })}
+                    <div key={i} style={{ borderRadius: 10, padding: '8px 10px', background: isCpu ? '#f0f8f0' : '#faf8f5', border: `1px solid ${isCpu ? '#90b090' : 'var(--border)'}` }}>
+                      {/* 人間/CPU トグル */}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: isCpu ? 8 : 0 }}>
+                        <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 'bold' }}>
+                          {PLAYER_NAMES[i + 1]}
+                        </span>
+                        <div style={{ display: 'flex', gap: 4 }}>
+                          {(['人間', 'CPU'] as const).map((role) => {
+                            const isCpuRole  = role === 'CPU';
+                            const isSelected = isCpu === isCpuRole;
+                            return (
+                              <button
+                                key={role}
+                                onClick={() => { if (isCpu !== isCpuRole) toggleCpuSlot(i); }}
+                                style={{
+                                  padding: '4px 10px', borderRadius: 8, fontSize: 12, fontWeight: 'bold',
+                                  border: `1.5px solid ${isSelected ? (isCpuRole ? '#4e8a4e' : '#c87028') : 'var(--border)'}`,
+                                  background: isSelected ? (isCpuRole ? '#e8f4e8' : '#fff3e0') : 'transparent',
+                                  color: isSelected ? (isCpuRole ? '#2a6a2a' : '#8a4010') : 'var(--text-muted)',
+                                  cursor: 'pointer',
+                                }}
+                              >{role}</button>
+                            );
+                          })}
+                        </div>
                       </div>
+                      {/* CPU強さ選択 */}
+                      {isCpu && (
+                        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                          {CPU_LEVELS.map(({ level, label }) => {
+                            const isSelected = cpuLevels[i] === level;
+                            return (
+                              <button
+                                key={level}
+                                onClick={() => setCpuLevel(i, level)}
+                                style={{
+                                  padding: '3px 8px', borderRadius: 7, fontSize: 11, fontWeight: 'bold',
+                                  border: `1.5px solid ${isSelected ? '#4e8a4e' : 'var(--border)'}`,
+                                  background: isSelected ? '#d0ecd0' : 'transparent',
+                                  color: isSelected ? '#1a5a1a' : 'var(--text-muted)',
+                                  cursor: 'pointer',
+                                }}
+                              >{label}</button>
+                            );
+                          })}
+                        </div>
+                      )}
+
                     </div>
                   );
                 })}
