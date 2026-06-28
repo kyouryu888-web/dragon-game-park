@@ -6,14 +6,17 @@ import type { CaptureAnimInfo } from './MancalaGamePage';
 import { supabase } from '../../lib/supabase';
 import { Layout } from '../../components/Layout';
 import { Button } from '../../components/Button';
-import { MancalaBoard } from './MancalaBoard';
+import { MancalaBoard, PLANK_POSITIONS } from './MancalaBoard';
+import type { PlankSlideEntry } from './MancalaBoard';
 import { PLAYER_ACCENT_COLORS } from './MancalaPit';
 
 const STONE_ANIM_MS   = 400;
 const CAPTURE_ANIM_MS = 700;
+const ELIM_ANIM_MS    = 480; // 脱落プランクのフェードアウト
+const SLIDE_ANIM_MS   = 580; // スライド全体の待機
 
 // ============================================================
-// computeStoneSteps（MancalaGamePage と同じロジック）
+// computeStoneSteps
 // ============================================================
 
 function computeStoneSteps(state: GameState, pitId: string): {
@@ -76,7 +79,12 @@ function computeStoneSteps(state: GameState, pitId: string): {
             const oppAfter     = afterState.board.find(p => p.id === oppPitId)!;
             const landingAfter = afterState.board.find(p => p.id === lastPitId)!;
             if (oppAfter.stones === 0 && landingAfter.stones === 0) {
-              captureInfo = { landingPitId: lastPitId, oppositePitId: oppPitId, storeId: myStoreId, stoneCount: 1 + oppBefore };
+              captureInfo = {
+                landingPitId: lastPitId,
+                oppositePitId: oppPitId,
+                storeId: myStoreId,
+                stoneCount: 1 + oppBefore,
+              };
             }
           }
         }
@@ -88,12 +96,25 @@ function computeStoneSteps(state: GameState, pitId: string): {
 }
 
 // ============================================================
+// rotateForDisplay: myPlayerId が先頭に来るよう activePlayerIds を循環シフト
+// ============================================================
+
+function rotateForDisplay(ids: PlayerId[], myId: PlayerId): PlayerId[] {
+  const myIdx = ids.indexOf(myId);
+  if (myIdx <= 0) return [...ids] as PlayerId[];
+  return [
+    ...ids.slice(myIdx),
+    ...ids.slice(0, myIdx),
+  ] as PlayerId[];
+}
+
+// ============================================================
 // メインコンポーネント
 // ============================================================
 
 type MancalaOnlineGamePageProps = {
-  roomCode:    string;
-  myPlayerId:  PlayerId;
+  roomCode:     string;
+  myPlayerId:   PlayerId;
   onBackToHome: () => void;
 };
 
@@ -122,6 +143,15 @@ export function MancalaOnlineGamePage({
   const [showCaptureBanner, setShowCaptureBanner] = useState(false);
   const [captureBannerKey,  setCaptureBannerKey]  = useState(0);
 
+  // ── 脱落アニメーション ──
+  const [boardFading,      setBoardFading]      = useState<'none' | 'out' | 'sliding'>('none');
+  const [displayActiveIds, setDisplayActiveIds] = useState<PlayerId[]>([]);
+  const [eliminatingId,    setEliminatingId]    = useState<string | null>(null);
+  const [slidingPlanks,    setSlidingPlanks]    = useState<PlankSlideEntry[] | null>(null);
+  const [slideAtTarget,    setSlideAtTarget]    = useState(false);
+  const prevDisplayIdsRef  = useRef<PlayerId[]>([]);
+  const isTransitioningRef = useRef(false);
+
   // ── 名前編集 ──
   const [editingName, setEditingName] = useState(false);
   const [nameInput,   setNameInput]   = useState('');
@@ -130,7 +160,6 @@ export function MancalaOnlineGamePage({
   const isAnimatingRef = useRef(false);
   isAnimatingRef.current = isAnimating;
 
-  // アニメーション完了時に適用する最終状態（クリック時に事前計算）
   const pendingFinalStateRef = useRef<GameState | null>(null);
 
   // ============================================================
@@ -145,7 +174,8 @@ export function MancalaOnlineGamePage({
         .select('game_state')
         .eq('room_code', roomCode)
         .single();
-      if (cancelled || !data?.game_state || isAnimatingRef.current) return;
+      if (cancelled || !data?.game_state) return;
+      if (isAnimatingRef.current || isTransitioningRef.current) return;
       const gs = data.game_state as GameState;
       setGameState(prev =>
         !prev || gs.turnCount > prev.turnCount ? gs : prev
@@ -172,12 +202,11 @@ export function MancalaOnlineGamePage({
         { event: 'UPDATE', schema: 'public', table: 'mancala_rooms', filter: `room_code=eq.${roomCode}` },
         (payload) => {
           if (cancelled) return;
+          if (isAnimatingRef.current || isTransitioningRef.current) return;
           const gs = (payload.new as { game_state: GameState }).game_state;
-          if (!isAnimatingRef.current) {
-            setGameState(prev =>
-              !prev || gs.turnCount >= prev.turnCount ? gs : prev
-            );
-          }
+          setGameState(prev =>
+            !prev || gs.turnCount >= prev.turnCount ? gs : prev
+          );
         }
       )
       .subscribe(async (status) => {
@@ -197,8 +226,105 @@ export function MancalaOnlineGamePage({
   }, [roomCode]);
 
   // ============================================================
-  // 移動開始ヘルパー（クリック時・CPU時共通）
-  // finalState を即座に Supabase に書き込み、アニメーションを開始する
+  // 脱落検出 & スライドアニメーション
+  // gameState.activePlayerIds の人数が減ったときに発火
+  // ============================================================
+  useEffect(() => {
+    if (!gameState) return;
+
+    const currRotated = rotateForDisplay(gameState.activePlayerIds, myPlayerId);
+    const prevRotated = prevDisplayIdsRef.current;
+
+    // 初回ロード: displayActiveIds を初期化
+    if (prevRotated.length === 0) {
+      setDisplayActiveIds(currRotated);
+      prevDisplayIdsRef.current = currRotated;
+      return;
+    }
+
+    // 脱落なし（通常の手番進行）
+    if (currRotated.length >= prevRotated.length) {
+      setDisplayActiveIds(currRotated);
+      prevDisplayIdsRef.current = currRotated;
+      return;
+    }
+
+    // ── 脱落発生 ──
+    const eliminatedId = prevRotated.find(id => !currRotated.includes(id));
+    const fromCount    = prevRotated.length; // 4 or 3
+    const toCount      = currRotated.length; // 3 or 2
+
+    isTransitioningRef.current = true;
+    setBoardFading('out');
+    // 4P→3P: 脱落プランクのみフェードアウト（3P→2P は SVG三角形のためスキップ）
+    if (fromCount === 4) {
+      setEliminatingId(eliminatedId ?? null);
+    }
+
+    let t2: ReturnType<typeof setTimeout> | undefined;
+
+    const t1 = setTimeout(() => {
+      setEliminatingId(null);
+      setBoardFading('sliding');
+
+      const fromPositions = PLANK_POSITIONS[String(fromCount)];
+      const toPositions   = PLANK_POSITIONS[String(toCount)];
+      const allPlayerIds  = gameState.players.map(p => p.id);
+
+      const slides: PlankSlideEntry[] = currRotated.map((playerId, newSlot) => {
+        const oldSlot = prevRotated.indexOf(playerId);
+        const src     = fromPositions[oldSlot] ?? fromPositions[0];
+        const tgt     = toPositions[newSlot]   ?? toPositions[0];
+        const player  = gameState.players.find(p => p.id === playerId)!;
+        const pits    = gameState.board.filter(p => p.ownerPlayerId === playerId && !p.isStore);
+        const store   = gameState.board.find(p => p.ownerPlayerId === playerId && p.isStore)!;
+        return {
+          playerId,
+          pits,
+          store,
+          playerName:    player.name,
+          colorAccent:   PLAYER_ACCENT_COLORS[allPlayerIds.indexOf(playerId)],
+          isCurrentTurn: gameState.currentPlayerId === playerId,
+          sourceLeft: src.left, sourceTop: src.top, sourceRot: src.rot,
+          targetLeft: tgt.left, targetTop: tgt.top, targetRot: tgt.rot,
+        };
+      });
+
+      setSlidingPlanks(slides);
+
+      t2 = setTimeout(() => {
+        setSlidingPlanks(null);
+        setDisplayActiveIds(currRotated);
+        prevDisplayIdsRef.current = currRotated;
+        setBoardFading('none');
+        isTransitioningRef.current = false;
+      }, SLIDE_ANIM_MS);
+    }, ELIM_ANIM_MS);
+
+    return () => {
+      clearTimeout(t1);
+      if (t2 !== undefined) clearTimeout(t2);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameState?.activePlayerIds.length, (gameState as GameState | null)?.gameId, myPlayerId]);
+
+  // ============================================================
+  // double-RAF: slidingPlanks が設定されたら CSS transition を発火
+  // ============================================================
+  useEffect(() => {
+    if (!slidingPlanks) { setSlideAtTarget(false); return; }
+    let r2: number | undefined;
+    const r1 = requestAnimationFrame(() => {
+      r2 = requestAnimationFrame(() => setSlideAtTarget(true));
+    });
+    return () => {
+      cancelAnimationFrame(r1);
+      if (r2 !== undefined) cancelAnimationFrame(r2);
+    };
+  }, [slidingPlanks]);
+
+  // ============================================================
+  // 移動開始ヘルパー
   // ============================================================
   const startMove = useCallback((state: GameState, pitId: string) => {
     const finalState = applyMove(state, pitId);
@@ -292,6 +418,7 @@ export function MancalaOnlineGamePage({
   // ============================================================
   const handlePitClick = useCallback((pitId: string) => {
     if (!gameState || isAnimating || capturePhase !== null) return;
+    if (isTransitioningRef.current) return;
     if (gameState.status !== 'playing') return;
     if (gameState.currentPlayerId !== myPlayerId) return;
     startMove(gameState, pitId);
@@ -302,6 +429,7 @@ export function MancalaOnlineGamePage({
   // ============================================================
   useEffect(() => {
     if (!gameState || isAnimating || capturePhase !== null) return;
+    if (isTransitioningRef.current) return;
     if (gameState.status !== 'playing') return;
     if (myPlayerId !== 'player-1') return;
 
@@ -314,6 +442,7 @@ export function MancalaOnlineGamePage({
     const id = setTimeout(() => {
       const state = gameStateRef.current;
       if (!state || state.status !== 'playing') return;
+      if (isTransitioningRef.current) return;
       const cp = state.players.find(p => p.id === state.currentPlayerId);
       if (!cp?.isCpu || state.currentPlayerId !== cpuId) return;
       const pitId = chooseCpuMove(state, cpuId, cpuLevel);
@@ -326,7 +455,7 @@ export function MancalaOnlineGamePage({
   }, [gameState?.currentPlayerId, (gameState as GameState | null)?.turnCount, isAnimating, capturePhase, myPlayerId, startMove]);
 
   // ============================================================
-  // 名前の変更（対局中も可能）
+  // 名前の変更
   // ============================================================
   const handleSaveName = useCallback(() => {
     const newName = nameInput.trim();
@@ -355,24 +484,16 @@ export function MancalaOnlineGamePage({
 
   // ============================================================
   // 表示用ゲーム状態
-  // activePlayerIds を回転させ、自分（myPlayerId）を常に slot-0（手前）に配置
+  // displayActiveIds（脱落アニメーション管理済み）を使用
   // ============================================================
   const boardDisplayState = isAnimating
     ? animSteps[Math.min(animIdx, animSteps.length - 1)]
     : gameState;
 
   const displayGameState = useMemo<GameState | null>(() => {
-    if (!boardDisplayState) return null;
-    const myIdx = boardDisplayState.activePlayerIds.indexOf(myPlayerId);
-    // すでに手前 or 脱落済み（-1）はそのまま返す
-    if (myIdx <= 0) return boardDisplayState;
-    // myPlayerId が先頭になるよう循環シフト
-    const rotated = [
-      ...boardDisplayState.activePlayerIds.slice(myIdx),
-      ...boardDisplayState.activePlayerIds.slice(0, myIdx),
-    ] as PlayerId[];
-    return { ...boardDisplayState, activePlayerIds: rotated };
-  }, [boardDisplayState, myPlayerId]);
+    if (!boardDisplayState || displayActiveIds.length === 0) return null;
+    return { ...boardDisplayState, activePlayerIds: displayActiveIds };
+  }, [boardDisplayState, displayActiveIds]);
 
   // ============================================================
   // ローディング
@@ -398,9 +519,10 @@ export function MancalaOnlineGamePage({
     );
   }
 
-  const isMyTurn   = gameState.currentPlayerId === myPlayerId;
-  const isFinished = gameState.status === 'finished';
-  const isMoving   = isAnimating || capturePhase !== null;
+  const isMyTurn       = gameState.currentPlayerId === myPlayerId;
+  const isFinished     = gameState.status === 'finished';
+  const isMoving       = isAnimating || capturePhase !== null;
+  const isTransitioning = boardFading !== 'none';
 
   // ============================================================
   // ゲーム終了パネル
@@ -452,25 +574,25 @@ export function MancalaOnlineGamePage({
   const myPlayer      = gameState.players.find(p => p.id === myPlayerId);
   const opponents     = gameState.players.filter(p => p.id !== myPlayerId);
 
-  // 2P 上下ラベル（displayGameState 基準）
-  const bottomId        = displayGameState.activePlayerIds[0];
-  const topId           = displayGameState.activePlayerIds[1];
-  const bottomPlayer    = gameState.players.find(p => p.id === bottomId);
-  const topPlayer       = gameState.players.find(p => p.id === topId);
+  const bottomId      = displayActiveIds[0];
+  const topId         = displayActiveIds[1];
+  const bottomPlayer  = gameState.players.find(p => p.id === bottomId);
+  const topPlayer     = gameState.players.find(p => p.id === topId);
   const bottomPlayerIdx = gameState.players.findIndex(p => p.id === bottomId);
   const topPlayerIdx    = gameState.players.findIndex(p => p.id === topId);
 
   const turnLabel = isMoving
     ? `✨ ${currentPlayer?.name ?? '?'}が石を配っています...`
+    : isTransitioning
+    ? '🔄 プレイヤーが脱落しました...'
     : isMyTurn
-    ? `🎮 あなたの番です`
+    ? '🎮 あなたの番です'
     : `⏳ ${currentPlayer?.name ?? '相手'}の番です`;
 
   return (
     <Layout>
       {/* ヘッダー */}
       <div style={{ textAlign: 'center', marginBottom: 8 }}>
-        {/* 名前表示 / 編集 */}
         <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4, fontFamily: 'monospace' }}>
           ルーム: <strong>{roomCode}</strong>
           {editingName ? (
@@ -487,14 +609,14 @@ export function MancalaOnlineGamePage({
                   fontFamily: 'inherit', width: 80, background: '#fffbe8',
                 }}
               />
-              <button
-                onClick={handleSaveName}
-                style={{ fontSize: 13, background: 'none', border: 'none', cursor: 'pointer', color: '#2a7a2a', padding: 2 }}
-              >✓</button>
-              <button
-                onClick={() => setEditingName(false)}
-                style={{ fontSize: 13, background: 'none', border: 'none', cursor: 'pointer', color: '#c0392b', padding: 2 }}
-              >✗</button>
+              <button onClick={handleSaveName}
+                style={{ fontSize: 13, background: 'none', border: 'none', cursor: 'pointer', color: '#2a7a2a', padding: 2 }}>
+                ✓
+              </button>
+              <button onClick={() => setEditingName(false)}
+                style={{ fontSize: 13, background: 'none', border: 'none', cursor: 'pointer', color: '#c0392b', padding: 2 }}>
+                ✗
+              </button>
             </span>
           ) : (
             <span>
@@ -508,19 +630,25 @@ export function MancalaOnlineGamePage({
           )}
         </div>
 
-        {/* ターンバナー */}
         <div style={{
           fontSize: 13, fontWeight: 'bold', padding: '5px 14px', borderRadius: 20,
-          background: isMyTurn && !isMoving ? '#e8f5e9' : isMoving ? '#fff3e0' : '#f5f5f5',
-          color:      isMyTurn && !isMoving ? '#2e7d32' : isMoving ? '#c06000' : 'var(--text-muted)',
+          background: isTransitioning ? '#fce4e4'
+            : isMyTurn && !isMoving ? '#e8f5e9'
+            : isMoving ? '#fff3e0'
+            : '#f5f5f5',
+          color: isTransitioning ? '#b22222'
+            : isMyTurn && !isMoving ? '#2e7d32'
+            : isMoving ? '#c06000'
+            : 'var(--text-muted)',
           display: 'inline-block',
+          transition: 'background 0.3s, color 0.3s',
         }}>
           {turnLabel}
         </div>
       </div>
 
       {/* 2P: 上プレイヤーラベル */}
-      {displayGameState.activePlayerIds.length === 2 && topPlayer && (
+      {displayActiveIds.length === 2 && topPlayer && (
         <div style={{
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           padding: '3px 8px', marginBottom: 2,
@@ -539,20 +667,23 @@ export function MancalaOnlineGamePage({
         <MancalaBoard
           gameState={displayGameState}
           onPitClick={handlePitClick}
-          disabled={!isMyTurn || isMoving}
+          disabled={!isMyTurn || isMoving || isTransitioning}
           animActiveIds={animActiveIds}
           animIdx={animIdx}
           animStepMs={STONE_ANIM_MS}
           captureAnimInfo={captureAnimInfo}
           capturePhase={capturePhase}
           captureStepMs={CAPTURE_ANIM_MS}
+          eliminatingId={eliminatingId}
+          transitionSlides={slidingPlanks}
+          slideAtTarget={slideAtTarget}
         />
         {showExtraTurn    && <div key={extraTurnKey}     className="extra-turn-banner">⭐ 追加ターン！</div>}
         {showCaptureBanner && <div key={captureBannerKey} className="capture-banner">🔴 捕獲！</div>}
       </div>
 
       {/* 2P: 下プレイヤーラベル */}
-      {displayGameState.activePlayerIds.length === 2 && bottomPlayer && (
+      {displayActiveIds.length === 2 && bottomPlayer && (
         <div style={{
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           padding: '3px 8px', marginTop: 2,
@@ -567,7 +698,7 @@ export function MancalaOnlineGamePage({
       )}
 
       {/* 3P/4P: 対戦相手一覧 */}
-      {displayGameState.activePlayerIds.length > 2 && (
+      {displayActiveIds.length > 2 && (
         <div style={{ textAlign: 'center', marginTop: 8, fontSize: 12, color: 'var(--text-muted)' }}>
           🌐 対戦相手：{opponents.map(p => p.name).join('、')}
         </div>
