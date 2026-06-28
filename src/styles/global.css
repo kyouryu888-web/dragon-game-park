@@ -548,6 +548,448 @@ button {
   animation: rank-slide-in 0.35s ease both;
 }
 
+/* ---- UNOカード ---- */
+.uno-card {
+  transition: transform 0.12s ease, filter 0.12s ease, box-shadow 0.14s ease;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.uno-card.is-playable:not(:disabled):hover {
+  transform: translateY(-8px) rotate(-1deg);
+  filter: brightness(1.06);
+}
+.uno-card.is-playable:not(:disabled):active {
+  transform: translateY(-3px) scale(0.97) !important;
+}
+.uno-card.is-hard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(135deg, transparent 0 12px, rgba(255,255,255,0.08) 12px 15px);
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+/* ---- UNO 対戦テーブル ---- */
+.uno-table-view {
+  position: relative;
+  margin: 10px -4px 0;
+  padding: 12px 0 0;
+}
+.uno-table-view.is-hard {
+  --uno-table-accent: #c33a30;
+  --uno-table-ring: #8b241f;
+}
+.uno-table-view:not(.is-hard) {
+  --uno-table-accent: #d8a43a;
+  --uno-table-ring: #c59032;
+}
+.uno-table-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+  padding: 9px 12px;
+  margin-bottom: 8px;
+  border-radius: 14px;
+  border: 1.5px solid rgba(216, 180, 90, 0.45);
+  background: rgba(255, 253, 248, 0.78);
+  color: var(--text-mid);
+  font-size: 12px;
+  line-height: 1.4;
+}
+.uno-table-header strong {
+  color: var(--brown);
+  font-size: 13px;
+}
+.uno-table-arena {
+  position: relative;
+  min-height: clamp(350px, 58vw, 470px);
+  border-radius: 28px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 48%, rgba(184, 120, 56, 0.28), rgba(92, 48, 16, 0.10) 33%, rgba(255, 253, 248, 0.55) 66%),
+    linear-gradient(145deg, #fff7e9, #f1dfc4);
+  border: 1.5px solid rgba(216, 196, 160, 0.85);
+  box-shadow: var(--shadow-md), inset 0 0 60px rgba(90, 48, 16, 0.10);
+}
+.uno-table-view.is-hard .uno-table-arena {
+  background:
+    radial-gradient(circle at 50% 48%, rgba(160, 36, 28, 0.30), rgba(68, 20, 18, 0.16) 38%, rgba(255, 248, 232, 0.60) 70%),
+    linear-gradient(145deg, #fff2df, #ead2b4);
+  border-color: rgba(195, 58, 48, 0.55);
+}
+.uno-table-glow {
+  position: absolute;
+  width: min(62vw, 315px);
+  aspect-ratio: 1;
+  left: 50%;
+  top: 47%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(255, 232, 160, 0.42), rgba(200, 112, 40, 0.08) 58%, transparent 70%);
+  pointer-events: none;
+}
+.uno-seat {
+  position: absolute;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  min-width: 110px;
+}
+.uno-seat.is-current .uno-seat-badge {
+  border-color: var(--uno-table-accent);
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.88), 0 0 20px color-mix(in srgb, var(--uno-table-accent) 60%, transparent);
+}
+.uno-seat.is-current::after {
+  content: "";
+  width: 0;
+  height: 0;
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+  border-top: 13px solid var(--uno-table-accent);
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.20));
+}
+.uno-seat-bottom.is-current::after {
+  order: -1;
+  border-top: none;
+  border-bottom: 13px solid var(--uno-table-accent);
+}
+.uno-seat-top { left: 50%; top: 14%; }
+.uno-seat-upper-left { left: 28%; top: 18%; }
+.uno-seat-upper-right { left: 72%; top: 18%; }
+.uno-seat-left { left: 16%; top: 47%; }
+.uno-seat-right { left: 84%; top: 47%; }
+.uno-seat-far-left { left: 13%; top: 40%; }
+.uno-seat-far-right { left: 87%; top: 40%; }
+.uno-seat-top-left { left: 36%; top: 13%; }
+.uno-seat-top-right { left: 64%; top: 13%; }
+.uno-seat-bottom { left: 50%; top: 91%; }
+.uno-seat-arc {
+  min-width: 92px;
+}
+.uno-seat-arc .uno-opponent-stack {
+  transform: scale(0.86);
+  transform-origin: center bottom;
+}
+.uno-seat-arc .uno-seat-badge {
+  min-width: 88px;
+  padding: 4px 7px;
+  font-size: 10px;
+}
+.uno-seat-arc .uno-seat-badge strong {
+  max-width: 92px;
+}
+.uno-seat-badge {
+  display: grid;
+  grid-template-columns: auto auto;
+  column-gap: 7px;
+  row-gap: 2px;
+  align-items: center;
+  justify-content: center;
+  min-width: 100px;
+  padding: 5px 9px;
+  border-radius: 11px;
+  border: 1.5px solid rgba(200, 168, 112, 0.85);
+  background: rgba(255, 253, 248, 0.92);
+  box-shadow: 0 2px 10px rgba(58, 37, 24, 0.12);
+  color: var(--text-mid);
+  font-size: 11px;
+  line-height: 1.2;
+}
+.uno-seat-badge strong {
+  grid-column: 1 / -1;
+  color: var(--brown);
+  font-size: 11px;
+  white-space: nowrap;
+  max-width: 116px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.uno-seat-badge.is-warning {
+  border-color: #d8a43a;
+  background: #fff4c8;
+}
+.uno-seat-badge.is-danger {
+  border-color: #cf382d;
+  background: #ffe0da;
+}
+.uno-seat-turn,
+.uno-seat-next {
+  justify-self: center;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 900;
+}
+.uno-seat-turn {
+  background: var(--uno-table-accent);
+  color: #fff;
+}
+.uno-seat-next {
+  background: #fff2bf;
+  color: #7a5010;
+  border: 1px solid #e2b452;
+}
+.uno-opponent-stack {
+  position: relative;
+  width: 132px;
+  height: 54px;
+}
+.uno-mini-back {
+  position: absolute;
+  left: 46px;
+  top: 0;
+  width: 34px;
+  height: 48px;
+  border-radius: 7px;
+  border: 2px solid #fff3df;
+  background: linear-gradient(145deg, #6d1a17, #1b1110);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+  color: rgba(255, 245, 225, 0.85);
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 900;
+}
+.uno-mini-back.is-hard {
+  border-color: #1a1110;
+  background: linear-gradient(145deg, #210f12, #7b151a);
+}
+.uno-center-pile {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  width: min(52vw, 270px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  z-index: 2;
+}
+.uno-direction-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 10px solid color-mix(in srgb, var(--uno-table-ring) 74%, transparent);
+  box-shadow:
+    inset 0 0 22px rgba(90, 48, 16, 0.15),
+    0 0 22px rgba(90, 48, 16, 0.14);
+}
+.uno-direction-ring.is-counterclockwise {
+  transform: scaleX(-1);
+}
+.uno-ring-arrow {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--uno-table-ring);
+  color: #fff6df;
+  font-size: 24px;
+  font-weight: 900;
+}
+.uno-ring-arrow-a {
+  right: -16px;
+  top: 43%;
+}
+.uno-ring-arrow-b {
+  left: -16px;
+  top: 43%;
+}
+.uno-center-pile.is-thinking .uno-direction-ring {
+  animation: cpu-thinking-pulse 0.9s ease-in-out infinite;
+}
+.uno-center-cards {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  z-index: 1;
+}
+.uno-center-card-wrap {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  color: var(--brown);
+  font-size: 10px;
+  font-weight: 900;
+}
+.uno-center-arrow {
+  color: var(--uno-table-accent);
+  font-size: 21px;
+  font-weight: 900;
+}
+.uno-center-status {
+  position: absolute;
+  bottom: 17%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgba(255, 253, 248, 0.94);
+  border: 1.5px solid rgba(216, 196, 160, 0.85);
+  color: var(--text-mid);
+  font-size: 11px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+.uno-color-dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.12);
+}
+.uno-table-message {
+  margin: 8px auto 10px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.uno-hand-fan-panel {
+  position: relative;
+  margin-top: 4px;
+  padding: 13px 12px 14px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border-light);
+  background: rgba(255, 253, 248, 0.96);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.uno-hand-fan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 8px;
+  color: var(--brown);
+  font-size: 14px;
+}
+.uno-hand-fan-header span {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.uno-hand-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 26px 4px 14px;
+}
+.uno-hand-fan {
+  position: relative;
+  height: 156px;
+  margin: 0 auto;
+}
+.uno-hand-card {
+  position: absolute;
+  top: 8px;
+  transform-origin: 50% 120%;
+  transition: transform 0.14s ease, z-index 0.14s ease;
+}
+.uno-hand-card.is-playable {
+  filter: drop-shadow(0 7px 12px rgba(70, 120, 40, 0.22));
+}
+.uno-playable-chip {
+  position: absolute;
+  left: 50%;
+  bottom: -20px;
+  transform: translateX(-50%);
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #e7f6dc;
+  color: #2f7d32;
+  border: 1px solid #9fce85;
+  font-size: 10px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+.uno-hand-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 2px;
+}
+
+@media (max-width: 560px) {
+  .uno-table-view {
+    margin-left: -8px;
+    margin-right: -8px;
+  }
+  .uno-table-header {
+    margin-left: 8px;
+    margin-right: 8px;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .uno-table-arena {
+    min-height: 370px;
+    border-radius: 22px;
+  }
+  .uno-center-pile {
+    width: min(64vw, 232px);
+    top: 49%;
+  }
+  .uno-center-cards {
+    gap: 4px;
+  }
+  .uno-opponent-stack {
+    transform: scale(0.78);
+    height: 44px;
+  }
+  .uno-seat {
+    min-width: 88px;
+  }
+  .uno-seat-left { left: 17%; top: 44%; }
+  .uno-seat-right { left: 83%; top: 44%; }
+  .uno-seat-far-left { left: 16%; top: 34%; }
+  .uno-seat-far-right { left: 84%; top: 34%; }
+  .uno-seat-upper-left { left: 31%; top: 17%; }
+  .uno-seat-upper-right { left: 69%; top: 17%; }
+  .uno-seat-top-left { left: 34%; top: 12%; }
+  .uno-seat-top-right { left: 66%; top: 12%; }
+  .uno-seat-arc {
+    min-width: 72px;
+  }
+  .uno-seat-arc .uno-opponent-stack {
+    transform: scale(0.72);
+  }
+  .uno-seat-arc .uno-seat-badge {
+    min-width: 70px;
+    padding: 3px 5px;
+    font-size: 9px;
+  }
+  .uno-seat-arc .uno-seat-badge strong {
+    max-width: 72px;
+    font-size: 9px;
+  }
+  .uno-seat-badge {
+    min-width: 82px;
+    padding: 4px 6px;
+    font-size: 10px;
+  }
+  .uno-seat-badge strong {
+    max-width: 84px;
+    font-size: 10px;
+  }
+  .uno-hand-fan {
+    height: 146px;
+  }
+  .uno-hand-card .uno-card {
+    width: 82px !important;
+  }
+}
+
 /* ---- アニメーション: 新ボードレイアウト登場 (脱落後) ---- */
 @keyframes board-switch-in {
   from { opacity: 0; transform: scale(0.93); }

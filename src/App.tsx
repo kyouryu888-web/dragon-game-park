@@ -6,13 +6,18 @@ import { MancalaGamePage } from './features/mancala/MancalaGamePage';
 import { MancalaRoomPage } from './features/mancala/MancalaRoomPage';
 import type { OnlineRoomInfo } from './features/mancala/MancalaRoomPage';
 import { MancalaOnlineGamePage } from './features/mancala/MancalaOnlineGamePage';
+import type { UnoConfig } from './features/uno/unoTypes';
+import { UnoSetupPage } from './features/uno/UnoSetupPage';
+import { UnoGamePage } from './features/uno/UnoGamePage';
 
 type AppScreen =
   | 'home'
   | 'mancala-setup'
   | 'mancala-game'
   | 'mancala-room'
-  | 'mancala-online-game';
+  | 'mancala-online-game'
+  | 'uno-setup'
+  | 'uno-game';
 
 export default function App() {
   const [screen, setScreen] = useState<AppScreen>('home');
@@ -23,6 +28,13 @@ export default function App() {
       { name: '', isCpu: true,  cpuLevel: 'normal' },
     ],
   });
+  const [unoConfig, setUnoConfig] = useState<UnoConfig>({
+    variant: 'standard',
+    playerConfigs: [
+      { name: '', isCpu: false, cpuLevel: 'normal' },
+      { name: '', isCpu: true, cpuLevel: 'normal' },
+    ],
+  });
   const [onlineRoomInfo, setOnlineRoomInfo] = useState<OnlineRoomInfo | null>(null);
 
   if (screen === 'home') {
@@ -30,6 +42,7 @@ export default function App() {
       <HomePage
         onSelectGame={(gameId) => {
           if (gameId === 'mancala') setScreen('mancala-setup');
+          if (gameId === 'uno') setScreen('uno-setup');
         }}
       />
     );
@@ -75,6 +88,28 @@ export default function App() {
       <MancalaOnlineGamePage
         roomCode={onlineRoomInfo.roomCode}
         myPlayerId={onlineRoomInfo.myPlayerId}
+        onBackToHome={() => setScreen('home')}
+      />
+    );
+  }
+
+  if (screen === 'uno-setup') {
+    return (
+      <UnoSetupPage
+        onStart={(config) => {
+          setUnoConfig(config);
+          setScreen('uno-game');
+        }}
+        onBack={() => setScreen('home')}
+      />
+    );
+  }
+
+  if (screen === 'uno-game') {
+    return (
+      <UnoGamePage
+        config={unoConfig}
+        onBackToSetup={() => setScreen('uno-setup')}
         onBackToHome={() => setScreen('home')}
       />
     );
