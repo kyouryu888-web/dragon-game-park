@@ -8,11 +8,11 @@ const CONFIG_STORAGE_KEY = 'dragon-game-park:mancala-config-v2';
 
 // ---- CPU 強さ一覧 ----
 const CPU_LEVELS: { level: CpuLevel; label: string; emoji: string }[] = [
-  { level: 'very-easy', label: 'とてもかんたん', emoji: '🥚' },
-  { level: 'easy',      label: 'かんたん',       emoji: '🐣' },
-  { level: 'normal',    label: 'ふつう',          emoji: '🐲' },
-  { level: 'hard',      label: 'むずかしい',      emoji: '🔥' },
-  { level: 'very-hard', label: 'とてもむずかしい', emoji: '💀' },
+  { level: 'very-easy', label: 'ベビードラゴン',   emoji: '🥚' },
+  { level: 'easy',      label: 'ドラゴン',        emoji: '🐲' },
+  { level: 'normal',    label: 'スーパードラゴン', emoji: '🐉' },
+  { level: 'hard',      label: 'ドラゴンキング', emoji: '👑' },
+  { level: 'very-hard', label: 'ゴッドドラゴン', emoji: '⚡' },
 ];
 
 // ---- ルール ----

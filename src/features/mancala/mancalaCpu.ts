@@ -7,11 +7,11 @@ import { getSelectablePits, applyMove } from './mancalaRules';
 
 export function getCpuDisplayName(level: CpuLevel): string {
   const names: Record<CpuLevel, string> = {
-    'very-easy': 'よわよわドラゴン',
-    'easy':      'ちびドラゴン',
-    'normal':    'こどもドラゴン',
-    'hard':      'ドラゴンナイト',
-    'very-hard': '大魔王ドラゴン',
+    'very-easy': 'ベビードラゴン',
+    'easy':      'ドラゴン',
+    'normal':    'スーパードラゴン',
+    'hard':      'ドラゴンキング',
+    'very-hard': 'ゴッドドラゴン',
   };
   return names[level];
 }

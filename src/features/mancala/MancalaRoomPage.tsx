@@ -70,11 +70,11 @@ function countJoined(row: Partial<RoomRow>): number {
 const PLAYER_NAMES = ['ホスト', 'ゲスト1', 'ゲスト2', 'ゲスト3'];
 
 const CPU_LEVELS: { level: CpuLevel; label: string }[] = [
-  { level: 'very-easy', label: '易しい' },
-  { level: 'easy',      label: 'かんたん' },
-  { level: 'normal',    label: 'ふつう' },
-  { level: 'hard',      label: '難しい' },
-  { level: 'very-hard', label: '超難しい' },
+  { level: 'very-easy', label: 'ベビードラゴン' },
+  { level: 'easy',      label: 'ドラゴン' },
+  { level: 'normal',    label: 'スーパードラゴン' },
+  { level: 'hard',      label: 'ドラゴンキング' },
+  { level: 'very-hard', label: 'ゴッドドラゴン' },
 ];
 
 export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
