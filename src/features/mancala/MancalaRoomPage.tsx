@@ -154,7 +154,7 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
 
     setRoomCode(code);
     setMyWaitingPlayerId('player-1');
-    setJoinedCount(1);
+    setJoinedCount(1 + Object.keys(cpuPreFill).length);
     setWaitingPlayerCount(playerCount);
     setPageState('waiting');
   }

@@ -114,6 +114,7 @@ function evaluateState(state: GameState, cpuPlayerId: PlayerId): number {
   const oppStores = state.board.filter(
     (p) => p.ownerPlayerId !== cpuPlayerId && p.isStore
   );
+  if (oppStores.length === 0) return myStore.stones;
   const avgOppScore =
     oppStores.reduce((s, p) => s + p.stones, 0) / oppStores.length;
   return myStore.stones - avgOppScore;

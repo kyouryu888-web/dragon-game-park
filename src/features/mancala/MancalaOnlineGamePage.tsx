@@ -451,8 +451,10 @@ export function MancalaOnlineGamePage({
     }, 700);
 
     return () => clearTimeout(id);
+  // boardFading を deps に含めることで、脱落アニメーション完了後（boardFading → 'none'）に
+  // CPU 手番が再トリガーされる（isTransitioningRef での早期 return を抜けられる）
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gameState?.currentPlayerId, (gameState as GameState | null)?.turnCount, isAnimating, capturePhase, myPlayerId, startMove]);
+  }, [gameState?.currentPlayerId, (gameState as GameState | null)?.turnCount, isAnimating, capturePhase, myPlayerId, startMove, boardFading]);
 
   // ============================================================
   // 名前の変更
