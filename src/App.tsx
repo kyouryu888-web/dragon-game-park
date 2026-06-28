@@ -9,6 +9,9 @@ import { MancalaOnlineGamePage } from './features/mancala/MancalaOnlineGamePage'
 import type { UnoConfig } from './features/uno/unoTypes';
 import { UnoSetupPage } from './features/uno/UnoSetupPage';
 import { UnoGamePage } from './features/uno/UnoGamePage';
+import { UnoOnlineRoomPage } from './features/uno/UnoOnlineRoomPage';
+import { UnoOnlineGamePage } from './features/uno/UnoOnlineGamePage';
+import type { UnoOnlineRoomInfo } from './features/uno/unoOnline';
 
 type AppScreen =
   | 'home'
@@ -17,7 +20,9 @@ type AppScreen =
   | 'mancala-room'
   | 'mancala-online-game'
   | 'uno-setup'
-  | 'uno-game';
+  | 'uno-game'
+  | 'uno-room'
+  | 'uno-online-game';
 
 export default function App() {
   const [screen, setScreen] = useState<AppScreen>('home');
@@ -36,6 +41,7 @@ export default function App() {
     ],
   });
   const [onlineRoomInfo, setOnlineRoomInfo] = useState<OnlineRoomInfo | null>(null);
+  const [unoOnlineRoomInfo, setUnoOnlineRoomInfo] = useState<UnoOnlineRoomInfo | null>(null);
 
   if (screen === 'home') {
     return (
@@ -101,6 +107,7 @@ export default function App() {
           setScreen('uno-game');
         }}
         onBack={() => setScreen('home')}
+        onOnlinePlay={() => setScreen('uno-room')}
       />
     );
   }
@@ -110,6 +117,28 @@ export default function App() {
       <UnoGamePage
         config={unoConfig}
         onBackToSetup={() => setScreen('uno-setup')}
+        onBackToHome={() => setScreen('home')}
+      />
+    );
+  }
+
+  if (screen === 'uno-room') {
+    return (
+      <UnoOnlineRoomPage
+        onGameStart={(info) => {
+          setUnoOnlineRoomInfo(info);
+          setScreen('uno-online-game');
+        }}
+        onBack={() => setScreen('uno-setup')}
+      />
+    );
+  }
+
+  if (screen === 'uno-online-game' && unoOnlineRoomInfo) {
+    return (
+      <UnoOnlineGamePage
+        roomCode={unoOnlineRoomInfo.roomCode}
+        myPlayerId={unoOnlineRoomInfo.myPlayerId}
         onBackToHome={() => setScreen('home')}
       />
     );

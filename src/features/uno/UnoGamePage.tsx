@@ -324,7 +324,7 @@ function TurnStatus({
   );
 }
 
-function PendingPanel({
+export function PendingPanel({
   state,
   onColorChoice,
   onSwapPick,

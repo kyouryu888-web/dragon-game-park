@@ -17,10 +17,12 @@ type UnoTableViewProps = {
   nextPlayerId: UnoPlayerId;
   topCard: UnoCard;
   currentHand: UnoCard[];
+  handPlayer?: UnoPlayer;
   playableIds: Set<string>;
   canAct: boolean;
   isCpuThinking: boolean;
   message: string;
+  viewPlayerId?: UnoPlayerId;
   onPlay: (card: UnoCard) => void;
   onDraw: () => void;
   onAcceptDraw: () => void;
@@ -32,16 +34,17 @@ export function UnoTableView({
   nextPlayerId,
   topCard,
   currentHand,
+  handPlayer,
   playableIds,
   canAct,
   isCpuThinking,
   message,
+  viewPlayerId = 'player-1',
   onPlay,
   onDraw,
   onAcceptDraw,
 }: UnoTableViewProps) {
-  const myPlayerId = 'player-1';
-  const myPlayer = state.players.find((p) => p.id === myPlayerId) ?? state.players[0]!;
+  const myPlayer = state.players.find((p) => p.id === viewPlayerId) ?? state.players[0]!;
   const opponents = state.players.filter((p) => p.id !== myPlayer.id);
 
   return (
@@ -94,7 +97,7 @@ export function UnoTableView({
       <div className="uno-table-message">{message}</div>
 
       <UnoHandFan
-        player={currentPlayer}
+        player={handPlayer ?? currentPlayer}
         hand={currentHand}
         playableIds={playableIds}
         variant={state.variant}

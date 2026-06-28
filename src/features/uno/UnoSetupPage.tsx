@@ -40,9 +40,10 @@ function saveConfig(config: UnoConfig): void {
 type UnoSetupPageProps = {
   onStart: (config: UnoConfig) => void;
   onBack: () => void;
+  onOnlinePlay: () => void;
 };
 
-export function UnoSetupPage({ onStart, onBack }: UnoSetupPageProps) {
+export function UnoSetupPage({ onStart, onBack, onOnlinePlay }: UnoSetupPageProps) {
   const saved = useMemo(() => loadSavedConfig(), []);
   const [variant, setVariant] = useState<UnoVariant>(saved?.variant ?? 'standard');
   const [playerCount, setPlayerCount] = useState(() => {
@@ -186,9 +187,14 @@ export function UnoSetupPage({ onStart, onBack }: UnoSetupPageProps) {
             </div>
           </section>
 
-          <Button fullWidth onClick={handleStart}>
-            UNOをはじめる
-          </Button>
+          <div style={{ display: 'grid', gap: 9 }}>
+            <Button fullWidth onClick={handleStart}>
+              オフラインで遊ぶ
+            </Button>
+            <Button fullWidth variant="secondary" onClick={onOnlinePlay}>
+              オンライン対戦
+            </Button>
+          </div>
         </div>
 
         <div style={{ marginTop: 16 }}>
