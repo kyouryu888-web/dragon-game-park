@@ -48,7 +48,7 @@ export default function App() {
       <HomePage
         onSelectGame={(gameId) => {
           if (gameId === 'mancala') setScreen('mancala-setup');
-          if (gameId === 'uno') setScreen('uno-setup');
+          if (gameId === 'uno') setScreen('uno-room');
         }}
       />
     );

@@ -46,6 +46,17 @@ function WildColorWheel() {
   );
 }
 
+function PawBackIcon({ compact = false }: { compact?: boolean }) {
+  return (
+    <span className={`uno-paw-back-mark ${compact ? 'is-compact' : ''}`} aria-hidden="true">
+      <span className="uno-paw-pad" />
+      <span className="uno-paw-toe uno-paw-toe-1" />
+      <span className="uno-paw-toe uno-paw-toe-2" />
+      <span className="uno-paw-toe uno-paw-toe-3" />
+    </span>
+  );
+}
+
 type UnoCardViewProps = {
   card?: UnoCard;
   variant?: UnoVariant;
@@ -74,13 +85,13 @@ export function UnoCardView({
     ? 'linear-gradient(145deg, #111, #292929 48%, #050505)'
     : `linear-gradient(145deg, ${color?.bg}, ${color?.deep})`;
   const textColor = !hidden && color ? color.text : '#fff7e8';
-  const label = hidden ? 'DGP' : card ? getUnoCardName(card) : '';
-  const symbol = hidden ? '龍' : card ? getSymbol(card) : '';
+  const label = hidden ? '' : card ? getUnoCardName(card) : '';
+  const symbol = hidden ? '' : card ? getSymbol(card) : '';
 
   return (
     <button
       type="button"
-      aria-label={hidden ? 'カードのうら' : label}
+      aria-label={hidden ? '山札カード' : label}
       onClick={onClick}
       disabled={!onClick}
       className={`uno-card ${playable ? 'is-playable' : ''} ${selected ? 'is-selected' : ''} ${isHard ? 'is-hard' : ''}`}
@@ -134,8 +145,8 @@ export function UnoCardView({
         alignItems: 'center',
       }}>
         <div style={{ alignSelf: 'stretch', display: 'flex', justifyContent: 'space-between', fontSize: compact ? 11 : 13, fontWeight: 900 }}>
-          <span>{symbol}</span>
-          <span>{symbol}</span>
+          <span>{hidden ? '' : symbol}</span>
+          <span>{hidden ? '' : symbol}</span>
         </div>
         <div style={{
           fontSize: compact ? 24 : symbol.length >= 4 ? 22 : 34,
@@ -145,7 +156,7 @@ export function UnoCardView({
           textShadow: isWild || hidden ? '0 2px 0 rgba(0,0,0,0.35)' : 'none',
           transform: hidden ? 'rotate(-10deg)' : 'rotate(-8deg)',
         }}>
-          {symbol}
+          {hidden ? <PawBackIcon compact={compact} /> : symbol}
         </div>
         <div style={{
           minHeight: compact ? 20 : 28,
@@ -162,7 +173,7 @@ export function UnoCardView({
           textAlign: 'center',
           width: '100%',
         }}>
-          {hidden ? (isHard ? 'ハード' : 'ドラゴン') : label}
+          {label}
         </div>
       </div>
     </button>

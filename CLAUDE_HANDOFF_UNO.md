@@ -268,8 +268,171 @@ Polish UNO scoring and table controls
 - `.\node_modules\.bin\vitest.CMD run`: 4 files / 66 tests passed
 - `.\node_modules\.bin\tsc.CMD -b`: 成功
 - `.\node_modules\.bin\vite.CMD build`: 成功。500kB超chunk警告のみ。
+
+## 2026-06-29 追記: 足あとカード裏・効果ボタン整理・進行矢印調整
+
+ユーザーの追加コメントを受けて、以下を修正。
+
+- `src/features/uno/UnoCardView.tsx`
+  - 山札カード裏を足あと風マークに変更。実画面ではChromeで `Ctrl + R` 更新後に確認可能。
+- `src/features/uno/UnoTableView.tsx`
+  - 普通の数字カードには `?` ボタンを出さないようにした。
+  - ハード版の `0` と `7` は効果があるため `?` を残す。
+  - 場のカードも効果があるカードだけ `?` を表示。
+- `src/styles/global.css`
+  - 手札カードの `?` ボタンを右上から左上へ移動。重なったカードでも押しやすくするため。
+  - 中央リングの進行矢印を `→` から、円周に沿う角度の記号表示へ調整。
+  - プレイヤー情報欄に重なりにくいよう、矢印位置をリング下寄りに変更。
+
+検証:
+
+- `.\node_modules\.bin\tsc.CMD --noEmit`: 成功
+- `.\node_modules\.bin\vitest.CMD run src/features/uno/unoRules.test.ts src/features/uno/unoOnline.test.ts`: 2 files / 24 tests passed
+- `.\node_modules\.bin\vitest.CMD run`: 4 files / 66 tests passed
+- `.\node_modules\.bin\tsc.CMD -b`: 成功
+- `.\node_modules\.bin\vite.CMD build`: 成功。500kB超chunk警告のみ。
+- `.\node_modules\.bin\oxlint.CMD`: UNO由来エラーなし。既存のMancala警告のみ。
+
+未確認:
+
+- 実画面で足あとカード裏がユーザーの好みに合うか。
+- 進行矢印がプレイヤー情報と重ならず見やすいか。
+
+## 2026-06-29 追記: 重複ヘッダー削除・山形マーカー・相手カード裏統一
+
+ユーザーの追加コメントを受けて、以下を修正。
+
+- `src/features/uno/UnoTableView.tsx`
+  - テーブル内の `プレイヤーX の番です / 色: ...` ヘッダーを削除。上部の大きなターン表示と重複していたため。
+  - 進行マーカーの文字 `→` を削除し、CSSだけで描く山形マーカーに変更。
+  - 相手の裏向きカードも足あとマーク構造に変更。
+- `src/styles/global.css`
+  - `.uno-table-header` の通常/モバイルCSSを削除。
+  - `.uno-next-direction-arrow::before` で `＜ / ＞` に近い山形マークを描画。
+  - 相手カード裏を山札カード裏に近い斜線入り・足あと系デザインへ変更。
+
+検証:
+
+- `.\node_modules\.bin\tsc.CMD --noEmit`: 成功
+- `.\node_modules\.bin\vitest.CMD run src/features/uno/unoRules.test.ts src/features/uno/unoOnline.test.ts`: 2 files / 24 tests passed
+- `.\node_modules\.bin\vitest.CMD run`: 4 files / 66 tests passed
+- `.\node_modules\.bin\tsc.CMD -b`: 成功
+- `.\node_modules\.bin\vite.CMD build`: 成功。500kB超chunk警告のみ。
+- `.\node_modules\.bin\oxlint.CMD`: UNO由来エラーなし。既存のMancala警告のみ。
+
+未確認:
+
+- 実画面で山形マーカーの角度が円の線に沿って見えるか。
+- 相手カード裏が山札カード裏と十分に統一されているか。
 - `.\node_modules\.bin\oxlint.CMD`: UNO由来エラーなし。既存のMancala Fast Refresh / deps警告のみ。
 
 未確認:
 
 - Codex側では `http://127.0.0.1:5175/` のブラウザ操作がポリシーでブロックされるため、実画面でのルーレット自動進行はユーザーChromeで確認が必要。
+
+## 2026-06-29 追記: 席順とカード効果確認UI
+
+今回の追加修正:
+
+- `src/features/uno/UnoTableView.tsx`
+  - 自分を下に固定したまま、席配置を進行方向に合わせて並べ替える `getSeatedOpponents` を追加。
+  - 時計回りでは次の人が左側、反時計回りでは次の人が右側に来るようにした。
+  - プレイ中にカード効果を確認できる「カード効果」ボタンを追加。
+  - 場のカードと手札カードに小さな `?` ボタンを追加。カードを出す操作とは別に効果説明を開ける。
+  - 説明文は小学生向けに、英語を避けて短い日本語で表示。
+- `src/styles/global.css`
+  - カード効果ボタン、カード個別説明、カード効果一覧パネルのスタイルを追加。
+  - スマホ幅ではカード効果一覧を1列表示にする。
+
+検証:
+
+- `.\node_modules\.bin\tsc.CMD --noEmit`: 成功
+- `.\node_modules\.bin\vitest.CMD run src/features/uno/unoRules.test.ts src/features/uno/unoOnline.test.ts`: 2 files / 24 tests passed
+- `.\node_modules\.bin\vitest.CMD run`: 4 files / 66 tests passed
+- `.\node_modules\.bin\tsc.CMD -b`: 成功
+- `.\node_modules\.bin\vite.CMD build`: 成功。500kB超chunk警告のみ。
+- `.\node_modules\.bin\oxlint.CMD`: UNO由来エラーなし。既存のMancala Fast Refresh / deps警告のみ。
+
+未確認:
+
+- 実画面で `?` ボタンがカード操作を邪魔しないか、ユーザーChromeで確認が必要。
+- 4人以上・リバース後の席順が直感どおりか、ユーザーChromeで確認が必要。
+
+## 2026-06-29 追記: ブラウザコメント対応
+
+ユーザーの実画面コメントを受けて、以下を修正。
+
+- `src/features/uno/UnoTableView.tsx`
+  - 中央リングの意味不明な矢印表示を廃止。
+  - リング上に `いま` / `つぎ` / `2番` / `3番` の順番チップを表示。
+  - 手札枠内にも `山札から引く` / `Nまい引く` ボタンを追加し、中央山札とどちらからでも引けるようにした。
+- `src/features/uno/UnoCardView.tsx`
+  - カード裏の漢字 `龍` 表示を廃止。
+  - CSSで描くドラゴン風マークに変更。
+- `src/styles/global.css`
+  - ドラゴン風カード裏マーク、順番チップ、手札内山札ボタンのCSSを追加。
+
+検証:
+
+- `.\node_modules\.bin\tsc.CMD --noEmit`: 成功
+- `.\node_modules\.bin\vitest.CMD run src/features/uno/unoRules.test.ts src/features/uno/unoOnline.test.ts`: 2 files / 24 tests passed
+- `.\node_modules\.bin\vitest.CMD run`: 4 files / 66 tests passed
+- `.\node_modules\.bin\tsc.CMD -b`: 成功
+- `.\node_modules\.bin\vite.CMD build`: 成功。500kB超chunk警告のみ。
+- `.\node_modules\.bin\oxlint.CMD`: UNO由来エラーなし。既存のMancala警告のみ。
+
+未確認:
+
+- 実画面で中央リングの順番チップが見やすいか。
+- 手札枠内の山札ボタンがスマホで押しやすいか。
+
+## 2026-06-29 追記: 中央リング再修正と山札裏デザイン保留
+
+ユーザーの実画面コメントを受けて、以下を修正。
+
+- `src/features/uno/UnoTableView.tsx`
+  - 中央リング上の `いま` / `つぎ` / `2番` / `3番` チップを削除。重なって読めなかったため。
+  - `つぎへ` テキストを削除し、次の席側に小さな `→` マーカーだけを表示。
+- `src/styles/global.css`
+  - 古い `uno-ring-step` / `uno-turn-orbit` 系CSSを削除。
+  - 新しい `uno-next-direction-arrow` のCSSを追加。
+
+山札カード裏デザイン:
+
+- ユーザーから「実装前にいくつか候補を出して選ばせてほしい」と要望あり。
+- まだ山札カード裏デザインの再変更は未実装。次回は候補提示から行うこと。
+
+検証:
+
+- `.\node_modules\.bin\tsc.CMD --noEmit`: 成功
+- `.\node_modules\.bin\vitest.CMD run src/features/uno/unoRules.test.ts src/features/uno/unoOnline.test.ts`: 2 files / 24 tests passed
+- `.\node_modules\.bin\vitest.CMD run`: 4 files / 66 tests passed
+- `.\node_modules\.bin\tsc.CMD -b`: 成功
+- `.\node_modules\.bin\vite.CMD build`: 成功。500kB超chunk警告のみ。
+## 2026-06-29 追記: UNOテーブル進行マーカーと手札視認性の改善
+
+今回の追加修正:
+
+- `src/features/uno/UnoTableView.tsx`
+  - 進行マーカーを中央リング固定から、現在プレイヤー席と次プレイヤー席の中間に出す方式へ変更。
+  - 席ごとの座標を `getSeatPoints` で持ち、`getTurnMarkerPlacement` で中間位置と角度を計算。
+  - 相手席の表示は、進行方向に応じた座席順を維持したまま、マーカーだけを席間に表示。
+  - 手札ファンは、出せるカード数が多い時ほどカード間隔を広げ、出せるカードをより上に浮かせて前面表示。
+- `src/styles/global.css`
+  - 古い `.uno-next-direction-arrow` を廃止し、`.uno-between-turn-marker` を追加。
+  - マーカーは `›` 風の山形表示にし、CSS変数 `--uno-turn-angle` で次プレイヤー方向へ回転。
+  - 相手の裏カード束と名前枠の重なりを減らすため、席内のgap、z-index、カード束の高さを調整。
+  - 手札エリアの高さと上余白を増やし、出せるカードに緑の外枠を追加。
+
+検証:
+
+- `.\node_modules\.bin\tsc.CMD --noEmit`: 成功
+- `.\node_modules\.bin\vitest.CMD run src/features/uno/unoRules.test.ts src/features/uno/unoOnline.test.ts`: 2 files / 24 tests passed
+- `.\node_modules\.bin\vite.CMD build`: 成功。500kB超のchunk警告のみ。
+- in-app browserで `http://127.0.0.1:5175/` を開き、UNO設定からオフライン4人ハード版へ進めて表示確認。
+
+見た目の確認状況:
+
+- 進行マーカーは「いま」の席と「つぎ」の席の間に表示される。
+- ただし、最終的な見た目の好みはユーザーChrome上でもう一度確認が必要。
+- 手札の出せるカードは以前より前面に出るが、15枚以上の大量手札ではさらに改善余地あり。
