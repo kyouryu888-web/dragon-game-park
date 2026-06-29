@@ -1,8 +1,7 @@
-import type { CSSProperties } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import type { UnoCard, UnoColor, UnoGameState, UnoPlayer, UnoPlayerId, UnoVariant } from './unoTypes';
 import { UNO_COLOR_LABELS } from './unoCardMeta';
 import { UnoCardView } from './UnoCardView';
-import { Button } from '../../components/Button';
 
 const COLOR_DOTS: Record<UnoColor, string> = {
   red: '#df352c',
@@ -23,6 +22,7 @@ type UnoTableViewProps = {
   isCpuThinking: boolean;
   message: string;
   viewPlayerId?: UnoPlayerId;
+  pendingOverlay?: ReactNode;
   onPlay: (card: UnoCard) => void;
   onDraw: () => void;
   onAcceptDraw: () => void;
@@ -40,12 +40,16 @@ export function UnoTableView({
   isCpuThinking,
   message,
   viewPlayerId = 'player-1',
+  pendingOverlay,
   onPlay,
   onDraw,
   onAcceptDraw,
 }: UnoTableViewProps) {
   const myPlayer = state.players.find((p) => p.id === viewPlayerId) ?? state.players[0]!;
   const opponents = state.players.filter((p) => p.id !== myPlayer.id);
+  const canUseDeck = canAct && (state.pendingDrawCount > 0 || playableIds.size === 0);
+  const turnFlow = getTurnFlowPlayers(state);
+  const directionLabel = state.direction === 'clockwise' ? '時計回り' : '反時計回り';
 
   return (
     <section className={`uno-table-view ${state.variant === 'hard' ? 'is-hard' : ''}`}>
@@ -55,6 +59,23 @@ export function UnoTableView({
           色: {UNO_COLOR_LABELS[state.activeColor]}
           {state.pendingDrawCount > 0 ? ` / ドロー ${state.pendingDrawCount}まい` : ''}
         </span>
+      </div>
+
+      <div className="uno-turn-flow" aria-label={`進行方向 ${directionLabel}`}>
+        <span className={`uno-turn-flow-direction ${state.direction === 'clockwise' ? 'is-clockwise' : 'is-counterclockwise'}`}>
+          {directionLabel}
+        </span>
+        <div className="uno-turn-flow-track">
+          {turnFlow.map((player, index) => (
+            <span
+              key={player.id}
+              className={`uno-turn-flow-player ${player.id === state.currentPlayerId ? 'is-current' : ''} ${player.id === nextPlayerId ? 'is-next' : ''}`}
+            >
+              {index > 0 && <span className="uno-turn-flow-arrow">{state.direction === 'clockwise' ? '→' : '←'}</span>}
+              <span>{player.isCpu ? 'CPU ' : ''}{player.name}</span>
+            </span>
+          ))}
+        </div>
       </div>
 
       <div className="uno-table-arena">
@@ -84,13 +105,19 @@ export function UnoTableView({
           activeColor={state.activeColor}
           pendingDrawCount={state.pendingDrawCount}
           isCpuThinking={isCpuThinking}
+          canDraw={canUseDeck}
+          turnMarker={`${state.currentPlayerId}-${state.turnCount}-${state.direction}`}
+          onDeckClick={state.pendingDrawCount > 0 ? onAcceptDraw : onDraw}
         />
+
+        {pendingOverlay && <div className="uno-table-overlay">{pendingOverlay}</div>}
 
         <UnoSelfSeat
           player={myPlayer}
           cardCount={state.hands[myPlayer.id]?.length ?? 0}
           isCurrent={myPlayer.id === state.currentPlayerId}
           isNext={myPlayer.id === nextPlayerId}
+          autoUno={state.unoDeclaredIds.includes(myPlayer.id) && (state.hands[myPlayer.id]?.length ?? 0) === 1}
         />
       </div>
 
@@ -102,10 +129,9 @@ export function UnoTableView({
         playableIds={playableIds}
         variant={state.variant}
         canAct={canAct}
+        canUseDeck={canUseDeck}
         pendingDrawCount={state.pendingDrawCount}
         onPlay={onPlay}
-        onDraw={onDraw}
-        onAcceptDraw={onAcceptDraw}
       />
     </section>
   );
@@ -156,6 +182,20 @@ function getOpponentPlacement(index: number, total: number): SeatPlacement {
   };
 }
 
+function getTurnFlowPlayers(state: UnoGameState): UnoPlayer[] {
+  const active = state.players.filter((player) => !player.isEliminated);
+  if (active.length === 0) return [];
+
+  const currentIndex = active.findIndex((player) => player.id === state.currentPlayerId);
+  const startIndex = currentIndex >= 0 ? currentIndex : 0;
+  const step = state.direction === 'clockwise' ? 1 : -1;
+
+  return Array.from({ length: active.length }, (_, offset) => {
+    const index = ((startIndex + step * offset) % active.length + active.length) % active.length;
+    return active[index]!;
+  });
+}
+
 function UnoOpponentSeat({
   player,
   cardCount,
@@ -189,15 +229,18 @@ function UnoSelfSeat({
   cardCount,
   isCurrent,
   isNext,
+  autoUno,
 }: {
   player: UnoPlayer;
   cardCount: number;
   isCurrent: boolean;
   isNext: boolean;
+  autoUno: boolean;
 }) {
   return (
     <div className={`uno-seat uno-seat-bottom ${isCurrent ? 'is-current' : ''} ${isNext ? 'is-next' : ''}`}>
       <SeatBadge player={player} cardCount={cardCount} isCurrent={isCurrent} isNext={isNext} self />
+      {autoUno && <span className="uno-auto-badge">UNO! 自動</span>}
     </div>
   );
 }
@@ -256,6 +299,9 @@ function UnoCenterPile({
   activeColor,
   pendingDrawCount,
   isCpuThinking,
+  canDraw,
+  turnMarker,
+  onDeckClick,
 }: {
   variant: UnoVariant;
   topCard: UnoCard;
@@ -264,19 +310,41 @@ function UnoCenterPile({
   activeColor: UnoColor;
   pendingDrawCount: number;
   isCpuThinking: boolean;
+  canDraw: boolean;
+  turnMarker: string;
+  onDeckClick: () => void;
 }) {
   const clockwise = direction === 'clockwise';
   return (
     <div className={`uno-center-pile ${variant === 'hard' ? 'is-hard' : ''} ${isCpuThinking ? 'is-thinking' : ''}`}>
       <div className={`uno-direction-ring ${clockwise ? 'is-clockwise' : 'is-counterclockwise'}`}>
-        <span className="uno-ring-arrow uno-ring-arrow-a">{clockwise ? '↻' : '↺'}</span>
-        <span className="uno-ring-arrow uno-ring-arrow-b">{clockwise ? '↻' : '↺'}</span>
+        <span className="uno-ring-direction-label">{clockwise ? '時計回り' : '反時計回り'}</span>
+        {[0, 1, 2, 3].map((index) => (
+          <span
+            key={index}
+            className={`uno-ring-marker uno-ring-marker-${index}`}
+            aria-hidden="true"
+          >
+            {clockwise ? '➜' : '➜'}
+          </span>
+        ))}
+        <span key={turnMarker} className={`uno-turn-orbit ${clockwise ? 'is-clockwise' : 'is-counterclockwise'}`}>
+          <span>{clockwise ? '›' : '‹'}</span>
+        </span>
       </div>
 
       <div className="uno-center-cards">
         <div className="uno-center-card-wrap">
-          <UnoCardView hidden compact variant={variant} />
-          <span>山札 {deckCount}</span>
+          <div className={`uno-deck-button ${canDraw ? 'is-actionable' : ''}`}>
+            <UnoCardView
+              hidden
+              compact
+              variant={variant}
+              playable={canDraw}
+              onClick={canDraw ? onDeckClick : undefined}
+            />
+          </div>
+          <span>{pendingDrawCount > 0 ? `${pendingDrawCount}枚引く` : `山札 ${deckCount}`}</span>
         </div>
         <div className="uno-center-arrow">{clockwise ? '→' : '←'}</div>
         <div className="uno-center-card-wrap">
@@ -300,20 +368,18 @@ function UnoHandFan({
   playableIds,
   variant,
   canAct,
+  canUseDeck,
   pendingDrawCount,
   onPlay,
-  onDraw,
-  onAcceptDraw,
 }: {
   player: UnoPlayer;
   hand: UnoCard[];
   playableIds: Set<string>;
   variant: UnoVariant;
   canAct: boolean;
+  canUseDeck: boolean;
   pendingDrawCount: number;
   onPlay: (card: UnoCard) => void;
-  onDraw: () => void;
-  onAcceptDraw: () => void;
 }) {
   const maxSpread = hand.length <= 8 ? 42 : hand.length <= 14 ? 32 : 24;
   const center = (hand.length - 1) / 2;
@@ -356,15 +422,13 @@ function UnoHandFan({
       </div>
 
       <div className="uno-hand-actions">
-        {pendingDrawCount > 0 ? (
-          <Button variant="secondary" onClick={onAcceptDraw} disabled={!canAct}>
-            {pendingDrawCount}まい引く
-          </Button>
-        ) : (
-          <Button variant="secondary" onClick={onDraw} disabled={!canAct}>
-            カードを引く
-          </Button>
-        )}
+        <span className={`uno-draw-hint ${canUseDeck ? 'is-active' : ''}`}>
+          {pendingDrawCount > 0
+            ? `中央の山札を押すと${pendingDrawCount}枚引きます`
+            : canAct && playableIds.size > 0
+              ? '出せるカードがあります'
+              : '出せない時は中央の山札を押します'}
+        </span>
       </div>
     </section>
   );

@@ -109,13 +109,12 @@ describe('UNO online action permissions', () => {
     expect(canApplyUnoOnlineAction(s, 'player-1', 'color-pick')).toBe(false);
   });
 
-  it('allows UNO declaration for self and penalty against another player', () => {
+  it('allows legacy UNO declaration only for self', () => {
     const s: UnoGameState = {
       ...state(),
       pendingAction: { kind: 'uno-window', playerWithOneCard: 'player-2', declared: false },
     };
     expect(canApplyUnoOnlineAction(s, 'player-2', 'uno-declare')).toBe(true);
-    expect(canApplyUnoOnlineAction(s, 'player-1', 'uno-penalty', 'player-2')).toBe(true);
-    expect(canApplyUnoOnlineAction(s, 'player-2', 'uno-penalty', 'player-2')).toBe(false);
+    expect(canApplyUnoOnlineAction(s, 'player-1', 'uno-declare')).toBe(false);
   });
 });

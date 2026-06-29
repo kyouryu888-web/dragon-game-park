@@ -11,7 +11,6 @@ import {
   applyPlayCard,
   applySwapPick,
   applyUnoDeclaration,
-  applyUnoPenalty,
   canPlayCard,
   getNextPlayerId,
   getPlayableCards,
@@ -20,6 +19,7 @@ import { chooseUnoCpuAction } from './unoCpu';
 import { UNO_COLOR_LABELS, getUnoCardName } from './unoCardMeta';
 import { UnoRulesPanel } from './UnoRulesPanel';
 import { UnoTableView } from './UnoTableView';
+import { getUnoRankings, type UnoRankingEntry } from './unoScoring';
 
 const COLOR_BUTTONS: Array<{ color: UnoColor; bg: string }> = [
   { color: 'red', bg: '#df352c' },
@@ -44,9 +44,17 @@ export function UnoGamePage({ config, onBackToSetup, onBackToHome }: UnoGamePage
 
   const isHard = gameState.variant === 'hard';
   const currentPlayer = gameState.players.find((p) => p.id === gameState.currentPlayerId)!;
-  const currentHand = gameState.hands[gameState.currentPlayerId] ?? [];
+  const visibleHandPlayer =
+    currentPlayer.isCpu
+      ? gameState.players.find((player) => !player.isCpu && !player.isEliminated)
+        ?? gameState.players.find((player) => !player.isCpu)
+        ?? currentPlayer
+      : currentPlayer;
+  const visibleHand = gameState.hands[visibleHandPlayer.id] ?? [];
   const topCard = gameState.discardPile[0]!;
-  const playableCards = getPlayableCards(gameState, gameState.currentPlayerId);
+  const playableCards = visibleHandPlayer.id === gameState.currentPlayerId
+    ? getPlayableCards(gameState, gameState.currentPlayerId)
+    : [];
   const pending = gameState.pendingAction;
   const nextPlayerId = useMemo(() => getNextPlayerId(gameState), [gameState]);
 
@@ -104,19 +112,22 @@ export function UnoGamePage({ config, onBackToSetup, onBackToHome }: UnoGamePage
     applyState((state) => applySwapPick(state, targetPlayerId), `${target?.name ?? '相手'} と手札をこうかんしました。`);
   }, [applyState, gameState.players]);
 
-  const handleRouletteStep = useCallback(() => {
-    applyState((state) => applyColorRouletteStep(state), 'ルーレットで1まい引きました。');
-  }, [applyState]);
-
   const handleUnoDeclare = useCallback((playerId: UnoPlayerId) => {
     const player = gameState.players.find((p) => p.id === playerId);
     applyState((state) => applyUnoDeclaration(state, playerId), `${player?.name ?? 'プレイヤー'} が「ウノ!」と言いました。`);
   }, [applyState, gameState.players]);
 
-  const handleUnoPenalty = useCallback((playerId: UnoPlayerId) => {
-    const player = gameState.players.find((p) => p.id === playerId);
-    applyState((state) => applyUnoPenalty(state, playerId), `${player?.name ?? 'プレイヤー'} が言い忘れ! 2まい引きます。`);
-  }, [applyState, gameState.players]);
+  const rouletteProgressKey = useMemo(() => {
+    if (pending?.kind !== 'color-roulette') return 'none';
+    const target = gameState.players.find((player) => player.id === pending.targetPlayerId);
+    return [
+      pending.targetPlayerId,
+      pending.targetColor,
+      target?.isEliminated ? 'out' : 'in',
+      gameState.hands[pending.targetPlayerId]?.length ?? 0,
+      gameState.deck.length,
+    ].join(':');
+  }, [gameState.deck.length, gameState.hands, gameState.players, pending]);
 
   useEffect(() => {
     if (gameState.status !== 'playing') {
@@ -171,8 +182,6 @@ export function UnoGamePage({ config, onBackToSetup, onBackToHome }: UnoGamePage
             return applyColorRouletteStep(prev);
           case 'declare-uno':
             return applyUnoDeclaration(prev, action.playerId);
-          case 'penalty-uno':
-            return applyUnoPenalty(prev, action.playerId);
         }
       });
       setMessage(`${actingPlayer.name} が考えました。`);
@@ -180,14 +189,18 @@ export function UnoGamePage({ config, onBackToSetup, onBackToHome }: UnoGamePage
     }, 620);
 
     return () => clearTimeout(id);
-  }, [gameState.currentPlayerId, gameState.pendingAction, gameState.status, gameState.turnCount, gameState.players]);
+  }, [
+    gameState.currentPlayerId,
+    gameState.pendingAction,
+    gameState.status,
+    gameState.turnCount,
+    gameState.players,
+    rouletteProgressKey,
+  ]);
 
   const rankings = useMemo(() => {
-    return [...gameState.players].sort((a, b) => {
-      if (a.isEliminated !== b.isEliminated) return a.isEliminated ? 1 : -1;
-      return (gameState.hands[a.id]?.length ?? 0) - (gameState.hands[b.id]?.length ?? 0);
-    });
-  }, [gameState.hands, gameState.players]);
+    return getUnoRankings(gameState);
+  }, [gameState]);
 
   return (
     <Layout>
@@ -205,7 +218,6 @@ export function UnoGamePage({ config, onBackToSetup, onBackToHome }: UnoGamePage
           <ResultPanel
             winner={winner}
             rankings={rankings}
-            hands={gameState.hands}
             onRestart={handleRestart}
             onBackToSetup={onBackToSetup}
             onBackToHome={onBackToHome}
@@ -228,26 +240,24 @@ export function UnoGamePage({ config, onBackToSetup, onBackToHome }: UnoGamePage
               currentPlayer={currentPlayer}
               nextPlayerId={nextPlayerId}
               topCard={topCard}
-              currentHand={currentHand}
+              currentHand={visibleHand}
+              handPlayer={visibleHandPlayer}
               playableIds={new Set(playableCards.map((card) => card.id))}
               canAct={canHumanAct && !pending}
               isCpuThinking={isCpuThinking}
               message={message}
+              pendingOverlay={pending ? (
+                <PendingPanel
+                  state={gameState}
+                  onColorChoice={handleColorChoice}
+                  onSwapPick={handleSwapPick}
+                  onUnoDeclare={handleUnoDeclare}
+                />
+              ) : null}
               onPlay={handlePlayCard}
               onDraw={handleDraw}
               onAcceptDraw={handleAcceptDraw}
             />
-
-            {pending && (
-              <PendingPanel
-                state={gameState}
-                onColorChoice={handleColorChoice}
-                onSwapPick={handleSwapPick}
-                onRouletteStep={handleRouletteStep}
-                onUnoDeclare={handleUnoDeclare}
-                onUnoPenalty={handleUnoPenalty}
-              />
-            )}
 
             <button
               onClick={() => setShowRules((show) => !show)}
@@ -328,16 +338,12 @@ export function PendingPanel({
   state,
   onColorChoice,
   onSwapPick,
-  onRouletteStep,
   onUnoDeclare,
-  onUnoPenalty,
 }: {
   state: UnoGameState;
   onColorChoice: (color: UnoColor) => void;
   onSwapPick: (targetPlayerId: UnoPlayerId) => void;
-  onRouletteStep: () => void;
   onUnoDeclare: (playerId: UnoPlayerId) => void;
-  onUnoPenalty: (playerId: UnoPlayerId) => void;
 }) {
   const pending = state.pendingAction;
   if (!pending) return null;
@@ -385,11 +391,19 @@ export function PendingPanel({
     return (
       <ActionPanel title="カラー ルーレット">
         <p style={{ fontSize: 13, color: 'var(--text-mid)', lineHeight: 1.7, marginBottom: 10 }}>
-          {target?.name ?? '次の人'} が {UNO_COLOR_LABELS[pending.targetColor]} のカードを引くまで、1まいずつ引きます。
+          {target?.name ?? '次の人'} が {UNO_COLOR_LABELS[pending.targetColor]} のカードを引くまで、対象プレイヤーに1まいずつ引かせます。
         </p>
-        <Button fullWidth onClick={onRouletteStep}>
-          1まい引く
-        </Button>
+        <div className="cpu-thinking-pulse" style={{
+          border: '1.5px solid #e8c880',
+          borderRadius: 13,
+          background: '#fffdf8',
+          color: 'var(--brown)',
+          fontWeight: 900,
+          padding: '11px 12px',
+          textAlign: 'center',
+        }}>
+          自動で進めています...
+        </div>
       </ActionPanel>
     );
   }
@@ -399,14 +413,11 @@ export function PendingPanel({
     return (
       <ActionPanel title="ウノ!">
         <p style={{ fontSize: 13, color: 'var(--text-mid)', lineHeight: 1.7, marginBottom: 10 }}>
-          {player?.name ?? 'プレイヤー'} の手札があと1まいです。言い忘れたら2まい引きます。
+          {player?.name ?? 'プレイヤー'} の手札があと1まいです。UNOは自動で宣言されます。
         </p>
         <div style={{ display: 'grid', gap: 8 }}>
           <Button fullWidth onClick={() => onUnoDeclare(pending.playerWithOneCard)}>
-            ウノ! と言う
-          </Button>
-          <Button fullWidth variant="secondary" onClick={() => onUnoPenalty(pending.playerWithOneCard)}>
-            言い忘れを指摘する
+            OK
           </Button>
         </div>
       </ActionPanel>
@@ -435,14 +446,12 @@ function ActionPanel({ title, children }: { title: string; children: React.React
 function ResultPanel({
   winner,
   rankings,
-  hands,
   onRestart,
   onBackToSetup,
   onBackToHome,
 }: {
   winner: UnoPlayer | null;
-  rankings: UnoPlayer[];
-  hands: Record<UnoPlayerId, UnoCard[]>;
+  rankings: UnoRankingEntry[];
   onRestart: () => void;
   onBackToSetup: () => void;
   onBackToHome: () => void;
@@ -461,19 +470,29 @@ function ResultPanel({
       <h2 style={{ fontSize: 20, color: 'var(--brown)', marginBottom: 12 }}>
         {winner ? `${winner.name} の勝ち!` : 'ゲーム終了'}
       </h2>
+      <p style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: 12 }}>
+        数字カードは数字の点、スキップ・リバース・ドローなどの記号カードは20点、ワイルドカードは50点です。点が少ないほど上位です。
+      </p>
       <div style={{ display: 'grid', gap: 7, marginBottom: 16 }}>
-        {rankings.map((player, index) => (
-          <div key={player.id} style={{
+        {rankings.map((entry, index) => (
+          <div key={entry.player.id} className="rank-card" style={{
             display: 'flex',
             justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: 10,
             background: index === 0 ? '#fff0b8' : '#fffdf8',
             border: '1.5px solid var(--border)',
             borderRadius: 12,
             padding: '8px 10px',
             fontSize: 13,
+            animationDelay: `${index * 45}ms`,
           }}>
-            <strong>{index + 1}. {player.name}</strong>
-            <span>{player.isEliminated ? 'アウト' : `${hands[player.id]?.length ?? 0}まい`}</span>
+            <strong>{entry.rank}. {entry.player.name}</strong>
+            <span>
+              {entry.player.isEliminated ? '脱落 / ' : ''}
+              {entry.score}点
+              <small style={{ color: 'var(--text-muted)', marginLeft: 6 }}>残り{entry.cardCount}枚</small>
+            </span>
           </div>
         ))}
       </div>

@@ -145,6 +145,12 @@ export type UnoGameState = {
   /** 勝者のID（status='finished' のときのみ有効）*/
   winnerPlayerId: UnoPlayerId | null;
 
+  /** ゲーム終了時に確定した手札点数 */
+  finalScores: Record<UnoPlayerId, number> | null;
+
+  /** ハード版の25枚KOで脱落した瞬間の手札点数 */
+  eliminatedScores: Record<UnoPlayerId, number>;
+
   /** ターンカウンタ（CPU の useEffect 依存配列用）*/
   turnCount: number;
 

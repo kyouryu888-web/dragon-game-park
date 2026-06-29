@@ -59,6 +59,8 @@ export function createInitialUnoState(config: UnoConfig): UnoGameState {
     lastDrawCardValue: 0,
     pendingAction: null,
     winnerPlayerId: null,
+    finalScores: null,
+    eliminatedScores: {},
     turnCount: 0,
     unoDeclaredIds: [],
   };

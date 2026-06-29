@@ -177,8 +177,7 @@ export function renameUnoPlayer(state: UnoGameState, playerIndex: number, name: 
 export function canApplyUnoOnlineAction(
   state: UnoGameState,
   myPlayerId: UnoPlayerId,
-  action: 'turn' | 'color-pick' | 'swap-pick' | 'uno-declare' | 'uno-penalty',
-  targetPlayerId?: UnoPlayerId,
+  action: 'turn' | 'color-pick' | 'swap-pick' | 'uno-declare',
 ): boolean {
   if (state.status !== 'playing') return false;
   const pending = state.pendingAction;
@@ -194,9 +193,6 @@ export function canApplyUnoOnlineAction(
   }
   if (action === 'uno-declare') {
     return pending?.kind === 'uno-window' && pending.playerWithOneCard === myPlayerId;
-  }
-  if (action === 'uno-penalty') {
-    return pending?.kind === 'uno-window' && pending.playerWithOneCard !== myPlayerId && pending.playerWithOneCard === targetPlayerId;
   }
   return false;
 }

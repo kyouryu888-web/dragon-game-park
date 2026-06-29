@@ -8,8 +8,7 @@ export type UnoCpuAction =
   | { type: 'choose-color'; color: UnoColor }
   | { type: 'choose-swap'; targetPlayerId: UnoPlayerId }
   | { type: 'roulette-step' }
-  | { type: 'declare-uno'; playerId: UnoPlayerId }
-  | { type: 'penalty-uno'; playerId: UnoPlayerId };
+  | { type: 'declare-uno'; playerId: UnoPlayerId };
 
 const COLORS: UnoColor[] = ['red', 'yellow', 'green', 'blue'];
 
@@ -101,8 +100,7 @@ export function chooseUnoCpuAction(
 
   const pending = state.pendingAction;
   if (pending?.kind === 'uno-window') {
-    if (pending.playerWithOneCard === playerId) return { type: 'declare-uno', playerId };
-    return { type: 'penalty-uno', playerId: pending.playerWithOneCard };
+    return { type: 'declare-uno', playerId: pending.playerWithOneCard };
   }
   if (pending?.kind === 'color-pick' && pending.chooserPlayerId === playerId) {
     return { type: 'choose-color', color: chooseUnoColor(state, playerId) };

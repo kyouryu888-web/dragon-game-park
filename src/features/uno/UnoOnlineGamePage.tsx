@@ -11,7 +11,6 @@ import {
   applyPlayCard,
   applySwapPick,
   applyUnoDeclaration,
-  applyUnoPenalty,
   canPlayCard,
   getNextPlayerId,
   getPlayableCards,
@@ -26,6 +25,7 @@ import {
   getUnoOnlinePlayerId,
   type UnoRoomRow,
 } from './unoOnline';
+import { getUnoRankings } from './unoScoring';
 
 type UnoOnlineGamePageProps = {
   roomCode: string;
@@ -148,6 +148,7 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
   const playableCards = gameState ? getPlayableCards(gameState, myPlayerId) : [];
   const canTakeTurn = !!gameState && canApplyUnoOnlineAction(gameState, myPlayerId, 'turn') && !isWriting && !isCpuThinking;
   const winner = gameState?.winnerPlayerId ? gameState.players.find((player) => player.id === gameState.winnerPlayerId) : null;
+  const rankings = gameState ? getUnoRankings(gameState) : [];
 
   const handlePlayCard = useCallback((card: UnoCard) => {
     if (!gameState || !canTakeTurn) return;
@@ -186,19 +187,9 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
     void updateRemoteState((state) => applySwapPick(state, targetPlayerId), `${target?.name ?? '相手'} と手札をこうかんしました。`);
   }, [gameState, myPlayerId, updateRemoteState]);
 
-  const handleRouletteStep = useCallback(() => {
-    if (!gameState || !isHostClient) return;
-    void updateRemoteState((state) => applyColorRouletteStep(state), 'カラー ルーレットを進めました。');
-  }, [gameState, isHostClient, updateRemoteState]);
-
   const handleUnoDeclare = useCallback((playerId: UnoPlayerId) => {
     if (!gameState || !canApplyUnoOnlineAction(gameState, myPlayerId, 'uno-declare')) return;
     void updateRemoteState((state) => applyUnoDeclaration(state, playerId), 'ウノ! と言いました。');
-  }, [gameState, myPlayerId, updateRemoteState]);
-
-  const handleUnoPenalty = useCallback((playerId: UnoPlayerId) => {
-    if (!gameState || !canApplyUnoOnlineAction(gameState, myPlayerId, 'uno-penalty', playerId)) return;
-    void updateRemoteState((state) => applyUnoPenalty(state, playerId), '言い忘れを指摘しました。');
   }, [gameState, myPlayerId, updateRemoteState]);
 
   useEffect(() => {
@@ -257,8 +248,6 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
             return applyColorRouletteStep(prev);
           case 'declare-uno':
             return applyUnoDeclaration(prev, action.playerId);
-          case 'penalty-uno':
-            return applyUnoPenalty(prev, action.playerId);
         }
       }, `${actingPlayer.name} が考えました。`);
       setIsCpuThinking(false);
@@ -299,6 +288,29 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
           <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 20 }}>
             ルーム: <strong style={{ fontFamily: 'monospace' }}>{roomCode}</strong>
           </p>
+          <div style={{ display: 'grid', gap: 7, marginBottom: 18 }}>
+            {rankings.map((entry, index) => (
+              <div key={entry.player.id} className="rank-card" style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: 10,
+                background: index === 0 ? '#fff0b8' : '#fffdf8',
+                border: '1.5px solid var(--border)',
+                borderRadius: 12,
+                padding: '9px 10px',
+                fontSize: 13,
+                animationDelay: `${index * 45}ms`,
+              }}>
+                <strong>{entry.rank}. {entry.player.name}</strong>
+                <span>
+                  {entry.player.isEliminated ? '脱落 / ' : ''}
+                  {entry.score}点
+                  <small style={{ color: 'var(--text-muted)', marginLeft: 6 }}>残り{entry.cardCount}枚</small>
+                </span>
+              </div>
+            ))}
+          </div>
           <Button fullWidth onClick={onBackToHome}>ホームへ戻る</Button>
         </div>
       </Layout>
@@ -346,21 +358,18 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
           isCpuThinking={isCpuThinking}
           message={message}
           viewPlayerId={myPlayerId}
+          pendingOverlay={gameState.pendingAction ? (
+            <PendingPanel
+              state={gameState}
+              onColorChoice={handleColorChoice}
+              onSwapPick={handleSwapPick}
+              onUnoDeclare={handleUnoDeclare}
+            />
+          ) : null}
           onPlay={handlePlayCard}
           onDraw={handleDraw}
           onAcceptDraw={handleAcceptDraw}
         />
-
-        {gameState.pendingAction && (
-          <PendingPanel
-            state={gameState}
-            onColorChoice={handleColorChoice}
-            onSwapPick={handleSwapPick}
-            onRouletteStep={handleRouletteStep}
-            onUnoDeclare={handleUnoDeclare}
-            onUnoPenalty={handleUnoPenalty}
-          />
-        )}
 
         <button
           onClick={() => setShowRules((show) => !show)}

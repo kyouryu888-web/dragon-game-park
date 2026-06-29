@@ -1,4 +1,5 @@
 import type { UnoCard, UnoColor, UnoGameState, UnoPlayerId } from './unoTypes';
+import { getUnoCurrentScores, getUnoHandScore } from './unoScoring';
 
 // ═══════════════════════════════════════════════
 // 内部ヘルパー（非公開）
@@ -34,6 +35,8 @@ function drawCardsForPlayer(
   playerId: UnoPlayerId,
   count: number,
 ): UnoGameState {
+  if (state.players.find((player) => player.id === playerId)?.isEliminated) return state;
+
   let s = state;
   for (let i = 0; i < count; i++) {
     s = reshuffleIfNeeded(s);
@@ -57,6 +60,16 @@ export function drawCards(
   return drawCardsForPlayer(state, playerId, count);
 }
 
+function finishGame(state: UnoGameState, winnerPlayerId: UnoPlayerId): UnoGameState {
+  return {
+    ...state,
+    status: 'finished',
+    winnerPlayerId,
+    pendingAction: null,
+    finalScores: getUnoCurrentScores(state),
+  };
+}
+
 /**
  * hard モード: 手札 25 枚以上のプレイヤーを脱落させる。
  * 脱落したら手札をデッキ底に戻す。最後の 1 人なら finished にする。
@@ -76,12 +89,13 @@ function checkElimination(state: UnoGameState): UnoGameState {
       ...s,
       deck: [...s.deck, ...hand],
       hands: { ...s.hands, [player.id]: [] },
+      eliminatedScores: { ...s.eliminatedScores, [player.id]: getUnoHandScore(hand) },
       players: s.players.map((p) => (p.id === player.id ? { ...p, isEliminated: true } : p)),
     };
 
     const remaining = s.players.filter((p) => !p.isEliminated);
     if (remaining.length === 1) {
-      return { ...s, status: 'finished', winnerPlayerId: remaining[0]!.id };
+      return finishGame(s, remaining[0]!.id);
     }
 
     // 脱落したプレイヤーが手番だった場合は次へ
@@ -154,6 +168,21 @@ export function getNextPlayerId(state: UnoGameState, playersToSkip = 1): UnoPlay
   const step = state.direction === 'clockwise' ? 1 : -1;
   const nextIdx = ((idx + step * playersToSkip) % active.length + active.length) % active.length;
   return active[nextIdx]!;
+}
+
+function getNextActivePlayerAfter(state: UnoGameState, playerId: UnoPlayerId): UnoPlayerId {
+  const players = state.players;
+  const startIndex = players.findIndex((player) => player.id === playerId);
+  if (startIndex === -1) return getNextPlayerId(state);
+
+  const step = state.direction === 'clockwise' ? 1 : -1;
+  for (let offset = 1; offset <= players.length; offset++) {
+    const index = ((startIndex + step * offset) % players.length + players.length) % players.length;
+    const candidate = players[index];
+    if (candidate && !candidate.isEliminated) return candidate.id;
+  }
+
+  return state.currentPlayerId;
 }
 
 // ═══════════════════════════════════════════════
@@ -239,7 +268,7 @@ export function applyPlayCard(state: UnoGameState, cardId: string): UnoGameState
   // ── 即座の勝利チェック（ワイルド色選択より前）──
   // discard-all 以外: 手札 0 枚 → 勝利
   if (newHand.length === 0 && !(card.kind === 'action' && card.symbol === 'discard-all')) {
-    return { ...s, status: 'finished', winnerPlayerId: state.currentPlayerId, pendingAction: null };
+    return finishGame(s, state.currentPlayerId);
   }
 
   // ── カードの効果を適用 ──
@@ -363,7 +392,7 @@ function applyActionEffect(
       };
       // 手札が 0 になったら勝利
       if (remaining.length === 0) {
-        return { ...s, status: 'finished', winnerPlayerId: playerId };
+        return finishGame(s, playerId);
       }
       return checkUnoWindowAndAdvance(s, playerId, remaining.length);
     }
@@ -380,23 +409,11 @@ function checkUnoWindowAndAdvance(
   handSizeAfterPlay: number,
   playersToSkip = 1,
 ): UnoGameState {
-  // 手札が残り 1 枚 → UNO 宣言ウィンドウを設定
-  if (
-    handSizeAfterPlay === 1 &&
-    state.status === 'playing' &&
-    !state.unoDeclaredIds.includes(playerId)
-  ) {
-    const s = advanceTurn(state, playersToSkip);
-    return {
-      ...s,
-      pendingAction: {
-        kind: 'uno-window',
-        playerWithOneCard: playerId,
-        declared: false,
-      },
-    };
-  }
-  return advanceTurn(state, playersToSkip);
+  const s =
+    handSizeAfterPlay === 1 && state.status === 'playing' && !state.unoDeclaredIds.includes(playerId)
+      ? { ...state, unoDeclaredIds: [...state.unoDeclaredIds, playerId] }
+      : state;
+  return advanceTurn(s, playersToSkip);
 }
 
 // ═══════════════════════════════════════════════
@@ -425,7 +442,7 @@ export function applyColorChoice(state: UnoGameState, color: UnoColor): UnoGameS
 
   // wild-color-roulette: 次のプレイヤーが目標色を引くまで引く
   if (topCard?.kind === 'wild' && topCard.symbol === 'wild-color-roulette') {
-    const targetId = getNextPlayerId(s);
+    const targetId = getNextActivePlayerAfter(s, chooserPlayerId);
     return {
       ...s,
       activeColor: color,
@@ -485,6 +502,7 @@ export function applyDrawCard(state: UnoGameState): UnoGameState {
   if (state.status !== 'playing') return state;
   if (state.pendingAction !== null) return state;
   if (state.pendingDrawCount > 0) return state; // applyAcceptDraw を使うべき
+  if (getPlayableCards(state, state.currentPlayerId).length > 0) return state;
 
   if (state.variant === 'hard') {
     return applyInfiniteDraw(state);
@@ -580,12 +598,23 @@ export function applyColorRouletteStep(state: UnoGameState): UnoGameState {
   if (state.pendingAction?.kind !== 'color-roulette') return state;
 
   const { targetPlayerId, targetColor } = state.pendingAction;
+  const target = state.players.find((player) => player.id === targetPlayerId);
+  if (!target || target.isEliminated) {
+    const nextId = getNextActivePlayerAfter({ ...state, pendingAction: null }, targetPlayerId);
+    return { ...state, pendingAction: null, currentPlayerId: nextId, turnCount: state.turnCount + 1 };
+  }
 
   let s = drawCardsForPlayer(state, targetPlayerId, 1);
 
   // 脱落チェック
   s = checkElimination(s);
   if (s.status === 'finished') return s;
+
+  const targetAfterDraw = s.players.find((player) => player.id === targetPlayerId);
+  if (!targetAfterDraw || targetAfterDraw.isEliminated) {
+    const nextId = getNextActivePlayerAfter({ ...s, pendingAction: null }, targetPlayerId);
+    return { ...s, pendingAction: null, currentPlayerId: nextId, turnCount: s.turnCount + 1 };
+  }
 
   const hand = s.hands[targetPlayerId] ?? [];
   const drawnCard = hand[hand.length - 1];
@@ -594,7 +623,7 @@ export function applyColorRouletteStep(state: UnoGameState): UnoGameState {
   if (drawnCard && drawnCard.kind !== 'wild' && drawnCard.color === targetColor) {
     s = { ...s, pendingAction: null };
     // ターンは targetPlayerId の次のプレイヤーへ
-    const afterTarget = getNextPlayerId({ ...s, currentPlayerId: targetPlayerId });
+    const afterTarget = getNextActivePlayerAfter(s, targetPlayerId);
     return { ...s, currentPlayerId: afterTarget, turnCount: s.turnCount + 1 };
   }
 
@@ -615,11 +644,4 @@ export function applyUnoDeclaration(state: UnoGameState, playerId: UnoPlayerId):
     : [...state.unoDeclaredIds, playerId];
 
   return { ...state, pendingAction: null, unoDeclaredIds };
-}
-
-export function applyUnoPenalty(state: UnoGameState, playerId: UnoPlayerId): UnoGameState {
-  let s = drawCardsForPlayer(state, playerId, 2);
-  s = checkElimination(s);
-  if (s.status === 'finished') return s;
-  return { ...s, pendingAction: null };
 }
