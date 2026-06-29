@@ -22,6 +22,13 @@ export const games: GameInfo[] = [
     status: 'available',
     themeLabel: 'ボードゲーム',
   },
+  {
+    id: 'uno',
+    title: 'UNO',
+    description: '同じ色・数字・記号を出して手札をなくすカードゲームです。通常版と25まいアウトのハード版で遊べます。',
+    status: 'available',
+    themeLabel: 'カードゲーム',
+  },
   // 将来追加するゲームの例（コメントアウト中）：
   // {
   //   id: 'reversi',
