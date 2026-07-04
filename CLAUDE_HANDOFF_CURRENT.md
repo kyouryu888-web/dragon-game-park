@@ -39,7 +39,27 @@ SQLや設定値を貼ってもらう時は、必ず「今ある内容を全部�
 
 バックギャモンを3つ目のゲームとして追加する。
 
-**このセッションではまだ実装は始まっていません。** 前セッションはコードを書かず、引き継ぎ書の整備だけを行いました。次のセッションが最初にやることは、下記の「バックギャモン固有で最初に決めるべき論点」をユーザーに確認してから実装に入ることです。
+**進捗: オフライン版の実装が完了（`claude/backgammon` ブランチ、未マージ）。**
+
+ユーザー確認済みの方針:
+- ルール範囲: 標準ルール + ダブリングキューブ（ギャモン/バックギャモンの点数計算あり。キューブはセットアップでオフにも可能）
+- 対戦形態: オフラインのみ（人 vs CPU / 人 vs 人 同一画面）。**オンライン対戦は未実装で今後の課題**
+- スマホ優先: タップ2回方式（駒タップ→金色ハイライトの移動先をタップ）。375px幅で確認済み
+- CPU難易度: 既存と同じ5段階（very-easy〜very-hard、ドラゴン段位名もマンカラと共通）
+- 演出: サイコロ転がりアニメ、駒スライド移動アニメ、金×深緑のドラゴン風駒
+
+### バックギャモンの実装ファイル（`src/features/backgammon/`）
+
+純ロジック層（マンカラ同様、Reactに依存しない）:
+- `backgammonTypes.ts` — 型定義。盤は `points[24]`（index 0-5 = 白/金のホーム、18-23 = 黒/翠のホーム）。white は 23→0、black は 0→23 に進む
+- `createInitialBackgammonState.ts` — 標準初期配置
+- `backgammonRules.ts` + テスト — 合法手列挙（最大限使用ルール・大きい目強制を含む）、ヒット/バー/ベアオフ、ダブリングキューブ、勝敗（シングル/ギャモン/バックギャモン × キューブ値）
+- `backgammonCpu.ts` + テスト — 5段階CPU（盤面評価 + 被ヒット確率計算）、キューブ提案/受諾判断、CPU同士の完走スモークテスト
+
+UI層:
+- `BackgammonSetupPage.tsx` / `BackgammonGamePage.tsx` / `BackgammonBoard.tsx` / `BackgammonPoint.tsx` / `BackgammonDice.tsx`
+- スタイルは `global.css` 末尾の「バックギャモン」セクション（`--bg-point-h` などの clamp 変数、三角ポイント、駒、サイコロ、キューブ）
+- 配線済み: `games.ts`（id: backgammon）、`HomePage.tsx`（🎲 / #8a6a1f）、`App.tsx`（backgammon-setup / backgammon-game）
 
 ## サイト全体のアーキテクチャ（ゲームを追加する時に触る場所）
 
@@ -78,19 +98,10 @@ Supabaseベース。マンカラの `mancala_rooms` テーブル（列: `room_co
 
 `src/styles/global.css` の `:root` にドラゴンファンタジー配色の変数がある（羊皮紙背景 `--bg`、深緑 `--brown`、金 `--gold` など。変数名は歴史的経緯でこの名前になっているが値は緑金系）。共有コンポーネント `src/components/Button.tsx` / `Card.tsx` を使うと自動でこの配色に乗る。フォントは見出し Zen Antique Soft、本文 Zen Maru Gothic（`index.html` でGoogle Fonts読み込み済み）。
 
-## バックギャモン固有で最初に決めるべき論点（次セッションでユーザーに確認すること）
-
-実装を始める前に、以下をユーザーに確認する:
-
-1. **ルール範囲**: 標準ルールのみか、ダブリングキューブなどのバリアントも入れるか。
-2. **オンライン対戦**: マンカラ/UNOと同様、最初からオンライン対戦を実装するか、まずはオフライン（人 vs CPU、人 vs 人 同一画面）から始めるか。
-3. **CPU難易度**: 既存ゲームと同じ段階式（very-easy 〜 very-hard）にするか。
-4. **見た目**: サイコロの演出、駒のデザイン、盤面レイアウトの希望（ドラゴンファンタジーの世界観を踏襲する前提で、他に要望があるか）。
-
 ## 次にやること
 
-1. 上記の論点をユーザーに確認する。
-2. `main` から新しいブランチ（例 `claude/backgammon`）を作成する。
-3. 確認した論点をもとに、マンカラのファイル構成パターンに倣って `src/features/backgammon/` を実装する。
-4. `src/data/games.ts` / `HomePage.tsx` / `App.tsx` にバックギャモンを配線する。
-5. 実装後は `tsc --noEmit` / `vitest run` / プレビューでの画面確認を行い、完了したら `CLAUDE_HANDOFF_CURRENT.md` を更新する。
+1. ユーザーが実機（スマホ）で遊んで挙動・操作感を確認する。フィードバックがあれば `claude/backgammon` 上で調整する。
+2. 問題なければ PR を作って `main` にマージ（→ Vercel が自動デプロイ）。
+3. 将来の課題: バックギャモンのオンライン対戦（Supabase に `backgammon_rooms` テーブルを作り、`MancalaRoomPage.tsx` / `MancalaOnlineGamePage.tsx` のパターンを踏襲。`GameState` は最初から JSON シリアライズ可能な形にしてある）。
+
+検証済み（2026-07-05）: `tsc --noEmit` ✅ / `vitest run` 105件 ✅（バックギャモン33件含む）/ プレビューで ホーム→セットアップ→対局→CPU自動手番 をモバイル幅(375px)・デスクトップで確認 ✅

@@ -23,6 +23,13 @@ export const games: GameInfo[] = [
     themeLabel: 'ボードゲーム',
   },
   {
+    id: 'backgammon',
+    title: 'バックギャモン',
+    description: 'サイコロを振って15個の駒をゴールへ運ぶ、世界最古の2人対戦ボードゲームです。ダブリングキューブの駆け引きも楽しめます。',
+    status: 'available',
+    themeLabel: 'ボードゲーム',
+  },
+  {
     id: 'uno',
     title: 'UNO',
     description: '同じ色・数字・記号を出して手札をなくすカードゲームです。通常版と25まいアウトのハード版で遊べます。',

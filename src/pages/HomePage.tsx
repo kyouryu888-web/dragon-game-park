@@ -7,6 +7,7 @@ import { Button } from '../components/Button';
 const GAME_ICONS: Record<string, string> = {
   mancala: '🎯',
   uno: '🃏',
+  backgammon: '🎲',
   reversi: '⚫',
   gomoku: '🔵',
   checkers: '♟️',
@@ -15,6 +16,7 @@ const GAME_ICONS: Record<string, string> = {
 const GAME_ACCENT: Record<string, string> = {
   mancala:  '#a4761f',
   uno:      '#b83a30',
+  backgammon: '#8a6a1f',
   reversi:  '#3f4a42',
   gomoku:   '#2d6e8f',
   checkers: '#5f5028',
