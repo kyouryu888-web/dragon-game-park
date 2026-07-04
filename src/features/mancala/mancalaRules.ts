@@ -149,6 +149,66 @@ export function applyMove(state: GameState, pitId: string): GameState {
   return checkGameEnd(nextState);
 }
 
+/** 手を打ったときの結果予告（盤面は変更しない） */
+export type MovePreview = {
+  /** 最後の石が落ちる穴のID */
+  landingPitId: string;
+  /** もう一回自分の番になるか（着地が自分のストア） */
+  isExtraTurn: boolean;
+  /** 捕獲できる場合、向かいの穴のID */
+  captureOppositePitId: string | null;
+  /** 捕獲できる石の合計（着地石1個 + 向かいの石） */
+  captureCount: number;
+};
+
+/**
+ * applyMove と同じ配石ロジックで着地穴と捕獲可否を予告する。
+ * ルール変更時は applyMove と両方を更新すること。
+ */
+export function getMovePreview(state: GameState, pitId: string): MovePreview | null {
+  if (!canSelectPit(state, pitId)) return null;
+
+  const stonesByIdx = state.board.map((p) => p.stones);
+  const myStore = state.board.find((p) => p.ownerPlayerId === state.currentPlayerId && p.isStore)!;
+
+  const startIdx = state.board.findIndex((p) => p.id === pitId);
+  let stones = stonesByIdx[startIdx];
+  stonesByIdx[startIdx] = 0;
+
+  let idx = startIdx;
+  while (stones > 0) {
+    idx = (idx + 1) % state.board.length;
+    if (!state.activePlayerIds.includes(state.board[idx].ownerPlayerId as PlayerId)) continue;
+    if (state.board[idx].isStore && state.board[idx].ownerPlayerId !== state.currentPlayerId) continue;
+    stonesByIdx[idx] += 1;
+    stones -= 1;
+  }
+
+  const landedPit = state.board[idx];
+  const isExtraTurn = landedPit.id === myStore.id;
+
+  let captureOppositePitId: string | null = null;
+  let captureCount = 0;
+  if (
+    state.activePlayerIds.length === 2 &&
+    !isExtraTurn &&
+    !landedPit.isStore &&
+    landedPit.ownerPlayerId === state.currentPlayerId &&
+    stonesByIdx[idx] === 1
+  ) {
+    const oppPitId = getEffectiveOppositePitId(state, landedPit);
+    if (oppPitId) {
+      const oppIdx = state.board.findIndex((p) => p.id === oppPitId);
+      if (oppIdx >= 0 && stonesByIdx[oppIdx] > 0) {
+        captureOppositePitId = oppPitId;
+        captureCount = stonesByIdx[oppIdx] + 1;
+      }
+    }
+  }
+
+  return { landingPitId: landedPit.id, isExtraTurn, captureOppositePitId, captureCount };
+}
+
 /**
  * ゲーム終了チェック
  *
