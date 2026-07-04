@@ -477,6 +477,23 @@ Add UNO flash animation and online-only mode
 検証: tsc / vitest 66 passed / プレビューでホーム・UNOルーム・モバイル幅確認済み。
 次: PR作成 https://github.com/kyouryu888-web/dragon-game-park/pull/new/claude/dragon-redesign → ユーザーがマージ → 本番反映。
 
+## 2026-07-04 追記: マンカラ2P盤の整列 + とれる予告 + ゲット演出
+
+ブランチ `claude/dragon-redesign` に追加コミット済み（push済み）。
+
+- 問題: 2P盤は上列 [ストア][穴6]、下列 [穴6][ストア] のflexでストア幅分ズレ、向かいの穴が斜めに見えた。
+- `src/features/mancala/MancalaPit.tsx`
+  - `PlayerPlank` facingMode を [角][穴6][角] の3ゾーン構成に変更（`.plank-2p-corner-spacer` 追加）→ 向かいの穴が縦に整列。
+  - `PocketPit` に `previewState`（landing/capture）と `onHoverChange` を追加。captureには「とれる!」チップ。
+- `src/features/mancala/mancalaRules.ts`
+  - `getMovePreview(state, pitId)` 追加。applyMoveと同じ配石ロジックで着地穴・捕獲可否・捕獲数を予告（純関数）。**applyMoveのルールを変えたら両方更新すること**。
+- `src/features/mancala/MancalaBoard.tsx`
+  - `hoveredPitId` state。2P分岐でhover/focus中の選択可能穴から予告を計算し両プランクに配布。
+  - 捕獲アニメ中に「ゲット! +N個」ポップアップ（`.mancala-get-flash`）。
+- `src/styles/global.css`: spacer / `.is-landing-preview`（金点滅）/ `.is-capture-preview`（赤パルス）/ `.mancala-capture-chip` / `.mancala-get-flash` 系を追加。`.board-container` に position:relative。
+- テスト: `mancalaRules.test.ts` に getMovePreview 6ケース追加 → 全72 passed。
+- プレビュー検証済み: 穴の縦整列、focus発火で着地予告点灯。捕獲演出の実プレイ確認は未。
+
 ## 2026-07-04 追記: 本番公開完了
 
 - コミット `984b6d8` をブランチへpush後、ユーザーがGitHub上でPR #1をmainへマージ。
