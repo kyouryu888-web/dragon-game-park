@@ -11,21 +11,21 @@ type ButtonProps = {
 
 const VARIANT_STYLES: Record<ButtonVariant, React.CSSProperties> = {
   primary: {
-    background: 'linear-gradient(160deg, #a06030, #7a4020)',
-    color: '#fff',
-    border: 'none',
-    boxShadow: '0 3px 12px rgba(90, 48, 16, 0.35), inset 0 1px 0 rgba(255,255,255,0.18)',
+    background: 'linear-gradient(160deg, #d9b545, #b1852a)',
+    color: '#2c2410',
+    border: '1px solid #8a6d1f',
+    boxShadow: '0 3px 12px rgba(140, 110, 30, 0.35), inset 0 1px 0 rgba(255,255,255,0.35)',
   },
   secondary: {
-    background: '#ede4d4',
-    color: '#5a3a1a',
-    border: '1.5px solid #cbb898',
-    boxShadow: '0 2px 6px rgba(90, 48, 16, 0.10)',
+    background: '#ece5d0',
+    color: '#1f4a36',
+    border: '1.5px solid #b8ad8a',
+    boxShadow: '0 2px 6px rgba(40, 60, 40, 0.10)',
   },
   ghost: {
     background: 'transparent',
-    color: '#7a5038',
-    border: '1.5px solid #c8a870',
+    color: '#3f6b52',
+    border: '1.5px solid #9fb59a',
     boxShadow: 'none',
   },
 };

@@ -459,3 +459,11 @@ Add UNO flash animation and online-only mode
 - Chromeで実際にUNO残り1枚になった時のフラッシュアニメーションの演出の良し悪し（CPUが1枚になるまでプレイして確認）。
 - 席バッジの赤枠が分かりやすいか。
 - ホームからUNOを選ぶと直接オンラインルームに入れるか。
+
+## 2026-07-04 追記: 本番公開完了
+
+- コミット `984b6d8` をブランチへpush後、ユーザーがGitHub上でPR #1をmainへマージ。
+- Vercelがmainを自動ビルドし、本番URL `https://dragon-game-park.vercel.app` に公開済み。
+- 本番CSSに `uno-flash-word` が含まれることを確認済み（最新ビルド反映済み）。
+- `codex/uno-online` ブランチはマージ済み。次の作業は新しいブランチを切ってPRを作る流れを推奨。
+- 未確認: 本番URLでのオンライン2人対戦（別タブ/別端末でルームコード合流）。

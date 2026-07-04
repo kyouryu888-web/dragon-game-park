@@ -12,9 +12,9 @@ html, body, #root {
    CSS 変数（デザイントークン）
 ============================================= */
 :root {
-  /* 背景 */
-  --bg: #f5ede0;
-  --card: #fffdf8;
+  /* 背景（羊皮紙） */
+  --bg: #f2ecdc;
+  --card: #fbf7ec;
 
   /* 木製ボード */
   --wood-deep:  #3a1e08;
@@ -23,25 +23,26 @@ html, body, #root {
   --wood-light: #b87838;
   --wood-pale:  #e8c890;
 
-  /* ブランドカラー */
-  --brown:   #5a3018;
-  --orange:  #c87028;
-  --green:   #4e8a4e;
-  --gold:    #d8b030;
+  /* ブランドカラー（ドラゴンファンタジー: 深緑×金） */
+  --brown:   #1f4a36;
+  --orange:  #b8862b;
+  --green:   #2d6e4f;
+  --gold:    #c9a227;
 
   /* テキスト */
-  --text:       #3a2518;
-  --text-mid:   #6a4a30;
-  --text-muted: #907060;
+  --text:       #2e2b20;
+  --text-mid:   #575239;
+  --text-muted: #8a8265;
 
   /* ボーダー */
-  --border:       #d8c4a0;
-  --border-light: #ede0c8;
+  --border:       #cfc39e;
+  --border-light: #e6dfc6;
 
   /* シャドウ */
-  --shadow-sm: 0 2px 8px rgba(58, 37, 24, 0.12);
-  --shadow-md: 0 4px 18px rgba(58, 37, 24, 0.16);
-  --shadow-lg: 0 8px 36px rgba(58, 37, 24, 0.22);
+  --shadow-sm: 0 2px 8px rgba(30, 45, 32, 0.12);
+  --shadow-md: 0 4px 18px rgba(30, 45, 32, 0.16);
+  --shadow-lg: 0 8px 36px rgba(30, 45, 32, 0.22);
+  --glow-gold: 0 0 18px rgba(201, 162, 39, 0.35);
 
   /* 角丸 */
   --r-sm: 10px;
@@ -71,11 +72,21 @@ html, body, #root {
    ベース
 ============================================= */
 body {
-  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'Zen Maru Gothic', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
   background-color: var(--bg);
+  /* 鱗風ドットテクスチャ + 上部に深緑のビネット */
+  background-image:
+    radial-gradient(circle at 50% -12%, rgba(45, 110, 79, 0.16), transparent 58%),
+    radial-gradient(circle at 6px 6px, rgba(31, 74, 54, 0.03) 4px, transparent 4.5px);
+  background-size: 100% 100%, 26px 26px;
+  background-attachment: fixed;
   color: var(--text);
   min-height: 100vh;
   -webkit-tap-highlight-color: transparent;
+}
+
+h1, h2, h3 {
+  font-family: 'Zen Antique Soft', 'Zen Maru Gothic', serif;
 }
 
 button {
@@ -582,8 +593,8 @@ button {
   --uno-table-ring: #8b241f;
 }
 .uno-table-view:not(.is-hard) {
-  --uno-table-accent: #d8a43a;
-  --uno-table-ring: #c59032;
+  --uno-table-accent: #c9a227;
+  --uno-table-ring: #a8842a;
 }
 .uno-turn-flow {
   display: grid;
@@ -1256,9 +1267,12 @@ button {
   transition: transform 0.12s ease, filter 0.12s ease;
 }
 .uno-card-info-button.is-hand {
-  left: -9px;
+  /* カード枠の内側に置く: overflow:hidden の手札パネルでもクリップされない */
+  left: 3px;
   right: auto;
-  top: -13px;
+  top: 3px;
+  width: 30px;
+  height: 30px;
 }
 .uno-card-help-panel,
 .uno-card-guide-panel {
