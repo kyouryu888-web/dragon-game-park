@@ -5,6 +5,7 @@ import {
   getSelectablePits,
   applyMove,
   checkGameEnd,
+  getMovePreview,
 } from './mancalaRules';
 import type { GameState, PlayerId } from './mancalaTypes';
 
@@ -330,5 +331,63 @@ describe('勝敗・引き分け判定', () => {
     const state = createFinishedState(24, 24);
     expect(state.winnerPlayerId).toBeNull();
     expect(state.isDraw).toBe(true);
+  });
+});
+
+// ============================================================
+// getMovePreview：手の結果予告
+// ============================================================
+
+describe('getMovePreview：着地穴と捕獲の予告', () => {
+  it('ストアに着地する手は isExtraTurn を返す', () => {
+    // p1-pit-2 の4個: pit-3, pit-4, pit-5, store に落ちる
+    const state = createInitialMancalaState('cpu');
+    const preview = getMovePreview(state, 'p1-pit-2')!;
+    expect(preview.landingPitId).toBe('p1-store');
+    expect(preview.isExtraTurn).toBe(true);
+    expect(preview.captureOppositePitId).toBeNull();
+  });
+
+  it('自分の空の穴に着地し向かいに石があれば捕獲を予告する', () => {
+    // p1-pit-4 の1個 → p1-pit-5（空）に着地。向かいは p2-pit-0（4個）
+    let state = createInitialMancalaState('cpu');
+    state = setPitStones(state, 'p1-pit-4', 1);
+    state = setPitStones(state, 'p1-pit-5', 0);
+    const preview = getMovePreview(state, 'p1-pit-4')!;
+    expect(preview.landingPitId).toBe('p1-pit-5');
+    expect(preview.captureOppositePitId).toBe('p2-pit-0');
+    expect(preview.captureCount).toBe(5); // 向かい4個 + 着地1個
+  });
+
+  it('向かいの穴が空なら捕獲予告しない', () => {
+    let state = createInitialMancalaState('cpu');
+    state = setPitStones(state, 'p1-pit-4', 1);
+    state = setPitStones(state, 'p1-pit-5', 0);
+    state = setPitStones(state, 'p2-pit-0', 0);
+    const preview = getMovePreview(state, 'p1-pit-4')!;
+    expect(preview.landingPitId).toBe('p1-pit-5');
+    expect(preview.captureOppositePitId).toBeNull();
+  });
+
+  it('選べない穴には null を返す', () => {
+    const state = createInitialMancalaState('cpu');
+    expect(getMovePreview(state, 'p2-pit-0')).toBeNull();
+  });
+
+  it('盤面を変更しない（純関数）', () => {
+    const state = createInitialMancalaState('cpu');
+    const before = state.board.map((p) => p.stones);
+    getMovePreview(state, 'p1-pit-0');
+    expect(state.board.map((p) => p.stones)).toEqual(before);
+  });
+
+  it('applyMove の結果と予告が一致する', () => {
+    let state = createInitialMancalaState('cpu');
+    state = setPitStones(state, 'p1-pit-4', 1);
+    state = setPitStones(state, 'p1-pit-5', 0);
+    const preview = getMovePreview(state, 'p1-pit-4')!;
+    const after = applyMove(state, 'p1-pit-4');
+    const store = after.board.find((p) => p.id === 'p1-store')!;
+    expect(store.stones).toBe(preview.captureCount);
   });
 });

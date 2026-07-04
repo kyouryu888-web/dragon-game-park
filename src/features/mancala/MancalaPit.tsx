@@ -111,23 +111,40 @@ type PocketPitProps = {
   isSource?: boolean;
   /** true: 穴の下に石数を数字で表示する（3P/4P用） */
   showCount?: boolean;
+  /** 予告表示: landing=最後の石が落ちる穴 / capture=取れる向かいの穴 */
+  previewState?: 'landing' | 'capture' | null;
+  /** hover/focus の開始・終了通知（選択可能な穴のみ発火） */
+  onHoverChange?: (hovering: boolean) => void;
 };
 
 export function PocketPit({
   pit, isSelectable, onClick, isActive = false, isSource = false, showCount = false,
+  previewState = null, onHoverChange,
 }: PocketPitProps) {
   const cls = [
     'pit-btn',
     isSelectable ? 'is-selectable' : '',
     isActive     ? 'is-active'     : '',
     isSource     ? 'is-source'     : '',
+    previewState === 'landing' ? 'is-landing-preview' : '',
+    previewState === 'capture' ? 'is-capture-preview' : '',
   ].filter(Boolean).join(' ');
+
+  const hoverProps = isSelectable && onHoverChange
+    ? {
+        onMouseEnter: () => onHoverChange(true),
+        onMouseLeave: () => onHoverChange(false),
+        onFocus: () => onHoverChange(true),
+        onBlur: () => onHoverChange(false),
+      }
+    : {};
 
   return (
     <button
       className={cls}
       onClick={isSelectable ? onClick : undefined}
       disabled={!isSelectable}
+      {...hoverProps}
       aria-label={`${pit.stones}個の石${isSelectable ? '（選択可能）' : ''}`}
       style={{
         width: '100%',
@@ -166,6 +183,9 @@ export function PocketPit({
       }}
     >
       <PocketGems count={pit.stones} />
+      {previewState === 'capture' && (
+        <span className="mancala-capture-chip" aria-hidden="true">とれる!</span>
+      )}
       {showCount && (
         <span style={{
           position: 'absolute',
@@ -264,6 +284,12 @@ export type PlayerPlankProps = {
   storePosition?: 'left' | 'right';
   /** 表示用石数ラベルを外部に出さず内部に表示（3P/4P プランクモード） */
   showCount?: boolean;
+  /** 予告: 最後の石が落ちる穴のID */
+  previewLandingId?: string | null;
+  /** 予告: 取れる向かいの穴のID */
+  previewCaptureId?: string | null;
+  /** 選択可能な穴の hover/focus 通知 */
+  onPitHover?: (pitId: string, hovering: boolean) => void;
 };
 
 export const PLAYER_ACCENT_COLORS = [
@@ -278,6 +304,7 @@ export function PlayerPlank({
   selectableIds, onPitClick, curActiveId, sourcePitId,
   animIdx, setCellRef, style, facingMode = false, reversed = false,
   storePosition = 'left', showCount = true,
+  previewLandingId = null, previewCaptureId = null, onPitHover,
 }: PlayerPlankProps) {
   const displayPits = reversed ? [...pits].reverse() : pits;
 
@@ -294,6 +321,12 @@ export function PlayerPlank({
           pit={pit}
           isSelectable={selectableIds.has(pit.id)}
           onClick={() => onPitClick(pit.id)}
+          previewState={
+            pit.id === previewLandingId ? 'landing'
+            : pit.id === previewCaptureId ? 'capture'
+            : null
+          }
+          onHoverChange={onPitHover ? (hovering) => onPitHover(pit.id, hovering) : undefined}
           isActive={isActive}
           isSource={isSource}
           showCount={showCount}
@@ -318,10 +351,11 @@ export function PlayerPlank({
           borderRadius: '9px 9px 0 0',
           background: colorAccent, opacity: 0.70,
         }} />
+        {/* 両列とも [角][穴×6][角] 構成にして向かいの穴を縦に揃える */}
         {storePosition === 'left' ? (
-          <>{storeCell}{pitCells}</>
+          <>{storeCell}{pitCells}<div className="plank-2p-corner-spacer" aria-hidden="true" /></>
         ) : (
-          <>{pitCells}{storeCell}</>
+          <><div className="plank-2p-corner-spacer" aria-hidden="true" />{pitCells}{storeCell}</>
         )}
       </div>
     );

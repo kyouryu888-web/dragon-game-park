@@ -1,7 +1,7 @@
-import { useRef, useLayoutEffect } from 'react';
+import { useRef, useState, useLayoutEffect } from 'react';
 import type { GameState, PlayerId, Pit } from './mancalaTypes';
 import type { CaptureAnimInfo } from './MancalaGamePage';
-import { getSelectablePits } from './mancalaRules';
+import { getSelectablePits, getMovePreview } from './mancalaRules';
 import { PocketPit, StorePit, GEM_COLORS, PlayerPlank, PLAYER_ACCENT_COLORS } from './MancalaPit';
 
 // ============================================================
@@ -573,6 +573,7 @@ export function MancalaBoard({
   slideAtTarget    = false,
 }: MancalaBoardProps) {
   const cellRefMap = useRef<Map<string, HTMLElement>>(new Map());
+  const [hoveredPitId, setHoveredPitId] = useState<string | null>(null);
   const setCellRef = (id: string) => (el: HTMLElement | null) => {
     if (el) cellRefMap.current.set(id, el);
     else    cellRefMap.current.delete(id);
@@ -665,6 +666,20 @@ export function MancalaBoard({
   const bottomPlayer    = gameState.players.find(p => p.id === bottomId)!;
   const topPlayer       = gameState.players.find(p => p.id === topId)!;
 
+  // とれる予告: hover中の選択可能な穴から着地穴・捕獲穴を計算
+  const preview = hoveredPitId && selectableIds.has(hoveredPitId) && !hasAnim
+    ? getMovePreview(gameState, hoveredPitId)
+    : null;
+  const previewLandingId = preview?.landingPitId ?? null;
+  const previewCaptureId = preview?.captureOppositePitId ?? null;
+  const handlePitHover = (pitId: string, hovering: boolean) =>
+    setHoveredPitId((cur) => (hovering ? pitId : cur === pitId ? null : cur));
+  const previewProps = {
+    previewLandingId,
+    previewCaptureId,
+    onPitHover: handlePitHover,
+  };
+
   return (
     <div className="board-container">
       <div className="board-2p-face">
@@ -685,6 +700,7 @@ export function MancalaBoard({
           reversed
           storePosition="left"
           style={{ borderRadius: '12px 12px 0 0', borderBottom: 'none' }}
+          {...previewProps}
         />
         {/* 区切りライン */}
         <div className="board-2p-divider" />
@@ -704,17 +720,24 @@ export function MancalaBoard({
           facingMode
           storePosition="right"
           style={{ borderRadius: '0 0 12px 12px', borderTop: 'none' }}
+          {...previewProps}
         />
       </div>
 
       {animOverlay}
       {showCapture && (
-        <CaptureFlyingCluster
-          key={capturePhase}
-          fromPitId={captureFromId} toPitId={captureToId}
-          stoneCount={captureAnimInfo!.stoneCount}
-          stepMs={captureStepMs} cellRefMap={cellRefMap}
-        />
+        <>
+          <CaptureFlyingCluster
+            key={capturePhase}
+            fromPitId={captureFromId} toPitId={captureToId}
+            stoneCount={captureAnimInfo!.stoneCount}
+            stepMs={captureStepMs} cellRefMap={cellRefMap}
+          />
+          <div className="mancala-get-flash" aria-live="polite" aria-atomic="true">
+            <span className="mancala-get-word">ゲット!</span>
+            <span className="mancala-get-count">+{captureAnimInfo!.stoneCount}個</span>
+          </div>
+        </>
       )}
     </div>
   );
