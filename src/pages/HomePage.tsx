@@ -13,11 +13,11 @@ const GAME_ICONS: Record<string, string> = {
 };
 
 const GAME_ACCENT: Record<string, string> = {
-  mancala:  '#c87038',
-  uno:      '#d63a30',
-  reversi:  '#444',
-  gomoku:   '#3a8adc',
-  checkers: '#6a5028',
+  mancala:  '#a4761f',
+  uno:      '#b83a30',
+  reversi:  '#3f4a42',
+  gomoku:   '#2d6e8f',
+  checkers: '#5f5028',
 };
 
 type HomePageProps = {
@@ -113,16 +113,26 @@ export function HomePage({ onSelectGame }: HomePageProps) {
           paddingBottom: 'var(--hero-pb)',
         }}
       >
-        <div className="dragon-float" style={{ fontSize: 68, marginBottom: 10 }}>
+        <div
+          className="dragon-float"
+          style={{
+            fontSize: 68,
+            marginBottom: 10,
+            filter: 'drop-shadow(0 6px 16px rgba(201, 162, 39, 0.5))',
+          }}
+        >
           🐉
         </div>
         <h1
           style={{
-            fontSize: 26,
+            fontSize: 28,
             fontWeight: 'bold',
-            color: 'var(--brown)',
+            background: 'linear-gradient(165deg, #d9b545 10%, #8a6d1f 55%, #1f4a36 130%)',
+            WebkitBackgroundClip: 'text',
+            backgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
             marginBottom: 8,
-            letterSpacing: 1.5,
+            letterSpacing: 2,
           }}
         >
           ドラゴンゲームパーク
@@ -135,16 +145,16 @@ export function HomePage({ onSelectGame }: HomePageProps) {
           display: 'flex',
           alignItems: 'center',
           gap: 12,
-          background: 'linear-gradient(135deg, #fff8ed, #fdf0d8)',
-          border: '1.5px solid #e8c880',
+          background: 'linear-gradient(135deg, #f6f2e2, #e9e5cd)',
+          border: '1.5px solid #c9b26a',
           borderRadius: 16,
           padding: '14px 16px',
           marginBottom: 22,
-          boxShadow: '0 2px 10px rgba(200, 150, 40, 0.12)',
+          boxShadow: '0 2px 10px rgba(160, 130, 40, 0.15)',
         }}
       >
         <span style={{ fontSize: 26, flexShrink: 0 }}>🐲</span>
-        <p style={{ fontSize: 14, color: '#7a5010', fontWeight: 'bold' }}>
+        <p style={{ fontSize: 14, color: '#4a5c1f', fontWeight: 'bold' }}>
           ゲームを選択してください。
         </p>
       </div>
@@ -185,7 +195,7 @@ export function HomePage({ onSelectGame }: HomePageProps) {
           textAlign: 'center',
           paddingBottom: 36,
           fontSize: 11,
-          color: '#c0a880',
+          color: '#a89a68',
           letterSpacing: 0.5,
         }}
       >

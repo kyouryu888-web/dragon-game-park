@@ -459,3 +459,28 @@ Add UNO flash animation and online-only mode
 - Chromeで実際にUNO残り1枚になった時のフラッシュアニメーションの演出の良し悪し（CPUが1枚になるまでプレイして確認）。
 - 席バッジの赤枠が分かりやすいか。
 - ホームからUNOを選ぶと直接オンラインルームに入れるか。
+
+## 2026-07-04 追記: ドラゴンファンタジー全面リデザイン + ?ボタン修正
+
+ブランチ `claude/dragon-redesign`（mainから分岐、push済み・PR未作成）。
+
+- `src/styles/global.css`
+  - `:root` トークン刷新: 羊皮紙背景 `#f2ecdc`、深緑 `--brown:#1f4a36`、金 `--gold:#c9a227` 等。変数名は維持し値のみ変更。
+  - body に鱗風ドットテクスチャ + 深緑ビネット背景、フォントを Zen Maru Gothic に。h1-h3 は Zen Antique Soft。
+  - `.uno-card-info-button.is-hand` をカード枠内 `left:3px; top:3px` に移動、30pxに拡大（overflow:hidden によるクリップ解消）。
+  - UNO通常版のリング/アクセント色を新金色に調整。
+- `index.html`: 日本語タイトル・meta description・theme-color・Google Fonts リンク追加。
+- `src/components/Button.tsx`: primary=金グラデ、secondary=深緑テキスト、ghost=緑系。
+- `src/components/Card.tsx`: 羊皮紙背景 + 金ボーダー（選択時金グロー）。
+- `src/pages/HomePage.tsx`: タイトルを金グラデ文字（background-clip:text）、ドラゴンに金グロー、案内ボックス/アクセント色を新パレットに。
+
+検証: tsc / vitest 66 passed / プレビューでホーム・UNOルーム・モバイル幅確認済み。
+次: PR作成 https://github.com/kyouryu888-web/dragon-game-park/pull/new/claude/dragon-redesign → ユーザーがマージ → 本番反映。
+
+## 2026-07-04 追記: 本番公開完了
+
+- コミット `984b6d8` をブランチへpush後、ユーザーがGitHub上でPR #1をmainへマージ。
+- Vercelがmainを自動ビルドし、本番URL `https://dragon-game-park.vercel.app` に公開済み。
+- 本番CSSに `uno-flash-word` が含まれることを確認済み（最新ビルド反映済み）。
+- `codex/uno-online` ブランチはマージ済み。次の作業は新しいブランチを切ってPRを作る流れを推奨。
+- 未確認: 本番URLでのオンライン2人対戦（別タブ/別端末でルームコード合流）。
