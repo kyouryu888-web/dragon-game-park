@@ -33,7 +33,6 @@ export function BackgammonOnlineGame({
 
   const hostName = payload.hostName || 'ルームの主';
   const guestName = payload.guestName || '挑戦者';
-  const myName = iAmHost ? hostName : guestName;
   const oppName = iAmHost ? guestName : hostName;
 
   // ---- 受信 ----

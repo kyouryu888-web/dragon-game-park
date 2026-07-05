@@ -45,11 +45,10 @@ export function Button({
     borderRadius: 8,
     fontSize: 15,
     fontWeight: 'bold',
-    letterSpacing: '.12em',
     cursor: disabled ? 'not-allowed' : 'pointer',
     opacity: disabled ? 0.5 : 1,
     width: fullWidth ? '100%' : undefined,
-    letterSpacing: 0.4,
+    letterSpacing: '.12em',
     lineHeight: 1.3,
     textAlign: 'center',
   };
