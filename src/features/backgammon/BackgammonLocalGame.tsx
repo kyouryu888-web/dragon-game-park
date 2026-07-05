@@ -26,8 +26,8 @@ export function BackgammonLocalGame({ config, showToast, onExitToSettings, onBac
   const quitArm = useRef(false);
 
   const isCpuMode = config.mode === 'cpu';
-  const pName = config.name.trim() || '挑戦者';
-  const cName = isCpuMode ? getCpuDisplayName(config.cpuLevel) : (config.name2.trim() || '挑戦者2');
+  const pName = config.name.trim() || '名もなき挑戦者';
+  const cName = isCpuMode ? getCpuDisplayName(config.cpuLevel) : (config.name2.trim() || '名もなき挑戦者2');
   const nameFor = (id: PlayerId) => (id === 'white' ? pName : cName);
   const isHumanTurn = !isCpuMode || state.currentPlayer === 'white';
 

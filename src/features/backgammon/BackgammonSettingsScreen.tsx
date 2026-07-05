@@ -159,7 +159,7 @@ export function BackgammonSettingsScreen({
       {/* name */}
       <div style={{ marginTop: 22 }}>
         <SectionHeading numeral="I." text="名を刻む" />
-        <DarkInput value={config.name} onChange={(v) => onChange({ name: v })} placeholder="挑戦者の名(12文字まで)" />
+        <DarkInput value={config.name} onChange={(v) => onChange({ name: v })} placeholder="挑戦者の名（なくてもよい）" />
       </div>
 
       {/* mode select */}
@@ -216,7 +216,7 @@ export function BackgammonSettingsScreen({
           {config.mode === 'local' && (
             <SubPanel>
               <div style={{ fontSize: 12, color: BG.muted, letterSpacing: '.06em' }}>お相手の名</div>
-              <DarkInput value={config.name2} onChange={(v) => onChange({ name2: v })} placeholder="対戦相手の名(12文字まで)" height={48} />
+              <DarkInput value={config.name2} onChange={(v) => onChange({ name2: v })} placeholder="お相手の名（なくてもよい）" height={48} />
             </SubPanel>
           )}
 

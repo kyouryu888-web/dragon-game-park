@@ -60,7 +60,7 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
       .single();
 
     if (error || !data?.game_state) {
-      setMessage('UNOルームの取得に失敗しました。');
+      setMessage('ルームの気配が途絶えた…。');
       setLoading(false);
       return;
     }
@@ -270,7 +270,7 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
     return (
       <Layout>
         <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-          <p style={{ color: 'var(--text-muted)', marginBottom: 20 }}>UNOルームの取得に失敗しました。</p>
+          <p style={{ color: 'var(--text-muted)', marginBottom: 20 }}>ルームの気配が途絶えた…。</p>
           <Button onClick={onBackToHome}>ホームへ戻る</Button>
         </div>
       </Layout>

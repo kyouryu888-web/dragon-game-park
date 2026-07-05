@@ -325,7 +325,7 @@ function TurnStatus({
       textAlign: 'center',
     }}>
       <div className={thinking ? 'cpu-thinking-pulse' : undefined} style={{ fontWeight: 900, fontSize: 14 }}>
-        {player.isCpu ? 'CPU ' : ''}{player.name} の番です
+        {player.isCpu ? 'CPU ' : ''}{player.name} の番
       </div>
       <div style={{ marginTop: 4, fontSize: 12, lineHeight: 1.5 }}>
         色: {UNO_COLOR_LABELS[activeColor]}{pendingDrawCount > 0 ? ` / ドロー ${pendingDrawCount}まい` : ''} / {message}
@@ -468,7 +468,7 @@ function ResultPanel({
     }}>
       <div className="trophy-bounce" style={{ fontSize: 42 }}>🏆</div>
       <h2 style={{ fontSize: 20, color: 'var(--brown)', marginBottom: 12 }}>
-        {winner ? `${winner.name} の勝ち!` : 'ゲーム終了'}
+        {winner ? `${winner.name} の勝利!` : '決闘は終わった'}
       </h2>
       <p style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: 12 }}>
         数字カードは数字の点、スキップ・リバース・ドローなどの記号カードは20点、ワイルドカードは50点です。点が少ないほど上位です。

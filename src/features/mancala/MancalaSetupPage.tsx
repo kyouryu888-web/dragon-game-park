@@ -103,7 +103,7 @@ export function MancalaSetupPage({ onStart, onBack, onOnlinePlay }: MancalaSetup
             マンカラ
           </h1>
           <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.7 }}>
-            木製ボードと石で遊ぶカラハ式マンカラです
+            古木の盤と石で競う、いにしえの遊戯カラハ
           </p>
         </div>
 

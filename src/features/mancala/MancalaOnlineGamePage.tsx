@@ -514,7 +514,7 @@ export function MancalaOnlineGamePage({
     return (
       <Layout>
         <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-          <p style={{ color: 'var(--text-muted)', marginBottom: 24 }}>ルームの取得に失敗しました</p>
+          <p style={{ color: 'var(--text-muted)', marginBottom: 24 }}>ルームの気配が途絶えた…</p>
           <Button onClick={onBackToHome}>ホームに戻る</Button>
         </div>
       </Layout>

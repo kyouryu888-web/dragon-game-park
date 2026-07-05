@@ -58,12 +58,12 @@ export function BackgammonPage({ onBackToHome }: BackgammonPageProps) {
 
   // ---- 開始 ----
   async function handleStart() {
-    if (!config.name.trim()) { showToast('まずは名を刻んでほしい'); return; }
-    if (config.mode === 'local' && !config.name2.trim()) { showToast('お相手の名も刻んでほしい'); return; }
+    // 名前は空でもよい（名もなき挑戦者として遊べる）
+    const myName = config.name.trim() || '名もなき挑戦者';
 
     if (config.mode !== 'online') {
       setScreen('play');
-      showToast(config.mode === 'cpu' ? 'そなたから振るがよい' : `${config.name.trim()}から振るがよい`);
+      showToast(config.mode === 'cpu' ? 'そなたから振るがよい' : `${myName}から振るがよい`);
       return;
     }
 
@@ -73,7 +73,7 @@ export function BackgammonPage({ onBackToHome }: BackgammonPageProps) {
       setIsJoiner(true);
       setScreen('waiting');
       try {
-        const info = await joinRoom(joinCode, config.name.trim());
+        const info = await joinRoom(joinCode, myName);
         const row = await fetchRoom(info.roomCode);
         if (!row) throw new Error('その紋章のルームは見つからぬ');
         setRoom(info);
@@ -86,7 +86,7 @@ export function BackgammonPage({ onBackToHome }: BackgammonPageProps) {
       }
     } else {
       try {
-        const info = await createRoom(config.name.trim());
+        const info = await createRoom(myName);
         setRoom(info);
         setIsJoiner(false);
         setCopied(false);

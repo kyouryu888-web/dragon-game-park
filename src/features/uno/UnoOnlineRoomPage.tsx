@@ -73,7 +73,7 @@ export function UnoOnlineRoomPage({ onGameStart, onBack }: UnoOnlineRoomPageProp
 
     const code = generateUnoRoomCode();
     const hostId = getUnoOnlinePlayerId();
-    const hostName = myName.trim() || 'ホスト';
+    const hostName = myName.trim() || 'ルームの主';
     const gameState = createUnoOnlineInitialState(variant, playerCount, hostName, activeSlots);
     const cpuPrefill = buildUnoCpuPrefill(playerCount, activeSlots);
 
@@ -92,7 +92,7 @@ export function UnoOnlineRoomPage({ onGameStart, onBack }: UnoOnlineRoomPageProp
       .single();
 
     if (insertError || !data) {
-      setError('UNOルームの作成に失敗しました。Supabaseに uno_rooms テーブルがあるか確認してください。');
+      setError('ルームを開けなかった。時をおいて再び試されよ');
       setPageState('menu');
       return;
     }
@@ -149,7 +149,7 @@ export function UnoOnlineRoomPage({ onGameStart, onBack }: UnoOnlineRoomPageProp
       return;
     }
 
-    const guestName = myName.trim() || `ゲスト${openSlot.playerIndex + 1}`;
+    const guestName = myName.trim() || `挑戦者${openSlot.playerIndex + 1}`;
     const currentState = row.game_state as Parameters<typeof renameUnoPlayer>[0] | null;
     const updatedState = currentState
       ? renameUnoPlayer(currentState, openSlot.playerIndex, guestName)
@@ -170,7 +170,7 @@ export function UnoOnlineRoomPage({ onGameStart, onBack }: UnoOnlineRoomPageProp
       .maybeSingle();
 
     if (updateError || !updated) {
-      setError('参加に失敗しました。ほかの人が先に入った可能性があります。もう一度お試しください。');
+      setError('扉は既に閉ざされていた。別のルームを探されよ');
       return;
     }
 
@@ -275,16 +275,16 @@ export function UnoOnlineRoomPage({ onGameStart, onBack }: UnoOnlineRoomPageProp
     <Layout>
       <div style={{ paddingTop: 16, paddingBottom: 40 }}>
         <h1 style={{ fontSize: 20, fontWeight: 900, color: 'var(--brown)', textAlign: 'center', marginBottom: 20 }}>
-          UNO オンライン対戦
+          UNO ─ 遠方の者との決闘
         </h1>
 
         <section style={panelStyle}>
-          <h2 style={sectionTitleStyle}>あなたの名前</h2>
+          <h2 style={sectionTitleStyle}>名を刻む（なくてもよい）</h2>
           <input
             type="text"
             value={myName}
             onChange={(event) => handleNameChange(event.target.value)}
-            placeholder="例: たろう"
+            placeholder="挑戦者の名"
             maxLength={12}
             style={inputStyle}
           />
@@ -486,7 +486,7 @@ function OnlineSlotRow({
           type="text"
           value={slot.name}
           onChange={(event) => onChange({ name: event.target.value })}
-          placeholder={`ゲスト${index + 2}`}
+          placeholder={`挑戦者${index + 2}`}
           maxLength={12}
           style={inputStyle}
         />

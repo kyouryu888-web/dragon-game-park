@@ -1347,6 +1347,12 @@ button {
   box-shadow: 0 3px 10px rgba(35, 20, 8, 0.24);
   transition: transform 0.12s ease, filter 0.12s ease;
 }
+/* 見た目は小さいままタップ判定を44px相当まで広げる */
+.uno-card-info-button::after {
+  content: '';
+  position: absolute;
+  inset: -10px;
+}
 .uno-card-info-button.is-hand {
   /* カード枠の内側に置く: overflow:hidden の手札パネルでもクリップされない */
   left: 3px;

@@ -36,8 +36,8 @@ export type CaptureAnimInfo = {
 const PLAYER_SCORE_COLORS = [
   { bg: 'rgba(201,162,75,.16)', border: '#e0b060', text: '#f0dfae' },
   { bg: 'rgba(138,111,58,.14)', border: '#80b880', text: '#f0dfae' },
-  { bg: '#f0e8ff', border: '#a880e0', text: '#481090' },
-  { bg: '#e0eeff', border: '#6090d0', text: '#0840a0' },
+  { bg: 'rgba(140,100,220,.18)', border: '#a880e0', text: '#d8c8f8' },
+  { bg: 'rgba(80,140,220,.18)', border: '#6090d0', text: '#bcd8ff' },
 ];
 
 const RANK_MEDALS = ['🥇', '🥈', '🥉', '  '];
@@ -844,9 +844,9 @@ function PlayerLabel({
       </span>
       <span style={{
         fontSize: 12, fontWeight: 'bold', color: colors.text,
-        background: isCurrentTurn ? colors.bg : '#f0e8d4',
+        background: isCurrentTurn ? colors.bg : 'rgba(255,255,255,.08)',
         padding: '2px 10px', borderRadius: 20,
-        border: isCurrentTurn ? `1.5px solid ${colors.border}` : '1px solid #d8cbb0',
+        border: isCurrentTurn ? `1.5px solid ${colors.border}` : '1px solid rgba(201,162,75,.3)',
         transition: 'background 0.2s ease',
       }}>
         {score}石

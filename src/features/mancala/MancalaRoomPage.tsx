@@ -67,7 +67,7 @@ function countJoined(row: Partial<RoomRow>): number {
   return c;
 }
 
-const PLAYER_NAMES = ['ホスト', 'ゲスト1', 'ゲスト2', 'ゲスト3'];
+const PLAYER_NAMES = ['ルームの主', '挑戦者1', '挑戦者2', '挑戦者3'];
 
 const CPU_LEVELS: { level: CpuLevel; label: string }[] = [
   { level: 'very-easy', label: 'ベビードラゴン' },
@@ -147,7 +147,7 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
     });
 
     if (err) {
-      setError('ルームの作成に失敗しました。もう一度お試しください。');
+      setError('ルームを開けなかった。時をおいて再び試されよ');
       setPageState('menu');
       return;
     }
@@ -287,7 +287,7 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
       .eq('room_code', code);
 
     if (updateErr) {
-      setError('参加に失敗しました。もう一度お試しください。');
+      setError('その紋章のルームには入れなかった。コードを確かめられよ');
       return;
     }
 
@@ -422,7 +422,7 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
           borderRadius: 18, padding: '16px 20px', marginBottom: 16,
         }}>
           <div style={{ fontSize: 13, fontWeight: 'bold', color: 'var(--brown)', marginBottom: 8 }}>
-            👤 あなたの名前
+            👤 名を刻む（なくてもよい）
           </div>
           <input
             type="text"

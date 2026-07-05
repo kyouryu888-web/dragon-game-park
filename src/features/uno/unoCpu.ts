@@ -24,12 +24,13 @@ export function getUnoCpuDisplayName(level: UnoCpuLevel = 'normal'): string {
 }
 
 export function getUnoCpuLevelLabel(level: UnoCpuLevel): string {
+  // ドラゴン段位（マンカラ・バックギャモンと共通の呼び名）
   const labels: Record<UnoCpuLevel, string> = {
-    'very-easy': 'とてもよわい',
-    easy: 'よわい',
-    normal: 'ふつう',
-    hard: 'つよい',
-    'very-hard': 'さいきょう',
+    'very-easy': '🥚 ベビードラゴン',
+    easy: '🐲 ドラゴン',
+    normal: '🐉 スーパードラゴン',
+    hard: '👑 ドラゴンキング',
+    'very-hard': '⚡ ゴッドドラゴン',
   };
   return labels[level];
 }

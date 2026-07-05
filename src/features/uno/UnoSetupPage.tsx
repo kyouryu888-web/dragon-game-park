@@ -189,10 +189,10 @@ export function UnoSetupPage({ onStart, onBack, onOnlinePlay }: UnoSetupPageProp
 
           <div style={{ display: 'grid', gap: 9 }}>
             <Button fullWidth onClick={handleStart}>
-              オフラインで遊ぶ
+              この場の者と遊ぶ
             </Button>
             <Button fullWidth variant="secondary" onClick={onOnlinePlay}>
-              オンライン対戦
+              遠方の者と対戦
             </Button>
           </div>
         </div>
