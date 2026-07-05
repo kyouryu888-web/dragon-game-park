@@ -39,27 +39,33 @@ SQLや設定値を貼ってもらう時は、必ず「今ある内容を全部�
 
 バックギャモンを3つ目のゲームとして追加する。
 
-**進捗: オフライン版の実装が完了（`claude/backgammon` ブランチ、未マージ）。**
+**進捗: ダークファンタジーUI版＋オンライン対戦の実装完了（`claude/backgammon` ブランチ、未マージ）。Supabase の SQL 実行だけユーザー作業が残っている。**
 
-ユーザー確認済みの方針:
-- ルール範囲: 標準ルール + ダブリングキューブ（ギャモン/バックギャモンの点数計算あり。キューブはセットアップでオフにも可能）
-- 対戦形態: オフラインのみ（人 vs CPU / 人 vs 人 同一画面）。**オンライン対戦は未実装で今後の課題**
-- スマホ優先: タップ2回方式（駒タップ→金色ハイライトの移動先をタップ）。375px幅で確認済み
-- CPU難易度: 既存と同じ5段階（very-easy〜very-hard、ドラゴン段位名もマンカラと共通）
-- 演出: サイコロ転がりアニメ、駒スライド移動アニメ、金×深緑のドラゴン風駒
+経緯: 最初にサイト共通デザイン（羊皮紙）の版を実装 → ユーザーが claude.ai/design で作ったデザイン（`Backgammon.dc.html`、ダークファンタジー調・スマホ390×844想定）に全面リデザイン。ユーザー確認済みの方針:
+- 見た目はデザインに忠実（焦茶の盤・金×緋の駒・火の粉・番人ドラゴン・Cinzel/しっぽり明朝フォント）
+- **ダブリングキューブはUIから外した**（ロジックは `backgammonRules.ts` に温存。復活可能）
+- CPU 5段階選択はデザインの意匠でサブパネルに追加
+- **オンライン対戦を Supabase で本実装**（マンカラ/UNOと同じ realtime＋5秒ポーリング構成）
 
 ### バックギャモンの実装ファイル（`src/features/backgammon/`）
 
-純ロジック層（マンカラ同様、Reactに依存しない）:
-- `backgammonTypes.ts` — 型定義。盤は `points[24]`（index 0-5 = 白/金のホーム、18-23 = 黒/翠のホーム）。white は 23→0、black は 0→23 に進む
-- `createInitialBackgammonState.ts` — 標準初期配置
-- `backgammonRules.ts` + テスト — 合法手列挙（最大限使用ルール・大きい目強制を含む）、ヒット/バー/ベアオフ、ダブリングキューブ、勝敗（シングル/ギャモン/バックギャモン × キューブ値）
-- `backgammonCpu.ts` + テスト — 5段階CPU（盤面評価 + 被ヒット確率計算）、キューブ提案/受諾判断、CPU同士の完走スモークテスト
+純ロジック層（Reactに依存しない・テスト105件中33件）:
+- `backgammonTypes.ts` — 型定義。盤は `points[24]`（0-5 = white/金のホーム、18-23 = black/緋のホーム）。white 23→0、black 0→23。`BackgammonConfig = { mode: 'cpu'|'local'|'online', name, name2, cpuLevel }`
+- `createInitialBackgammonState.ts` / `backgammonRules.ts` + テスト（最大限使用ルール・ベアオフ・ヒット/バー・ギャモン判定）/ `backgammonCpu.ts` + テスト（5段階評価CPU・完走スモークテスト）
 
-UI層:
-- `BackgammonSetupPage.tsx` / `BackgammonGamePage.tsx` / `BackgammonBoard.tsx` / `BackgammonPoint.tsx` / `BackgammonDice.tsx`
-- スタイルは `global.css` 末尾の「バックギャモン」セクション（`--bg-point-h` などの clamp 変数、三角ポイント、駒、サイコロ、キューブ）
-- 配線済み: `games.ts`（id: backgammon）、`HomePage.tsx`（🎲 / #8a6a1f）、`App.tsx`（backgammon-setup / backgammon-game）
+UI層（インラインスタイル基調。デザインの色・寸法をそのまま移植）:
+- `BackgammonUi.tsx` — 色定数 `BG`、DragonIcon、GoldButton 等の共有パーツ
+- `BackgammonPage.tsx` — ルート。画面遷移（settings/waiting/play/online-play）、火の粉、トースト、設定の localStorage 保存
+- `BackgammonSettingsScreen.tsx` — 名を刻む/対戦の作法（龍と対戦・同じ盤・遠方の者）/CPU段位/オンラインタブ
+- `BackgammonPlayScreen.tsx` — 盤・サイコロ・プレート・勝敗オーバーレイの純表示コンポーネント
+- `BackgammonLocalGame.tsx` — CPU/2人対戦のコンテナ（エンジン接続・CPU自動手番・トースト台詞）
+- `BackgammonOnlineGame.tsx` + `backgammonOnline.ts` — オンライン対戦（ホスト=金/ゲスト=緋、seq番号で古い受信を破棄、realtime購読＋5秒ポーリング）
+- キーフレームは `global.css` 末尾（emberRise/dotPulse/diceIn/pickPulse 等）。フォントは `index.html` に Cinzel / Shippori Mincho B1 追加済み
+- 配線: `App.tsx` の `'backgammon'` 1画面 → `BackgammonPage`
+
+### オンライン対戦の残作業（ユーザーが行う）
+
+`supabase/backgammon_rooms.sql` を Supabase の SQL Editor で実行するまで、オンラインは「ルームを開けなかった」トーストになる（実行後に動く）。テーブル構成はマンカラ/UNOと同系（room_code / host_id / guest_id / game_state jsonb、RLS全開放、realtime publication 追加）。
 
 ## サイト全体のアーキテクチャ（ゲームを追加する時に触る場所）
 
@@ -100,8 +106,9 @@ Supabaseベース。マンカラの `mancala_rooms` テーブル（列: `room_co
 
 ## 次にやること
 
-1. ユーザーが実機（スマホ）で遊んで挙動・操作感を確認する。フィードバックがあれば `claude/backgammon` 上で調整する。
-2. 問題なければ PR を作って `main` にマージ（→ Vercel が自動デプロイ）。
-3. 将来の課題: バックギャモンのオンライン対戦（Supabase に `backgammon_rooms` テーブルを作り、`MancalaRoomPage.tsx` / `MancalaOnlineGamePage.tsx` のパターンを踏襲。`GameState` は最初から JSON シリアライズ可能な形にしてある）。
+1. ユーザーが `supabase/backgammon_rooms.sql` を Supabase SQL Editor で実行する（新規クエリとして全文貼り付け→Run。既存内容の置き換えではない）。
+2. ユーザーが実機（スマホ）で CPU対戦・2人対戦・オンライン対戦（端末2台 or ブラウザ2窓）を確認する。
+3. 問題なければ PR を作って `main` にマージ（→ Vercel が自動デプロイ）。
+4. 将来の課題: ダブリングキューブUIの復活（ロジックは温存済み）、オンラインの再戦機能、切断時の再入室導線の改善。
 
-検証済み（2026-07-05）: `tsc --noEmit` ✅ / `vitest run` 105件 ✅（バックギャモン33件含む）/ プレビューで ホーム→セットアップ→対局→CPU自動手番 をモバイル幅(375px)・デスクトップで確認 ✅
+検証済み（2026-07-05）: `tsc --noEmit` ✅ / `vitest run` 105件 ✅ / プレビュー390×844で 設定→オープニングロール→CPU手番→駒選択→移動先マーカー→移動 の全フロー✅ / オンラインはテーブル未作成時のエラートースト✅（本接続はSQL実行後に確認）

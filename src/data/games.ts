@@ -25,7 +25,7 @@ export const games: GameInfo[] = [
   {
     id: 'backgammon',
     title: 'バックギャモン',
-    description: 'サイコロを振って15個の駒をゴールへ運ぶ、世界最古の2人対戦ボードゲームです。ダブリングキューブの駆け引きも楽しめます。',
+    description: 'サイコロを振って15個の駒をゴールへ運ぶ、世界最古の2人対戦ボードゲームです。番人ドラゴンとの対戦やオンライン対戦が楽しめます。',
     status: 'available',
     themeLabel: 'ボードゲーム',
   },

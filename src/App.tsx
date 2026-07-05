@@ -12,9 +12,7 @@ import { UnoGamePage } from './features/uno/UnoGamePage';
 import { UnoOnlineRoomPage } from './features/uno/UnoOnlineRoomPage';
 import { UnoOnlineGamePage } from './features/uno/UnoOnlineGamePage';
 import type { UnoOnlineRoomInfo } from './features/uno/unoOnline';
-import type { BackgammonConfig } from './features/backgammon/backgammonTypes';
-import { BackgammonSetupPage } from './features/backgammon/BackgammonSetupPage';
-import { BackgammonGamePage } from './features/backgammon/BackgammonGamePage';
+import { BackgammonPage } from './features/backgammon/BackgammonPage';
 
 type AppScreen =
   | 'home'
@@ -26,8 +24,7 @@ type AppScreen =
   | 'uno-game'
   | 'uno-room'
   | 'uno-online-game'
-  | 'backgammon-setup'
-  | 'backgammon-game';
+  | 'backgammon';
 
 export default function App() {
   const [screen, setScreen] = useState<AppScreen>('home');
@@ -45,13 +42,6 @@ export default function App() {
       { name: '', isCpu: true, cpuLevel: 'normal' },
     ],
   });
-  const [backgammonConfig, setBackgammonConfig] = useState<BackgammonConfig>({
-    players: [
-      { name: '', isCpu: false, cpuLevel: 'normal' },
-      { name: '', isCpu: true,  cpuLevel: 'normal' },
-    ],
-    useDoublingCube: true,
-  });
   const [onlineRoomInfo, setOnlineRoomInfo] = useState<OnlineRoomInfo | null>(null);
   const [unoOnlineRoomInfo, setUnoOnlineRoomInfo] = useState<UnoOnlineRoomInfo | null>(null);
 
@@ -61,7 +51,7 @@ export default function App() {
         onSelectGame={(gameId) => {
           if (gameId === 'mancala') setScreen('mancala-setup');
           if (gameId === 'uno') setScreen('uno-room');
-          if (gameId === 'backgammon') setScreen('backgammon-setup');
+          if (gameId === 'backgammon') setScreen('backgammon');
         }}
       />
     );
@@ -112,26 +102,8 @@ export default function App() {
     );
   }
 
-  if (screen === 'backgammon-setup') {
-    return (
-      <BackgammonSetupPage
-        onStart={(config) => {
-          setBackgammonConfig(config);
-          setScreen('backgammon-game');
-        }}
-        onBack={() => setScreen('home')}
-      />
-    );
-  }
-
-  if (screen === 'backgammon-game') {
-    return (
-      <BackgammonGamePage
-        config={backgammonConfig}
-        onBackToSetup={() => setScreen('backgammon-setup')}
-        onBackToHome={() => setScreen('home')}
-      />
-    );
+  if (screen === 'backgammon') {
+    return <BackgammonPage onBackToHome={() => setScreen('home')} />;
   }
 
   if (screen === 'uno-setup') {

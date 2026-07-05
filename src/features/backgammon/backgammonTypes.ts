@@ -5,17 +5,15 @@ export type CpuLevel = 'very-easy' | 'easy' | 'normal' | 'hard' | 'very-hard';
 /** プレイヤーID。white=金龍（インデックス23→0へ進む）、black=翠龍（0→23へ進む） */
 export type PlayerId = 'white' | 'black';
 
-export type PlayerConfig = {
-  name: string;
-  isCpu: boolean;
-  cpuLevel: CpuLevel;
-};
+export type BackgammonMode = 'cpu' | 'local' | 'online';
 
 export type BackgammonConfig = {
-  /** [0]=white（金）, [1]=black（翠） */
-  players: [PlayerConfig, PlayerConfig];
-  /** ダブリングキューブを使うか */
-  useDoublingCube: boolean;
+  mode: BackgammonMode;
+  /** 挑戦者（金のコマ・white） */
+  name: string;
+  /** 2人対戦時の相手（緋のコマ・black） */
+  name2: string;
+  cpuLevel: CpuLevel;
 };
 
 /** ポイント1つの状態。駒がなければ null */
