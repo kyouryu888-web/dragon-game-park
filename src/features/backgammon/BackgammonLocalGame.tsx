@@ -1,7 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { BackgammonConfig, GameState, Move, PlayerId } from './backgammonTypes';
 import { createInitialBackgammonState } from './createInitialBackgammonState';
-import { applyMove, getLegalMoves, getOpponent, passTurn, rollDice, rollOpening } from './backgammonRules';
+import {
+  applyMove, getChainedMoves, getLegalMoves, getOpponent,
+  isPureBearOffRace, passTurn, rollDice, rollOpening,
+  type ChainedMove,
+} from './backgammonRules';
 import { chooseCpuMoveSequence, getCpuDisplayName } from './backgammonCpu';
 import { BackgammonPlayScreen } from './BackgammonPlayScreen';
 
@@ -18,6 +22,7 @@ type BackgammonLocalGameProps = {
 export function BackgammonLocalGame({ config, showToast, onExitToSettings, onBackToHome }: BackgammonLocalGameProps) {
   const [state, setState] = useState<GameState>(() => createInitialBackgammonState());
   const [selected, setSelected] = useState<'bar' | number | null>(null);
+  const [autoRunFor, setAutoRunFor] = useState<PlayerId | null>(null);
   const quitArm = useRef(false);
 
   const isCpuMode = config.mode === 'cpu';
@@ -57,6 +62,16 @@ export function BackgammonLocalGame({ config, showToast, onExitToSettings, onBac
     return new Set(legalMoves.map((m) => String(m.from)));
   }, [isHumanTurn, state.phase, effectiveSelected, legalMoves]);
 
+  // サイコロ2個分を一度に動かす候補
+  const chainMoves = useMemo<ChainedMove[]>(
+    () => (isHumanTurn && effectiveSelected !== null ? getChainedMoves(state, effectiveSelected) : []),
+    [isHumanTurn, effectiveSelected, state],
+  );
+  const chainDestinations = useMemo(
+    () => new Set(chainMoves.map((c) => c.dest).filter((d) => !destinations.has(d))),
+    [chainMoves, destinations],
+  );
+
   function doApplyMove(move: Move) {
     const mover = state.currentPlayer;
     // ヒット判定（適用前に見る）
@@ -76,6 +91,26 @@ export function BackgammonLocalGame({ config, showToast, onExitToSettings, onBac
     setState(next);
   }
 
+  /** 2手分をまとめて適用（途中のヒットも通知） */
+  function doApplyChain(chain: ChainedMove) {
+    const mover = state.currentPlayer;
+    let hit = false;
+    let s = state;
+    for (const move of chain.moves) {
+      if (move.to !== 'off') {
+        const target = s.points[move.to as number];
+        if (target && target.owner === getOpponent(mover)) hit = true;
+      }
+      s = applyMove(s, move);
+    }
+    if (hit) {
+      const humanHit = !isCpuMode || mover === 'white';
+      showToast(humanHit ? '相手のコマを弾いた!' : 'コマが弾かれてバー送りに!');
+    }
+    setSelected(null);
+    setState(s);
+  }
+
   // ---- タップ操作 ----
   function handleTapPoint(i: number) {
     if (state.phase === 'finished') return;
@@ -86,6 +121,10 @@ export function BackgammonLocalGame({ config, showToast, onExitToSettings, onBac
       const candidates = movesFromSelected.filter((m) => m.to === i);
       doApplyMove(candidates.reduce((a, b) => (a.die >= b.die ? a : b)));
       return;
+    }
+    if (effectiveSelected !== null && chainDestinations.has(i)) {
+      const chain = chainMoves.find((c) => c.dest === i);
+      if (chain) { doApplyChain(chain); return; }
     }
     if (state.bar[state.currentPlayer] > 0) { showToast('まずバーのコマを戻すのだ'); return; }
     const pt = state.points[i];
@@ -129,6 +168,38 @@ export function BackgammonLocalGame({ config, showToast, onExitToSettings, onBac
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mustPass, state]);
+
+  // ---- ベアオフ自動化 ----
+  const currentIsHumanSide = !isCpuMode || state.currentPlayer === 'white';
+  const autoEligible =
+    currentIsHumanSide &&
+    state.phase !== 'finished' &&
+    state.phase !== 'opening-roll' &&
+    isPureBearOffRace(state, state.currentPlayer);
+  const autoActive = autoRunFor !== null && autoRunFor === state.currentPlayer;
+
+  useEffect(() => {
+    if (state.phase === 'finished' && autoRunFor !== null) setAutoRunFor(null);
+  }, [state.phase, autoRunFor]);
+
+  useEffect(() => {
+    if (autoRunFor === null || state.currentPlayer !== autoRunFor || state.phase === 'finished') return;
+    if (isCpuMode && state.currentPlayer === 'black') return; // CPU側は既存の自動処理に任せる
+    if (state.phase === 'rolling') {
+      const timer = setTimeout(() => {
+        setState((s) => (s.phase === 'rolling' && s.currentPlayer === autoRunFor ? rollDice(s) : s));
+      }, 420);
+      return () => clearTimeout(timer);
+    }
+    if (state.phase === 'moving' && legalMoves.length > 0) {
+      const timer = setTimeout(() => {
+        const seq = chooseCpuMoveSequence(state, 'very-hard');
+        if (seq && seq.moves.length > 0) doApplyMove(seq.moves[0]);
+      }, 340);
+      return () => clearTimeout(timer);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state, autoRunFor, legalMoves]);
 
   // ---- CPUの手番 ----
   useEffect(() => {
@@ -203,6 +274,7 @@ export function BackgammonLocalGame({ config, showToast, onExitToSettings, onBac
 
   function handleRematch() {
     setSelected(null);
+    setAutoRunFor(null);
     setState(createInitialBackgammonState());
     showToast(isCpuMode ? 'そなたから振るがよい' : `${pName}から振るがよい`);
   }
@@ -212,6 +284,16 @@ export function BackgammonLocalGame({ config, showToast, onExitToSettings, onBac
       state={state}
       selectedFrom={effectiveSelected}
       destinations={isHumanTurn ? destinations : new Set()}
+      chainDestinations={isHumanTurn ? chainDestinations : new Set()}
+      autoButton={
+        autoEligible || autoActive
+          ? {
+              label: autoActive ? '⚡ 自動で上がり中…（触れて解除）' : '⚡ あとは自動で上がる',
+              active: autoActive,
+              onClick: () => setAutoRunFor(autoActive ? null : state.currentPlayer),
+            }
+          : null
+      }
       offDestFor={isHumanTurn && offMove ? state.currentPlayer : null}
       pickableFroms={pickableFroms}
       centerMsg={centerMsg}

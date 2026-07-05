@@ -14,13 +14,13 @@ export function Card({ children, onClick, selected = false, padding = '20px' }: 
       onClick={onClick}
       onKeyDown={onClick ? (e) => { if (e.key === 'Enter' || e.key === ' ') onClick(); } : undefined}
       style={{
-        backgroundColor: '#fbf7ec',
-        borderRadius: 20,
+        backgroundColor: 'rgba(13, 11, 16, 0.55)',
+        borderRadius: 10,
         padding,
         boxShadow: selected
-          ? '0 4px 20px rgba(160, 130, 40, 0.28), 0 0 0 2.5px #c9a227'
-          : '0 2px 14px rgba(40, 60, 40, 0.10)',
-        border: selected ? '2px solid #c9a227' : '1.5px solid #ddd2ac',
+          ? '0 0 20px rgba(201, 162, 75, 0.3), 0 0 0 1.5px #c9a24b, inset 0 0 12px rgba(201, 162, 75, 0.08)'
+          : '0 4px 18px rgba(0, 0, 0, 0.4)',
+        border: selected ? '1.5px solid #c9a24b' : '1px solid rgba(201, 162, 75, 0.25)',
         cursor: onClick ? 'pointer' : 'default',
         transition: 'box-shadow 0.15s ease, border-color 0.15s ease',
         overflow: 'hidden',

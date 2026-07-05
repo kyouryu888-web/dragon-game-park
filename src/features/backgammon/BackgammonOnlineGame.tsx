@@ -1,6 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { GameState, Move } from './backgammonTypes';
-import { applyMove, getLegalMoves, getOpponent, passTurn, rollDice, rollOpening } from './backgammonRules';
+import {
+  applyMove, getChainedMoves, getLegalMoves, getOpponent,
+  isPureBearOffRace, passTurn, rollDice, rollOpening,
+  type ChainedMove,
+} from './backgammonRules';
+import { chooseCpuMoveSequence } from './backgammonCpu';
 import { BackgammonPlayScreen } from './BackgammonPlayScreen';
 import { type BackgammonRoomInfo, type OnlinePayload, pushPayload, subscribeRoom } from './backgammonOnline';
 
@@ -17,6 +22,7 @@ export function BackgammonOnlineGame({
 }: BackgammonOnlineGameProps) {
   const [payload, setPayload] = useState<OnlinePayload>(initialPayload);
   const [selected, setSelected] = useState<'bar' | number | null>(null);
+  const [autoRun, setAutoRun] = useState(false);
   const seqRef = useRef(initialPayload.seq);
   const quitArm = useRef(false);
 
@@ -81,6 +87,30 @@ export function BackgammonOnlineGame({
     return new Set(legalMoves.map((m) => String(m.from)));
   }, [isMyTurn, state.phase, effectiveSelected, legalMoves]);
 
+  // サイコロ2個分を一度に動かす候補
+  const chainMoves = useMemo<ChainedMove[]>(
+    () => (isMyTurn && effectiveSelected !== null ? getChainedMoves(state, effectiveSelected) : []),
+    [isMyTurn, effectiveSelected, state],
+  );
+  const chainDestinations = useMemo(
+    () => new Set(chainMoves.map((c) => c.dest).filter((d) => !destinations.has(d))),
+    [chainMoves, destinations],
+  );
+
+  function doApplyChain(chain: ChainedMove) {
+    let hit = false;
+    let s = state;
+    for (const move of chain.moves) {
+      if (move.to !== 'off') {
+        const target = s.points[move.to as number];
+        if (target && target.owner === getOpponent(state.currentPlayer)) hit = true;
+      }
+      s = applyMove(s, move);
+    }
+    if (hit) showToast('相手のコマを弾いた!');
+    commit(s);
+  }
+
   function doApplyMove(move: Move) {
     if (move.to !== 'off') {
       const target = state.points[move.to];
@@ -103,6 +133,10 @@ export function BackgammonOnlineGame({
       const candidates = movesFromSelected.filter((m) => m.to === i);
       doApplyMove(candidates.reduce((a, b) => (a.die >= b.die ? a : b)));
       return;
+    }
+    if (effectiveSelected !== null && chainDestinations.has(i)) {
+      const chain = chainMoves.find((c) => c.dest === i);
+      if (chain) { doApplyChain(chain); return; }
     }
     if (state.bar[myColor] > 0) { showToast('まずバーのコマを戻すのだ'); return; }
     const pt = state.points[i];
@@ -138,6 +172,29 @@ export function BackgammonOnlineGame({
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mustPass, state]);
+
+  // ---- ベアオフ自動化 ----
+  const autoEligible = isMyTurn && state.phase !== 'opening-roll' && isPureBearOffRace(state, myColor);
+  useEffect(() => {
+    if (state.phase === 'finished' && autoRun) setAutoRun(false);
+  }, [state.phase, autoRun]);
+  useEffect(() => {
+    if (!autoRun || !isMyTurn || state.phase === 'finished') return;
+    if (state.phase === 'rolling') {
+      const timer = setTimeout(() => {
+        if (state.phase === 'rolling' && isMyTurn) commit(rollDice(state));
+      }, 420);
+      return () => clearTimeout(timer);
+    }
+    if (state.phase === 'moving' && legalMoves.length > 0) {
+      const timer = setTimeout(() => {
+        const seq = chooseCpuMoveSequence(state, 'very-hard');
+        if (seq && seq.moves.length > 0) doApplyMove(seq.moves[0]);
+      }, 340);
+      return () => clearTimeout(timer);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoRun, state, isMyTurn, legalMoves]);
 
   // ---- 表示 ----
   const waitingForGuest = payload.guestName === null;
@@ -181,6 +238,16 @@ export function BackgammonOnlineGame({
       state={state}
       selectedFrom={isMyTurn ? effectiveSelected : null}
       destinations={isMyTurn ? destinations : new Set()}
+      chainDestinations={isMyTurn ? chainDestinations : new Set()}
+      autoButton={
+        autoEligible || autoRun
+          ? {
+              label: autoRun ? '⚡ 自動で上がり中…（触れて解除）' : '⚡ あとは自動で上がる',
+              active: autoRun,
+              onClick: () => setAutoRun((v) => !v),
+            }
+          : null
+      }
       offDestFor={isMyTurn && offMove ? myColor : null}
       pickableFroms={pickableFroms}
       centerMsg={centerMsg}

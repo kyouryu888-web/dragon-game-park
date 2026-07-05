@@ -328,6 +328,48 @@ export function hasAnyMove(state: GameState): boolean {
   return getLegalMoves(state).length > 0;
 }
 
+export type ChainedMove = { dest: number; moves: [Move, Move] };
+
+/**
+ * 同じ駒を2手続けて動かして到達できる盤上の移動先（サイコロ2個分を一度に動かすUI用）。
+ * 1手目・2手目とも合法手（最大限使用ルール込み）のみを辿る。
+ */
+export function getChainedMoves(state: GameState, from: number | 'bar'): ChainedMove[] {
+  if (state.phase !== 'moving' || state.dice.length < 2) return [];
+  const player = state.currentPlayer;
+  const results: ChainedMove[] = [];
+  const seen = new Set<number>();
+  for (const m1 of getLegalMoves(state).filter((m) => m.from === from && m.to !== 'off')) {
+    const next = applyMove(state, m1);
+    if (next.phase !== 'moving' || next.currentPlayer !== player) continue;
+    for (const m2 of getLegalMoves(next)) {
+      if (m2.from !== m1.to || m2.to === 'off') continue;
+      const dest = m2.to as number;
+      if (!seen.has(dest)) {
+        seen.add(dest);
+        results.push({ dest, moves: [m1, m2] });
+      }
+    }
+  }
+  return results;
+}
+
+/**
+ * 相手との接触が完全になくなり、あとは全駒をゴールへ運ぶだけの状態か（ベアオフ自動化の条件）。
+ * 自分の全駒がホーム内にあり、相手の駒がバーにも自分のホーム内にも無いこと。
+ */
+export function isPureBearOffRace(state: GameState, player: PlayerId): boolean {
+  if (!canBearOff(state, player)) return false;
+  const opponent = getOpponent(player);
+  if (state.bar[opponent] > 0) return false;
+  const [lo, hi] = homeRange(player);
+  for (let i = lo; i <= hi; i++) {
+    const p = state.points[i];
+    if (p && p.owner === opponent && p.count > 0) return false;
+  }
+  return true;
+}
+
 // ============================================================
 // ダブリングキューブ
 // ============================================================

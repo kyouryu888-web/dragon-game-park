@@ -120,7 +120,7 @@ export function UnoSetupPage({ onStart, onBack, onOnlinePlay }: UnoSetupPageProp
         </div>
 
         <div style={{
-          background: '#fffdf8',
+          background: '#1d1723',
           border: '1.5px solid var(--border-light)',
           borderRadius: 22,
           boxShadow: 'var(--shadow-md)',
@@ -157,9 +157,9 @@ export function UnoSetupPage({ onStart, onBack, onOnlinePlay }: UnoSetupPageProp
                   style={{
                     padding: '9px 0',
                     borderRadius: 12,
-                    border: `2px solid ${playerCount === count ? '#c87028' : 'var(--border)'}`,
-                    background: playerCount === count ? '#fff3df' : '#faf8f5',
-                    color: playerCount === count ? '#8a4010' : 'var(--text-mid)',
+                    border: `2px solid ${playerCount === count ? '#c9a24b' : 'var(--border)'}`,
+                    background: playerCount === count ? 'rgba(201,162,75,.12)' : '#191320',
+                    color: playerCount === count ? '#f0dfae' : 'var(--text-mid)',
                     fontWeight: 900,
                     cursor: 'pointer',
                   }}
@@ -202,7 +202,7 @@ export function UnoSetupPage({ onStart, onBack, onOnlinePlay }: UnoSetupPageProp
             onClick={() => setShowRules((show) => !show)}
             style={{
               width: '100%',
-              background: variant === 'hard' ? '#2a1114' : '#faf8f4',
+              background: variant === 'hard' ? '#2a1114' : '#191320',
               color: variant === 'hard' ? '#fff4e4' : 'var(--text-mid)',
               border: `1.5px solid ${variant === 'hard' ? '#b93530' : 'var(--border)'}`,
               borderRadius: 14,
@@ -250,17 +250,17 @@ function ModeButton({
       style={{
         textAlign: 'left',
         borderRadius: 16,
-        border: `2px solid ${selected ? (danger ? '#c83b32' : '#c87028') : 'var(--border)'}`,
+        border: `2px solid ${selected ? (danger ? '#c83b32' : '#c9a24b') : 'var(--border)'}`,
         background: selected
-          ? danger ? '#321316' : '#fff3df'
-          : '#faf8f5',
-        color: selected && danger ? '#fff6e8' : 'var(--text)',
+          ? danger ? '#321316' : 'rgba(201,162,75,.12)'
+          : '#191320',
+        color: selected && danger ? 'rgba(201,162,75,.12)' : 'var(--text)',
         padding: '14px 14px',
         cursor: 'pointer',
       }}
     >
       <div style={{ fontSize: 16, fontWeight: 900, marginBottom: 4 }}>{title}</div>
-      <div style={{ fontSize: 12, lineHeight: 1.55, color: selected && danger ? '#ffd8c8' : 'var(--text-muted)' }}>{text}</div>
+      <div style={{ fontSize: 12, lineHeight: 1.55, color: selected && danger ? 'rgba(224,115,58,.2)' : 'var(--text-muted)' }}>{text}</div>
     </button>
   );
 }
@@ -279,8 +279,8 @@ function PlayerSetupRow({
   return (
     <div style={{
       borderRadius: 15,
-      border: `1.5px solid ${config.isCpu ? '#8cc58d' : 'var(--border)'}`,
-      background: config.isCpu ? '#f0f8ef' : '#faf8f5',
+      border: `1.5px solid ${config.isCpu ? '#8a6f3a' : 'var(--border)'}`,
+      background: config.isCpu ? 'rgba(138,111,58,.14)' : '#191320',
       padding: '12px',
       display: 'grid',
       gap: 10,
@@ -314,7 +314,7 @@ function PlayerSetupRow({
                   padding: '5px 10px',
                   borderRadius: 9,
                   border: `1.5px solid ${selected ? accent : 'var(--border)'}`,
-                  background: selected ? '#fff4df' : 'transparent',
+                  background: selected ? 'rgba(201,162,75,.16)' : 'transparent',
                   color: selected ? '#7a3a10' : 'var(--text-muted)',
                   fontWeight: 900,
                   cursor: 'pointer',
@@ -340,7 +340,7 @@ function PlayerSetupRow({
           fontSize: 14,
           fontFamily: 'inherit',
           outline: 'none',
-          background: '#fffdf8',
+          background: '#1d1723',
         }}
       />
       {config.isCpu && (
@@ -354,8 +354,8 @@ function PlayerSetupRow({
                 style={{
                   padding: '5px 8px',
                   borderRadius: 9,
-                  border: `1.5px solid ${selected ? '#4e8a4e' : 'var(--border)'}`,
-                  background: selected ? '#dff0df' : 'transparent',
+                  border: `1.5px solid ${selected ? '#8a6f3a' : 'var(--border)'}`,
+                  background: selected ? 'rgba(138,111,58,.14)' : 'transparent',
                   color: selected ? '#1f641f' : 'var(--text-muted)',
                   fontSize: 11,
                   fontWeight: 900,

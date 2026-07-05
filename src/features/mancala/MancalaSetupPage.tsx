@@ -93,7 +93,7 @@ export function MancalaSetupPage({ onStart, onBack, onOnlinePlay }: MancalaSetup
             display: 'flex', alignItems: 'center', gap: 5,
           }}
         >
-          ← ゲーム選択画面へ戻る
+          ← 焚き火のもとへ戻る
         </button>
 
         {/* タイトル */}
@@ -109,7 +109,7 @@ export function MancalaSetupPage({ onStart, onBack, onOnlinePlay }: MancalaSetup
 
         {/* ─── 設定カード ─── */}
         <div style={{
-          background: '#fffdf8', borderRadius: 22, padding: '22px 18px',
+          background: '#1d1723', borderRadius: 22, padding: '22px 18px',
           boxShadow: 'var(--shadow-md)', border: '1.5px solid var(--border-light)',
           marginBottom: 18, display: 'flex', flexDirection: 'column', gap: 20,
         }}>
@@ -127,9 +127,9 @@ export function MancalaSetupPage({ onStart, onBack, onOnlinePlay }: MancalaSetup
                   style={{
                     flex: 1, padding: '10px 0', borderRadius: 12, fontWeight: 'bold',
                     fontSize: 15, cursor: 'pointer',
-                    border: `2px solid ${playerCount === n ? '#c87028' : 'var(--border)'}`,
-                    background: playerCount === n ? '#fff3e0' : '#faf8f5',
-                    color: playerCount === n ? '#8a4010' : 'var(--text)',
+                    border: `2px solid ${playerCount === n ? '#c9a24b' : 'var(--border)'}`,
+                    background: playerCount === n ? 'rgba(201,162,75,.16)' : '#191320',
+                    color: playerCount === n ? '#f0dfae' : 'var(--text)',
                     boxShadow: playerCount === n ? '0 2px 10px rgba(200,112,40,0.22)' : 'none',
                     transition: 'all 0.15s',
                   }}
@@ -170,24 +170,24 @@ export function MancalaSetupPage({ onStart, onBack, onOnlinePlay }: MancalaSetup
           </section>
 
           <Button fullWidth onClick={handleStart}>
-            ゲームスタート！ 🎮
+            盤へ進む
           </Button>
         </div>
 
         {/* オンライン対戦 */}
         {onOnlinePlay && (
           <div style={{
-            background: '#f0f8ff', border: '1.5px solid #b0d4f0',
+            background: 'rgba(224,115,58,.07)', border: '1.5px solid rgba(224,115,58,.35)',
             borderRadius: 18, padding: '16px 18px', marginBottom: 0,
           }}>
-            <div style={{ fontSize: 13, fontWeight: 'bold', color: '#1a5a8a', marginBottom: 4 }}>
+            <div style={{ fontSize: 13, fontWeight: 'bold', color: '#e6c877', marginBottom: 4 }}>
               🌐 オンライン対戦
             </div>
-            <div style={{ fontSize: 11, color: '#4a7a9a', marginBottom: 12 }}>
+            <div style={{ fontSize: 11, color: '#b9a888', marginBottom: 12 }}>
               ルームコードを使って離れた相手と対戦できます
             </div>
             <Button fullWidth variant="secondary" onClick={onOnlinePlay}>
-              オンライン対戦を始める
+              遠方の者と対戦する
             </Button>
           </div>
         )}
@@ -197,13 +197,13 @@ export function MancalaSetupPage({ onStart, onBack, onOnlinePlay }: MancalaSetup
           <button
             onClick={() => setShowRules(!showRules)}
             style={{
-              width: '100%', background: '#faf8f4', border: '1.5px solid var(--border)',
+              width: '100%', background: '#191320', border: '1.5px solid var(--border)',
               borderRadius: 14, padding: '13px 18px', cursor: 'pointer', fontSize: 14,
               color: 'var(--text-mid)', fontWeight: 'bold',
               display: 'flex', justifyContent: 'space-between', alignItems: 'center',
             }}
           >
-            <span>📖 かんたんルール</span>
+            <span>📜 遊戯の掟</span>
             <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 'normal' }}>
               {showRules ? '▲ 閉じる' : '▼ 開く'}
             </span>
@@ -211,7 +211,7 @@ export function MancalaSetupPage({ onStart, onBack, onOnlinePlay }: MancalaSetup
 
           {showRules && (
             <div style={{
-              marginTop: 6, background: '#fffdf4', border: '1.5px solid var(--border)',
+              marginTop: 6, background: '#1d1723', border: '1.5px solid var(--border)',
               borderRadius: 14, padding: '18px 16px',
             }}>
               <ul style={{ listStyle: 'none', padding: 0 }}>
@@ -239,7 +239,7 @@ export function MancalaSetupPage({ onStart, onBack, onOnlinePlay }: MancalaSetup
 // プレイヤー1人分の設定行
 // ============================================================
 
-const PLAYER_COLORS = ['#c87028', '#4e8a4e', '#7040a0', '#2060a8'];
+const PLAYER_COLORS = ['#c9a24b', '#8a6f3a', '#7040a0', '#2060a8'];
 const PLAYER_ICONS  = ['👤', '🐲', '🦊', '🤖'];
 
 function PlayerSetupRow({
@@ -253,9 +253,9 @@ function PlayerSetupRow({
 
   return (
     <div style={{
-      border: `1.5px solid ${config.isCpu ? '#90b090' : 'var(--border)'}`,
+      border: `1.5px solid ${config.isCpu ? '#6a5a38' : 'var(--border)'}`,
       borderRadius: 14, padding: '12px 14px',
-      background: config.isCpu ? '#f0f8f0' : '#faf8f5',
+      background: config.isCpu ? 'rgba(138,111,58,.14)' : '#191320',
       transition: 'all 0.15s',
     }}>
       {/* ヘッダー行 */}
@@ -282,9 +282,9 @@ function PlayerSetupRow({
                 onClick={() => onChange({ isCpu: isCpuRole })}
                 style={{
                   padding: '4px 10px', borderRadius: 8, fontSize: 12, fontWeight: 'bold',
-                  border: `1.5px solid ${isSelected ? (isCpuRole ? '#4e8a4e' : color) : 'var(--border)'}`,
-                  background: isSelected ? (isCpuRole ? '#e8f4e8' : '#fff3e0') : 'transparent',
-                  color: isSelected ? (isCpuRole ? '#2a6a2a' : '#8a4010') : 'var(--text-muted)',
+                  border: `1.5px solid ${isSelected ? (isCpuRole ? '#8a6f3a' : color) : 'var(--border)'}`,
+                  background: isSelected ? (isCpuRole ? 'rgba(138,111,58,.14)' : 'rgba(201,162,75,.16)') : 'transparent',
+                  color: isSelected ? (isCpuRole ? '#d8c79a' : '#f0dfae') : 'var(--text-muted)',
                   cursor: 'pointer', transition: 'all 0.12s',
                 }}
               >
@@ -310,7 +310,7 @@ function PlayerSetupRow({
             flex: 1, minWidth: 0, boxSizing: 'border-box',
             padding: '6px 10px', borderRadius: 8,
             border: '1.5px solid var(--border)', fontSize: 13, color: 'var(--text)',
-            background: '#faf8f5', outline: 'none', fontFamily: 'inherit',
+            background: '#191320', outline: 'none', fontFamily: 'inherit',
           }}
           onFocus={(e) => { e.target.style.borderColor = color; }}
           onBlur={(e)  => { e.target.style.borderColor = 'var(--border)'; }}
@@ -328,9 +328,9 @@ function PlayerSetupRow({
                 onClick={() => onChange({ cpuLevel: level })}
                 style={{
                   padding: '4px 8px', borderRadius: 8, fontSize: 11, fontWeight: 'bold',
-                  border: `1.5px solid ${isSelected ? '#4e8a4e' : 'var(--border)'}`,
-                  background: isSelected ? '#d0ecd0' : 'transparent',
-                  color: isSelected ? '#1a5a1a' : 'var(--text-muted)',
+                  border: `1.5px solid ${isSelected ? '#8a6f3a' : 'var(--border)'}`,
+                  background: isSelected ? 'rgba(138,111,58,.25)' : 'transparent',
+                  color: isSelected ? '#f0dfae' : 'var(--text-muted)',
                   cursor: 'pointer', transition: 'all 0.12s',
                   display: 'flex', alignItems: 'center', gap: 3,
                 }}

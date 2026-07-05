@@ -12,37 +12,37 @@ html, body, #root {
    CSS 変数（デザイントークン）
 ============================================= */
 :root {
-  /* 背景（羊皮紙） */
-  --bg: #f2ecdc;
-  --card: #fbf7ec;
+  /* 背景（石造りの闇 / ダークファンタジー） */
+  --bg: #15121a;
+  --card: #1d1723;
 
-  /* 木製ボード */
-  --wood-deep:  #3a1e08;
-  --wood-dark:  #5c3010;
-  --wood-mid:   #7a4820;
-  --wood-light: #b87838;
-  --wood-pale:  #e8c890;
+  /* 木製ボード（篝火に照る古木） */
+  --wood-deep:  #241505;
+  --wood-dark:  #4a2a0c;
+  --wood-mid:   #6a3e18;
+  --wood-light: #a86a2e;
+  --wood-pale:  #d8ae6a;
 
-  /* ブランドカラー（ドラゴンファンタジー: 深緑×金） */
-  --brown:   #1f4a36;
-  --orange:  #b8862b;
-  --green:   #2d6e4f;
-  --gold:    #c9a227;
+  /* ブランドカラー（金彩×熾火。--brown は歴史的経緯で名前が残っているが値は明るい金） */
+  --brown:   #e6c877;
+  --orange:  #e0733a;
+  --green:   #8a6f3a;
+  --gold:    #c9a24b;
 
   /* テキスト */
-  --text:       #2e2b20;
-  --text-mid:   #575239;
-  --text-muted: #8a8265;
+  --text:       #e8ddc8;
+  --text-mid:   #b9a888;
+  --text-muted: #9a8d75;
 
   /* ボーダー */
-  --border:       #cfc39e;
-  --border-light: #e6dfc6;
+  --border:       #4a3d28;
+  --border-light: #332a1e;
 
   /* シャドウ */
-  --shadow-sm: 0 2px 8px rgba(30, 45, 32, 0.12);
-  --shadow-md: 0 4px 18px rgba(30, 45, 32, 0.16);
-  --shadow-lg: 0 8px 36px rgba(30, 45, 32, 0.22);
-  --glow-gold: 0 0 18px rgba(201, 162, 39, 0.35);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.45);
+  --shadow-md: 0 4px 18px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 8px 36px rgba(0, 0, 0, 0.65);
+  --glow-gold: 0 0 18px rgba(201, 162, 75, 0.35);
 
   /* 角丸 */
   --r-sm: 10px;
@@ -72,13 +72,13 @@ html, body, #root {
    ベース
 ============================================= */
 body {
-  font-family: 'Zen Maru Gothic', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'Shippori Mincho B1', 'Zen Maru Gothic', serif;
   background-color: var(--bg);
-  /* 鱗風ドットテクスチャ + 上部に深緑のビネット */
+  /* 石造りの闇 + 画面下部に焚き火の熾火の照り返し + かすかな石目 */
   background-image:
-    radial-gradient(circle at 50% -12%, rgba(45, 110, 79, 0.16), transparent 58%),
-    radial-gradient(circle at 6px 6px, rgba(31, 74, 54, 0.03) 4px, transparent 4.5px);
-  background-size: 100% 100%, 26px 26px;
+    radial-gradient(ellipse 120% 55% at 50% 108%, rgba(224, 115, 58, 0.18) 0%, rgba(224, 115, 58, 0.04) 45%, transparent 70%),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.014) 0px, rgba(255, 255, 255, 0.014) 1px, transparent 1px, transparent 7px),
+    linear-gradient(180deg, #15121a 0%, #191320 60%, #1e1420 100%);
   background-attachment: fixed;
   color: var(--text);
   min-height: 100vh;
@@ -86,7 +86,7 @@ body {
 }
 
 h1, h2, h3 {
-  font-family: 'Zen Antique Soft', 'Zen Maru Gothic', serif;
+  font-family: 'Cinzel', 'Shippori Mincho B1', serif;
 }
 
 button {
@@ -513,7 +513,7 @@ button {
   font-size: 46px;
   font-weight: 950;
   color: #c9a227;
-  -webkit-text-stroke: 4px rgba(255, 253, 248, 0.96);
+  -webkit-text-stroke: 4px rgba(29, 23, 35, 0.95);
   paint-order: stroke fill;
   line-height: 1;
   animation: mancala-get-word 1400ms cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -522,8 +522,8 @@ button {
   margin-top: 4px;
   font-size: 15px;
   font-weight: 900;
-  color: #7a5010;
-  background: rgba(255, 253, 248, 0.94);
+  color: #e6c877;
+  background: rgba(29, 23, 35, 0.92);
   padding: 3px 14px;
   border-radius: 999px;
   box-shadow: 0 2px 10px rgba(64, 36, 12, 0.2);
@@ -686,7 +686,7 @@ button {
   padding: 7px 9px;
   border-radius: 13px;
   border: 1.5px solid rgba(216, 196, 160, 0.8);
-  background: rgba(255, 253, 248, 0.86);
+  background: rgba(29, 23, 35, 0.86);
   box-shadow: 0 2px 8px rgba(58, 37, 24, 0.08);
 }
 .uno-turn-flow-direction {
@@ -696,17 +696,17 @@ button {
   min-width: 72px;
   padding: 4px 8px;
   border-radius: 999px;
-  background: #fff2bf;
+  background: rgba(201,162,75,.22);
   border: 1px solid #e2b452;
-  color: #7a5010;
+  color: #e6c877;
   font-size: 11px;
   font-weight: 900;
   white-space: nowrap;
 }
 .uno-turn-flow-direction.is-counterclockwise {
-  background: #ffe2dc;
+  background: rgba(224,115,58,.22);
   border-color: #d95b4e;
-  color: #8b241f;
+  color: #ff9a8a;
 }
 .uno-turn-flow-track {
   display: flex;
@@ -733,7 +733,7 @@ button {
   padding: 3px 8px;
   border-radius: 999px;
   border: 1px solid transparent;
-  background: #f9f2e6;
+  background: rgba(255,255,255,.06);
 }
 .uno-turn-flow-player.is-current > span:last-child {
   background: var(--uno-table-accent);
@@ -741,9 +741,9 @@ button {
   color: #fff;
 }
 .uno-turn-flow-player.is-next > span:last-child {
-  background: #e7f6dc;
+  background: rgba(90, 140, 80, 0.28);
   border-color: #9fce85;
-  color: #2f7d32;
+  color: #9fd6a4;
 }
 .uno-turn-flow-arrow {
   color: var(--uno-table-accent);
@@ -793,7 +793,7 @@ button {
 .uno-paw-toe {
   position: absolute;
   display: block;
-  background: #fff4dc;
+  background: rgba(201,162,75,.18);
   box-shadow: 0 2px 0 rgba(0,0,0,0.22);
 }
 .uno-paw-pad {
@@ -885,7 +885,7 @@ button {
   padding: 5px 9px;
   border-radius: 11px;
   border: 1.5px solid rgba(200, 168, 112, 0.85);
-  background: rgba(255, 253, 248, 0.92);
+  background: rgba(29, 23, 35, 0.92);
   box-shadow: 0 2px 10px rgba(58, 37, 24, 0.12);
   color: var(--text-mid);
   font-size: 11px;
@@ -902,15 +902,15 @@ button {
 }
 .uno-seat-badge.is-warning {
   border-color: #d8a43a;
-  background: #fff4c8;
+  background: rgba(201,162,75,.18);
 }
 .uno-seat-badge.is-danger {
   border-color: #cf382d;
-  background: #ffe0da;
+  background: rgba(224,115,58,.24);
 }
 .uno-seat-badge.is-uno {
   border-color: #d63a30;
-  background: linear-gradient(135deg, #fff2f0, #ffe4e1);
+  background: linear-gradient(135deg, rgba(224,115,58,.2), rgba(224,115,58,.34));
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9), 0 0 14px rgba(214, 58, 48, 0.30);
 }
 .uno-seat-turn,
@@ -926,8 +926,8 @@ button {
   color: #fff;
 }
 .uno-seat-next {
-  background: #fff2bf;
-  color: #7a5010;
+  background: rgba(201,162,75,.22);
+  color: #e6c877;
   border: 1px solid #e2b452;
 }
 .uno-flash-overlay {
@@ -948,7 +948,7 @@ button {
   font-size: 72px;
   font-weight: 950;
   color: #d63a30;
-  -webkit-text-stroke: 5px rgba(255, 253, 248, 0.96);
+  -webkit-text-stroke: 5px rgba(29, 23, 35, 0.95);
   paint-order: stroke fill;
   line-height: 1;
   letter-spacing: -2px;
@@ -958,7 +958,7 @@ button {
   font-size: 17px;
   font-weight: 900;
   color: var(--brown);
-  background: rgba(255, 253, 248, 0.94);
+  background: rgba(29, 23, 35, 0.92);
   padding: 4px 18px;
   border-radius: 999px;
   box-shadow: 0 2px 10px rgba(64, 36, 12, 0.15);
@@ -1015,7 +1015,7 @@ button {
 .uno-mini-paw-toe {
   position: absolute;
   display: block;
-  background: #fff4dc;
+  background: rgba(201,162,75,.18);
   box-shadow: 0 1px 0 rgba(0,0,0,0.20);
 }
 .uno-mini-paw-pad {
@@ -1087,7 +1087,7 @@ button {
   background: var(--uno-table-accent);
   /* right-pointing triangle with centroid at exactly (50%, 50%) of the box */
   clip-path: polygon(25% 0%, 25% 100%, 100% 50%);
-  filter: drop-shadow(0 0 4px rgba(255, 253, 248, 0.94)) drop-shadow(0 2px 5px rgba(64, 36, 12, 0.30));
+  filter: drop-shadow(0 0 4px rgba(29, 23, 35, 0.92)) drop-shadow(0 2px 5px rgba(64, 36, 12, 0.30));
 }
 .uno-ring-turn-marker.is-clockwise {
   left: 16%;
@@ -1161,7 +1161,7 @@ button {
   gap: 5px;
   padding: 4px 9px;
   border-radius: 999px;
-  background: rgba(255, 253, 248, 0.94);
+  background: rgba(29, 23, 35, 0.92);
   border: 1.5px solid rgba(216, 196, 160, 0.85);
   color: var(--text-mid);
   font-size: 11px;
@@ -1200,7 +1200,7 @@ button {
   padding: 13px 12px 14px;
   border-radius: 20px;
   border: 1.5px solid var(--border-light);
-  background: rgba(255, 253, 248, 0.96);
+  background: rgba(29, 23, 35, 0.95);
   box-shadow: var(--shadow-sm);
   overflow: hidden;
 }
@@ -1246,8 +1246,8 @@ button {
   transform: translateX(-50%);
   padding: 2px 7px;
   border-radius: 999px;
-  background: #e7f6dc;
-  color: #2f7d32;
+  background: rgba(90, 140, 80, 0.28);
+  color: #9fd6a4;
   border: 1px solid #9fce85;
   font-size: 10px;
   font-weight: 900;
@@ -1266,7 +1266,7 @@ button {
   padding: 7px 13px;
   border-radius: 999px;
   border: 1.5px solid var(--border-light);
-  background: #f7efe0;
+  background: #241d2b;
   color: var(--text-muted);
   font-size: 12px;
   font-weight: 900;
@@ -1274,9 +1274,9 @@ button {
 }
 .uno-hand-draw-button.is-active {
   cursor: pointer;
-  background: linear-gradient(135deg, #fff3bf, #ffd66d);
+  background: linear-gradient(135deg, #4a3a16, #8a6a24);
   border-color: #dfb74f;
-  color: #7a5010;
+  color: #e6c877;
   box-shadow: 0 3px 12px rgba(216, 164, 58, 0.24);
 }
 .uno-hand-draw-button.is-active:hover {
@@ -1290,7 +1290,7 @@ button {
   min-height: 26px;
   padding: 5px 10px;
   border-radius: 999px;
-  background: #f8f1e2;
+  background: #241d2b;
   border: 1px solid var(--border-light);
   color: var(--text-muted);
   font-size: 11px;
@@ -1298,9 +1298,9 @@ button {
   text-align: center;
 }
 .uno-draw-hint.is-active {
-  background: #fff3bf;
+  background: rgba(201,162,75,.25);
   border-color: #dfb74f;
-  color: #7a5010;
+  color: #e6c877;
 }
 .uno-card-tools {
   display: flex;
@@ -1309,7 +1309,7 @@ button {
 }
 .uno-card-guide-button {
   border: 1.5px solid var(--border);
-  background: #fffdf8;
+  background: #1d1723;
   color: var(--brown);
   border-radius: 999px;
   padding: 7px 12px;
@@ -1360,7 +1360,7 @@ button {
   margin: 8px 2px 10px;
   border: 1.5px solid #e1bf73;
   border-radius: 16px;
-  background: #fffaf0;
+  background: #1d1723;
   color: var(--text-mid);
   box-shadow: var(--shadow-sm);
 }
@@ -1385,8 +1385,8 @@ button {
   display: inline-flex;
   padding: 3px 8px;
   border-radius: 999px;
-  background: #f7ecd4;
-  color: #7a5010;
+  background: #241d2b;
+  color: #e6c877;
   font-size: 11px;
   font-weight: 900;
 }
@@ -1396,7 +1396,7 @@ button {
   height: 30px;
   border-radius: 999px;
   border: 1.5px solid var(--border);
-  background: #fffdf8;
+  background: #1d1723;
   color: var(--brown);
   font-size: 18px;
   font-weight: 900;
@@ -1408,7 +1408,7 @@ button {
 }
 .uno-card-guide-panel.is-hard {
   border-color: #c96b45;
-  background: #fff6ea;
+  background: #241d2b;
 }
 .uno-card-guide-head {
   display: flex;
@@ -1429,7 +1429,7 @@ button {
   min-height: 72px;
   border: 1px solid var(--border-light);
   border-radius: 12px;
-  background: rgba(255, 253, 248, 0.86);
+  background: rgba(29, 23, 35, 0.86);
   padding: 8px 9px;
   font-size: 12px;
   line-height: 1.45;
@@ -1564,4 +1564,4 @@ button {
 @keyframes diceIn { 0%{transform:rotate(-160deg) scale(.4);opacity:0} 60%{transform:rotate(14deg) scale(1.08);opacity:1} 100%{transform:rotate(0) scale(1);opacity:1} }
 @keyframes pickPulse { 0%,100%{outline:2px solid rgba(240,223,174,.2); outline-offset:1px} 50%{outline:2px solid rgba(240,223,174,.75); outline-offset:1px} }
 
-.bg-dark-input::placeholder { color: #6b6154; opacity: 1; }
+.bg-dark-input::placeholder { color: #b9a888; opacity: 1; }

@@ -34,8 +34,8 @@ export type CaptureAnimInfo = {
 // ============================================================
 
 const PLAYER_SCORE_COLORS = [
-  { bg: '#fff3e0', border: '#e0b060', text: '#8a4010' },
-  { bg: '#e8f4e8', border: '#80b880', text: '#1a5a1a' },
+  { bg: 'rgba(201,162,75,.16)', border: '#e0b060', text: '#f0dfae' },
+  { bg: 'rgba(138,111,58,.14)', border: '#80b880', text: '#f0dfae' },
   { bg: '#f0e8ff', border: '#a880e0', text: '#481090' },
   { bg: '#e0eeff', border: '#6090d0', text: '#0840a0' },
 ];
@@ -500,7 +500,7 @@ export function MancalaGamePage({ config, onBackToSetup, onBackToHome }: Mancala
     ? `✨ ${currentPlayer.name}が石を配っています...`
     : isCpuTurn
     ? `🐉 ${currentPlayer.name}が考え中...`
-    : `🎮 ${currentPlayer.name}の番です`;
+    : `⚔ ${currentPlayer.name}の番`;
 
   const turnBannerVariant: 'human' | 'cpu' = isCpuTurn ? 'cpu' : 'human';
 
@@ -604,7 +604,7 @@ export function MancalaGamePage({ config, onBackToSetup, onBackToHome }: Mancala
                   display: 'flex', alignItems: 'center', gap: 5,
                   padding: '5px 10px', borderRadius: 10,
                   border: `1.5px solid ${isCurrentTurn ? colors.border : isActive ? '#c0b090' : '#d8cbb0'}`,
-                  background: isCurrentTurn ? colors.bg : isActive ? '#f7f4ef' : '#ece8e0',
+                  background: isCurrentTurn ? colors.bg : isActive ? 'rgba(201,162,75,.18)' : 'rgba(255,255,255,.05)',
                   transition: 'all 0.2s',
                   opacity: isActive ? 1 : 0.45,
                 }}>
@@ -649,7 +649,7 @@ export function MancalaGamePage({ config, onBackToSetup, onBackToHome }: Mancala
                 マンカラ設定画面へ戻る
               </Button>
               <Button variant="secondary" fullWidth onClick={onBackToHome}>
-                ゲーム選択画面へ戻る
+                焚き火のもとへ戻る
               </Button>
             </div>
           </div>
@@ -680,7 +680,7 @@ function RankingPanel({
       className="result-appear"
       style={{
         marginTop: 20, padding: '24px 20px',
-        background: 'linear-gradient(135deg, #fffbe8, #fdf5d0)',
+        background: 'linear-gradient(135deg, rgba(201,162,75,.12), rgba(201,162,75,.22))',
         border: '2px solid #e0c060', borderRadius: 22, textAlign: 'center',
         boxShadow: '0 6px 28px rgba(180, 140, 30, 0.20)',
         position: 'relative', overflow: 'hidden',
@@ -719,7 +719,7 @@ function RankingPanel({
                 display: 'flex', alignItems: 'center', gap: 10,
                 padding: '10px 14px', borderRadius: 14,
                 background: isWinner
-                  ? 'linear-gradient(135deg, #fff8d8, #ffeea0)'
+                  ? 'linear-gradient(135deg, rgba(230,200,119,.28), rgba(230,200,119,.45))'
                   : colors.bg,
                 border: isWinner
                   ? '2px solid #d4a020'
@@ -759,14 +759,14 @@ function RankingPanel({
       {/* ボタン */}
       <div className="game-nav-buttons" style={{ marginTop: 0 }}>
         <Button fullWidth onClick={onRestart}>
-          もう一度遊ぶ 🎮
+          もう一度戦う
         </Button>
         <div className="game-nav-secondary">
           <Button variant="secondary" fullWidth onClick={onBackToSetup}>
             マンカラ設定画面へ戻る
           </Button>
           <Button variant="secondary" fullWidth onClick={onBackToHome}>
-            ゲーム選択画面へ戻る
+            焚き火のもとへ戻る
           </Button>
         </div>
       </div>
@@ -791,8 +791,8 @@ function TurnBanner({
       style={{
         textAlign: 'center',
         background: isCpu
-          ? 'linear-gradient(135deg, #e8f4e8, #d0ecd0)'
-          : 'linear-gradient(135deg, #fff8e8, #fdf0d0)',
+          ? 'linear-gradient(135deg, rgba(138,111,58,.14), rgba(138,111,58,.25))'
+          : 'linear-gradient(135deg, rgba(201,162,75,.12), rgba(201,162,75,.12))',
         border: `1.5px solid ${isCpu ? '#90c890' : '#e8d070'}`,
         borderRadius: 14, padding: '10px 16px', marginBottom: 12,
         boxShadow: isCpu
@@ -802,7 +802,7 @@ function TurnBanner({
     >
       <div
         className={thinking ? 'cpu-thinking-pulse' : undefined}
-        style={{ fontSize: 13, fontWeight: 'bold', color: isCpu ? '#2a6a2a' : '#7a5010' }}
+        style={{ fontSize: 13, fontWeight: 'bold', color: isCpu ? '#d8c79a' : '#7a5010' }}
       >
         {label}
       </div>

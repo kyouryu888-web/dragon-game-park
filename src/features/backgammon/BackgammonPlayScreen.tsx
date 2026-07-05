@@ -36,6 +36,10 @@ export type BackgammonPlayScreenProps = {
   state: GameState;
   selectedFrom: 'bar' | number | null;
   destinations: Set<number>;
+  /** サイコロ2個分を一度に動かす到達点（緋色マーカーで表示） */
+  chainDestinations: Set<number>;
+  /** ベアオフ自動化ボタン（条件を満たすときだけ渡す） */
+  autoButton: { label: string; onClick: () => void; active: boolean } | null;
   /** 「上がり」ボタンを光らせる側（オフ移動が可能なとき） */
   offDestFor: PlayerId | null;
   /** 選択前にタップ候補の駒を脈動させる移動元（'bar' or index文字列） */
@@ -85,6 +89,7 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
     const count = pt?.count ?? 0;
     const show = Math.min(count, 5);
     const isDest = props.destinations.has(i);
+    const isChainDest = !isDest && props.chainDestinations.has(i);
     const isSel = props.selectedFrom === i;
     const pickable = props.pickableFroms.has(String(i));
     const tri = i % 2 ? '#5a4128' : '#392a1c';
@@ -120,6 +125,23 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
               width: 13, height: 13, marginLeft: -6.5, border: `2px solid ${BG.goldBright}`,
               borderRadius: '50%', background: 'rgba(230,200,119,.3)', animation: 'dotPulse 1.1s infinite',
             }} />
+          </>
+        )}
+        {isChainDest && (
+          <>
+            <div style={{
+              position: 'absolute', left: 2, right: 2, ...triPos, clipPath: clip,
+              background: 'rgba(224,115,58,.22)', boxShadow: 'inset 0 0 14px rgba(224,115,58,.7)',
+            }} />
+            <div style={{
+              position: 'absolute', left: '50%', [row === 'top' ? 'bottom' : 'top']: 10,
+              width: 13, height: 13, marginLeft: -6.5, border: `2px solid ${BG.ember}`,
+              borderRadius: '50%', background: 'rgba(224,115,58,.25)', animation: 'dotPulse 1.1s infinite',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 8, fontWeight: 700, color: '#f6e0d0',
+            }}>
+              2
+            </div>
           </>
         )}
         <div style={{
@@ -359,6 +381,23 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
           </div>
         </div>
       </div>
+
+      {/* ベアオフ自動化 */}
+      {props.autoButton && (
+        <button
+          onClick={props.autoButton.onClick}
+          style={{
+            margin: '6px 2px 0', minHeight: 44, borderRadius: 6, cursor: 'pointer',
+            border: `1px solid ${props.autoButton.active ? BG.ember : 'rgba(201,162,75,.4)'}`,
+            background: props.autoButton.active ? 'rgba(224,115,58,.14)' : 'rgba(201,162,75,.07)',
+            color: props.autoButton.active ? '#f0c8a8' : '#d8c79a',
+            fontFamily: BG.serifJa, fontSize: 13.5, fontWeight: 700, letterSpacing: '.1em',
+            animation: props.autoButton.active ? 'dotPulse 1.4s infinite' : 'none',
+          }}
+        >
+          {props.autoButton.label}
+        </button>
+      )}
 
       {/* 自分プレート（金 / white） */}
       {plaque(props.botPlayer, 'white', props.onTapOffBot, props.offDestFor === 'white')}

@@ -545,7 +545,7 @@ export function MancalaOnlineGamePage({
           <h2 style={{ fontSize: 22, fontWeight: 'bold', color: 'var(--brown)', marginBottom: 20 }}>
             {isWinner ? '勝利！' : '対戦終了'}
           </h2>
-          <div style={{ background: '#fffdf8', border: '1.5px solid var(--border)', borderRadius: 16, padding: '16px', marginBottom: 24 }}>
+          <div style={{ background: '#1d1723', border: '1.5px solid var(--border)', borderRadius: 16, padding: '16px', marginBottom: 24 }}>
             {sorted.map((p, i) => {
               const score = gameState.board.find(pit => pit.ownerPlayerId === p.id && pit.isStore)?.stones ?? 0;
               const isMe  = p.id === myPlayerId;
@@ -553,7 +553,7 @@ export function MancalaOnlineGamePage({
                 <div key={p.id} style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                   padding: '8px 12px',
-                  background: isMe ? '#fff8e8' : 'transparent',
+                  background: isMe ? 'rgba(201,162,75,.12)' : 'transparent',
                   borderRadius: 10, marginBottom: 4,
                   fontWeight: isMe ? 'bold' : 'normal',
                 }}>
@@ -588,8 +588,8 @@ export function MancalaOnlineGamePage({
     : isTransitioning
     ? '🔄 プレイヤーが脱落しました...'
     : isMyTurn
-    ? '🎮 あなたの番です'
-    : `⏳ ${currentPlayer?.name ?? '相手'}の番です`;
+    ? '⚔ そなたの番'
+    : `⏳ ${currentPlayer?.name ?? '相手'}の番…`;
 
   return (
     <Layout>
@@ -608,7 +608,7 @@ export function MancalaOnlineGamePage({
                 style={{
                   fontSize: 12, padding: '2px 6px', borderRadius: 6,
                   border: '1.5px solid var(--orange)', outline: 'none',
-                  fontFamily: 'inherit', width: 80, background: '#fffbe8',
+                  fontFamily: 'inherit', width: 80, background: 'rgba(201,162,75,.12)',
                 }}
               />
               <button onClick={handleSaveName}
@@ -634,10 +634,10 @@ export function MancalaOnlineGamePage({
 
         <div style={{
           fontSize: 13, fontWeight: 'bold', padding: '5px 14px', borderRadius: 20,
-          background: isTransitioning ? '#fce4e4'
-            : isMyTurn && !isMoving ? '#e8f5e9'
-            : isMoving ? '#fff3e0'
-            : '#f5f5f5',
+          background: isTransitioning ? 'rgba(224,115,58,.18)'
+            : isMyTurn && !isMoving ? 'rgba(138,111,58,.14)'
+            : isMoving ? 'rgba(201,162,75,.16)'
+            : 'rgba(255,255,255,.06)',
           color: isTransitioning ? '#b22222'
             : isMyTurn && !isMoving ? '#2e7d32'
             : isMoving ? '#c06000'

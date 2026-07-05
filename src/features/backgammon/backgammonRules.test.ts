@@ -8,9 +8,11 @@ import {
   canOfferDouble,
   declineDouble,
   expandDice,
+  getChainedMoves,
   getLegalMoves,
   getLegalMoveSequences,
   getPipCount,
+  isPureBearOffRace,
   offerDouble,
   rollDice,
   rollOpening,
@@ -377,6 +379,81 @@ describe('手番の自動交代', () => {
     const next = applyMove(state, moves[0]);
     expect(next.currentPlayer).toBe('black');
     expect(next.phase).toBe('rolling');
+  });
+});
+
+describe('2個分の連続移動（getChainedMoves）', () => {
+  it('同じ駒で2手続けた到達点を返す', () => {
+    const state = makeState(
+      [
+        { index: 20, owner: 'white', count: 2 },
+        { index: 0, owner: 'black', count: 2 },
+      ],
+      { dice: [3, 5] },
+    );
+    const chains = getChainedMoves(state, 20);
+    // 20→17→12（3,5） / 20→15→12（5,3）→ 到達点 12 が1件
+    expect(chains.map((c) => c.dest)).toEqual([12]);
+    expect(chains[0].moves[0].from).toBe(20);
+    expect(chains[0].moves[1].to).toBe(12);
+  });
+
+  it('途中がブロックされていても別順で到達できれば返す', () => {
+    // 20→17(3) がブロック、20→15(5)→12(3) は通る
+    const state = makeState(
+      [
+        { index: 20, owner: 'white', count: 2 },
+        { index: 17, owner: 'black', count: 2 },
+        { index: 0, owner: 'black', count: 2 },
+      ],
+      { dice: [3, 5] },
+    );
+    const chains = getChainedMoves(state, 20);
+    expect(chains.map((c) => c.dest)).toEqual([12]);
+    expect(chains[0].moves[0].die).toBe(5);
+  });
+});
+
+describe('接触なしレース判定（isPureBearOffRace）', () => {
+  it('全駒ホーム内かつ相手が絡まないとき true', () => {
+    const state = makeState(
+      [
+        { index: 3, owner: 'white', count: 15 },
+        { index: 20, owner: 'black', count: 15 },
+      ],
+    );
+    expect(isPureBearOffRace(state, 'white')).toBe(true);
+  });
+
+  it('相手が自分のホーム内やバーに残っていれば false', () => {
+    const inHome = makeState(
+      [
+        { index: 3, owner: 'white', count: 15 },
+        { index: 1, owner: 'black', count: 1 },
+        { index: 20, owner: 'black', count: 14 },
+      ],
+    );
+    expect(isPureBearOffRace(inHome, 'white')).toBe(false);
+
+    const onBar = makeState(
+      [
+        { index: 3, owner: 'white', count: 15 },
+        { index: 20, owner: 'black', count: 15 },
+      ],
+      { bar: { white: 0, black: 1 } },
+    );
+    expect(isPureBearOffRace(onBar, 'white')).toBe(false);
+  });
+
+  it('ホーム外に駒が残っていれば false', () => {
+    const state = makeState(
+      [
+        { index: 3, owner: 'white', count: 14 },
+        { index: 8, owner: 'white', count: 1 },
+        { index: 20, owner: 'black', count: 15 },
+      ],
+    );
+    expect(isPureBearOffRace(state, 'white')).toBe(false);
   });
 });
 
