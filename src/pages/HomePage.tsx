@@ -3,21 +3,32 @@ import type { GameInfo } from '../data/games';
 import { Layout } from '../components/Layout';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
+import { Embers } from '../components/Embers';
 
 const GAME_ICONS: Record<string, string> = {
   mancala: '🎯',
   uno: '🃏',
+  backgammon: '🎲',
   reversi: '⚫',
   gomoku: '🔵',
   checkers: '♟️',
 };
 
+// 金彩×熾火の世界観に馴染むアクセント
 const GAME_ACCENT: Record<string, string> = {
-  mancala:  '#a4761f',
-  uno:      '#b83a30',
-  reversi:  '#3f4a42',
-  gomoku:   '#2d6e8f',
-  checkers: '#5f5028',
+  mancala:  '#c9a24b',
+  uno:      '#b8502e',
+  backgammon: '#e0733a',
+  reversi:  '#8a6f3a',
+  gomoku:   '#5c7a8a',
+  checkers: '#8a6f3a',
+};
+
+// カードに刻むゲームごとの誘い文句
+const GAME_EN: Record<string, string> = {
+  mancala: 'MANCALA',
+  uno: 'UNO',
+  backgammon: 'BACKGAMMON',
 };
 
 type HomePageProps = {
@@ -26,50 +37,58 @@ type HomePageProps = {
 
 function GameCard({ game, onSelect }: { game: GameInfo; onSelect: () => void }) {
   const icon    = GAME_ICONS[game.id]  ?? '🎮';
-  const accent  = GAME_ACCENT[game.id] ?? '#888';
+  const accent  = GAME_ACCENT[game.id] ?? '#c9a24b';
   const isAvail = game.status === 'available';
 
   return (
     <Card>
       <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 14 }}>
-        {/* アイコン */}
+        {/* 紋章 */}
         <div
           style={{
             width: 60,
             height: 60,
-            borderRadius: 16,
-            backgroundColor: isAvail ? accent : '#c8b898',
+            borderRadius: '50%',
+            border: `1.5px solid ${isAvail ? accent : 'rgba(201,162,75,.25)'}`,
+            background: 'radial-gradient(circle at 50% 38%, #2a1e2b 0%, #191320 75%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: 30,
+            fontSize: 28,
             flexShrink: 0,
-            boxShadow: isAvail
-              ? `0 4px 14px ${accent}55`
-              : '0 2px 6px rgba(0,0,0,0.10)',
+            boxShadow: isAvail ? `0 0 18px ${accent}44, inset 0 0 12px rgba(0,0,0,.6)` : 'inset 0 0 12px rgba(0,0,0,.6)',
+            filter: isAvail ? 'none' : 'grayscale(.6)',
           }}
         >
           {icon}
         </div>
         <div>
-          {/* ジャンルラベル */}
+          {/* ジャンルの銘 */}
           <div
             style={{
               display: 'inline-block',
               fontSize: 10,
               fontWeight: 'bold',
-              backgroundColor: isAvail ? `${accent}22` : '#f0ece8',
-              color: isAvail ? accent : '#9a8070',
+              letterSpacing: '.18em',
+              background: isAvail ? 'rgba(201,162,75,.14)' : 'rgba(255,255,255,.04)',
+              color: isAvail ? '#d8c79a' : '#7a6f5c',
+              border: `1px solid ${isAvail ? 'rgba(201,162,75,.35)' : 'rgba(201,162,75,.15)'}`,
               padding: '2px 10px',
-              borderRadius: 20,
-              marginBottom: 5,
-              letterSpacing: 0.5,
+              borderRadius: 3,
+              marginBottom: 6,
             }}
           >
             {game.themeLabel}
           </div>
-          <div style={{ fontSize: 20, fontWeight: 'bold', color: 'var(--text)' }}>
-            {game.title}
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+            <span style={{ fontSize: 20, fontWeight: 'bold', color: 'var(--text)', letterSpacing: '.08em' }}>
+              {game.title}
+            </span>
+            {GAME_EN[game.id] && (
+              <span style={{ fontFamily: 'Cinzel,serif', fontSize: 10, letterSpacing: '.2em', color: '#8a7a58' }}>
+                {GAME_EN[game.id]}
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -80,21 +99,22 @@ function GameCard({ game, onSelect }: { game: GameInfo; onSelect: () => void }) 
 
       {isAvail ? (
         <Button fullWidth onClick={onSelect}>
-          {game.title}をはじめる →
+          {game.title}の盤へ進む
         </Button>
       ) : (
         <div
           style={{
             textAlign: 'center',
             padding: '12px',
-            background: '#f4f0ec',
-            borderRadius: 12,
-            color: '#b0a090',
+            background: 'rgba(13,11,16,.5)',
+            borderRadius: 6,
+            color: '#7a6f5c',
             fontSize: 13,
-            border: '1px dashed #d8cfc4',
+            letterSpacing: '.08em',
+            border: '1px dashed rgba(201,162,75,.25)',
           }}
         >
-          🔜 近日公開予定
+          🔒 いずれ封印が解かれる…
         </div>
       )}
     </Card>
@@ -104,66 +124,74 @@ function GameCard({ game, onSelect }: { game: GameInfo; onSelect: () => void }) 
 export function HomePage({ onSelectGame }: HomePageProps) {
   return (
     <Layout>
+      <Embers />
 
-      {/* ヒーローバナー: --hero-pt / --hero-pb はスマホ横向きで縮小 */}
+      {/* ヒーロー */}
       <div
         style={{
           textAlign: 'center',
           paddingTop: 'var(--hero-pt)',
           paddingBottom: 'var(--hero-pb)',
+          position: 'relative',
+          zIndex: 2,
         }}
       >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, color: '#8a6f3a', marginBottom: 12 }}>
+          <div style={{ height: 1, width: 52, background: 'linear-gradient(90deg,transparent,#8a6f3a)' }} />
+          <svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 0 L7.6 4.4 L12 6 L7.6 7.6 L6 12 L4.4 7.6 L0 6 L4.4 4.4 Z" fill="#8a6f3a" /></svg>
+          <div style={{ height: 1, width: 52, background: 'linear-gradient(270deg,transparent,#8a6f3a)' }} />
+        </div>
         <div
           className="dragon-float"
           style={{
-            fontSize: 68,
+            fontSize: 64,
             marginBottom: 10,
-            filter: 'drop-shadow(0 6px 16px rgba(201, 162, 39, 0.5))',
+            filter: 'drop-shadow(0 0 22px rgba(224, 115, 58, 0.45))',
           }}
         >
           🐉
         </div>
         <h1
           style={{
-            fontSize: 28,
-            fontWeight: 'bold',
-            background: 'linear-gradient(165deg, #d9b545 10%, #8a6d1f 55%, #1f4a36 130%)',
-            WebkitBackgroundClip: 'text',
-            backgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            marginBottom: 8,
-            letterSpacing: 2,
+            fontFamily: 'Cinzel,serif',
+            fontSize: 26,
+            fontWeight: 700,
+            letterSpacing: '.14em',
+            color: '#e6c877',
+            textShadow: '0 0 24px rgba(224,115,58,.35), 0 2px 2px rgba(0,0,0,.6)',
+            marginBottom: 6,
           }}
         >
-          ドラゴンゲームパーク
+          DRAGON GAME PARK
         </h1>
+        <div style={{ fontSize: 13, letterSpacing: '.3em', color: '#9a8d75' }}>
+          ドラゴンゲームパーク
+        </div>
       </div>
 
-      {/* ドラゴン案内メッセージ */}
+      {/* 番人ドラゴンの口上 */}
       <div
         style={{
+          position: 'relative',
+          zIndex: 2,
           display: 'flex',
           alignItems: 'center',
           gap: 12,
-          background: 'linear-gradient(135deg, #f6f2e2, #e9e5cd)',
-          border: '1.5px solid #c9b26a',
-          borderRadius: 16,
+          background: 'rgba(201,162,75,.08)',
+          border: '1px solid rgba(201,162,75,.28)',
+          borderRadius: 6,
           padding: '14px 16px',
           marginBottom: 22,
-          boxShadow: '0 2px 10px rgba(160, 130, 40, 0.15)',
         }}
       >
-        <span style={{ fontSize: 26, flexShrink: 0 }}>🐲</span>
-        <p style={{ fontSize: 14, color: '#4a5c1f', fontWeight: 'bold' }}>
-          ゲームを選択してください。
+        <span style={{ fontSize: 26, flexShrink: 0, filter: 'drop-shadow(0 0 8px rgba(224,115,58,.4))' }}>🐲</span>
+        <p style={{ fontSize: 13.5, color: '#d8cbb0', lineHeight: 1.7 }}>
+          よくぞ参った、挑戦者よ。焚き火のそばで、挑む遊戯を選ぶがいい。
         </p>
       </div>
 
-      {/*
-        ゲームカード一覧
-        game-grid: スマホ縦1列 → 680px+ で横2列グリッド（global.css 参照）
-      */}
-      <div className="game-grid">
+      {/* ゲームカード一覧 */}
+      <div className="game-grid" style={{ position: 'relative', zIndex: 2 }}>
         {games.map((game) => (
           <GameCard
             key={game.id}
@@ -176,30 +204,36 @@ export function HomePage({ onSelectGame }: HomePageProps) {
       {/* 追加予定の告知 */}
       <div
         style={{
+          position: 'relative',
+          zIndex: 2,
           textAlign: 'center',
           padding: '14px 16px',
-          background: '#f0ece6',
-          borderRadius: 14,
+          background: 'rgba(13,11,16,.5)',
+          borderRadius: 6,
           marginBottom: 16,
           fontSize: 13,
-          color: '#9a7a58',
-          border: '1px dashed #d4c0a0',
+          letterSpacing: '.08em',
+          color: '#9a8d75',
+          border: '1px dashed rgba(201,162,75,.3)',
         }}
       >
-        🎲 今後、いろいろなゲームを追加予定！
+        ✦ 新たな遊戯が、闇の中で目覚めのときを待っている…
       </div>
 
       {/* フッター */}
       <div
         style={{
+          position: 'relative',
+          zIndex: 2,
           textAlign: 'center',
           paddingBottom: 36,
-          fontSize: 11,
-          color: '#a89a68',
-          letterSpacing: 0.5,
+          fontFamily: 'Cinzel,serif',
+          fontSize: 10,
+          color: '#5f5443',
+          letterSpacing: '.3em',
         }}
       >
-        🐉 Dragon Game Park
+        DRAGON-GAME-PARK
       </div>
 
     </Layout>

@@ -22,8 +22,8 @@ export function UnoRulesPanel({ variant }: { variant: UnoVariant }) {
   const rules = variant === 'hard' ? HARD_RULES : STANDARD_RULES;
   return (
     <div style={{
-      background: variant === 'hard' ? '#2a1114' : '#fffaf0',
-      color: variant === 'hard' ? '#fff5e8' : 'var(--text-mid)',
+      background: variant === 'hard' ? '#2a1114' : '#241d2b',
+      color: variant === 'hard' ? 'rgba(201,162,75,.12)' : 'var(--text-mid)',
       border: `1.5px solid ${variant === 'hard' ? '#c33a30' : 'var(--border)'}`,
       borderRadius: 16,
       padding: '14px 14px',

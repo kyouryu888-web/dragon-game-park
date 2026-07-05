@@ -267,7 +267,7 @@ export function UnoGamePage({ config, onBackToSetup, onBackToHome }: UnoGamePage
                 padding: '11px 14px',
                 borderRadius: 14,
                 border: '1.5px solid var(--border)',
-                background: '#faf8f4',
+                background: '#191320',
                 color: 'var(--text-mid)',
                 cursor: 'pointer',
                 fontWeight: 900,
@@ -316,8 +316,8 @@ function TurnStatus({
     <div className="turn-slide" style={{
       background: variant === 'hard'
         ? 'linear-gradient(135deg, #2b1114, #4b1518)'
-        : 'linear-gradient(135deg, #fff8e8, #fdf0d0)',
-      color: variant === 'hard' ? '#fff5e8' : '#7a5010',
+        : 'linear-gradient(135deg, rgba(201,162,75,.12), rgba(201,162,75,.12))',
+      color: variant === 'hard' ? 'rgba(201,162,75,.12)' : '#7a5010',
       border: `1.5px solid ${variant === 'hard' ? '#c33a30' : '#e8d070'}`,
       borderRadius: 15,
       padding: '11px 14px',
@@ -325,7 +325,7 @@ function TurnStatus({
       textAlign: 'center',
     }}>
       <div className={thinking ? 'cpu-thinking-pulse' : undefined} style={{ fontWeight: 900, fontSize: 14 }}>
-        {player.isCpu ? 'CPU ' : ''}{player.name} の番です
+        {player.isCpu ? 'CPU ' : ''}{player.name} の番
       </div>
       <div style={{ marginTop: 4, fontSize: 12, lineHeight: 1.5 }}>
         色: {UNO_COLOR_LABELS[activeColor]}{pendingDrawCount > 0 ? ` / ドロー ${pendingDrawCount}まい` : ''} / {message}
@@ -396,7 +396,7 @@ export function PendingPanel({
         <div className="cpu-thinking-pulse" style={{
           border: '1.5px solid #e8c880',
           borderRadius: 13,
-          background: '#fffdf8',
+          background: '#1d1723',
           color: 'var(--brown)',
           fontWeight: 900,
           padding: '11px 12px',
@@ -430,7 +430,7 @@ export function PendingPanel({
 function ActionPanel({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div style={{
-      background: '#fff8e8',
+      background: 'rgba(201,162,75,.12)',
       border: '1.5px solid #e8c880',
       borderRadius: 18,
       padding: '15px 14px',
@@ -458,7 +458,7 @@ function ResultPanel({
 }) {
   return (
     <div className="result-appear" style={{
-      background: 'linear-gradient(135deg, #fffbe8, #fdf1bd)',
+      background: 'linear-gradient(135deg, rgba(201,162,75,.12), rgba(201,162,75,.22))',
       border: '2px solid #d8b030',
       borderRadius: 22,
       padding: '22px 18px',
@@ -468,7 +468,7 @@ function ResultPanel({
     }}>
       <div className="trophy-bounce" style={{ fontSize: 42 }}>🏆</div>
       <h2 style={{ fontSize: 20, color: 'var(--brown)', marginBottom: 12 }}>
-        {winner ? `${winner.name} の勝ち!` : 'ゲーム終了'}
+        {winner ? `${winner.name} の勝利!` : '決闘は終わった'}
       </h2>
       <p style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: 12 }}>
         数字カードは数字の点、スキップ・リバース・ドローなどの記号カードは20点、ワイルドカードは50点です。点が少ないほど上位です。
@@ -480,7 +480,7 @@ function ResultPanel({
             justifyContent: 'space-between',
             alignItems: 'center',
             gap: 10,
-            background: index === 0 ? '#fff0b8' : '#fffdf8',
+            background: index === 0 ? 'rgba(230,200,119,.25)' : '#1d1723',
             border: '1.5px solid var(--border)',
             borderRadius: 12,
             padding: '8px 10px',
@@ -497,7 +497,7 @@ function ResultPanel({
         ))}
       </div>
       <div className="game-nav-buttons" style={{ marginTop: 0 }}>
-        <Button fullWidth onClick={onRestart}>もう一度あそぶ</Button>
+        <Button fullWidth onClick={onRestart}>もう一度戦う</Button>
         <div className="game-nav-secondary">
           <Button fullWidth variant="secondary" onClick={onBackToSetup}>UNO設定へ戻る</Button>
           <Button fullWidth variant="secondary" onClick={onBackToHome}>ゲーム選択へ戻る</Button>

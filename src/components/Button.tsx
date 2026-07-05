@@ -11,21 +11,21 @@ type ButtonProps = {
 
 const VARIANT_STYLES: Record<ButtonVariant, React.CSSProperties> = {
   primary: {
-    background: 'linear-gradient(160deg, #d9b545, #b1852a)',
-    color: '#2c2410',
-    border: '1px solid #8a6d1f',
-    boxShadow: '0 3px 12px rgba(140, 110, 30, 0.35), inset 0 1px 0 rgba(255,255,255,0.35)',
+    background: 'linear-gradient(180deg, #3a2c17 0%, #2a1f12 100%)',
+    color: '#f0dfae',
+    border: '1px solid #c9a24b',
+    boxShadow: '0 0 20px rgba(224, 115, 58, 0.22), inset 0 1px 0 rgba(255, 235, 180, 0.18)',
   },
   secondary: {
-    background: '#ece5d0',
-    color: '#1f4a36',
-    border: '1.5px solid #b8ad8a',
-    boxShadow: '0 2px 6px rgba(40, 60, 40, 0.10)',
+    background: 'rgba(201, 162, 75, 0.08)',
+    color: '#d8c79a',
+    border: '1px solid rgba(201, 162, 75, 0.4)',
+    boxShadow: 'none',
   },
   ghost: {
     background: 'transparent',
-    color: '#3f6b52',
-    border: '1.5px solid #9fb59a',
+    color: '#9a8d75',
+    border: '1px solid rgba(201, 162, 75, 0.25)',
     boxShadow: 'none',
   },
 };
@@ -42,13 +42,13 @@ export function Button({
     alignItems: 'center',
     justifyContent: 'center',
     padding: '14px 20px',
-    borderRadius: 14,
+    borderRadius: 8,
     fontSize: 15,
     fontWeight: 'bold',
     cursor: disabled ? 'not-allowed' : 'pointer',
     opacity: disabled ? 0.5 : 1,
     width: fullWidth ? '100%' : undefined,
-    letterSpacing: 0.4,
+    letterSpacing: '.12em',
     lineHeight: 1.3,
     textAlign: 'center',
   };

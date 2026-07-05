@@ -67,7 +67,7 @@ function countJoined(row: Partial<RoomRow>): number {
   return c;
 }
 
-const PLAYER_NAMES = ['ホスト', 'ゲスト1', 'ゲスト2', 'ゲスト3'];
+const PLAYER_NAMES = ['ルームの主', '挑戦者1', '挑戦者2', '挑戦者3'];
 
 const CPU_LEVELS: { level: CpuLevel; label: string }[] = [
   { level: 'very-easy', label: 'ベビードラゴン' },
@@ -147,7 +147,7 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
     });
 
     if (err) {
-      setError('ルームの作成に失敗しました。もう一度お試しください。');
+      setError('ルームを開けなかった。時をおいて再び試されよ');
       setPageState('menu');
       return;
     }
@@ -287,7 +287,7 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
       .eq('room_code', code);
 
     if (updateErr) {
-      setError('参加に失敗しました。もう一度お試しください。');
+      setError('その紋章のルームには入れなかった。コードを確かめられよ');
       return;
     }
 
@@ -360,7 +360,7 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
             display: 'inline-block',
             fontSize: 34, fontWeight: 'bold', letterSpacing: 10,
             fontFamily: 'monospace', color: 'var(--brown)',
-            background: '#fffbe8', border: '2px solid #e8c870',
+            background: 'rgba(201,162,75,.12)', border: '2px solid #e8c870',
             borderRadius: 18, padding: '18px 32px', marginBottom: 20,
           }}>
             {roomCode}
@@ -387,7 +387,7 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
           </div>
 
           <div className="cpu-thinking-pulse" style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 28 }}>
-            全員の参加を待っています...
+            挑戦者が現れるのを待っている…
           </div>
 
           <Button variant="ghost" onClick={async () => {
@@ -418,11 +418,11 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
 
         {/* ── プレイヤー名入力 ── */}
         <div style={{
-          background: '#fffdf8', border: '1.5px solid var(--border)',
+          background: '#1d1723', border: '1.5px solid var(--border)',
           borderRadius: 18, padding: '16px 20px', marginBottom: 16,
         }}>
           <div style={{ fontSize: 13, fontWeight: 'bold', color: 'var(--brown)', marginBottom: 8 }}>
-            👤 あなたの名前
+            👤 名を刻む（なくてもよい）
           </div>
           <input
             type="text"
@@ -433,10 +433,10 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
             style={{
               width: '100%', padding: '10px 14px', fontSize: 15,
               border: '1.5px solid var(--border)', borderRadius: 10,
-              boxSizing: 'border-box', background: '#faf8f5',
+              boxSizing: 'border-box', background: '#191320',
               color: 'var(--text)', outline: 'none', fontFamily: 'inherit',
             }}
-            onFocus={e => { e.target.style.borderColor = '#c87028'; }}
+            onFocus={e => { e.target.style.borderColor = '#c9a24b'; }}
             onBlur={e  => { e.target.style.borderColor = 'var(--border)'; }}
           />
           <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 5 }}>
@@ -446,7 +446,7 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
 
         {/* ── ルームを作る ── */}
         <div style={{
-          background: '#fffdf8', border: '1.5px solid var(--border)',
+          background: '#1d1723', border: '1.5px solid var(--border)',
           borderRadius: 18, padding: '20px', marginBottom: 16,
         }}>
           <h2 style={{ fontSize: 16, fontWeight: 'bold', color: 'var(--brown)', marginBottom: 6 }}>
@@ -467,9 +467,9 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
                   style={{
                     flex: 1, padding: '8px 0', borderRadius: 10, fontWeight: 'bold',
                     fontSize: 15, cursor: 'pointer',
-                    border: `2px solid ${playerCount === n ? '#c87028' : 'var(--border)'}`,
-                    background: playerCount === n ? '#fff3e0' : '#faf8f5',
-                    color: playerCount === n ? '#8a4010' : 'var(--text)',
+                    border: `2px solid ${playerCount === n ? '#c9a24b' : 'var(--border)'}`,
+                    background: playerCount === n ? 'rgba(201,162,75,.16)' : '#191320',
+                    color: playerCount === n ? '#f0dfae' : 'var(--text)',
                     transition: 'all 0.12s',
                   }}
                 >
@@ -487,7 +487,7 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
                 {Array.from({ length: playerCount - 1 }, (_, i) => {
                   const isCpu = cpuSlots[i];
                   return (
-                    <div key={i} style={{ borderRadius: 10, padding: '8px 10px', background: isCpu ? '#f0f8f0' : '#faf8f5', border: `1px solid ${isCpu ? '#90b090' : 'var(--border)'}` }}>
+                    <div key={i} style={{ borderRadius: 10, padding: '8px 10px', background: isCpu ? 'rgba(138,111,58,.14)' : '#191320', border: `1px solid ${isCpu ? '#6a5a38' : 'var(--border)'}` }}>
                       {/* 人間/CPU トグル */}
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: isCpu ? 8 : 0 }}>
                         <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 'bold' }}>
@@ -503,9 +503,9 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
                                 onClick={() => { if (isCpu !== isCpuRole) toggleCpuSlot(i); }}
                                 style={{
                                   padding: '4px 10px', borderRadius: 8, fontSize: 12, fontWeight: 'bold',
-                                  border: `1.5px solid ${isSelected ? (isCpuRole ? '#4e8a4e' : '#c87028') : 'var(--border)'}`,
-                                  background: isSelected ? (isCpuRole ? '#e8f4e8' : '#fff3e0') : 'transparent',
-                                  color: isSelected ? (isCpuRole ? '#2a6a2a' : '#8a4010') : 'var(--text-muted)',
+                                  border: `1.5px solid ${isSelected ? (isCpuRole ? '#8a6f3a' : '#c9a24b') : 'var(--border)'}`,
+                                  background: isSelected ? (isCpuRole ? 'rgba(138,111,58,.14)' : 'rgba(201,162,75,.16)') : 'transparent',
+                                  color: isSelected ? (isCpuRole ? '#d8c79a' : '#f0dfae') : 'var(--text-muted)',
                                   cursor: 'pointer',
                                 }}
                               >{role}</button>
@@ -524,9 +524,9 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
                                 onClick={() => setCpuLevel(i, level)}
                                 style={{
                                   padding: '3px 8px', borderRadius: 7, fontSize: 11, fontWeight: 'bold',
-                                  border: `1.5px solid ${isSelected ? '#4e8a4e' : 'var(--border)'}`,
-                                  background: isSelected ? '#d0ecd0' : 'transparent',
-                                  color: isSelected ? '#1a5a1a' : 'var(--text-muted)',
+                                  border: `1.5px solid ${isSelected ? '#8a6f3a' : 'var(--border)'}`,
+                                  background: isSelected ? 'rgba(138,111,58,.25)' : 'transparent',
+                                  color: isSelected ? '#f0dfae' : 'var(--text-muted)',
                                   cursor: 'pointer',
                                 }}
                               >{label}</button>
@@ -549,7 +549,7 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
 
         {/* ── ルームに参加する ── */}
         <div style={{
-          background: '#fffdf8', border: '1.5px solid var(--border)',
+          background: '#1d1723', border: '1.5px solid var(--border)',
           borderRadius: 18, padding: '20px', marginBottom: 16,
         }}>
           <h2 style={{ fontSize: 16, fontWeight: 'bold', color: 'var(--brown)', marginBottom: 6 }}>
@@ -569,7 +569,7 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
               width: '100%', padding: '12px 16px',
               fontSize: 22, fontFamily: 'monospace', letterSpacing: 8, textAlign: 'center',
               border: '2px solid var(--border)', borderRadius: 12, marginBottom: 12,
-              boxSizing: 'border-box', background: '#fffdf8', color: 'var(--text)', outline: 'none',
+              boxSizing: 'border-box', background: '#1d1723', color: 'var(--text)', outline: 'none',
             }}
           />
           <Button fullWidth variant="secondary" onClick={handleJoin}>
@@ -579,7 +579,7 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
 
         {error && (
           <div style={{
-            color: '#c0392b', background: '#fdf0ef', border: '1px solid #f5c6c0',
+            color: '#c0392b', background: 'rgba(224,115,58,.12)', border: '1px solid rgba(224,115,58,.35)',
             borderRadius: 10, padding: '10px 14px', fontSize: 13, marginBottom: 16,
           }}>
             ⚠️ {error}

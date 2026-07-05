@@ -18,14 +18,21 @@ export const games: GameInfo[] = [
   {
     id: 'mancala',
     title: 'マンカラ',
-    description: '木製ボードとカラフルなおはじきで遊ぶ、かわいいカラハ式マンカラです。',
+    description: '古木の盤に石を配り、種を蒔くように陣を築く——いにしえより伝わる遊戯カラハ。',
+    status: 'available',
+    themeLabel: 'ボードゲーム',
+  },
+  {
+    id: 'backgammon',
+    title: 'バックギャモン',
+    description: '骰子に運命を委ね、15の駒を故郷へ帰す——世界最古の盤上遊戯。番人ドラゴンとの対決も、遠方の者との対戦も。',
     status: 'available',
     themeLabel: 'ボードゲーム',
   },
   {
     id: 'uno',
     title: 'UNO',
-    description: '同じ色・数字・記号を出して手札をなくすカードゲームです。通常版と25まいアウトのハード版で遊べます。',
+    description: '色と数字を紡いで手札を燃やし尽くすカードの決闘。掟の厳しいハード版も待ち受ける。',
     status: 'available',
     themeLabel: 'カードゲーム',
   },

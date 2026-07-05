@@ -60,7 +60,7 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
       .single();
 
     if (error || !data?.game_state) {
-      setMessage('UNOルームの取得に失敗しました。');
+      setMessage('ルームの気配が途絶えた…。');
       setLoading(false);
       return;
     }
@@ -270,7 +270,7 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
     return (
       <Layout>
         <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-          <p style={{ color: 'var(--text-muted)', marginBottom: 20 }}>UNOルームの取得に失敗しました。</p>
+          <p style={{ color: 'var(--text-muted)', marginBottom: 20 }}>ルームの気配が途絶えた…。</p>
           <Button onClick={onBackToHome}>ホームへ戻る</Button>
         </div>
       </Layout>
@@ -295,7 +295,7 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 gap: 10,
-                background: index === 0 ? '#fff0b8' : '#fffdf8',
+                background: index === 0 ? 'rgba(230,200,119,.25)' : '#1d1723',
                 border: '1.5px solid var(--border)',
                 borderRadius: 12,
                 padding: '9px 10px',
@@ -330,7 +330,7 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
         </div>
 
         <div style={{
-          background: canTakeTurn ? '#e8f5e9' : '#f8f4ec',
+          background: canTakeTurn ? 'rgba(138,111,58,.14)' : 'rgba(255,255,255,.06)',
           color: canTakeTurn ? '#2e7d32' : 'var(--text-muted)',
           border: `1.5px solid ${canTakeTurn ? '#9ac99b' : 'var(--border)'}`,
           borderRadius: 15,
@@ -340,7 +340,7 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
           fontSize: 13,
           fontWeight: 900,
         }}>
-          {canTakeTurn ? 'あなたの番です' : `${currentPlayer.name} の番です`}
+          {canTakeTurn ? '⚔ そなたの番' : `${currentPlayer.name} の番…`}
           <div style={{ marginTop: 4, fontSize: 12, fontWeight: 700 }}>
             {isCpuThinking ? 'CPU思考中...' : isWriting ? '同期中...' : message}
           </div>
@@ -379,7 +379,7 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
             padding: '11px 14px',
             borderRadius: 14,
             border: '1.5px solid var(--border)',
-            background: '#faf8f4',
+            background: '#191320',
             color: 'var(--text-mid)',
             cursor: 'pointer',
             fontWeight: 900,

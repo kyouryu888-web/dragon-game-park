@@ -73,7 +73,7 @@ export function UnoOnlineRoomPage({ onGameStart, onBack }: UnoOnlineRoomPageProp
 
     const code = generateUnoRoomCode();
     const hostId = getUnoOnlinePlayerId();
-    const hostName = myName.trim() || 'ホスト';
+    const hostName = myName.trim() || 'ルームの主';
     const gameState = createUnoOnlineInitialState(variant, playerCount, hostName, activeSlots);
     const cpuPrefill = buildUnoCpuPrefill(playerCount, activeSlots);
 
@@ -92,7 +92,7 @@ export function UnoOnlineRoomPage({ onGameStart, onBack }: UnoOnlineRoomPageProp
       .single();
 
     if (insertError || !data) {
-      setError('UNOルームの作成に失敗しました。Supabaseに uno_rooms テーブルがあるか確認してください。');
+      setError('ルームを開けなかった。時をおいて再び試されよ');
       setPageState('menu');
       return;
     }
@@ -149,7 +149,7 @@ export function UnoOnlineRoomPage({ onGameStart, onBack }: UnoOnlineRoomPageProp
       return;
     }
 
-    const guestName = myName.trim() || `ゲスト${openSlot.playerIndex + 1}`;
+    const guestName = myName.trim() || `挑戦者${openSlot.playerIndex + 1}`;
     const currentState = row.game_state as Parameters<typeof renameUnoPlayer>[0] | null;
     const updatedState = currentState
       ? renameUnoPlayer(currentState, openSlot.playerIndex, guestName)
@@ -170,7 +170,7 @@ export function UnoOnlineRoomPage({ onGameStart, onBack }: UnoOnlineRoomPageProp
       .maybeSingle();
 
     if (updateError || !updated) {
-      setError('参加に失敗しました。ほかの人が先に入った可能性があります。もう一度お試しください。');
+      setError('扉は既に閉ざされていた。別のルームを探されよ');
       return;
     }
 
@@ -245,7 +245,7 @@ export function UnoOnlineRoomPage({ onGameStart, onBack }: UnoOnlineRoomPageProp
             letterSpacing: 10,
             fontFamily: 'monospace',
             color: 'var(--brown)',
-            background: '#fffbe8',
+            background: 'rgba(201,162,75,.12)',
             border: '2px solid #e8c870',
             borderRadius: 18,
             padding: '18px 32px',
@@ -275,16 +275,16 @@ export function UnoOnlineRoomPage({ onGameStart, onBack }: UnoOnlineRoomPageProp
     <Layout>
       <div style={{ paddingTop: 16, paddingBottom: 40 }}>
         <h1 style={{ fontSize: 20, fontWeight: 900, color: 'var(--brown)', textAlign: 'center', marginBottom: 20 }}>
-          UNO オンライン対戦
+          UNO ─ 遠方の者との決闘
         </h1>
 
         <section style={panelStyle}>
-          <h2 style={sectionTitleStyle}>あなたの名前</h2>
+          <h2 style={sectionTitleStyle}>名を刻む（なくてもよい）</h2>
           <input
             type="text"
             value={myName}
             onChange={(event) => handleNameChange(event.target.value)}
-            placeholder="例: たろう"
+            placeholder="挑戦者の名"
             maxLength={12}
             style={inputStyle}
           />
@@ -305,9 +305,9 @@ export function UnoOnlineRoomPage({ onGameStart, onBack }: UnoOnlineRoomPageProp
                 style={{
                   padding: '8px 0',
                   borderRadius: 10,
-                  border: `2px solid ${playerCount === count ? '#c87028' : 'var(--border)'}`,
-                  background: playerCount === count ? '#fff3df' : '#faf8f5',
-                  color: playerCount === count ? '#8a4010' : 'var(--text-mid)',
+                  border: `2px solid ${playerCount === count ? '#c9a24b' : 'var(--border)'}`,
+                  background: playerCount === count ? 'rgba(201,162,75,.12)' : '#191320',
+                  color: playerCount === count ? '#f0dfae' : 'var(--text-mid)',
                   fontWeight: 900,
                   cursor: 'pointer',
                 }}
@@ -357,8 +357,8 @@ export function UnoOnlineRoomPage({ onGameStart, onBack }: UnoOnlineRoomPageProp
         {error && (
           <div style={{
             color: '#c0392b',
-            background: '#fdf0ef',
-            border: '1px solid #f5c6c0',
+            background: 'rgba(224,115,58,.12)',
+            border: '1px solid rgba(224,115,58,.35)',
             borderRadius: 10,
             padding: '10px 14px',
             fontSize: 13,
@@ -377,7 +377,7 @@ export function UnoOnlineRoomPage({ onGameStart, onBack }: UnoOnlineRoomPageProp
 }
 
 const panelStyle: React.CSSProperties = {
-  background: '#fffdf8',
+  background: '#1d1723',
   border: '1.5px solid var(--border)',
   borderRadius: 18,
   padding: 16,
@@ -396,7 +396,7 @@ const inputStyle: React.CSSProperties = {
   padding: '10px 14px',
   border: '1.5px solid var(--border)',
   borderRadius: 11,
-  background: '#faf8f5',
+  background: '#191320',
   color: 'var(--text)',
   fontFamily: 'inherit',
   boxSizing: 'border-box',
@@ -421,15 +421,15 @@ function ModeButton({
       style={{
         textAlign: 'left',
         borderRadius: 14,
-        border: `2px solid ${selected ? (danger ? '#c83b32' : '#c87028') : 'var(--border)'}`,
-        background: selected ? (danger ? '#321316' : '#fff3df') : '#faf8f5',
-        color: selected && danger ? '#fff6e8' : 'var(--text)',
+        border: `2px solid ${selected ? (danger ? '#c83b32' : '#c9a24b') : 'var(--border)'}`,
+        background: selected ? (danger ? '#321316' : 'rgba(201,162,75,.12)') : '#191320',
+        color: selected && danger ? 'rgba(201,162,75,.12)' : 'var(--text)',
         padding: '12px',
         cursor: 'pointer',
       }}
     >
       <div style={{ fontSize: 15, fontWeight: 900 }}>{title}</div>
-      <div style={{ fontSize: 12, color: selected && danger ? '#ffd8c8' : 'var(--text-muted)' }}>{text}</div>
+      <div style={{ fontSize: 12, color: selected && danger ? 'rgba(224,115,58,.2)' : 'var(--text-muted)' }}>{text}</div>
     </button>
   );
 }
@@ -446,8 +446,8 @@ function OnlineSlotRow({
   return (
     <div style={{
       borderRadius: 12,
-      border: `1.5px solid ${slot.isCpu ? '#8cc58d' : 'var(--border)'}`,
-      background: slot.isCpu ? '#f0f8ef' : '#faf8f5',
+      border: `1.5px solid ${slot.isCpu ? '#8a6f3a' : 'var(--border)'}`,
+      background: slot.isCpu ? 'rgba(138,111,58,.14)' : '#191320',
       padding: 10,
       display: 'grid',
       gap: 8,
@@ -469,8 +469,8 @@ function OnlineSlotRow({
               style={{
                 padding: '4px 7px',
                 borderRadius: 8,
-                border: `1.5px solid ${slot.cpuLevel === level ? '#4e8a4e' : 'var(--border)'}`,
-                background: slot.cpuLevel === level ? '#dff0df' : 'transparent',
+                border: `1.5px solid ${slot.cpuLevel === level ? '#8a6f3a' : 'var(--border)'}`,
+                background: slot.cpuLevel === level ? 'rgba(138,111,58,.14)' : 'transparent',
                 color: slot.cpuLevel === level ? '#1f641f' : 'var(--text-muted)',
                 fontSize: 11,
                 fontWeight: 900,
@@ -486,7 +486,7 @@ function OnlineSlotRow({
           type="text"
           value={slot.name}
           onChange={(event) => onChange({ name: event.target.value })}
-          placeholder={`ゲスト${index + 2}`}
+          placeholder={`挑戦者${index + 2}`}
           maxLength={12}
           style={inputStyle}
         />
@@ -499,8 +499,8 @@ function roleButtonStyle(selected: boolean): React.CSSProperties {
   return {
     padding: '5px 10px',
     borderRadius: 9,
-    border: `1.5px solid ${selected ? '#c87028' : 'var(--border)'}`,
-    background: selected ? '#fff3df' : 'transparent',
+    border: `1.5px solid ${selected ? '#c9a24b' : 'var(--border)'}`,
+    background: selected ? 'rgba(201,162,75,.12)' : 'transparent',
     color: selected ? '#7a3a10' : 'var(--text-muted)',
     fontWeight: 900,
     cursor: 'pointer',
