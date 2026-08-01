@@ -1,131 +1,68 @@
-# Claude Code 引き継ぎメモ: Dragon Game Park / バックギャモン追加
+# Dragon Game Park — Current Handoff
 
-この内容を Claude Code の新しいセッションに貼り付けてください。
-
-## まず読んでほしいこと
-
-このプロジェクトでは、UNO・マンカラだけでなく今後もたくさんのゲームを追加していく予定です。
-
-そのため、引き継ぎでは「今の作業」だけでなく、今後のゲーム追加にも使える運用を大事にしてください。
-
-- 作業が長くなったら、早めに引き継ぎ書を作る。
-- 週の残り使用量が少ないとユーザーが言ったら、実装を無理に続けず、まず引き継ぎ書を更新する。
-- 大きな機能が一段落したら、`CLAUDE_HANDOFF_CURRENT.md` を更新する。
-- 節目では保存版の引き継ぎ書も作る（`handoffs/YYYY-MM-DD-*.md`）。
-- ユーザーは初心者なので、ユーザーに操作してもらう時は必ず具体的に案内する。
-- 修正・書き換えがあった場合、必要に応じて `CLAUDE_HANDOFF_CURRENT.md` の更新を毎回自動で行う（ユーザーからの標準指示）。
-
-具体的な案内例:
-
-```text
-1. Chromeで http://127.0.0.1:5175/ を開いてください。
-2. 画面が古いままなら Ctrl + R を1回押してください。
-3. ホーム画面で「バックギャモン」を選んでください。
-4. 盤が表示されるか教えてください。
-```
-
-SQLや設定値を貼ってもらう時は、必ず「今ある内容を全部消して貼るのか」「続きに貼るのか」まで明記してください。
-
-## 現在の作業場所
-
-- 作業フォルダ: `C:\Users\ray-0\Dragon-game-park`
-- `main` ブランチが本番相当（Vercelが自動デプロイ）。
-- 本番URL: `https://dragon-game-park.vercel.app`
-- ローカル確認URL: `http://127.0.0.1:5175/`（サーバーはユーザーが別ウィンドウで起動済みのことが多い。起動コマンド: `node_modules\.bin\vite.cmd --host 127.0.0.1 --port 5175`）
-- 直近の保存版: [handoffs/2026-07-04-uno-mancala-redesign-complete.md](handoffs/2026-07-04-uno-mancala-redesign-complete.md)（UNOオンライン化〜ドラゴンファンタジー全面リデザイン〜マンカラ盤改善〜本番公開までの記録）
-- UNO・マンカラの改善は `claude/dragon-redesign` ブランチで行い、`main` にマージ・本番公開済み。今回のバックギャモン作業は **`main` から新しいブランチ（例: `claude/backgammon`）を切って開始すること**。
+更新日: 2026-07-31
+作業ブランチ: `codex/english-quest-v1`
 
 ## 現在の目的
 
-バックギャモンを3つ目のゲームとして追加する。
+新ゲーム「イングリッシュ ラーニング オデッセイ」の第1島「はじまりの森」を実装し、英語未経験の小学1年生が短時間から遊べる学習RPGとする。TOEIC点数の保証・予測表示は行わない。
 
-**進捗: ダークファンタジーUI版＋オンライン対戦の実装完了（`claude/backgammon` ブランチ、未マージ）。Supabase の SQL 実行だけユーザー作業が残っている。**
+## 実装済み
 
-経緯: 最初にサイト共通デザイン（羊皮紙）の版を実装 → ユーザーが claude.ai/design で作ったデザイン（`Backgammon.dc.html`、ダークファンタジー調・スマホ390×844想定）に全面リデザイン。ユーザー確認済みの方針:
-- 見た目はデザインに忠実（焦茶の盤・金×緋の駒・火の粉・番人ドラゴン・Cinzel/しっぽり明朝フォント）
-- **ダブリングキューブはUIから外した**（ロジックは `backgammonRules.ts` に温存。復活可能）
-- CPU 5段階選択はデザインの意匠でサブパネルに追加
-- **オンライン対戦を Supabase で本実装**（マンカラ/UNOと同じ realtime＋5秒ポーリング構成）
+- `src/features/englishQuest/` にUI、教材、学習エンジン、保存、Canvasゲームを分離。
+- 教材100項目: 音16、単語48、チャンク20、会話8、読解8。
+- 3分診断、12メインクエスト、最終脱出ダンジョン、4地域、精霊8種と進化。
+- 捕獲、Canvasアリーナ＋ボタン代替操作、Canvas錬金、会話・読解の脱出推理。
+- 誤答の短期再出題、1・3・7・14・30日間隔、ヒント段階、モード横断習熟、別日・複数モードでの進化判定。
+- 版付きlocalStorage、破損復旧、JSON書き出し・復元・初期化。
+- MediaRecorderのメモリ内録音。保存・送信・自動採点なし。マイク拒否でも上部の戻る操作で進行可能。
+- 390x844、768x1024、844x390、1280x720で表示確認。`prefers-reduced-motion`対応。
+- AI生成した独自の森・ドラゴン・精霊画像をWebP圧縮して同梱。
+- Kokoro-82M 0.9.4で24kHz/64kbps MP3とSHA-256マニフェストを作る制作スクリプトを追加。モデルはアプリ非同梱。
+- 復元JSONを項目ID・日時・範囲・精霊状態まで正規化し、欠損設定や不正な入れ子値による画面クラッシュを防止。
+- 音声マニフェストに存在するMP3だけを再生し、未生成時は二重再生なしで端末音声へフォールバック。
+- 回答連打、Canvas選択後の画面離脱、録音許可待ち中の画面離脱による遅延処理・マイク残留を防止。
+- 正解・誤答の色分け、正解語の即時表示、精霊・手がかりの重なり解消、音声ボタンの状態ラベルを追加。
+- 英語RPGを選択時に読み込む遅延チャンクへ分離。
 
-### バックギャモンの実装ファイル（`src/features/backgammon/`）
+## 確認済み
 
-純ロジック層（Reactに依存しない・テスト105件中33件）:
-- `backgammonTypes.ts` — 型定義。盤は `points[24]`（0-5 = white/金のホーム、18-23 = black/緋のホーム）。white 23→0、black 0→23。`BackgammonConfig = { mode: 'cpu'|'local'|'online', name, name2, cpuLevel }`
-- `createInitialBackgammonState.ts` / `backgammonRules.ts` + テスト（最大限使用ルール・ベアオフ・ヒット/バー・ギャモン判定）/ `backgammonCpu.ts` + テスト（5段階評価CPU・完走スモークテスト）
+- `npm run build`: 成功。英語用画像は合計約997KB、英語RPGの遅延JSは39.47KB。初期JSは約624KBから588.51KBへ減少。既存JSチャンクの500KB警告は残る。
+- `npm run lint`: 終了コード0。英語機能の警告0件。既存のMancala/Backgammon警告10件は未変更。
+- `npx vitest run --reporter=dot`: 7ファイル、120テスト成功。
+- ブラウザ通し確認: ホーム→診断10問→地図→アリーナ→錬金→脱出→保護者→録音画面。console error/warning 0件。
+- ブラウザ再確認: 390x844と1280x720、遅延読み込み、音声オン/オフ、誤答フィードバック、正解/誤答各1表示、精霊・選択肢の重なり0、console error/warning 0件。
+- デザイン比較資料: `docs/design/english-quest-mobile-concept.png` と各実装スクリーンショット。
 
-UI層（インラインスタイル基調。デザインの色・寸法をそのまま移植）:
-- `BackgammonUi.tsx` — 色定数 `BG`、DragonIcon、GoldButton 等の共有パーツ
-- `BackgammonPage.tsx` — ルート。画面遷移（settings/waiting/play/online-play）、火の粉、トースト、設定の localStorage 保存
-- `BackgammonSettingsScreen.tsx` — 名を刻む/対戦の作法（龍と対戦・同じ盤・遠方の者）/CPU段位/オンラインタブ
-- `BackgammonPlayScreen.tsx` — 盤・サイコロ・プレート・勝敗オーバーレイの純表示コンポーネント
-- `BackgammonLocalGame.tsx` — CPU/2人対戦のコンテナ（エンジン接続・CPU自動手番・トースト台詞）
-- `BackgammonOnlineGame.tsx` + `backgammonOnline.ts` — オンライン対戦（ホスト=金/ゲスト=緋、seq番号で古い受信を破棄、realtime購読＋5秒ポーリング）
-- キーフレームは `global.css` 末尾（emberRise/dotPulse/diceIn/pickPulse 等）。フォントは `index.html` に Cinzel / Shippori Mincho B1 追加済み
-- 配線: `App.tsx` の `'backgammon'` 1画面 → `BackgammonPage`
+## 公開前に残ること
 
-### オンライン対戦の残作業（ユーザーが行う）
+1. 一時環境へのKokoro依存取得が15分でタイムアウトしたため、音声ファイルと`manifest.json`はまだ未生成。現状は端末内SpeechSynthesisへ自動フォールバックする。
+2. ネットワークが安定した環境で、Pythonへ`kokoro==0.9.4 lameenc numpy`を導入後、`npm run generate:english-audio`を実行する。
+3. 生成した100音声を全件試聴し、声量・発音・マニフェストのハッシュを確認する。
+4. 家族による実機プレイを3回以上行い、成功率75〜85%・誤タップ・文字サイズ・8分構成を調整する。
+5. 公開時は必ず`PUBLISHING.md`のプレビュー、PR、Vercel確認手順に従う。まだcommit・push・PR・mergeはしていない。
 
-`supabase/backgammon_rooms.sql` を Supabase の SQL Editor で実行するまで、オンラインは「ルームを開けなかった」トーストになる（実行後に動く）。テーブル構成はマンカラ/UNOと同系（room_code / host_id / guest_id / game_state jsonb、RLS全開放、realtime publication 追加）。
+## 重要ファイル
 
-## サイト全体のアーキテクチャ（ゲームを追加する時に触る場所）
+- `src/features/englishQuest/EnglishQuestPage.tsx`
+- `src/features/englishQuest/englishQuestContent.ts`
+- `src/features/englishQuest/englishQuestEngine.ts`
+- `src/features/englishQuest/englishQuestEngine.test.ts`
+- `src/features/englishQuest/englishQuest.css`
+- `scripts/generate-english-quest-audio.mjs`
+- `scripts/generate_english_quest_audio.py`
+- `public/audio/englishQuest/NOTICE.md`
 
-新しいゲームを1つ追加するには、以下の3箇所の配線 + 1つの機能フォルダが必要です。
+## 廃止された方向
 
-1. **`src/data/games.ts`** — ゲーム一覧データ。`GameInfo` 型は `{ id, title, description, status: 'available' | 'coming-soon', themeLabel }`。現在の登録:
-   - `{ id: 'mancala', title: 'マンカラ', status: 'available', themeLabel: 'ボードゲーム' }`
-   - `{ id: 'uno', title: 'UNO', status: 'available', themeLabel: 'カードゲーム' }`
-   - バックギャモン用に `{ id: 'backgammon', title: 'バックギャモン', status: 'available', themeLabel: '...' }` を追加する。
-2. **`src/pages/HomePage.tsx`** — `GAME_ICONS` / `GAME_ACCENT` の Record に `backgammon` のアイコン（絵文字候補: 🎲）とアクセントカラーを追加する。ドラゴンファンタジー配色（羊皮紙×深緑×金）に馴染む色を選ぶこと。
-3. **`src/App.tsx`** — `AppScreen` 合併型に `'backgammon-setup' | 'backgammon-game' | 'backgammon-room' | 'backgammon-online-game'` 等を追加し、`onSelectGame` からの if/else ルーティングを他ゲームと同じパターンで追加する。
-4. **`src/features/backgammon/`** — 新規フォルダ。マンカラを参考実装として構成を揃える（下記参照）。
+- 診断正解数で物語を自動進行させる処理は廃止。物語CTAからセッションを完走した時だけ進む。
+- 有料API、ランタイムAI、Supabase同期、ログイン、広告、課金、録音保存は初版に入れない。
 
-### 参考実装: マンカラのファイル構成（`src/features/mancala/`）
+## 2026-08-01 デスクトップ改善・キャラクター追加
 
-純ロジック層（Reactに依存せず単体テスト可能）:
-- `mancalaTypes.ts` — 型定義（`GameState`, `Player`, `PlayerId`, `Pit` など）
-- `createInitialMancalaState.ts` — 初期状態を作るファクトリ関数
-- `mancalaRules.ts` — ルールエンジン本体（`applyMove()`, `getMovePreview()` など）+ `mancalaRules.test.ts`
-- `mancalaCpu.ts` — CPU思考ロジック（難易度段階あり）+ `mancalaCpu.test.ts`
-
-UI層（React）:
-- `MancalaSetupPage.tsx` — 人数・名前・CPU設定画面
-- `MancalaGamePage.tsx` — オフライン対戦画面（盤描画・ターン進行・CPU自動操作・アニメーション統括）
-- `MancalaBoard.tsx` / `MancalaPit.tsx` — 盤・穴の描画コンポーネント
-- `MancalaRoomPage.tsx` — オンラインロビー（ルームコード発行、Supabase `mancala_rooms` テーブルとやり取り、`localStorage` にプレイヤーID/名前を保存）
-- `MancalaOnlineGamePage.tsx` — オンライン対戦画面（Supabase経由で盤面同期）
-
-バックギャモンもこの「純ロジック層 / UI層」の分離パターンを踏襲すること。ただしバックギャモンはサイコロ・複数の合法手候補・ヒット/バーなどマンカラより状態遷移が複雑なので、ルールエンジンの設計は前もって整理してから実装に入ること。
-
-### オンライン対戦の既存パターン
-
-Supabaseベース。マンカラの `mancala_rooms` テーブル（列: `room_code`, `player_count`, `host_id`, `guest_id`, `guest2_id`, `guest3_id`, `game_state` など）と同じ形を新テーブル（例: `backgammon_rooms`）で用意し、`MancalaRoomPage.tsx` / `MancalaOnlineGamePage.tsx` を参考に実装する。UNO側にも同様のオンライン実装があるので、必要なら比較検討する。
-
-### デザインシステム（2026-07-05 全面刷新: ダークファンタジー）
-
-サイト全体がバックギャモン発のダークファンタジー世界観（石造りの闇 `--bg:#15121a`＋焚き火の熾火＋金彩 `--gold:#c9a24b`）に統一された。
-- `src/styles/global.css` の `:root` トークンが正。**`--brown` は歴史的経緯の名前だが値は明るい金 `#e6c877`**（見出し色）。`--orange` は熾火 `#e0733a`。
-- フォント: 本文 Shippori Mincho B1、見出し・英字 Cinzel（`index.html` で読み込み済み）。
-- 共有部品: `Button.tsx`（金縁ダーク）/ `Card.tsx`（石造りパネル）/ `Embers.tsx`（舞う火の粉の固定オーバーレイ）。新ゲームはこれらに乗せれば世界観が揃う。
-- 言葉遣いもダークファンタジー口調（「焚き火のもとへ戻る」「盤へ進む」「そなたの番」「遊戯の掟」など）。
-- UNOのカード券面・マンカラの石と木盤の色はゲームの識別性のため従来のまま（闇に映える）。
-
-## 世界観統一監査（2026-07-05 合格）
-
-ユーザー承認済みの採点ルール（100点満点・95点合格・必須条件: ライト背景ゼロ/390px横スクロールなし/全テスト合格/名前なし開始可）で全画面を採点し、**TOP 100 / マンカラ 98 / UNO 98 / バックギャモン 99 で全合格**。
-- CPUの強さ表示は全ゲーム「🥚ベビードラゴン〜⚡ゴッドドラゴン」で統一（UNOは `getUnoCpuLevelLabel` を変更）
-- 全ゲーム名前未入力で開始可（フォールバック名: 名もなき挑戦者／ルームの主／挑戦者N）
-- エラー・待機文言も世界観内（「ルームを開けなかった。時をおいて再び試されよ」等）
-
-## 次にやること
-
-1. ユーザーが `supabase/backgammon_rooms.sql` を Supabase SQL Editor で実行する（新規クエリとして全文貼り付け→Run。既存内容の置き換えではない）。
-2. ユーザーが実機（スマホ）で 全ゲームの見た目＋バックギャモンのオンライン対戦（端末2台 or ブラウザ2窓）を確認する。
-3. 問題なければ PR を作って `main` にマージ（→ Vercel が自動デプロイ）＝公開。
-4. 将来の課題: ダブリングキューブUIの復活（ロジックは温存済み）、オンラインの再戦機能、切断時の再入室導線の改善。
-
-検証済み（2026-07-05）: `tsc --noEmit` ✅ / `vitest run` 110件 ✅ / プレビュー390×844で 設定→オープニングロール→CPU手番→駒選択→移動（金マーカー）→2個分移動（緋の「2」マーカー）✅ / ホーム・マンカラ設定/対局・UNOロビー/卓のダークテーマ✅ / オンラインはテーブル未作成時のエラートースト✅（本接続はSQL実行後に確認）
-
-### バックギャモンの操作補助（2026-07-05 追加）
-
-- **2個分移動**: 駒選択時、`getChainedMoves()`（backgammonRules.ts）が同じ駒を2手続けて動かせる到達点を計算し、緋色の「2」マーカーで表示。タップで2手まとめて適用。
-- **ベアオフ自動化**: `isPureBearOffRace()` が真（全駒ホーム内＋相手との接触なし）のとき「⚡ あとは自動で上がる」ボタンが出る。押すと very-hard CPU 相当の手で自動進行（もう一度押すと解除）。ローカル・オンライン両対応。
+- 620px固定の縦型デスクトップ表示を廃止。900px以上は地図＋仲間キャンプの2列となり、1280x720で黒い左右余白、縦スクロール、下部CTAの見切れがない。
+- 新ガイド6人を追加: ミーナ、リラ、ガルド、ティック、セージ、ノクス。`forest-guides.webp`の3x2スプライトと`GuideSprite`を使用。
+- スマホ390x844は縦型地図を維持し、今日の案内役を追加。画面全体は844px内に収まる。
+- 画面コンセプト: `docs/design/english-quest-desktop-companion-concept.png`。
+- 現状採点・大量教材化・継続案: `docs/english-quest-product-audit.md`。最終ゴール基準は52/100、第1島アルファ単体は78/100。
+- 再検証: `npm.cmd run build`成功、`npm.cmd run lint`終了コード0（既存10警告のみ）、Vitest 7ファイル120テスト成功。ブラウザ1280x720/390x844、console error/warn 0、地図→ささやきの森→地図の操作を確認。
