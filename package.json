@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "test": "vitest"
+    "test": "vitest",
+    "generate:english-audio": "node scripts/generate-english-quest-audio.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.108.2",
