@@ -1,7 +1,7 @@
 # Dragon Game Park — Current Handoff
 
-更新日: 2026-07-31
-作業ブランチ: `codex/english-quest-v1`
+更新日: 2026-08-01
+作業状態: PR #6を`main`へマージし、本番公開・実機確認済み
 
 ## 現在の目的
 
@@ -27,20 +27,22 @@
 
 ## 確認済み
 
-- `npm run build`: 成功。英語用画像は合計約997KB、英語RPGの遅延JSは39.47KB。初期JSは約624KBから588.51KBへ減少。既存JSチャンクの500KB警告は残る。
+- `npm run build`: 成功。英語用画像は合計約1.15MB、英語RPGの遅延JSは42.54KB。初期JSは588.54KB。既存JSチャンクの500KB警告は残る。
 - `npm run lint`: 終了コード0。英語機能の警告0件。既存のMancala/Backgammon警告10件は未変更。
 - `npx vitest run --reporter=dot`: 7ファイル、120テスト成功。
 - ブラウザ通し確認: ホーム→診断10問→地図→アリーナ→錬金→脱出→保護者→録音画面。console error/warning 0件。
 - ブラウザ再確認: 390x844と1280x720、遅延読み込み、音声オン/オフ、誤答フィードバック、正解/誤答各1表示、精霊・選択肢の重なり0、console error/warning 0件。
 - デザイン比較資料: `docs/design/english-quest-mobile-concept.png` と各実装スクリーンショット。
+- PR #6をmerge commit `8ed665d20159c0b624390be40e2448b5fd7bdb27`で`main`へマージ。GitHub CIとVercel statusは成功。
+- 本番 `https://dragon-game-park.vercel.app/` でホーム→診断10問→地図→ささやきの森→音声再生→正答を確認。1440x900/390x844とも横はみ出し0、console error 0件。
 
-## 公開前に残ること
+## 公開後に残る品質向上
 
 1. 一時環境へのKokoro依存取得が15分でタイムアウトしたため、音声ファイルと`manifest.json`はまだ未生成。現状は端末内SpeechSynthesisへ自動フォールバックする。
 2. ネットワークが安定した環境で、Pythonへ`kokoro==0.9.4 lameenc numpy`を導入後、`npm run generate:english-audio`を実行する。
 3. 生成した100音声を全件試聴し、声量・発音・マニフェストのハッシュを確認する。
 4. 家族による実機プレイを3回以上行い、成功率75〜85%・誤タップ・文字サイズ・8分構成を調整する。
-5. 公開時は必ず`PUBLISHING.md`のプレビュー、PR、Vercel確認手順に従う。まだcommit・push・PR・mergeはしていない。
+5. 次回以降の変更も必ず`PUBLISHING.md`のプレビュー、PR、Vercel確認手順に従う。
 
 ## 重要ファイル
 
