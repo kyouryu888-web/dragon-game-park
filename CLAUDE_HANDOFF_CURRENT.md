@@ -2,7 +2,8 @@
 
 更新日: 2026-08-05
 ブランチ: `codex/english-quest-gameplay-v2`
-PR: [#8](https://github.com/kyouryu888-web/dragon-game-park/pull/8)（v3のpush・CI確認前）
+PR: [#8](https://github.com/kyouryu888-web/dragon-game-park/pull/8)（v3更新済み）
+主要実装コミット: `ca8bc85`
 
 ## 現在の目的
 
@@ -39,10 +40,8 @@ PR: [#8](https://github.com/kyouryu888-web/dragon-game-park/pull/8)（v3のpush�
 
 ## 次にすること
 
-1. v3をコミットしてPR #8へpushする。
-2. GitHub CIとVercelプレビューの成功を確認する。
-3. ユーザーにプレビューを確認してもらい、明示承認後のみ`main`へマージする。
-4. 家族で3回以上実機プレイし、成功率75〜85%と1週間後の保持率を測って難易度を調整する。
+1. PR #8のVercelプレビューをユーザーに確認してもらい、明示承認後のみ`main`へマージする。
+2. 家族で3回以上実機プレイし、成功率75〜85%と1週間後の保持率を測って難易度を調整する。
 
 ## 未完成・誤解させてはいけない点
 
@@ -50,7 +49,8 @@ PR: [#8](https://github.com/kyouryu888-web/dragon-game-park/pull/8)（v3のpush�
 - Kokoro音声100件は未生成。現状は端末の`SpeechSynthesis`フォールバック。音声マニフェスト、24kHz生成、正規化、全件聞き取り確認が必要。
 - 会話は短い応答中心で、2〜3往復会話の量産は後続工程。
 - 誤答を必ず3〜5問後に戻すゲーム内キューは未完成。現在はヒント付き再挑戦と3分後の復習期限で扱う。
-- 家族実機プレイ、公開プレビュー承認、本番マージは未実施。
+- PR #8の`build-and-test`、Vercel、Vercel Preview Commentsは`ca8bc85`で成功済み。プレビューはVercel認証で保護されている。
+- 家族実機プレイ、プレビューのユーザー承認、本番マージは未実施。
 - 有料API、ランタイムAI、Supabase同期、ログイン、広告、課金、録音保存は初版に入れない。
 
 ## 廃止した方向
