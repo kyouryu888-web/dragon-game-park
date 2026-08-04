@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { playLearningItem, speakJapanese, stopEnglishAudio } from './englishQuestAudio';
 import { ENGLISH_QUEST_GUIDES } from './englishQuestContent';
 import { makeAttempt } from './englishQuestEngine';
-import { escapeDoorMatches, rotatedChoices } from './englishQuestGameplay';
+import { advancePracticeTurns, choicesForItem, createPracticeTurns, escapeDoorMatches } from './englishQuestGameplay';
 import { QuestComplete, QuestGameHeader } from './QuestGameUI';
 import type { Attempt, LearningItem, QuestDefinition } from './englishQuestTypes';
 
@@ -29,19 +29,23 @@ export function EscapeGame({
   onComplete: () => void;
   onExit: () => void;
 }) {
-  const [index, setIndex] = useState(0);
+  const [turns, setTurns] = useState(() => createPracticeTurns(items));
+  const [answered, setAnswered] = useState(0);
   const [clues, setClues] = useState<number[]>([]);
   const [combined, setCombined] = useState(false);
   const [message, setMessage] = useState('');
   const startedAt = useRef(performance.now());
-  const current = items[index];
-  const exits = useMemo(() => rotatedChoices(items, index, 3), [index, items]);
+  const locked = useRef(false);
+  const currentTurn = turns[0];
+  const current = currentTurn?.item;
+  const exits = useMemo(() => current ? choicesForItem(items, current, answered, 3) : [], [answered, current, items]);
   const guideIndex = Math.max(0, ENGLISH_QUEST_GUIDES.findIndex((guide) => guide.id === quest.guideId));
 
   useEffect(() => {
     setClues([]);
     setCombined(false);
     setMessage('');
+    locked.current = false;
     startedAt.current = performance.now();
     if (!current) return;
     const timer = window.setTimeout(() => speakJapanese('部屋をさわって、二つの手がかりを見つけよう', soundOn), 300);
@@ -49,7 +53,7 @@ export function EscapeGame({
       window.clearTimeout(timer);
       stopEnglishAudio();
     };
-  }, [current, soundOn]);
+  }, [current, currentTurn?.key, soundOn]);
 
   if (!current) {
     return <QuestComplete title={`${quest.title} クリア！`} message={quest.objective} reward={`${quest.rewardEmoji} ${quest.reward}`} onDone={onComplete} />;
@@ -61,6 +65,7 @@ export function EscapeGame({
     else speakJapanese('絵と看板の手がかりを見つけたよ', soundOn);
   };
   const tryExit = (item: LearningItem) => {
+    if (locked.current) return;
     if (!combined) {
       setMessage('まだ鍵がないよ。二つの手がかりを かさねよう');
       return;
@@ -71,21 +76,26 @@ export function EscapeGame({
       mode: 'escape',
       correct,
       latencyMs: performance.now() - startedAt.current,
-      hintLevel: correct ? 0 : 1,
+      hintLevel: currentTurn.hintLevel,
     }));
+    locked.current = true;
     if (!correct) {
-      setMessage('この出口ではないみたい。看板と声を もういちど見よう');
+      setMessage('だいじょうぶ。3〜5問あとに、光る出口ともう一度！');
       playLearningItem(current, soundOn);
-      return;
+    } else {
+      setMessage('鍵が光った！ 出口がひらくよ');
     }
-    setMessage('鍵が光った！ 出口がひらくよ');
-    window.setTimeout(() => setIndex((value) => value + 1), 800);
+    window.setTimeout(() => {
+      setTurns((value) => advancePracticeTurns(value, correct, items));
+      setAnswered((value) => value + 1);
+    }, 800);
   };
   const visibleClue = current.type === 'reading' ? current.answer : current.emoji;
+  const totalTurns = answered + turns.length;
 
   return (
     <main className="eq-shell eq-game-shell eq-escape-game">
-      <QuestGameHeader title={quest.title} instruction="手がかりを集めて 出口をひらこう" step={index} total={items.length} onExit={onExit} guideIndex={guideIndex} />
+      <QuestGameHeader title={quest.title} instruction={currentTurn.hintLevel === 1 ? 'おさらい！ 光る出口がヒントだよ' : '手がかりを集めて 出口をひらこう'} step={answered} total={totalTurns} onExit={onExit} guideIndex={guideIndex} />
       <section className="eq-escape-room">
         <div className="eq-room-title"><span>🗝️</span><strong>{ROOM_BY_TYPE[current.type]}</strong><small>へやの中を さわって しらべよう</small></div>
         <button className={clues.includes(0) ? 'eq-clue-hotspot eq-clue-hotspot--sign eq-clue-hotspot--found' : 'eq-clue-hotspot eq-clue-hotspot--sign'} type="button" onClick={() => collect(0)}>
@@ -96,7 +106,7 @@ export function EscapeGame({
         </button>
         <div className="eq-world-exits">
           {exits.map((item, exitIndex) => (
-            <button type="button" key={item.id} className={`eq-world-exit eq-world-exit--choice-${exitIndex}`} onClick={() => tryExit(item)}>
+            <button type="button" key={item.id} className={`eq-world-exit eq-world-exit--choice-${exitIndex} ${currentTurn.hintLevel === 1 && item.id === current.id ? 'eq-world-exit--hint' : ''}`} onClick={() => tryExit(item)}>
               <span>{item.emoji}</span><strong>{item.type === 'reading' || item.type === 'dialogue' ? item.answer : item.display}</strong><i aria-hidden="true">🚪</i>
             </button>
           ))}

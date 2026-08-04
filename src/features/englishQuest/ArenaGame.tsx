@@ -3,9 +3,11 @@ import { playLearningItem, speakJapanese, stopEnglishAudio } from './englishQues
 import { ENGLISH_QUEST_GUIDES } from './englishQuestContent';
 import { makeAttempt } from './englishQuestEngine';
 import {
+  advancePracticeTurns,
   arenaTargetAt,
+  choicesForItem,
+  createPracticeTurns,
   moveArenaPoint,
-  rotatedChoices,
   type ArenaDirection,
   type ArenaPoint,
 } from './englishQuestGameplay';
@@ -31,7 +33,8 @@ export function ArenaGame({
   onComplete: () => void;
   onExit: () => void;
 }) {
-  const [index, setIndex] = useState(0);
+  const [turns, setTurns] = useState(() => createPracticeTurns(items));
+  const [answered, setAnswered] = useState(0);
   const [player, setPlayer] = useState<ArenaPoint>({ x: 50, y: 82 });
   const [timeLeft, setTimeLeft] = useState(45);
   const [slowMode, setSlowMode] = useState(false);
@@ -40,8 +43,9 @@ export function ArenaGame({
   const startedAt = useRef(performance.now());
   const locked = useRef(false);
   const playerRef = useRef<ArenaPoint>({ x: 50, y: 82 });
-  const current = items[index];
-  const targetItems = useMemo(() => rotatedChoices(items, index, 3), [index, items]);
+  const currentTurn = turns[0];
+  const current = currentTurn?.item;
+  const targetItems = useMemo(() => current ? choicesForItem(items, current, answered, 3) : [], [answered, current, items]);
   const guideIndex = Math.max(0, ENGLISH_QUEST_GUIDES.findIndex((guide) => guide.id === quest.guideId));
 
   useEffect(() => {
@@ -60,7 +64,7 @@ export function ArenaGame({
       window.clearTimeout(timer);
       stopEnglishAudio();
     };
-  }, [current, soundOn]);
+  }, [current, currentTurn?.key, soundOn]);
 
   useEffect(() => {
     if (!current) return undefined;
@@ -76,22 +80,25 @@ export function ArenaGame({
       mode: 'arena',
       correct,
       latencyMs: performance.now() - startedAt.current,
-      hintLevel: slowMode ? 1 : 0,
+      hintLevel: slowMode || currentTurn.hintLevel === 1 ? 1 : 0,
     }));
+    locked.current = true;
     if (!correct) {
       const reset = { x: 50, y: 82 };
       playerRef.current = reset;
       setPlayer(reset);
-      setMessage('ちがう目標だよ。音をもういちど聞こう！');
+      setMessage('だいじょうぶ。3〜5問あとに、光るヒントともう一度！');
       playLearningItem(current, soundOn);
-      return;
+    } else {
+      playerRef.current = nextPoint;
+      setPlayer(nextPoint);
+      setMessage('魔法の結晶をゲット！');
     }
-    playerRef.current = nextPoint;
-    setPlayer(nextPoint);
-    locked.current = true;
-    setMessage('魔法の結晶をゲット！');
-    window.setTimeout(() => setIndex((value) => value + 1), 700);
-  }, [current, onAttempt, slowMode, soundOn, targetItems]);
+    window.setTimeout(() => {
+      setTurns((value) => advancePracticeTurns(value, correct, items));
+      setAnswered((value) => value + 1);
+    }, 700);
+  }, [current, currentTurn, items, onAttempt, slowMode, soundOn, targetItems]);
 
   const move = useCallback((direction: ArenaDirection) => {
     if (!current || locked.current || turnMode) return;
@@ -124,9 +131,11 @@ export function ArenaGame({
     return <QuestComplete title={`${quest.title} クリア！`} message={quest.objective} reward={`${quest.rewardEmoji} ${quest.reward}`} onDone={onComplete} />;
   }
 
+  const totalTurns = answered + turns.length;
+
   return (
     <main className="eq-shell eq-game-shell eq-arena-game">
-      <QuestGameHeader title={quest.title} instruction="英語を聞いて 目標まで動こう" step={index} total={items.length} onExit={onExit} guideIndex={guideIndex} />
+      <QuestGameHeader title={quest.title} instruction={currentTurn.hintLevel === 1 ? 'おさらい！ 光る結晶をねらおう' : '英語を聞いて 目標まで動こう'} step={answered} total={totalTurns} onExit={onExit} guideIndex={guideIndex} />
       <section className={slowMode ? 'eq-arena-board eq-arena-board--slow' : 'eq-arena-board'} aria-label="ドラゴンを動かすアリーナ">
         <div className="eq-arena-hud">
           <span>⏱ {timeLeft}</span>
@@ -139,7 +148,7 @@ export function ArenaGame({
           <button
             type="button"
             key={CRYSTAL_CLASS[targetIndex]}
-            className={`eq-crystal eq-crystal--${CRYSTAL_CLASS[targetIndex]}`}
+            className={`eq-crystal eq-crystal--${CRYSTAL_CLASS[targetIndex]} ${currentTurn.hintLevel === 1 && targetItems[targetIndex]?.id === current.id ? 'eq-crystal--hint' : ''}`}
             style={{ left: `${target.x}%`, top: `${target.y}%`, pointerEvents: turnMode ? 'auto' : 'none', cursor: turnMode ? 'pointer' : 'default' }}
             aria-label={`${targetItems[targetIndex]?.display ?? '目標'}の結晶`}
             aria-disabled={!turnMode}

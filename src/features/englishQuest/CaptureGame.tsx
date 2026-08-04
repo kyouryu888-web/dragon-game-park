@@ -3,7 +3,7 @@ import forestMap from './assets/forest-island-map.webp';
 import { playLearningItem, speakJapanese, stopEnglishAudio } from './englishQuestAudio';
 import { ENGLISH_QUEST_GUIDES, ENGLISH_QUEST_SPIRITS } from './englishQuestContent';
 import { makeAttempt } from './englishQuestEngine';
-import { rotatedChoices } from './englishQuestGameplay';
+import { advancePracticeTurns, choicesForItem, createPracticeTurns } from './englishQuestGameplay';
 import { SpiritSprite } from './EnglishQuestSprites';
 import { QuestComplete, QuestGameHeader } from './QuestGameUI';
 import type { Attempt, LearningItem, QuestDefinition } from './englishQuestTypes';
@@ -29,20 +29,24 @@ export function CaptureGame({
   onComplete: () => void;
   onExit: () => void;
 }) {
-  const [index, setIndex] = useState(0);
+  const [turns, setTurns] = useState(() => createPracticeTurns(items));
+  const [answered, setAnswered] = useState(0);
   const [found, setFound] = useState(false);
   const [searched, setSearched] = useState<number[]>([]);
   const [hinted, setHinted] = useState(false);
   const startedAt = useRef(performance.now());
-  const current = items[index];
-  const hidingSpot = index % HIDING_SPOTS.length;
+  const locked = useRef(false);
+  const currentTurn = turns[0];
+  const current = currentTurn?.item;
+  const hidingSpot = answered % HIDING_SPOTS.length;
   const guideIndex = Math.max(0, ENGLISH_QUEST_GUIDES.findIndex((guide) => guide.id === quest.guideId));
   const spirit = ENGLISH_QUEST_SPIRITS.find((candidate) => candidate.id === quest.spiritId);
 
   useEffect(() => {
     setFound(false);
     setSearched([]);
-    setHinted(false);
+    setHinted(currentTurn?.hintLevel === 1);
+    locked.current = false;
     startedAt.current = performance.now();
     if (!current) return;
     const timer = window.setTimeout(() => speakJapanese('光のあとを追って、精霊を見つけよう', soundOn), 300);
@@ -50,13 +54,13 @@ export function CaptureGame({
       window.clearTimeout(timer);
       stopEnglishAudio();
     };
-  }, [current, soundOn]);
+  }, [current, currentTurn?.key, currentTurn?.hintLevel, soundOn]);
 
   if (!current) {
     return <QuestComplete title={`${quest.title} クリア！`} message={quest.objective} reward={`${quest.rewardEmoji} ${quest.reward}`} onDone={onComplete} />;
   }
 
-  const offerings = rotatedChoices(items, index, quest.chapter === 1 ? 2 : 3);
+  const offerings = choicesForItem(items, current, answered, quest.chapter === 1 ? 2 : 3);
   const search = (spot: number) => {
     if (found) return;
     if (spot === hidingSpot) {
@@ -68,26 +72,31 @@ export function CaptureGame({
     speakJapanese('ここには いないみたい。光のあとを見てね', soundOn);
   };
   const offer = (choice: LearningItem) => {
+    if (locked.current) return;
+    locked.current = true;
     const correct = choice.id === current.id;
     onAttempt(makeAttempt({
       itemId: current.id,
       mode: 'capture',
       correct,
       latencyMs: performance.now() - startedAt.current,
-      hintLevel: hinted ? 1 : 0,
+      hintLevel: hinted || currentTurn.hintLevel === 1 ? 1 : 0,
     }));
     if (!correct) {
-      setHinted(true);
-      speakJapanese('もういちど音を聞いて、ひかる絵をえらぼう', soundOn);
+      speakJapanese('だいじょうぶ。少し進んだら、光るヒントといっしょにもう一度会えるよ', soundOn);
       playLearningItem(current, soundOn);
-      return;
     }
-    window.setTimeout(() => setIndex((value) => value + 1), 650);
+    window.setTimeout(() => {
+      setTurns((value) => advancePracticeTurns(value, correct, items));
+      setAnswered((value) => value + 1);
+    }, 650);
   };
+
+  const totalTurns = answered + turns.length;
 
   return (
     <main className="eq-shell eq-game-shell eq-capture-game">
-      <QuestGameHeader title={quest.title} instruction={found ? '精霊が好きな絵を あげよう' : '光る足あとを たどろう'} step={index} total={items.length} onExit={onExit} guideIndex={guideIndex} />
+      <QuestGameHeader title={quest.title} instruction={currentTurn.hintLevel === 1 ? 'おさらい！ 光る絵がヒントだよ' : found ? '精霊が好きな絵を あげよう' : '光る足あとを たどろう'} step={answered} total={totalTurns} onExit={onExit} guideIndex={guideIndex} />
       <section className="eq-capture-world" style={{ backgroundImage: `url(${forestMap})` }}>
         <div className="eq-sound-trail" aria-hidden="true"><i /><i /><i /><i /></div>
         {!found ? (
@@ -111,7 +120,7 @@ export function CaptureGame({
         ) : (
           <div className="eq-capture-found">
             <div className="eq-capture-spirit-stage">
-              <SpiritSprite index={spirit?.spriteIndex ?? index % 8} label={spirit?.name ?? '見つけた精霊'} className="eq-found-spirit" />
+              <SpiritSprite index={spirit?.spriteIndex ?? answered % 8} label={spirit?.name ?? '見つけた精霊'} className="eq-found-spirit" />
               <button type="button" className="eq-listen-orb" onClick={() => playLearningItem(current, soundOn)} aria-label="精霊の音をもういちど聞く">🔊</button>
             </div>
             <div className="eq-offering-tray" aria-label="精霊へのおくりもの">
@@ -126,7 +135,7 @@ export function CaptureGame({
                 </button>
               ))}
             </div>
-            <div className="eq-capture-meter"><span style={{ width: `${((index + 1) / items.length) * 100}%` }} /><small>なかよしゲージ</small></div>
+            <div className="eq-capture-meter"><span style={{ width: `${Math.min(100, ((answered + 1) / totalTurns) * 100)}%` }} /><small>なかよしゲージ</small></div>
           </div>
         )}
       </section>

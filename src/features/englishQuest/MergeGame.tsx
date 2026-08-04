@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { playLearningItem, speakJapanese, stopEnglishAudio } from './englishQuestAudio';
 import { ENGLISH_QUEST_GUIDES } from './englishQuestContent';
 import { makeAttempt } from './englishQuestEngine';
-import { mergeTokenMatches, rotatedChoices } from './englishQuestGameplay';
+import { advancePracticeTurns, choicesForItem, createPracticeTurns, mergeTokenMatches } from './englishQuestGameplay';
 import { QuestComplete, QuestGameHeader } from './QuestGameUI';
 import type { Attempt, LearningItem, QuestDefinition } from './englishQuestTypes';
 
@@ -27,18 +27,22 @@ export function MergeGame({
   onComplete: () => void;
   onExit: () => void;
 }) {
-  const [index, setIndex] = useState(0);
+  const [turns, setTurns] = useState(() => createPracticeTurns(items));
+  const [answered, setAnswered] = useState(0);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [combo, setCombo] = useState(0);
   const [feedback, setFeedback] = useState('');
   const [recipe, setRecipe] = useState(false);
   const [phraseDone, setPhraseDone] = useState<string[]>([]);
+  const [phraseHadError, setPhraseHadError] = useState(false);
   const startedAt = useRef(performance.now());
-  const current = items[index];
-  const stage = index % STAGES.length;
+  const locked = useRef(false);
+  const currentTurn = turns[0];
+  const current = currentTurn?.item;
+  const stage = answered % STAGES.length;
   const stageInfo = STAGES[stage];
   const isPhraseForge = current?.type === 'chunk' || current?.type === 'dialogue';
-  const normalTokens = useMemo(() => rotatedChoices(items, index, 3), [index, items]);
+  const normalTokens = useMemo(() => current ? choicesForItem(items, current, answered, 3) : [], [answered, current, items]);
   const phraseTokens = useMemo(() => (
     current?.answer.split(/\s+/).map((word, wordIndex) => ({ id: `${wordIndex}-${word}`, word, wordIndex })).reverse() ?? []
   ), [current]);
@@ -49,6 +53,8 @@ export function MergeGame({
     setPhraseDone([]);
     setFeedback('');
     setRecipe(false);
+    setPhraseHadError(false);
+    locked.current = false;
     startedAt.current = performance.now();
     if (!current) return;
     const timer = window.setTimeout(() => {
@@ -65,22 +71,26 @@ export function MergeGame({
       window.clearTimeout(timer);
       stopEnglishAudio();
     };
-  }, [current, isPhraseForge, soundOn, stage, stageInfo.label]);
+  }, [current, currentTurn?.key, isPhraseForge, soundOn, stage, stageInfo.label]);
 
   if (!current) {
     return <QuestComplete title={`${quest.title} クリア！`} message={quest.objective} reward={`${quest.rewardEmoji} ${quest.reward}・${combo}コンボ`} onDone={onComplete} />;
   }
 
-  const record = (correct: boolean, hintLevel: 0 | 1 = 0) => onAttempt(makeAttempt({
+  const record = (correct: boolean, hintLevel: 0 | 1 = currentTurn.hintLevel) => onAttempt(makeAttempt({
     itemId: current.id,
     mode: 'merge',
     correct,
     latencyMs: performance.now() - startedAt.current,
     hintLevel,
   }));
-  const advance = () => {
-    setRecipe(true);
-    window.setTimeout(() => setIndex((value) => value + 1), 1100);
+  const advance = (correct: boolean) => {
+    locked.current = true;
+    if (correct) setRecipe(true);
+    window.setTimeout(() => {
+      setTurns((value) => advancePracticeTurns(value, correct, items));
+      setAnswered((value) => value + 1);
+    }, 1100);
   };
   const tokenContent = (item: LearningItem) => {
     if (stage === 0) return '🔊';
@@ -92,25 +102,27 @@ export function MergeGame({
     if (stage === 0) playLearningItem(item, soundOn);
   };
   const merge = (itemId: string | null) => {
-    if (!itemId || recipe) return;
+    if (!itemId || locked.current) return;
     const correct = mergeTokenMatches(itemId, current.id);
-    record(correct, correct ? 0 : 1);
+    record(correct);
     if (!correct) {
       setCombo(0);
-      setFeedback('しずくが ぷるん！ 音と絵を もういちど見よう');
+      setFeedback('しずくが ぷるん！ 3〜5問あとにヒントと戻ってくるよ');
       playLearningItem(current, soundOn);
-      return;
+      advance(false);
+    } else {
+      setCombo((value) => value + 1);
+      setFeedback('ぴったり！ 結晶がことばを覚えたよ');
+      playLearningItem(current, soundOn);
+      advance(true);
     }
-    setCombo((value) => value + 1);
-    setFeedback('ぴったり！ 結晶がことばを覚えたよ');
-    playLearningItem(current, soundOn);
-    advance();
   };
   const choosePhraseToken = (token: typeof phraseTokens[number]) => {
-    if (phraseDone.includes(token.id) || recipe) return;
+    if (phraseDone.includes(token.id) || locked.current) return;
     const correct = token.wordIndex === phraseDone.length;
     if (!correct) {
-      record(false, 1);
+      if (!phraseHadError) record(false);
+      setPhraseHadError(true);
       setCombo(0);
       setFeedback('炉がやさしく光ったよ。聞こえた順をもう一度ためそう');
       playLearningItem(current, soundOn);
@@ -120,16 +132,18 @@ export function MergeGame({
     setPhraseDone(next);
     setFeedback('ことばが ひとつ つながった！');
     if (next.length === phraseTokens.length) {
-      record(true);
+      if (!phraseHadError) record(true);
       setCombo((value) => value + 1);
       playLearningItem(current, soundOn);
-      advance();
+      advance(!phraseHadError);
     }
   };
 
+  const totalTurns = answered + turns.length;
+
   return (
     <main className="eq-shell eq-game-shell eq-merge-game">
-      <QuestGameHeader title={quest.title} instruction={isPhraseForge ? '聞いた順に 文をつくろう' : 'しずくを運んで 結晶をつくろう'} step={index} total={items.length} onExit={onExit} guideIndex={guideIndex} />
+      <QuestGameHeader title={quest.title} instruction={currentTurn.hintLevel === 1 ? 'おさらい！ 光るかけらがヒントだよ' : isPhraseForge ? '聞いた順に 文をつくろう' : 'しずくを運んで 結晶をつくろう'} step={answered} total={totalTurns} onExit={onExit} guideIndex={guideIndex} />
       <section className={isPhraseForge ? 'eq-merge-lab eq-merge-lab--forge' : 'eq-merge-lab'}>
         <div className="eq-merge-status"><span>{isPhraseForge ? '🔥 ことばの炉' : `${stageInfo.icon} ${stageInfo.label}`}</span><strong>{combo} COMBO</strong></div>
 
@@ -141,7 +155,7 @@ export function MergeGame({
               <div>{current.answer.split(/\s+/).map((word, wordIndex) => <b key={`${word}-${wordIndex}`}>{phraseDone.length > wordIndex ? word : '…'}</b>)}</div>
             </div>
             <div className="eq-phrase-tokens" aria-label="並べることばのかけら">
-              {phraseTokens.map((token) => <button type="button" key={token.id} disabled={phraseDone.includes(token.id)} onClick={() => choosePhraseToken(token)}>{token.word}</button>)}
+              {phraseTokens.map((token) => <button type="button" key={token.id} className={currentTurn.hintLevel === 1 && token.wordIndex === phraseDone.length ? 'eq-token--hint' : ''} disabled={phraseDone.includes(token.id)} onClick={() => choosePhraseToken(token)}>{token.word}</button>)}
             </div>
           </>
         ) : (
@@ -152,7 +166,7 @@ export function MergeGame({
                   type="button"
                   draggable
                   key={`${stageInfo.id}-${item.id}`}
-                  className={selectedId === item.id ? `eq-droplet eq-droplet--${tokenIndex} eq-droplet--selected` : `eq-droplet eq-droplet--${tokenIndex}`}
+                  className={`${selectedId === item.id ? `eq-droplet eq-droplet--${tokenIndex} eq-droplet--selected` : `eq-droplet eq-droplet--${tokenIndex}`} ${currentTurn.hintLevel === 1 && item.id === current.id ? 'eq-droplet--hint' : ''}`}
                   onClick={() => chooseToken(item)}
                   onDragStart={(event) => event.dataTransfer.setData('text/plain', item.id)}
                   aria-label={`${item.display}の${stageInfo.label}を選ぶ`}

@@ -685,6 +685,7 @@
 .eq-crystal--red { color: #ff675b; }.eq-crystal--red i { background: #df493e; }
 .eq-crystal--blue { color: #5bc7ff; }.eq-crystal--blue i { background: #318bd5; }
 .eq-crystal--green { color: #66ef9c; }.eq-crystal--green i { background: #2bab67; }
+.eq-crystal--hint { filter: drop-shadow(0 0 13px #fff86f); animation: eq-retry-hint 1.15s ease-in-out infinite; }
 .eq-arena-player-hitbox { position: absolute; z-index: 5; width: 104px; height: 104px; transform: translate(-50%,-50%); transition: left .14s linear, top .14s linear; }
 .eq-arena-player-hitbox .eq-dragon-sprite { width: 100%; height: 100%; filter: drop-shadow(0 10px 7px rgba(0,0,0,.45)); }
 .eq-fireball { position: absolute; z-index: 4; width: 38px; height: 38px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff9a0, #ff762d 45%, #a8211f 72%); box-shadow: 0 0 20px #ff7c32; animation: eq-fireball-run 4s linear infinite; }
@@ -710,6 +711,7 @@
 .eq-droplet span { font-size: clamp(30px, 5vw, 54px); font-weight: 900; }
 .eq-droplet small { margin-top: 4px; font-size: 9px; font-weight: 900; }
 .eq-droplet--selected { border-color: #fff36e; box-shadow: 0 0 0 9px rgba(255,239,79,.24), 0 12px 25px rgba(0,0,0,.3); }
+.eq-droplet--hint, .eq-phrase-tokens .eq-token--hint { border-color: #fff06e; box-shadow: 0 0 0 9px rgba(255,238,94,.27), 0 0 30px rgba(255,244,117,.75); animation: eq-retry-hint 1.15s ease-in-out infinite; }
 .eq-merge-current { position: absolute; z-index: 4; left: 50%; top: 43%; display: grid; justify-items: center; transform: translate(-50%,-50%); color: #eaffff; }
 .eq-merge-current span { font-size: 60px; filter: drop-shadow(0 5px 8px rgba(0,0,0,.35)); }
 .eq-merge-current small { font-weight: 900; text-shadow: 0 2px 4px #164153; }
@@ -739,6 +741,7 @@
 .eq-world-exit { position: relative; display: grid; min-height: 75%; align-content: end; justify-items: center; overflow: hidden; border: 5px solid #9b6a42; border-radius: 70px 70px 10px 10px; color: #fff9d7; background: linear-gradient(90deg, #392447, #704e74 50%, #35213f); box-shadow: inset 0 0 25px #140f25, 0 13px 25px rgba(0,0,0,.35); text-shadow: 0 2px 4px #000; cursor: pointer; }
 .eq-world-exit > span { position: absolute; top: 8%; font-size: 27px; }.eq-world-exit strong { position: relative; z-index: 2; margin-bottom: 8px; font-size: clamp(13px, 2vw, 21px); }.eq-world-exit i { font-size: clamp(70px, 12vw, 125px); font-style: normal; }
 .eq-world-exit--red { background: linear-gradient(90deg,#6c252a,#bd4b40,#5e2025); }.eq-world-exit--blue { background: linear-gradient(90deg,#204c77,#357ec0,#18385e); }.eq-world-exit--green { background: linear-gradient(90deg,#235b44,#37a070,#174634); }
+.eq-world-exit--hint { border-color: #fff38b; box-shadow: inset 0 0 25px #140f25, 0 0 0 8px rgba(255,238,99,.25), 0 0 30px rgba(255,237,111,.72); animation: eq-retry-hint 1.15s ease-in-out infinite; }
 .eq-clue-tray { position: absolute; z-index: 7; left: 50%; bottom: 3%; display: grid; grid-template-columns: minmax(70px,1fr) auto minmax(70px,1fr) minmax(150px,1.4fr); align-items: center; gap: 8px; width: min(94%, 740px); transform: translateX(-50%); border: 3px solid #d7bc73; border-radius: 20px; padding: 9px; color: #f9edbd; background: rgba(35,25,56,.94); box-shadow: 0 8px 22px rgba(0,0,0,.42); }
 .eq-clue-piece { display: grid; min-height: 50px; place-items: center; border: 2px dashed #806b8d; border-radius: 12px; color: #aa9eb1; background: rgba(255,255,255,.08); font-size: 12px; font-weight: 900; }
 .eq-clue-piece--ready { border-style: solid; border-color: #ffe48c; color: #4c315b; background: #fff4c5; }
@@ -800,6 +803,7 @@
 @keyframes eq-bubbles { to { background-position: 0 -160px, 0 -200px; } }
 @keyframes eq-droplet-fall { 50% { transform: translateY(18px) rotate(3deg); } }
 @keyframes eq-recipe-pop { from { opacity: 0; transform: scale(.72); } }
+@keyframes eq-retry-hint { 50% { filter: brightness(1.2) saturate(1.18); } }
 
 @media (min-width: 900px) {
   .eq-welcome-v2 { align-content: center; padding: 20px 28px; }
