@@ -106,6 +106,7 @@ export interface PlayerProgress {
   mastery: Record<string, MasteryState>;
   spirits: Record<string, SpiritState>;
   attempts: Attempt[];
+  adventureDates: string[];
   settings: {
     soundOn: boolean;
     reducedMotion: boolean;

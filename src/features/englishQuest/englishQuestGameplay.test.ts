@@ -50,6 +50,13 @@ describe('English Quest distinct game rules', () => {
     expect(choicesForItem(items, items[0], 1, 3).at(-1)?.id).toBe('word-cat');
   });
 
+  it('builds three unique choices for a six-item teaching session', () => {
+    const items = learningItems(['word-cat', 'word-dog', 'word-bird', 'word-fish', 'word-red', 'word-blue']);
+    const choices = choicesForItem(items, items[0], 0, 3);
+    expect(choices).toHaveLength(3);
+    expect(new Set(choices.map((item) => item.id))).toHaveLength(3);
+  });
+
   it('keeps an escape door locked until two clues are combined', () => {
     expect(escapeDoorMatches('blue', 'blue', 1)).toBe(false);
     expect(escapeDoorMatches('red', 'blue', 2)).toBe(false);

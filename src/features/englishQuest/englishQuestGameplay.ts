@@ -53,8 +53,15 @@ export function choicesForItem(
   count = 3,
 ): LearningItem[] {
   const choices = [current];
-  for (let offset = 1; choices.length < Math.min(count, items.length); offset += 1) {
+  const targetCount = Math.min(count, items.length);
+  for (let offset = 1; offset <= items.length && choices.length < targetCount; offset += 1) {
     const candidate = items[(seed + offset * 3) % items.length];
+    if (!choices.some((item) => item.id === candidate.id)) choices.push(candidate);
+  }
+  // A 3-step rotation can revisit the same subset when the item count is a
+  // multiple of three. Fill from the source once so small sessions never loop.
+  for (const candidate of items) {
+    if (choices.length >= targetCount) break;
     if (!choices.some((item) => item.id === candidate.id)) choices.push(candidate);
   }
   return seed % 2 === 0 ? choices : [...choices.slice(1), current];

@@ -25,6 +25,7 @@ export function QuestMap({
   onStart,
   onParent,
   onRecord,
+  onTeach,
   onToggleSound,
 }: {
   progress: PlayerProgress;
@@ -32,6 +33,7 @@ export function QuestMap({
   onStart: (mode: LearningMode, advancesStory?: boolean) => void;
   onParent: () => void;
   onRecord: () => void;
+  onTeach: () => void;
   onToggleSound: () => void;
 }) {
   const captured = Object.values(progress.spirits).filter((state) => state !== 'locked').length;
@@ -43,6 +45,8 @@ export function QuestMap({
   const focusGuide = ENGLISH_QUEST_GUIDES.find((guide) => guide.id === nextQuest.guideId) ?? ENGLISH_QUEST_GUIDES[0];
   const storyRoute = [...MAIN_QUESTS, FINAL_QUEST];
   const visibleStoryStep = Math.min(progress.questStep, storyRoute.length - 1);
+  const constellationStars = Math.min(7, progress.adventureDates.length);
+  const teachUnlocked = progress.questStep >= 4;
   const nextLabel = storyComplete
     ? '今日の 思い出し遠征へ'
     : nextQuest.final
@@ -73,6 +77,7 @@ export function QuestMap({
       <div className="eq-map-layout">
         <section className="eq-adventure-map" style={{ backgroundImage: `url(${forestMap})` }} aria-label="はじまりの森の地図">
           <div className="eq-map-glow" aria-hidden="true" />
+          <div className="eq-constellation-badge" aria-label={`記憶の星座 ${constellationStars} / 7`}><small>記憶の星座</small><strong>{'★'.repeat(constellationStars)}{'☆'.repeat(7 - constellationStars)}</strong><span>連続じゃなくてOK</span></div>
           <div className="eq-map-path" aria-hidden="true"><i /><i /><i /><i /></div>
           {QUEST_REGIONS.map((region) => {
             const unlocked = isModeUnlocked(progress, region.mode);
@@ -95,6 +100,7 @@ export function QuestMap({
           <DragonSprite pose={1} className="eq-map-dragon" />
           <div className="eq-mobile-guide"><GuideSprite index={focusGuide.spriteIndex} label={focusGuide.name} /><span><strong>{focusGuide.name}</strong><small>{focusGuide.role}</small></span></div>
           <button className="eq-speak-shortcut" type="button" onClick={onRecord}><span aria-hidden="true">🎙️</span> まねして話す</button>
+          {teachUnlocked && <button className="eq-teach-shortcut" type="button" onClick={onTeach} aria-label="ドラゴンに英語を教える"><span aria-hidden="true">🐉</span> 先生になる</button>}
           {!storyComplete && <button className="eq-map-next-cta" type="button" onClick={startNext}><span>{focusGuide.name}の おすすめ</span><strong>{nextLabel}</strong><i>▶</i></button>}
         </section>
 
@@ -108,7 +114,9 @@ export function QuestMap({
               </li>
             ))}
           </ol>
+          {teachUnlocked && <button className="eq-teach-camp" type="button" onClick={onTeach}>🐉 きょうは先生になる</button>}
           <div className="eq-memory-card"><div><span>{reviewCount > 0 ? '今日の思い出し' : '島の習熟度'}</span><strong>{reviewCount > 0 ? `${reviewCount}こ` : `${mastery}%`}</strong></div><span className="eq-memory-track"><i style={{ width: `${reviewCount > 0 ? Math.min(100, (reviewCount / 15) * 100) : mastery}%` }} /></span><small>短く何度も会うと、ことばの光が強くなるよ。</small></div>
+          <div className="eq-constellation-card"><div><span>記憶の星座</span><strong>{constellationStars}/7</strong></div><p aria-hidden="true">{'★'.repeat(constellationStars)}{'☆'.repeat(7 - constellationStars)}</p><small>連続日数ではなく、戻ってきた日を祝うよ。</small></div>
           <button className="eq-primary-button eq-desktop-continue" type="button" onClick={startNext}>{nextLabel} ▶</button>
         </aside>
       </div>

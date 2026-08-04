@@ -1,4 +1,4 @@
-import { createInitialProgress } from './englishQuestEngine';
+import { createInitialProgress, localDateKey } from './englishQuestEngine';
 import { ENGLISH_QUEST_SPIRITS, ITEM_BY_ID, MAIN_QUESTS } from './englishQuestContent';
 import type { Attempt, LearningMode, MasteryState, PlayerProgress, SpiritState } from './englishQuestTypes';
 
@@ -71,6 +71,10 @@ export function normalizeProgress(value: unknown): PlayerProgress | null {
   }
 
   const settings = isRecord(value.settings) ? value.settings : {};
+  const attempts = value.attempts.map(normalizeAttempt).filter((attempt): attempt is Attempt => Boolean(attempt)).slice(-200);
+  const importedAdventureDates = Array.isArray(value.adventureDates)
+    ? value.adventureDates.filter((date): date is string => typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date))
+    : attempts.filter((attempt) => attempt.mode !== 'diagnostic').map((attempt) => localDateKey(attempt.answeredAt));
   return {
     schemaVersion: 1,
     profileName: value.profileName.trim().slice(0, 16) || initial.profileName,
@@ -80,7 +84,8 @@ export function normalizeProgress(value: unknown): PlayerProgress | null {
     light: finiteNumber(value.light, 0, 0, 9_999_999),
     mastery,
     spirits,
-    attempts: value.attempts.map(normalizeAttempt).filter((attempt): attempt is Attempt => Boolean(attempt)).slice(-200),
+    attempts,
+    adventureDates: Array.from(new Set(importedAdventureDates)).sort().slice(-365),
     settings: {
       soundOn: typeof settings.soundOn === 'boolean' ? settings.soundOn : initial.settings.soundOn,
       reducedMotion: typeof settings.reducedMotion === 'boolean' ? settings.reducedMotion : initial.settings.reducedMotion,

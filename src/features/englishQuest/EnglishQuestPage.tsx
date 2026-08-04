@@ -14,12 +14,14 @@ import { ParentDashboard } from './ParentDashboard';
 import { PronunciationRecorder } from './PronunciationRecorder';
 import { QuestBriefing } from './QuestBriefing';
 import { QuestMap } from './QuestMap';
+import { TeachDragonGame } from './TeachDragonGame';
 import './englishQuest.css';
 
 type PlayableMode = 'capture' | 'arena' | 'merge' | 'escape';
-type Screen = 'welcome' | 'beginner' | 'map' | 'briefing' | 'capture' | 'arena' | 'merge' | 'escape' | 'final' | 'parent' | 'record';
+type RunMode = PlayableMode | 'teach';
+type Screen = 'welcome' | 'beginner' | 'map' | 'briefing' | 'capture' | 'arena' | 'merge' | 'escape' | 'teach' | 'final' | 'parent' | 'record';
 type ActiveRun = {
-  mode: PlayableMode;
+  mode: RunMode;
   quest: QuestDefinition;
   items: LearningItem[];
   advancesStory: boolean;
@@ -62,6 +64,27 @@ export function EnglishQuestPage({ onBackToHome }: { onBackToHome: () => void })
     if (activeRun?.advancesStory) setProgress((current) => completeQuest(current));
     setActiveRun(null);
     setScreen('map');
+  };
+  const startTeaching = () => {
+    const items = composeSession(progress, new Date(), 6);
+    const template = MAIN_QUESTS[4] ?? MAIN_QUESTS[0];
+    const quest: QuestDefinition = {
+      ...template,
+      id: 'teach-the-dragon',
+      chapter: Math.min(13, progress.questStep + 1),
+      title: 'ドラゴン先生のお願い',
+      mode: 'review',
+      guideId: 'tick',
+      story: 'ドラゴンが覚えた英語を、今度はきみが先生になって確かめよう。',
+      objective: 'お手本の音とドラゴンの絵を比べ、間違いをやさしく直す',
+      reward: '記憶の星',
+      rewardEmoji: '🌟',
+      itemIds: items.map((item) => item.id),
+      spiritId: undefined,
+      final: false,
+    };
+    setActiveRun({ mode: 'teach', quest, items, advancesStory: false });
+    setScreen('teach');
   };
 
   if (screen === 'welcome') {
@@ -110,6 +133,7 @@ export function EnglishQuestPage({ onBackToHome }: { onBackToHome: () => void })
   if (screen === 'arena' && activeRun) return <ArenaGame soundOn={progress.settings.soundOn} items={activeRun.items} quest={activeRun.quest} onAttempt={recordAttempt} onComplete={finishGame} onExit={() => setScreen('map')} />;
   if (screen === 'merge' && activeRun) return <MergeGame soundOn={progress.settings.soundOn} items={activeRun.items} quest={activeRun.quest} onAttempt={recordAttempt} onComplete={finishGame} onExit={() => setScreen('map')} />;
   if (screen === 'escape' && activeRun) return <EscapeGame soundOn={progress.settings.soundOn} items={activeRun.items} quest={activeRun.quest} onAttempt={recordAttempt} onComplete={finishGame} onExit={() => setScreen('map')} />;
+  if (screen === 'teach' && activeRun) return <TeachDragonGame soundOn={progress.settings.soundOn} items={activeRun.items} quest={activeRun.quest} onAttempt={recordAttempt} onComplete={finishGame} onExit={() => setScreen('map')} />;
 
   if (screen === 'parent') {
     return (
@@ -135,6 +159,7 @@ export function EnglishQuestPage({ onBackToHome }: { onBackToHome: () => void })
       onStart={startGame}
       onParent={() => setScreen('parent')}
       onRecord={() => setScreen('record')}
+      onTeach={startTeaching}
       onToggleSound={() => setProgress((current) => ({
         ...current,
         settings: { ...current.settings, soundOn: !current.settings.soundOn },

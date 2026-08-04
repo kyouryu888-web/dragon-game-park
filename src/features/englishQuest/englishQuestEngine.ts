@@ -13,7 +13,13 @@ import type {
 const DAY_MS = 24 * 60 * 60 * 1000;
 const REVIEW_INTERVAL_DAYS = [0, 1, 3, 7, 14, 30] as const;
 
-const dateKey = (iso: string) => iso.slice(0, 10);
+export function localDateKey(iso: string): string {
+  const date = new Date(iso);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
 
 export function createInitialProgress(profileName = 'ちいさな冒険者'): PlayerProgress {
   return {
@@ -26,6 +32,7 @@ export function createInitialProgress(profileName = 'ちいさな冒険者'): Pl
     mastery: {},
     spirits: Object.fromEntries(ENGLISH_QUEST_SPIRITS.map((spirit) => [spirit.id, 'locked'])) as Record<string, SpiritState>,
     attempts: [],
+    adventureDates: [],
     settings: {
       soundOn: true,
       reducedMotion: false,
@@ -72,7 +79,7 @@ export function nextMasteryState(
     ? Array.from(new Set([...(previous?.successfulModalities ?? []), attempt.mode]))
     : previous?.successfulModalities ?? [];
   const successfulDates = attempt.correct
-    ? Array.from(new Set([...(previous?.successfulDates ?? []), dateKey(attempt.answeredAt)])).slice(-8)
+    ? Array.from(new Set([...(previous?.successfulDates ?? []), localDateKey(attempt.answeredAt)])).slice(-8)
     : previous?.successfulDates ?? [];
 
   return {
@@ -111,11 +118,15 @@ export function applyAttempt(progress: PlayerProgress, attempt: Attempt): Player
   }
 
   const attempts = [...progress.attempts, attempt].slice(-200);
+  const adventureDates = attempt.mode === 'diagnostic'
+    ? progress.adventureDates
+    : Array.from(new Set([...progress.adventureDates, localDateKey(attempt.answeredAt)])).sort().slice(-365);
   return {
     ...progress,
     mastery,
     spirits,
     attempts,
+    adventureDates,
     light: progress.light + (attempt.correct ? Math.max(2, 6 - attempt.hintLevel) : 1),
   };
 }

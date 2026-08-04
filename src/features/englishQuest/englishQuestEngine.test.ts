@@ -183,6 +183,23 @@ describe('English Quest scheduler', () => {
     expect(session.some((item) => item.difficulty >= 2)).toBe(true);
     expect(session.filter((item) => MAIN_QUESTS[0].itemIds.includes(item.id)).length).toBeGreaterThanOrEqual(5);
   });
+
+  it('celebrates return days without requiring a consecutive streak', () => {
+    let progress = createInitialProgress();
+    progress = applyAttempt(progress, makeAttempt({ itemId: 'word-cat', mode: 'capture', correct: true, latencyMs: 500, now: new Date('2026-08-01T00:00:00.000Z') }));
+    progress = applyAttempt(progress, makeAttempt({ itemId: 'word-dog', mode: 'diagnostic', correct: true, latencyMs: 500, now: new Date('2026-08-02T00:00:00.000Z') }));
+    progress = applyAttempt(progress, makeAttempt({ itemId: 'word-dog', mode: 'merge', correct: false, latencyMs: 500, now: new Date('2026-08-05T00:00:00.000Z') }));
+    expect(progress.adventureDates).toEqual(['2026-08-01', '2026-08-05']);
+  });
+
+  it('records the child\'s local calendar day instead of the UTC date', () => {
+    const localMorning = new Date(2026, 7, 5, 0, 30);
+    const progress = applyAttempt(createInitialProgress(), makeAttempt({
+      itemId: 'word-cat', mode: 'capture', correct: true, latencyMs: 500, now: localMorning,
+    }));
+    expect(progress.adventureDates).toEqual(['2026-08-05']);
+    expect(progress.mastery['word-cat'].successfulDates).toEqual(['2026-08-05']);
+  });
 });
 
 describe('English Quest collection', () => {
@@ -221,6 +238,14 @@ describe('English Quest persistence', () => {
   it('falls back to a fresh profile when stored data is corrupt', () => {
     const storage = { getItem: () => '{broken' };
     expect(loadProgress(storage).schemaVersion).toBe(1);
+  });
+
+  it('derives return days when importing an older version-one save', () => {
+    let progress = createInitialProgress();
+    progress = applyAttempt(progress, makeAttempt({ itemId: 'word-cat', mode: 'capture', correct: true, latencyMs: 500, now: new Date('2026-08-03T00:00:00.000Z') }));
+    const candidate = JSON.parse(serializeProgress(progress)) as Record<string, unknown>;
+    delete candidate.adventureDates;
+    expect(normalizeProgress(candidate)?.adventureDates).toEqual(['2026-08-03']);
   });
 
   it('repairs unsafe nested values without losing a valid profile', () => {
