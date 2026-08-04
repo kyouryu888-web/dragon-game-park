@@ -1,4 +1,4 @@
-# Dragon English Odyssey audio
+# English Learning Odyssey audio
 
 Production audio is generated locally with
 [Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M), licensed under Apache-2.0.

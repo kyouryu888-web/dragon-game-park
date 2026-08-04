@@ -3,7 +3,7 @@
 更新日: 2026-08-05
 ブランチ: `codex/english-quest-gameplay-v2`
 PR: [#8](https://github.com/kyouryu888-web/dragon-game-park/pull/8)（v3更新済み）
-主要実装コミット: `ca8bc85`
+最新機能コミット: `8fc7bfa`（Kokoro音声100件まで）
 
 ## 現在の目的
 
@@ -55,7 +55,7 @@ PR: [#8](https://github.com/kyouryu888-web/dragon-game-park/pull/8)（v3更新�
 - 初版は第1島100項目。TOEIC 900点台に必要な数千項目、全7 Partの形式演習、120分の持久力訓練は未実装で、現状だけではTOEIC 900点対策アプリとして未完成。
 - Kokoro音声100件の生成・正規化・自動検査は完了。公開前に人間が全100件を実際に聞き、発音・間・音量を確認する必要がある。ファイル不在・再生失敗時だけ端末の`SpeechSynthesis`へフォールバックする。
 - 最終ダンジョン内の固定4パズルはその場で安全に再挑戦する設計で、通常4ゲームの3〜5問後キューとは別扱い。
-- PR #8の`build-and-test`、Vercel、Vercel Preview Commentsは`ca8bc85`で成功済み。プレビューはVercel認証で保護されている。
+- PR #8の`build-and-test`、Vercel、Vercel Preview Commentsは`8fc7bfa`で成功済み。プレビューはVercel認証で保護されている。
 - 家族実機プレイ、プレビューのユーザー承認、本番マージは未実施。
 - 有料API、ランタイムAI、Supabase同期、ログイン、広告、課金、録音保存は初版に入れない。
 
