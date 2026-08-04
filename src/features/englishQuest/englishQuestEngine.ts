@@ -138,12 +138,15 @@ export function composeSession(
   targetSize = 10,
   items = ENGLISH_QUEST_ITEMS,
 ): LearningItem[] {
-  const due = items.filter((item) => {
+  const eligible = items.filter((item) => item.prerequisites.every(
+    (id) => (progress.mastery[id]?.stage ?? 0) >= 1,
+  ));
+  const due = eligible.filter((item) => {
     const state = progress.mastery[item.id];
     return state && new Date(state.dueAt) <= now;
   });
-  const fresh = items.filter((item) => !progress.mastery[item.id]);
-  const mixed = items
+  const fresh = eligible.filter((item) => !progress.mastery[item.id]);
+  const mixed = eligible
     .filter((item) => progress.mastery[item.id] && !due.includes(item))
     .sort((a, b) => (progress.mastery[a.id]?.stage ?? 0) - (progress.mastery[b.id]?.stage ?? 0));
 

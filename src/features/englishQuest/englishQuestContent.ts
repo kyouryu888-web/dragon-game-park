@@ -134,6 +134,27 @@ const readingSeeds: Seed[] = [
   { id: 'key-table', ja: 'かぎがある場所は？', en: 'ON THE TABLE', emoji: '🔑' },
 ];
 
+const prerequisites: Record<string, string[]> = {
+  'chunk-i-like-cats': ['word-cat'],
+  'chunk-it-red': ['word-red'],
+  'chunk-can-run': ['word-run'],
+  'chunk-can-jump': ['word-jump'],
+  'chunk-where-book': ['word-book'],
+  'chunk-on-table': ['word-table'],
+  'chunk-open-door': ['word-open'],
+  'chunk-close-book': ['word-close', 'word-book'],
+  'dialogue-like-cats': ['word-cat', 'chunk-i-like-cats'],
+  'dialogue-book-where': ['word-book', 'chunk-on-table'],
+  'dialogue-color': ['word-blue'],
+  'dialogue-how-many': ['word-three', 'word-bird'],
+  'reading-open-sign': ['word-open'],
+  'reading-stop-sign': ['word-stop'],
+  'reading-blue-door': ['word-blue', 'chunk-open-door'],
+  'reading-two-tickets': ['word-two'],
+  'reading-bus-eight': ['word-eight'],
+  'reading-key-table': ['word-key', 'word-table'],
+};
+
 const makeSimpleItems = (
   prefix: string,
   type: LearningItem['type'],
@@ -156,7 +177,7 @@ const makeSimpleItems = (
       emoji: seed.emoji,
       skillTags: tags,
       difficulty,
-      prerequisites: [],
+      prerequisites: prerequisites[id] ?? [],
     };
   });
 };

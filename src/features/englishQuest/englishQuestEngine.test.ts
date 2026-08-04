@@ -118,6 +118,12 @@ describe('English Quest scheduler', () => {
     expect(session).toHaveLength(10);
     expect(new Set(session.map((item) => item.id)).size).toBe(10);
   });
+
+  it('does not introduce a phrase before its prerequisite word was met', () => {
+    const phrase = ENGLISH_QUEST_ITEMS.find((item) => item.id === 'chunk-i-like-cats');
+    expect(phrase).toBeDefined();
+    expect(composeSession(createInitialProgress(), new Date(), 100)).not.toContain(phrase);
+  });
 });
 
 describe('English Quest persistence', () => {
