@@ -49,6 +49,15 @@ describe('English Quest content', () => {
     expect([count('sound'), count('word'), count('chunk'), count('dialogue'), count('reading')]).toEqual([16, 48, 20, 8, 8]);
   });
 
+  it('uses eight two-exchange dialogue prompts instead of isolated questions', () => {
+    const dialogues = ENGLISH_QUEST_ITEMS.filter((item) => item.type === 'dialogue');
+    expect(dialogues).toHaveLength(8);
+    for (const item of dialogues) {
+      expect(item.audioText.split(/[.!?]+/).filter(Boolean).length).toBeGreaterThanOrEqual(3);
+      expect(item.answer.length).toBeGreaterThan(0);
+    }
+  });
+
   it('gives all eight original spirits a reachable quest unlock', () => {
     expect(ENGLISH_QUEST_SPIRITS).toHaveLength(8);
     expect(ENGLISH_QUEST_SPIRITS.map((spirit) => spirit.unlockQuestStep)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);

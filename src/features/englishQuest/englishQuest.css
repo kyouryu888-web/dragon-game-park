@@ -381,6 +381,10 @@
 .eq-data-tools button { min-height: 45px; border: 2px solid #7e6688; border-radius: 13px; color: #432951; background: #f4eafa; font-size: 12px; font-weight: 900; cursor: pointer; }
 .eq-data-tools .eq-danger-button { grid-column: 1 / -1; border-color: #b96e62; color: #792d23; background: #fff0ed; }
 .eq-data-message { border-radius: 12px; padding: 9px; color: #245e4f; background: #e5f8ef; font-weight: 800; }
+.eq-audio-review { width: min(900px, calc(100% - 24px)); margin: 0 auto 28px; border: 2px solid #d8b65d; border-radius: 24px; padding: 14px 18px; background: #fff9dc; box-shadow: 0 10px 24px rgba(69,48,31,.13); }
+.eq-audio-review summary { cursor: pointer; color: #4e315a; font-size: 16px; font-weight: 900; }
+.eq-audio-review-card { display: grid; grid-template-columns: 72px 1fr auto; align-items: center; gap: 14px; margin-top: 14px; border: 2px solid #dfc879; border-radius: 18px; padding: 13px; background: #fffef2; }.eq-audio-review-card > span { font-size: 48px; text-align: center; }.eq-audio-review-card > div { display: grid; gap: 3px; }.eq-audio-review-card small { color: #756979; font-weight: 800; }.eq-audio-review-card strong { font-size: 17px; }.eq-audio-review-card p { margin: 0; color: #315845; font-weight: 800; }.eq-audio-review-card button, .eq-audio-review-nav button { min-height: 42px; border: 2px solid #795797; border-radius: 14px; padding: 7px 13px; color: #fff; background: #67417f; font-weight: 900; cursor: pointer; }.eq-audio-review-card button:focus-visible, .eq-audio-review-nav button:focus-visible { outline: 4px solid #ffd84f; outline-offset: 2px; }
+.eq-audio-review-nav { display: flex; justify-content: space-between; gap: 12px; margin-top: 10px; }.eq-audio-review-nav button { color: #4f315b; background: #fff4be; }.eq-audio-review-nav button:disabled { opacity: .4; cursor: default; }.eq-audio-review details > p { margin-bottom: 0; color: #62556a; font-size: 11px; font-weight: 800; text-align: center; }
 .eq-paste-restore { margin-top: 10px; border: 1px solid #c9b7d0; border-radius: 14px; padding: 9px 11px; background: #faf6fc; }.eq-paste-restore summary { color: #50335f; font-size: 12px; font-weight: 900; cursor: pointer; }.eq-paste-restore label { display: grid; gap: 5px; margin-top: 8px; color: #5d4a64; font-size: 11px; font-weight: 900; }.eq-paste-restore textarea { width: 100%; resize: vertical; border: 2px solid #b39bbc; border-radius: 10px; padding: 8px; color: #2e2035; background: #fff; font: 11px/1.45 ui-monospace, monospace; }.eq-paste-restore > button { width: 100%; margin-top: 8px; }.eq-paste-restore > button:disabled { cursor: default; opacity: .5; }
 
 @keyframes eq-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
@@ -824,6 +828,7 @@
 }
 
 @media (max-width: 720px) {
+  .eq-audio-review { padding: 12px; }.eq-audio-review-card { grid-template-columns: 54px minmax(0,1fr); gap: 9px; }.eq-audio-review-card > span { font-size: 38px; }.eq-audio-review-card > button { grid-column: 1 / -1; width: 100%; }
   .eq-game-header { grid-template-columns: 44px 48px minmax(0,1fr) auto; min-height: 70px; padding: 7px 10px; }
   .eq-game-header-guide { width: 48px; }
   .eq-game-header .eq-round-button { width: 42px; height: 42px; flex-basis: 42px; }

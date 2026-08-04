@@ -5,6 +5,7 @@ type Seed = {
   ja: string;
   en: string;
   emoji: string;
+  audioText?: string;
 };
 
 const asset = (id: string) => `/audio/englishQuest/${id}.mp3`;
@@ -113,14 +114,14 @@ const chunkSeeds: Seed[] = [
 ];
 
 const dialogueSeeds: Seed[] = [
-  { id: 'name', ja: 'What is your name? への返事', en: 'My name is Mio.', emoji: '💬' },
-  { id: 'how-are-you', ja: 'How are you? への返事', en: "I'm fine, thank you.", emoji: '😊' },
-  { id: 'like-cats', ja: 'Do you like cats? への返事', en: 'Yes, I do.', emoji: '🐱' },
-  { id: 'book-where', ja: 'Where is my book? への返事', en: "It's on the table.", emoji: '📘' },
-  { id: 'color', ja: 'What color is it? への返事', en: "It's blue.", emoji: '🔵' },
-  { id: 'how-many', ja: 'How many birds? への返事', en: 'Three birds.', emoji: '🐦' },
-  { id: 'can-swim', ja: 'Can you swim? への返事', en: 'Yes, I can.', emoji: '🏊' },
-  { id: 'goodbye', ja: 'Goodbye! への返事', en: 'See you!', emoji: '👋' },
+  { id: 'name', ja: 'What is your name? への返事', en: 'My name is Mio.', emoji: '💬', audioText: 'Hello! Hi! What is your name?' },
+  { id: 'how-are-you', ja: 'How are you? への返事', en: "I'm fine, thank you.", emoji: '😊', audioText: 'Good morning! Good morning! How are you?' },
+  { id: 'like-cats', ja: 'Do you like cats? への返事', en: 'Yes, I do.', emoji: '🐱', audioText: 'Look, a cat! It is cute. Do you like cats?' },
+  { id: 'book-where', ja: 'Where is my book? への返事', en: "It's on the table.", emoji: '📘', audioText: 'I need my book. I can help. Where is my book?' },
+  { id: 'color', ja: 'What color is it? への返事', en: "It's blue.", emoji: '🔵', audioText: 'Look at this bag. Nice! What color is it?' },
+  { id: 'how-many', ja: 'How many birds? への返事', en: 'Three birds.', emoji: '🐦', audioText: 'Look at the birds. I see them. How many birds?' },
+  { id: 'can-swim', ja: 'Can you swim? への返事', en: 'Yes, I can.', emoji: '🏊', audioText: 'Let us go to the pool. Okay! Can you swim?' },
+  { id: 'goodbye', ja: 'Goodbye! への返事', en: 'See you!', emoji: '👋', audioText: 'It is time to go. Okay. Goodbye!' },
 ];
 
 const readingSeeds: Seed[] = [
@@ -172,7 +173,7 @@ const makeSimpleItems = (
       display: seed.ja,
       answer: seed.en,
       choices: rotateChoices(answers, index),
-      audioText: type === 'dialogue' ? seed.ja.split(' への')[0] : seed.en,
+      audioText: seed.audioText ?? seed.en,
       audioAsset: asset(id),
       emoji: seed.emoji,
       skillTags: tags,

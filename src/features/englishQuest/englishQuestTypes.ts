@@ -118,7 +118,12 @@ export interface AudioManifest {
   transcript: string;
   asset: string;
   voice: string;
+  model: string;
+  generatorVersion: string;
   sampleRate: number;
+  bitrateKbps: number;
   durationSeconds: number;
+  rmsDbfs: number;
+  peakDbfs: number;
   sha256: string;
 }

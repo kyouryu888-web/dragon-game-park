@@ -1,4 +1,5 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { playLearningItem, stopEnglishAudio } from './englishQuestAudio';
 import { ENGLISH_QUEST_ITEMS, ENGLISH_QUEST_SPIRITS } from './englishQuestContent';
 import { dueCount, isMastered, masteryPercent } from './englishQuestEngine';
 import { parseImportedProgress, serializeProgress } from './englishQuestStorage';
@@ -34,8 +35,12 @@ export function ParentDashboard({
   const fileRef = useRef<HTMLInputElement>(null);
   const [message, setMessage] = useState('');
   const [pastedJson, setPastedJson] = useState('');
+  const [audioIndex, setAudioIndex] = useState(0);
   const mastered = Object.values(progress.mastery).filter(isMastered).length;
   const captured = Object.values(progress.spirits).filter((state) => state !== 'locked').length;
+  const audioItem = ENGLISH_QUEST_ITEMS[audioIndex];
+
+  useEffect(() => stopEnglishAudio, []);
 
   const download = () => {
     const blob = new Blob([serializeProgress(progress)], { type: 'application/json' });
@@ -149,6 +154,26 @@ export function ParentDashboard({
           <button type="button" disabled={!pastedJson.trim()} onClick={importPastedJson}>貼り付けたデータを復元</button>
         </details>
         {message && <p className="eq-data-message" role="status">{message}</p>}
+      </section>
+
+      <section className="eq-audio-review">
+        <details>
+          <summary>🔊 英語の音声見本を確認する（100件）</summary>
+          <div className="eq-audio-review-card">
+            <span aria-hidden="true">{audioItem.emoji}</span>
+            <div>
+              <small>{audioIndex + 1} / {ENGLISH_QUEST_ITEMS.length}・{audioItem.type}</small>
+              <strong>{audioItem.display}</strong>
+              <p>{audioItem.audioText}</p>
+            </div>
+            <button type="button" onClick={() => playLearningItem(audioItem, true)}>▶ 音声を聞く</button>
+          </div>
+          <div className="eq-audio-review-nav">
+            <button type="button" disabled={audioIndex === 0} onClick={() => setAudioIndex((value) => Math.max(0, value - 1))}>← 前の音声</button>
+            <button type="button" disabled={audioIndex === ENGLISH_QUEST_ITEMS.length - 1} onClick={() => setAudioIndex((value) => Math.min(ENGLISH_QUEST_ITEMS.length - 1, value + 1))}>次の音声 →</button>
+          </div>
+          <p>端末内で再生するだけです。録音・送信・自動採点はしません。</p>
+        </details>
       </section>
     </main>
   );
