@@ -1,34 +1,66 @@
 import { useEffect, useState } from 'react';
-import { applyAttempt, completeDiagnostic, completeQuest } from './englishQuestEngine';
+import { applyAttempt, completeDiagnostic, completeQuest, composeQuestSession, composeSession } from './englishQuestEngine';
+import { FINAL_QUEST, MAIN_QUESTS } from './englishQuestContent';
 import { clearProgress, loadProgress, saveProgress } from './englishQuestStorage';
-import type { Attempt, LearningMode, PlayerProgress } from './englishQuestTypes';
+import type { Attempt, LearningItem, LearningMode, PlayerProgress, QuestDefinition } from './englishQuestTypes';
 import { ArenaGame } from './ArenaGame';
 import { BeginnerJourney } from './BeginnerJourney';
 import { CaptureGame } from './CaptureGame';
 import { DragonSprite, GuideSprite } from './EnglishQuestSprites';
 import { EscapeGame } from './EscapeGame';
+import { FinalDungeon } from './FinalDungeon';
 import { MergeGame } from './MergeGame';
 import { ParentDashboard } from './ParentDashboard';
 import { PronunciationRecorder } from './PronunciationRecorder';
+import { QuestBriefing } from './QuestBriefing';
 import { QuestMap } from './QuestMap';
 import './englishQuest.css';
 
-type Screen = 'welcome' | 'beginner' | 'map' | 'capture' | 'arena' | 'merge' | 'escape' | 'parent' | 'record';
+type PlayableMode = 'capture' | 'arena' | 'merge' | 'escape';
+type Screen = 'welcome' | 'beginner' | 'map' | 'briefing' | 'capture' | 'arena' | 'merge' | 'escape' | 'final' | 'parent' | 'record';
+type ActiveRun = {
+  mode: PlayableMode;
+  quest: QuestDefinition;
+  items: LearningItem[];
+  advancesStory: boolean;
+};
+
+const REVIEW_MODES: PlayableMode[] = ['capture', 'arena', 'merge', 'escape'];
 
 export function EnglishQuestPage({ onBackToHome }: { onBackToHome: () => void }) {
   const [progress, setProgress] = useState<PlayerProgress>(() => loadProgress());
   const [screen, setScreen] = useState<Screen>(() => (progress.diagnosticComplete ? 'map' : 'welcome'));
-  const [advancesStory, setAdvancesStory] = useState(false);
+  const [activeRun, setActiveRun] = useState<ActiveRun | null>(null);
 
   useEffect(() => saveProgress(progress), [progress]);
 
   const recordAttempt = (attempt: Attempt) => setProgress((current) => applyAttempt(current, attempt));
   const startGame = (mode: LearningMode, story = false) => {
-    setAdvancesStory(story);
-    setScreen(mode === 'review' || mode === 'diagnostic' ? 'capture' : mode);
+    const reviewIndex = (new Date().getDate() + progress.light) % REVIEW_MODES.length;
+    const playableMode: PlayableMode = mode === 'review' || mode === 'diagnostic' ? REVIEW_MODES[reviewIndex] : mode;
+    const storyQuest = progress.questStep < MAIN_QUESTS.length ? MAIN_QUESTS[progress.questStep] : FINAL_QUEST;
+    const template = MAIN_QUESTS.find((quest) => quest.mode === playableMode) ?? MAIN_QUESTS[0];
+    const quest: QuestDefinition = story ? storyQuest : {
+      ...template,
+      id: `practice-${playableMode}`,
+      chapter: Math.min(13, progress.questStep + 1),
+      title: mode === 'review' ? '今日の思い出し遠征' : `${template.regionName}の自由探検`,
+      story: '前に出会ったことばと、これから出会うことばを混ぜた短い遠征だよ。',
+      objective: 'ちがう遊び方で思い出し、ことばの記憶を強くする',
+      reward: '思い出しの光',
+      rewardEmoji: '✨',
+      spiritId: undefined,
+      final: false,
+    };
+    const items = story
+      ? composeQuestSession(progress, quest)
+      : composeSession(progress, new Date(), 8);
+    setActiveRun({ mode: playableMode, quest, items, advancesStory: story });
+    setScreen(story ? 'briefing' : playableMode);
   };
   const finishGame = () => {
-    if (advancesStory) setProgress((current) => completeQuest(current));
+    if (activeRun?.advancesStory) setProgress((current) => completeQuest(current));
+    setActiveRun(null);
     setScreen('map');
   };
 
@@ -69,10 +101,15 @@ export function EnglishQuestPage({ onBackToHome }: { onBackToHome: () => void })
     );
   }
 
-  if (screen === 'capture') return <CaptureGame soundOn={progress.settings.soundOn} onAttempt={recordAttempt} onComplete={finishGame} onExit={() => setScreen('map')} />;
-  if (screen === 'arena') return <ArenaGame soundOn={progress.settings.soundOn} onAttempt={recordAttempt} onComplete={finishGame} onExit={() => setScreen('map')} />;
-  if (screen === 'merge') return <MergeGame soundOn={progress.settings.soundOn} onAttempt={recordAttempt} onComplete={finishGame} onExit={() => setScreen('map')} />;
-  if (screen === 'escape') return <EscapeGame soundOn={progress.settings.soundOn} onAttempt={recordAttempt} onComplete={finishGame} onExit={() => setScreen('map')} />;
+  if (screen === 'briefing' && activeRun) {
+    return <QuestBriefing quest={activeRun.quest} items={activeRun.items} soundOn={progress.settings.soundOn} onStart={() => setScreen(activeRun.quest.final ? 'final' : activeRun.mode)} onExit={() => { setActiveRun(null); setScreen('map'); }} />;
+  }
+
+  if (screen === 'final' && activeRun) return <FinalDungeon soundOn={progress.settings.soundOn} items={activeRun.items} quest={activeRun.quest} onAttempt={recordAttempt} onComplete={finishGame} onExit={() => setScreen('map')} />;
+  if (screen === 'capture' && activeRun) return <CaptureGame soundOn={progress.settings.soundOn} items={activeRun.items} quest={activeRun.quest} onAttempt={recordAttempt} onComplete={finishGame} onExit={() => setScreen('map')} />;
+  if (screen === 'arena' && activeRun) return <ArenaGame soundOn={progress.settings.soundOn} items={activeRun.items} quest={activeRun.quest} onAttempt={recordAttempt} onComplete={finishGame} onExit={() => setScreen('map')} />;
+  if (screen === 'merge' && activeRun) return <MergeGame soundOn={progress.settings.soundOn} items={activeRun.items} quest={activeRun.quest} onAttempt={recordAttempt} onComplete={finishGame} onExit={() => setScreen('map')} />;
+  if (screen === 'escape' && activeRun) return <EscapeGame soundOn={progress.settings.soundOn} items={activeRun.items} quest={activeRun.quest} onAttempt={recordAttempt} onComplete={finishGame} onExit={() => setScreen('map')} />;
 
   if (screen === 'parent') {
     return (

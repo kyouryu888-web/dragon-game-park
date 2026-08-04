@@ -33,6 +33,7 @@ export function ParentDashboard({
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [message, setMessage] = useState('');
+  const [pastedJson, setPastedJson] = useState('');
   const mastered = Object.values(progress.mastery).filter(isMastered).length;
   const captured = Object.values(progress.spirits).filter((state) => state !== 'locked').length;
 
@@ -56,6 +57,16 @@ export function ParentDashboard({
     }
     onChange(imported);
     setMessage('学習データを復元しました。');
+  };
+  const importPastedJson = () => {
+    const imported = parseImportedProgress(pastedJson);
+    if (!imported) {
+      setMessage('貼り付けたデータを読み込めませんでした。');
+      return;
+    }
+    onChange(imported);
+    setPastedJson('');
+    setMessage('貼り付けた学習データを復元しました。');
   };
 
   return (
@@ -129,6 +140,14 @@ export function ParentDashboard({
           hidden
           onChange={(event) => void importFile(event.target.files?.[0])}
         />
+        <details className="eq-paste-restore">
+          <summary>JSONを貼り付けて復元する</summary>
+          <label>
+            書き出したJSON
+            <textarea value={pastedJson} onChange={(event) => setPastedJson(event.target.value)} rows={5} />
+          </label>
+          <button type="button" disabled={!pastedJson.trim()} onClick={importPastedJson}>貼り付けたデータを復元</button>
+        </details>
         {message && <p className="eq-data-message" role="status">{message}</p>}
       </section>
     </main>

@@ -1,12 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { createInitialProgress } from './englishQuestEngine';
 import {
+  BEGINNER_ITEM_IDS,
   arenaTargetAt,
   escapeDoorMatches,
   isModeUnlocked,
   learningItems,
   mergeTokenMatches,
   moveArenaPoint,
+  rotatedChoices,
 } from './englishQuestGameplay';
 
 describe('English Quest beginner journey', () => {
@@ -20,7 +22,8 @@ describe('English Quest beginner journey', () => {
   });
 
   it('uses a tiny known-item set for the first experience', () => {
-    expect(learningItems(['word-cat', 'word-dog']).map((item) => item.answer)).toEqual(['cat', 'dog']);
+    expect(BEGINNER_ITEM_IDS).toHaveLength(6);
+    expect(learningItems(BEGINNER_ITEM_IDS).map((item) => item.answer)).toEqual(['cat', 'dog', 'bird', 'red', 'blue', 'one']);
   });
 });
 
@@ -34,6 +37,12 @@ describe('English Quest distinct game rules', () => {
   it('matches merge tokens by learning item instead of answer-button position', () => {
     expect(mergeTokenMatches('word-cat', 'word-cat')).toBe(true);
     expect(mergeTokenMatches('word-dog', 'word-cat')).toBe(false);
+  });
+
+  it('rotates the correct target through changing positions instead of a fixed slot', () => {
+    const items = learningItems(['word-cat', 'word-dog', 'word-bird', 'word-fish']);
+    expect(rotatedChoices(items, 0, 3)[0].id).toBe('word-cat');
+    expect(rotatedChoices(items, 1, 3).at(-1)?.id).toBe('word-dog');
   });
 
   it('keeps an escape door locked until two clues are combined', () => {

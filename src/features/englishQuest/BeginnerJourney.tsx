@@ -9,6 +9,9 @@ const PAIRS = [
   ['word-cat', 'word-dog'],
   ['word-dog', 'word-cat'],
   ['word-bird', 'word-fish'],
+  ['word-red', 'word-blue'],
+  ['word-blue', 'word-yellow'],
+  ['word-one', 'word-two'],
 ] as const;
 
 export function BeginnerJourney({
@@ -76,8 +79,8 @@ export function BeginnerJourney({
         <GuideSprite index={0} label="ミーナ" className="eq-complete-guide" />
         <DragonSprite pose={3} className="eq-complete-dragon" />
         <h1>できたね！</h1>
-        <p>えいごの おとを みつける じゅんびが できたよ。</p>
-        <div className="eq-result-orb"><strong>3</strong><span>この おとに であった</span></div>
+        <p>どうぶつ・いろ・かずの おとに であえたよ。</p>
+        <div className="eq-result-orb"><strong>6</strong><span>この おとに であった</span></div>
         <button className="eq-primary-button" type="button" onClick={() => onComplete(score)}>もりへ しゅっぱつ</button>
       </main>
     );

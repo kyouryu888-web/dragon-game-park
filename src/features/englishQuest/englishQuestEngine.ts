@@ -1,4 +1,4 @@
-import { ENGLISH_QUEST_ITEMS, ENGLISH_QUEST_SPIRITS, MAIN_QUESTS } from './englishQuestContent';
+import { ENGLISH_QUEST_ITEMS, ENGLISH_QUEST_SPIRITS, ITEM_BY_ID, MAIN_QUESTS } from './englishQuestContent';
 import type {
   Attempt,
   HintLevel,
@@ -6,6 +6,7 @@ import type {
   LearningMode,
   MasteryState,
   PlayerProgress,
+  QuestDefinition,
   SpiritState,
 } from './englishQuestTypes';
 
@@ -98,15 +99,15 @@ export function applyAttempt(progress: PlayerProgress, attempt: Attempt): Player
     ...progress.mastery,
     [attempt.itemId]: nextMasteryState(progress.mastery[attempt.itemId], attempt),
   };
-  const masteredCount = Object.values(mastery).filter(isMastered).length;
   const spirits = { ...progress.spirits };
+  const evolvedSupport = Object.values(mastery).filter(
+    (state) => state.stage >= 4 && state.successfulDates.length >= 3 && state.successfulModalities.length >= 2,
+  ).length;
 
   for (const spirit of ENGLISH_QUEST_SPIRITS) {
-    if (masteredCount >= spirit.unlockMasteredCount) spirits[spirit.id] = 'captured';
-    const support = Object.values(mastery).filter(
-      (state) => state.stage >= 4 && state.successfulDates.length >= 3 && state.successfulModalities.length >= 2,
-    ).length;
-    if (support >= spirit.unlockMasteredCount) spirits[spirit.id] = 'evolved';
+    if (spirits[spirit.id] !== 'locked' && evolvedSupport >= spirit.unlockMasteredCount) {
+      spirits[spirit.id] = 'evolved';
+    }
   }
 
   const attempts = [...progress.attempts, attempt].slice(-200);
@@ -120,7 +121,16 @@ export function applyAttempt(progress: PlayerProgress, attempt: Attempt): Player
 }
 
 export function completeQuest(progress: PlayerProgress): PlayerProgress {
-  return { ...progress, questStep: Math.min(MAIN_QUESTS.length + 1, progress.questStep + 1) };
+  const completedQuest = MAIN_QUESTS[progress.questStep];
+  const spirits = { ...progress.spirits };
+  if (completedQuest?.spiritId && spirits[completedQuest.spiritId] === 'locked') {
+    spirits[completedQuest.spiritId] = 'captured';
+  }
+  return {
+    ...progress,
+    spirits,
+    questStep: Math.min(MAIN_QUESTS.length + 1, progress.questStep + 1),
+  };
 }
 
 const unique = (items: LearningItem[]): LearningItem[] => {
@@ -162,6 +172,54 @@ export function composeSession(
     ...fresh.slice(freshCount),
   ]);
   return session.slice(0, targetSize);
+}
+
+export function composeQuestSession(
+  progress: PlayerProgress,
+  quest: QuestDefinition,
+  now = new Date(),
+  targetSize = quest.itemIds.length,
+  items = ENGLISH_QUEST_ITEMS,
+): LearningItem[] {
+  const eligible = items.filter((item) => item.prerequisites.every(
+    (id) => (progress.mastery[id]?.stage ?? 0) >= 1,
+  ));
+  const eligibleIds = new Set(eligible.map((item) => item.id));
+  const storyItems = quest.itemIds
+    .map((id) => ITEM_BY_ID.get(id))
+    .filter((item): item is LearningItem => item !== undefined)
+    .filter((item) => eligibleIds.has(item.id));
+  const due = eligible.filter((item) => {
+    const state = progress.mastery[item.id];
+    return state && new Date(state.dueAt) <= now;
+  });
+  const storyFresh = storyItems.filter((item) => !progress.mastery[item.id]);
+  const storySeen = storyItems.filter((item) => progress.mastery[item.id]);
+  const mixed = eligible
+    .filter((item) => progress.mastery[item.id] && !due.includes(item) && !storySeen.includes(item))
+    .sort((a, b) => (progress.mastery[a.id]?.stage ?? 0) - (progress.mastery[b.id]?.stage ?? 0));
+  const freshElsewhere = eligible.filter(
+    (item) => !progress.mastery[item.id] && !storyFresh.includes(item),
+  );
+  const placementStretch = progress.diagnosticScore >= 5
+    ? freshElsewhere.filter((item) => item.difficulty >= 2).slice(0, 2)
+    : [];
+
+  const dueQuota = Math.ceil(targetSize * 0.5);
+  const newQuota = Math.ceil(targetSize * 0.35);
+  const mixedQuota = Math.max(1, targetSize - dueQuota - newQuota);
+  return unique([
+    ...due.slice(0, dueQuota),
+    ...storyFresh.slice(0, newQuota),
+    ...placementStretch,
+    ...storySeen.slice(0, mixedQuota),
+    ...mixed.slice(0, mixedQuota),
+    ...storyFresh.slice(newQuota),
+    ...storySeen.slice(mixedQuota),
+    ...due.slice(dueQuota),
+    ...freshElsewhere,
+    ...mixed.slice(mixedQuota),
+  ]).slice(0, targetSize);
 }
 
 export function diagnosticItems(): LearningItem[] {

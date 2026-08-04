@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { ENGLISH_QUEST_ITEMS, FINAL_QUEST, MAIN_QUESTS } from './englishQuestContent';
+import { ENGLISH_QUEST_ITEMS, ENGLISH_QUEST_SPIRITS, FINAL_QUEST, ITEM_BY_ID, MAIN_QUESTS } from './englishQuestContent';
 import {
   applyAttempt,
+  composeQuestSession,
   composeSession,
+  completeDiagnostic,
   completeQuest,
   createInitialProgress,
   isMastered,
@@ -28,6 +30,29 @@ describe('English Quest content', () => {
     let progress = createInitialProgress();
     for (let index = 0; index < 20; index += 1) progress = completeQuest(progress);
     expect(progress.questStep).toBe(13);
+  });
+
+  it('assigns every one of the 100 items to a story quest exactly once', () => {
+    const storyIds = MAIN_QUESTS.flatMap((quest) => quest.itemIds);
+    expect(storyIds).toHaveLength(100);
+    expect(new Set(storyIds).size).toBe(100);
+    expect(new Set(storyIds)).toEqual(new Set(ENGLISH_QUEST_ITEMS.map((item) => item.id)));
+    for (const quest of MAIN_QUESTS) {
+      expect(quest.story.length).toBeGreaterThan(20);
+      expect(quest.objective.length).toBeGreaterThan(10);
+      expect(quest.itemIds.every((id) => ITEM_BY_ID.has(id))).toBe(true);
+    }
+  });
+
+  it('contains the planned 16 sounds, 48 words, 20 chunks, 8 dialogues and 8 readings', () => {
+    const count = (type: typeof ENGLISH_QUEST_ITEMS[number]['type']) => ENGLISH_QUEST_ITEMS.filter((item) => item.type === type).length;
+    expect([count('sound'), count('word'), count('chunk'), count('dialogue'), count('reading')]).toEqual([16, 48, 20, 8, 8]);
+  });
+
+  it('gives all eight original spirits a reachable quest unlock', () => {
+    expect(ENGLISH_QUEST_SPIRITS).toHaveLength(8);
+    expect(ENGLISH_QUEST_SPIRITS.map((spirit) => spirit.unlockQuestStep)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
+    expect(MAIN_QUESTS.filter((quest) => quest.spiritId)).toHaveLength(8);
   });
 });
 
@@ -123,6 +148,57 @@ describe('English Quest scheduler', () => {
     const phrase = ENGLISH_QUEST_ITEMS.find((item) => item.id === 'chunk-i-like-cats');
     expect(phrase).toBeDefined();
     expect(composeSession(createInitialProgress(), new Date(), 100)).not.toContain(phrase);
+  });
+
+  it('builds each quest from its own story pack while mixing prior learning', () => {
+    let progress = createInitialProgress();
+    progress = applyAttempt(progress, makeAttempt({
+      itemId: 'word-cat', mode: 'capture', correct: true, latencyMs: 700,
+      now: new Date('2026-08-01T00:00:00.000Z'),
+    }));
+    const session = composeQuestSession(progress, MAIN_QUESTS[1], new Date('2026-08-01T01:00:00.000Z'));
+    expect(session).toHaveLength(MAIN_QUESTS[1].itemIds.length);
+    expect(session.some((item) => MAIN_QUESTS[1].itemIds.includes(item.id))).toBe(true);
+    expect(session.some((item) => item.id === 'word-cat')).toBe(true);
+  });
+
+  it('keeps every child in the full story while retaining the diagnostic score for adaptation', () => {
+    expect(completeDiagnostic(createInitialProgress(), 0).questStep).toBe(0);
+    expect(completeDiagnostic(createInitialProgress(), 5).questStep).toBe(0);
+    expect(completeDiagnostic(createInitialProgress(), 6).diagnosticScore).toBe(6);
+  });
+
+  it('adds a small stretch item for an experienced child without skipping chapters', () => {
+    const experienced = completeDiagnostic(createInitialProgress(), 6);
+    const session = composeQuestSession(experienced, MAIN_QUESTS[0]);
+    expect(session.some((item) => item.difficulty >= 2)).toBe(true);
+    expect(session.filter((item) => MAIN_QUESTS[0].itemIds.includes(item.id)).length).toBeGreaterThanOrEqual(5);
+  });
+});
+
+describe('English Quest collection', () => {
+  it('captures each early spirit from story completion instead of impossible mastery totals', () => {
+    let progress = createInitialProgress();
+    for (let step = 0; step < 8; step += 1) progress = completeQuest(progress);
+    expect(Object.values(progress.spirits).filter((state) => state === 'captured')).toHaveLength(8);
+  });
+
+  it('does not evolve a spirit until it was captured and has three-day, two-mode support', () => {
+    let progress = createInitialProgress();
+    for (const [date, mode] of [
+      ['2026-08-01T00:00:00.000Z', 'capture'],
+      ['2026-08-02T00:00:00.000Z', 'merge'],
+      ['2026-08-05T00:00:00.000Z', 'capture'],
+      ['2026-08-12T00:00:00.000Z', 'merge'],
+    ] as const) {
+      for (const itemId of ['word-cat', 'word-dog']) {
+        progress = applyAttempt(progress, makeAttempt({ itemId, mode, correct: true, latencyMs: 700, now: new Date(date) }));
+      }
+    }
+    expect(progress.spirits.echo).toBe('locked');
+    progress = completeQuest(progress);
+    progress = applyAttempt(progress, makeAttempt({ itemId: 'word-cat', mode: 'capture', correct: true, latencyMs: 700, now: new Date('2026-08-20T00:00:00.000Z') }));
+    expect(progress.spirits.echo).toBe('evolved');
   });
 });
 

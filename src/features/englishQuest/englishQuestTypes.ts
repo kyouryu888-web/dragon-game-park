@@ -66,6 +66,7 @@ export interface SpiritDefinition {
   evolvedName: string;
   description: string;
   spriteIndex: number;
+  unlockQuestStep: number;
   unlockMasteredCount: number;
 }
 
@@ -79,9 +80,17 @@ export interface GuideDefinition {
 
 export interface QuestDefinition {
   id: string;
+  chapter: number;
   title: string;
   regionName: string;
   mode: LearningMode;
+  guideId: string;
+  spiritId?: string;
+  story: string;
+  objective: string;
+  reward: string;
+  rewardEmoji: string;
+  itemIds: string[];
   final?: boolean;
 }
 

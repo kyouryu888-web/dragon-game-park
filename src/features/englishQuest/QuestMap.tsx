@@ -40,9 +40,14 @@ export function QuestMap({
   const nextSpirit = ENGLISH_QUEST_SPIRITS.find((spirit) => progress.spirits[spirit.id] === 'locked');
   const reviewCount = dueCount(progress);
   const mastery = masteryPercent(progress);
-  const focusGuide = ENGLISH_QUEST_GUIDES[Math.min(progress.questStep, 3)];
-  const firstLap = progress.questStep < 4;
-  const nextLabel = storyComplete ? '今日の ふくしゅうへ' : firstLap ? `つぎは「${nextQuest.regionName}」` : 'つづきの 冒険へ';
+  const focusGuide = ENGLISH_QUEST_GUIDES.find((guide) => guide.id === nextQuest.guideId) ?? ENGLISH_QUEST_GUIDES[0];
+  const storyRoute = [...MAIN_QUESTS, FINAL_QUEST];
+  const visibleStoryStep = Math.min(progress.questStep, storyRoute.length - 1);
+  const nextLabel = storyComplete
+    ? '今日の 思い出し遠征へ'
+    : nextQuest.final
+      ? '最終ダンジョンへ'
+      : `第${nextQuest.chapter}話へ`;
   const startNext = () => onStart(storyComplete ? 'review' : nextQuest.mode, !storyComplete);
 
   return (
@@ -62,7 +67,7 @@ export function QuestMap({
           <SpiritSprite index={nextSpirit?.spriteIndex ?? 7} label={nextSpirit?.name ?? '精霊'} muted={!nextSpirit} />
           <span><small>集めた精霊</small><strong>{captured}/8</strong></span>
         </div>
-        {firstLap && <div className="eq-first-route-note"><strong>いまは ここ！</strong><span>一つずつ遊び方を覚えよう</span></div>}
+        {!storyComplete && <div className="eq-first-route-note"><strong>いまは 第{nextQuest.chapter}話</strong><span>光る「つぎ」だけ進めば大丈夫</span></div>}
       </section>
 
       <div className="eq-map-layout">
@@ -90,16 +95,16 @@ export function QuestMap({
           <DragonSprite pose={1} className="eq-map-dragon" />
           <div className="eq-mobile-guide"><GuideSprite index={focusGuide.spriteIndex} label={focusGuide.name} /><span><strong>{focusGuide.name}</strong><small>{focusGuide.role}</small></span></div>
           <button className="eq-speak-shortcut" type="button" onClick={onRecord}><span aria-hidden="true">🎙️</span> まねして話す</button>
-          {firstLap && <button className="eq-map-next-cta" type="button" onClick={startNext}><span>ミーナの おすすめ</span><strong>{nextLabel}</strong><i>▶</i></button>}
+          {!storyComplete && <button className="eq-map-next-cta" type="button" onClick={startNext}><span>{focusGuide.name}の おすすめ</span><strong>{nextLabel}</strong><i>▶</i></button>}
         </section>
 
         <aside className="eq-companion-camp" aria-label="森の案内役">
-          <div className="eq-camp-title"><span aria-hidden="true">🧭</span><h2>迷わない冒険ルート</h2><small>最初は1つの遊びだけ選べます</small></div>
+          <div className="eq-camp-title"><span aria-hidden="true">🧭</span><h2>13話の一本道</h2><small>光る場所から順に進もう</small></div>
           <div className="eq-current-mission"><GuideSprite index={focusGuide.spriteIndex} label={focusGuide.name} /><div><small>{focusGuide.name}から</small><strong>{nextQuest.title}</strong><p>{PLAY_COPY[nextQuest.mode] ?? '前に覚えたことばを思い出そう'}</p></div></div>
-          <ol className="eq-route-list">
-            {QUEST_REGIONS.map((region, regionIndex) => (
-              <li key={region.id} className={progress.questStep === regionIndex ? 'eq-route-list--current' : progress.questStep > regionIndex ? 'eq-route-list--done' : ''}>
-                <span>{progress.questStep > regionIndex ? '✓' : regionIndex + 1}</span><div><strong>{region.name}</strong><small>{PLAY_COPY[region.id]}</small></div>
+          <ol className="eq-chapter-track" aria-label="全13話の進み具合">
+            {storyRoute.map((quest, questIndex) => (
+              <li key={quest.id} className={visibleStoryStep === questIndex && !storyComplete ? 'is-current' : progress.questStep > questIndex ? 'is-done' : ''} aria-label={`${questIndex + 1} ${quest.title}`}>
+                <span>{progress.questStep > questIndex ? '✓' : questIndex + 1}</span><small>{questIndex === visibleStoryStep && !storyComplete ? quest.title : questIndex === 12 ? '最終' : quest.regionName.slice(0, 2)}</small>
               </li>
             ))}
           </ol>
@@ -108,7 +113,7 @@ export function QuestMap({
         </aside>
       </div>
 
-      <section className="eq-map-footer"><div className="eq-next-copy"><span>{reviewCount > 0 ? `思い出すことば ${reviewCount}こ` : `島の習熟度 ${mastery}%`}</span><strong>{nextQuest.title}</strong></div><button className="eq-primary-button" type="button" onClick={startNext}>{nextLabel} ▶</button></section>
+      <section className="eq-map-footer"><div className="eq-next-copy"><span>{storyComplete ? `思い出すことば ${reviewCount}こ` : `第${nextQuest.chapter}話・${nextQuest.regionName}`}</span><strong>{storyComplete ? '今日の思い出し遠征' : nextQuest.title}</strong></div><button className="eq-primary-button" type="button" onClick={startNext}>{nextLabel} ▶</button></section>
     </main>
   );
 }

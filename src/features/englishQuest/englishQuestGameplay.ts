@@ -4,14 +4,14 @@ import type { LearningItem, LearningMode, PlayerProgress } from './englishQuestT
 export type ArenaDirection = 'up' | 'down' | 'left' | 'right';
 export type ArenaPoint = { x: number; y: number };
 
-export const BEGINNER_ITEM_IDS = ['word-cat', 'word-dog', 'word-bird'] as const;
-
-export const MODE_ITEM_IDS: Record<'capture' | 'arena' | 'merge' | 'escape', readonly string[]> = {
-  capture: ['word-cat', 'word-dog', 'word-bird', 'word-fish'],
-  arena: ['word-red', 'word-blue', 'word-green'],
-  merge: ['word-cat', 'word-dog', 'word-bird'],
-  escape: ['reading-blue-door', 'reading-open-sign', 'reading-bus-eight'],
-};
+export const BEGINNER_ITEM_IDS = [
+  'word-cat',
+  'word-dog',
+  'word-bird',
+  'word-red',
+  'word-blue',
+  'word-one',
+] as const;
 
 export const MODE_UNLOCK_STEP: Record<'capture' | 'arena' | 'merge' | 'escape', number> = {
   capture: 0,
@@ -22,6 +22,21 @@ export const MODE_UNLOCK_STEP: Record<'capture' | 'arena' | 'merge' | 'escape', 
 
 export function learningItems(ids: readonly string[]): LearningItem[] {
   return ids.map((id) => ITEM_BY_ID.get(id)).filter((item): item is LearningItem => Boolean(item));
+}
+
+export function rotatedChoices(
+  items: readonly LearningItem[],
+  currentIndex: number,
+  count = 3,
+): LearningItem[] {
+  if (items.length === 0) return [];
+  const current = items[currentIndex % items.length];
+  const choices = [current];
+  for (let offset = 1; choices.length < Math.min(count, items.length); offset += 1) {
+    const candidate = items[(currentIndex + offset * 3) % items.length];
+    if (!choices.some((item) => item.id === candidate.id)) choices.push(candidate);
+  }
+  return currentIndex % 2 === 0 ? choices : [...choices.slice(1), current];
 }
 
 export function isModeUnlocked(progress: PlayerProgress, mode: LearningMode): boolean {
