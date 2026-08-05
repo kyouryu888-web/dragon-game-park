@@ -3,7 +3,7 @@
 更新日: 2026-08-05
 ブランチ: `codex/english-quest-gameplay-v2`
 PR: [#8](https://github.com/kyouryu888-web/dragon-game-park/pull/8)（v4更新済み）
-最新機能コミット: `f4e885d`（ドラゴン先生・記憶の星座まで）
+最新機能コミット: `e89cc8a`（音声100件の人間確認トラッカーまで）
 
 ## 現在の目的
 
@@ -37,7 +37,7 @@ PR: [#8](https://github.com/kyouryu888-web/dragon-game-park/pull/8)（v4更新�
 
 - `npx tsc --noEmit`: 成功。
 - `npm test -- --run`: 8ファイル、145テスト成功。
-- `npm run build`: 成功。英語RPG遅延JS 84.07KB、CSS 76.57KB。既存初期JS 588.54KBのサイズ警告のみ。
+- `npm run build`: 成功。英語RPG遅延JS 85.21KB、CSS 77.15KB。既存初期JS 588.54KBのサイズ警告のみ。
 - `npm run lint`: 終了コード0。英語機能の新規警告0件、既存Mancala/Backgammon警告10件のみ。
 - `git diff --check`: 成功（Windows改行予告のみ）。
 - ブラウザ通し確認: 6問導入→第1話捕獲→第2話アリーナ移動/タップ→第3話錬金マッチ/語順→第4話脱出→最終ダンジョン4部屋→完了。
