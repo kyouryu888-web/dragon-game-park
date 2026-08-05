@@ -40,6 +40,16 @@ function speakFallback(text: string): void {
   window.speechSynthesis.speak(utterance);
 }
 
+export function speakJapanese(text: string, enabled = true): void {
+  if (!enabled || !('speechSynthesis' in window)) return;
+  stopEnglishAudio();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'ja-JP';
+  utterance.rate = 0.88;
+  utterance.pitch = 1.06;
+  window.speechSynthesis.speak(utterance);
+}
+
 export function playEnglishText(text: string, asset?: string, enabled = true): void {
   if (!enabled) return;
   stopEnglishAudio();

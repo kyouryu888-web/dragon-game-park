@@ -5,11 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "npm run verify:english-audio && tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
     "test": "vitest",
-    "generate:english-audio": "node scripts/generate-english-quest-audio.mjs"
+    "generate:english-audio": "node scripts/generate-english-quest-audio.mjs",
+    "verify:english-audio": "node scripts/verify-english-quest-audio.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.108.2",

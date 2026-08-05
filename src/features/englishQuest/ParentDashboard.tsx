@@ -1,4 +1,5 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { playLearningItem, stopEnglishAudio } from './englishQuestAudio';
 import { ENGLISH_QUEST_ITEMS, ENGLISH_QUEST_SPIRITS } from './englishQuestContent';
 import { dueCount, isMastered, masteryPercent } from './englishQuestEngine';
 import { parseImportedProgress, serializeProgress } from './englishQuestStorage';
@@ -33,8 +34,16 @@ export function ParentDashboard({
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [message, setMessage] = useState('');
+  const [pastedJson, setPastedJson] = useState('');
+  const [audioIndex, setAudioIndex] = useState(0);
   const mastered = Object.values(progress.mastery).filter(isMastered).length;
   const captured = Object.values(progress.spirits).filter((state) => state !== 'locked').length;
+  const audioItem = ENGLISH_QUEST_ITEMS[audioIndex];
+  const approvedAudio = new Set(progress.audioReview.approvedItemIds);
+  const flaggedAudio = new Set(progress.audioReview.flaggedItemIds);
+  const reviewedAudioCount = approvedAudio.size + flaggedAudio.size;
+
+  useEffect(() => stopEnglishAudio, []);
 
   const download = () => {
     const blob = new Blob([serializeProgress(progress)], { type: 'application/json' });
@@ -56,6 +65,24 @@ export function ParentDashboard({
     }
     onChange(imported);
     setMessage('学習データを復元しました。');
+  };
+  const importPastedJson = () => {
+    const imported = parseImportedProgress(pastedJson);
+    if (!imported) {
+      setMessage('貼り付けたデータを読み込めませんでした。');
+      return;
+    }
+    onChange(imported);
+    setPastedJson('');
+    setMessage('貼り付けた学習データを復元しました。');
+  };
+  const markAudio = (status: 'approved' | 'flagged') => {
+    const approvedItemIds = progress.audioReview.approvedItemIds.filter((id) => id !== audioItem.id);
+    const flaggedItemIds = progress.audioReview.flaggedItemIds.filter((id) => id !== audioItem.id);
+    if (status === 'approved') approvedItemIds.push(audioItem.id);
+    else flaggedItemIds.push(audioItem.id);
+    onChange({ ...progress, audioReview: { approvedItemIds, flaggedItemIds } });
+    if (audioIndex < ENGLISH_QUEST_ITEMS.length - 1) setAudioIndex((value) => value + 1);
   };
 
   return (
@@ -129,7 +156,39 @@ export function ParentDashboard({
           hidden
           onChange={(event) => void importFile(event.target.files?.[0])}
         />
+        <details className="eq-paste-restore">
+          <summary>JSONを貼り付けて復元する</summary>
+          <label>
+            書き出したJSON
+            <textarea value={pastedJson} onChange={(event) => setPastedJson(event.target.value)} rows={5} />
+          </label>
+          <button type="button" disabled={!pastedJson.trim()} onClick={importPastedJson}>貼り付けたデータを復元</button>
+        </details>
         {message && <p className="eq-data-message" role="status">{message}</p>}
+      </section>
+
+      <section className="eq-audio-review">
+        <details>
+          <summary>🔊 英語の音声見本を確認する（{reviewedAudioCount}/100件）</summary>
+          <div className="eq-audio-review-card">
+            <span aria-hidden="true">{audioItem.emoji}</span>
+            <div>
+              <small>{audioIndex + 1} / {ENGLISH_QUEST_ITEMS.length}・{audioItem.type}</small>
+              <strong>{audioItem.display}</strong>
+              <p>{audioItem.audioText}</p>
+            </div>
+            <button type="button" onClick={() => playLearningItem(audioItem, true)}>▶ 音声を聞く</button>
+          </div>
+          <div className="eq-audio-review-checks" aria-label="現在の音声の確認結果">
+            <button className={approvedAudio.has(audioItem.id) ? 'is-selected' : ''} type="button" onClick={() => markAudio('approved')}>✓ 聞き取りOK</button>
+            <button className={flaggedAudio.has(audioItem.id) ? 'is-selected is-flagged' : ''} type="button" onClick={() => markAudio('flagged')}>⚑ 要再確認</button>
+          </div>
+          <div className="eq-audio-review-nav">
+            <button type="button" disabled={audioIndex === 0} onClick={() => setAudioIndex((value) => Math.max(0, value - 1))}>← 前の音声</button>
+            <button type="button" disabled={audioIndex === ENGLISH_QUEST_ITEMS.length - 1} onClick={() => setAudioIndex((value) => Math.min(ENGLISH_QUEST_ITEMS.length - 1, value + 1))}>次の音声 →</button>
+          </div>
+          <p>確認結果もこの端末だけに保存します。録音・送信・自動採点はしません。</p>
+        </details>
       </section>
     </main>
   );

@@ -66,6 +66,7 @@ export interface SpiritDefinition {
   evolvedName: string;
   description: string;
   spriteIndex: number;
+  unlockQuestStep: number;
   unlockMasteredCount: number;
 }
 
@@ -79,9 +80,17 @@ export interface GuideDefinition {
 
 export interface QuestDefinition {
   id: string;
+  chapter: number;
   title: string;
   regionName: string;
   mode: LearningMode;
+  guideId: string;
+  spiritId?: string;
+  story: string;
+  objective: string;
+  reward: string;
+  rewardEmoji: string;
+  itemIds: string[];
   final?: boolean;
 }
 
@@ -97,6 +106,11 @@ export interface PlayerProgress {
   mastery: Record<string, MasteryState>;
   spirits: Record<string, SpiritState>;
   attempts: Attempt[];
+  adventureDates: string[];
+  audioReview: {
+    approvedItemIds: string[];
+    flaggedItemIds: string[];
+  };
   settings: {
     soundOn: boolean;
     reducedMotion: boolean;
@@ -109,7 +123,12 @@ export interface AudioManifest {
   transcript: string;
   asset: string;
   voice: string;
+  model: string;
+  generatorVersion: string;
   sampleRate: number;
+  bitrateKbps: number;
   durationSeconds: number;
+  rmsDbfs: number;
+  peakDbfs: number;
   sha256: string;
 }

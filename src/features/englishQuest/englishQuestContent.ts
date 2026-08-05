@@ -5,6 +5,7 @@ type Seed = {
   ja: string;
   en: string;
   emoji: string;
+  audioText?: string;
 };
 
 const asset = (id: string) => `/audio/englishQuest/${id}.mp3`;
@@ -113,14 +114,14 @@ const chunkSeeds: Seed[] = [
 ];
 
 const dialogueSeeds: Seed[] = [
-  { id: 'name', ja: 'What is your name? への返事', en: 'My name is Mio.', emoji: '💬' },
-  { id: 'how-are-you', ja: 'How are you? への返事', en: "I'm fine, thank you.", emoji: '😊' },
-  { id: 'like-cats', ja: 'Do you like cats? への返事', en: 'Yes, I do.', emoji: '🐱' },
-  { id: 'book-where', ja: 'Where is my book? への返事', en: "It's on the table.", emoji: '📘' },
-  { id: 'color', ja: 'What color is it? への返事', en: "It's blue.", emoji: '🔵' },
-  { id: 'how-many', ja: 'How many birds? への返事', en: 'Three birds.', emoji: '🐦' },
-  { id: 'can-swim', ja: 'Can you swim? への返事', en: 'Yes, I can.', emoji: '🏊' },
-  { id: 'goodbye', ja: 'Goodbye! への返事', en: 'See you!', emoji: '👋' },
+  { id: 'name', ja: 'What is your name? への返事', en: 'My name is Mio.', emoji: '💬', audioText: 'Hello! Hi! What is your name?' },
+  { id: 'how-are-you', ja: 'How are you? への返事', en: "I'm fine, thank you.", emoji: '😊', audioText: 'Good morning! Good morning! How are you?' },
+  { id: 'like-cats', ja: 'Do you like cats? への返事', en: 'Yes, I do.', emoji: '🐱', audioText: 'Look, a cat! It is cute. Do you like cats?' },
+  { id: 'book-where', ja: 'Where is my book? への返事', en: "It's on the table.", emoji: '📘', audioText: 'I need my book. I can help. Where is my book?' },
+  { id: 'color', ja: 'What color is it? への返事', en: "It's blue.", emoji: '🔵', audioText: 'Look at this bag. Nice! What color is it?' },
+  { id: 'how-many', ja: 'How many birds? への返事', en: 'Three birds.', emoji: '🐦', audioText: 'Look at the birds. I see them. How many birds?' },
+  { id: 'can-swim', ja: 'Can you swim? への返事', en: 'Yes, I can.', emoji: '🏊', audioText: 'Let us go to the pool. Okay! Can you swim?' },
+  { id: 'goodbye', ja: 'Goodbye! への返事', en: 'See you!', emoji: '👋', audioText: 'It is time to go. Okay. Goodbye!' },
 ];
 
 const readingSeeds: Seed[] = [
@@ -133,6 +134,27 @@ const readingSeeds: Seed[] = [
   { id: 'bus-eight', ja: 'バスの番号は？', en: 'BUS 8', emoji: '🚌' },
   { id: 'key-table', ja: 'かぎがある場所は？', en: 'ON THE TABLE', emoji: '🔑' },
 ];
+
+const prerequisites: Record<string, string[]> = {
+  'chunk-i-like-cats': ['word-cat'],
+  'chunk-it-red': ['word-red'],
+  'chunk-can-run': ['word-run'],
+  'chunk-can-jump': ['word-jump'],
+  'chunk-where-book': ['word-book'],
+  'chunk-on-table': ['word-table'],
+  'chunk-open-door': ['word-open'],
+  'chunk-close-book': ['word-close', 'word-book'],
+  'dialogue-like-cats': ['word-cat', 'chunk-i-like-cats'],
+  'dialogue-book-where': ['word-book', 'chunk-on-table'],
+  'dialogue-color': ['word-blue'],
+  'dialogue-how-many': ['word-three', 'word-bird'],
+  'reading-open-sign': ['word-open'],
+  'reading-stop-sign': ['word-stop'],
+  'reading-blue-door': ['word-blue', 'chunk-open-door'],
+  'reading-two-tickets': ['word-two'],
+  'reading-bus-eight': ['word-eight'],
+  'reading-key-table': ['word-key', 'word-table'],
+};
 
 const makeSimpleItems = (
   prefix: string,
@@ -151,12 +173,12 @@ const makeSimpleItems = (
       display: seed.ja,
       answer: seed.en,
       choices: rotateChoices(answers, index),
-      audioText: type === 'dialogue' ? seed.ja.split(' への')[0] : seed.en,
+      audioText: seed.audioText ?? seed.en,
       audioAsset: asset(id),
       emoji: seed.emoji,
       skillTags: tags,
       difficulty,
-      prerequisites: [],
+      prerequisites: prerequisites[id] ?? [],
     };
   });
 };
@@ -185,14 +207,14 @@ export const ENGLISH_QUEST_ITEMS: LearningItem[] = [
 export const ITEM_BY_ID = new Map(ENGLISH_QUEST_ITEMS.map((item) => [item.id, item]));
 
 export const ENGLISH_QUEST_SPIRITS: SpiritDefinition[] = [
-  { id: 'echo', name: 'エコリ', evolvedName: 'エコリア', description: '音を見つける青い精霊', spriteIndex: 0, unlockMasteredCount: 2 },
-  { id: 'flare', name: 'フレコ', evolvedName: 'フレアード', description: '勇気をくれる炎の精霊', spriteIndex: 1, unlockMasteredCount: 5 },
-  { id: 'aqua', name: 'アクアム', evolvedName: 'アクアリア', description: 'ことばをつなぐ水の精霊', spriteIndex: 2, unlockMasteredCount: 9 },
-  { id: 'lore', name: 'ロアウル', evolvedName: 'ロアセージ', description: '本の謎を知る精霊', spriteIndex: 3, unlockMasteredCount: 14 },
-  { id: 'sol', name: 'ソルル', evolvedName: 'ソルレオン', description: '思い出す力を照らす精霊', spriteIndex: 4, unlockMasteredCount: 20 },
-  { id: 'leaf', name: 'リーフィ', evolvedName: 'リーフェル', description: '毎日の成長を守る精霊', spriteIndex: 5, unlockMasteredCount: 27 },
-  { id: 'tempo', name: 'テンポ', evolvedName: 'テンポラ', description: '忘れる前に現れる精霊', spriteIndex: 6, unlockMasteredCount: 35 },
-  { id: 'luna', name: 'ルナ', evolvedName: 'ルナリス', description: '記憶の夜道を照らす精霊', spriteIndex: 7, unlockMasteredCount: 44 },
+  { id: 'echo', name: 'エコリ', evolvedName: 'エコリア', description: '音を見つける青い精霊', spriteIndex: 0, unlockQuestStep: 1, unlockMasteredCount: 2 },
+  { id: 'flare', name: 'フレコ', evolvedName: 'フレアード', description: '勇気をくれる炎の精霊', spriteIndex: 1, unlockQuestStep: 2, unlockMasteredCount: 5 },
+  { id: 'aqua', name: 'アクアム', evolvedName: 'アクアリア', description: 'ことばをつなぐ水の精霊', spriteIndex: 2, unlockQuestStep: 3, unlockMasteredCount: 9 },
+  { id: 'lore', name: 'ロアウル', evolvedName: 'ロアセージ', description: '本の謎を知る精霊', spriteIndex: 3, unlockQuestStep: 4, unlockMasteredCount: 14 },
+  { id: 'sol', name: 'ソルル', evolvedName: 'ソルレオン', description: '思い出す力を照らす精霊', spriteIndex: 4, unlockQuestStep: 5, unlockMasteredCount: 20 },
+  { id: 'leaf', name: 'リーフィ', evolvedName: 'リーフェル', description: '毎日の成長を守る精霊', spriteIndex: 5, unlockQuestStep: 6, unlockMasteredCount: 27 },
+  { id: 'tempo', name: 'テンポ', evolvedName: 'テンポラ', description: '忘れる前に現れる精霊', spriteIndex: 6, unlockQuestStep: 7, unlockMasteredCount: 35 },
+  { id: 'luna', name: 'ルナ', evolvedName: 'ルナリス', description: '記憶の夜道を照らす精霊', spriteIndex: 7, unlockQuestStep: 8, unlockMasteredCount: 44 },
 ];
 
 export const ENGLISH_QUEST_GUIDES: GuideDefinition[] = [
@@ -212,24 +234,83 @@ export const QUEST_REGIONS = [
 ];
 
 export const MAIN_QUESTS: QuestDefinition[] = [
-  { id: 'q01', title: '音の芽をさがせ', regionName: 'ささやきの森', mode: 'capture' },
-  { id: 'q02', title: '赤い実の合図', regionName: 'ほのおの闘技場', mode: 'arena' },
-  { id: 'q03', title: 'ことば結晶', regionName: 'ことばの泉', mode: 'merge' },
-  { id: 'q04', title: '森の道しるべ', regionName: '記憶の図書館', mode: 'escape' },
-  { id: 'q05', title: '精霊のかくれんぼ', regionName: 'ささやきの森', mode: 'capture' },
-  { id: 'q06', title: 'ほのお橋をわたれ', regionName: 'ほのおの闘技場', mode: 'arena' },
-  { id: 'q07', title: 'あいさつのしずく', regionName: 'ことばの泉', mode: 'merge' },
-  { id: 'q08', title: '迷い鳥の地図', regionName: '記憶の図書館', mode: 'escape' },
-  { id: 'q09', title: '月明かりの音', regionName: 'ささやきの森', mode: 'capture' },
-  { id: 'q10', title: 'ドラゴンの試練', regionName: 'ほのおの闘技場', mode: 'arena' },
-  { id: 'q11', title: '会話の泉', regionName: 'ことばの泉', mode: 'merge' },
-  { id: 'q12', title: '図書館の封印', regionName: '記憶の図書館', mode: 'escape' },
+  {
+    id: 'q01', chapter: 1, title: '音の芽をさがせ', regionName: 'ささやきの森', mode: 'capture', guideId: 'mina', spiritId: 'echo',
+    story: '森から音が消えて、青い羽だけが残ったよ。光る足あとを追ってエコリを見つけよう。',
+    objective: '音を聞き、森を探し、同じ絵を精霊へ届ける', reward: '音の精霊 エコリ', rewardEmoji: '🎵',
+    itemIds: ['sound-a', 'sound-b', 'sound-c', 'sound-d', 'word-cat', 'word-dog', 'word-bird', 'word-fish'],
+  },
+  {
+    id: 'q02', chapter: 2, title: '赤い実の合図', regionName: 'ほのおの闘技場', mode: 'arena', guideId: 'gald', spiritId: 'flare',
+    story: '火の橋が眠ってしまった。聞こえた仲間のところまでドラゴンを動かして、勇気の火をともそう。',
+    objective: '音を覚え、ドラゴンを動かして目標へたどり着く', reward: '炎の精霊 フレコ', rewardEmoji: '🔥',
+    itemIds: ['sound-e', 'sound-f', 'sound-g', 'sound-h', 'word-rabbit', 'word-fox', 'word-lion', 'word-turtle'],
+  },
+  {
+    id: 'q03', chapter: 3, title: 'ことば結晶', regionName: 'ことばの泉', mode: 'merge', guideId: 'tick', spiritId: 'aqua',
+    story: '泉のしずくが、ばらばらになっているよ。音・絵・ことばを自分の手で結び直そう。',
+    objective: 'しずくを選び、泉へ運び、ことば結晶を作る', reward: '水の精霊 アクアム', rewardEmoji: '💧',
+    itemIds: ['sound-i', 'sound-j', 'sound-k', 'sound-l', 'word-red', 'word-blue', 'word-green', 'word-yellow'],
+  },
+  {
+    id: 'q04', chapter: 4, title: '森の道しるべ', regionName: '記憶の図書館', mode: 'escape', guideId: 'lira', spiritId: 'lore',
+    story: '古い図書館の扉が閉じたまま。部屋に隠れた二つの手がかりを重ねて、出口を見つけよう。',
+    objective: '部屋を調べ、二つの手がかりから出口を推理する', reward: '知恵の精霊 ロアウル', rewardEmoji: '📚',
+    itemIds: ['sound-m', 'sound-n', 'sound-o', 'sound-p', 'word-orange', 'word-purple', 'word-black', 'word-white'],
+  },
+  {
+    id: 'q05', chapter: 5, title: '八つ星のかくれんぼ', regionName: 'ささやきの森', mode: 'capture', guideId: 'sage', spiritId: 'sol',
+    story: '数の星が森のあちこちに隠れたよ。聞こえた数を覚えて、星明かりを集めよう。',
+    objective: '英語の数を聞き分け、隠れ場所から見つける', reward: '光の精霊 ソルル', rewardEmoji: '☀️',
+    itemIds: ['word-one', 'word-two', 'word-three', 'word-four', 'word-five', 'word-six', 'word-seven', 'word-eight'],
+  },
+  {
+    id: 'q06', chapter: 6, title: '仲間のアリーナ', regionName: 'ほのおの闘技場', mode: 'arena', guideId: 'gald', spiritId: 'leaf',
+    story: '迷子の仲間たちがアリーナで待っている。声の合図を聞いて、一人ずつ迎えに行こう。',
+    objective: '人や持ち物の音を覚え、正しい場所まで移動する', reward: '若葉の精霊 リーフィ', rewardEmoji: '🌿',
+    itemIds: ['word-mother', 'word-father', 'word-sister', 'word-brother', 'word-friend', 'word-teacher', 'word-book', 'word-pen'],
+  },
+  {
+    id: 'q07', chapter: 7, title: '動きのしずく', regionName: 'ことばの泉', mode: 'merge', guideId: 'mina', spiritId: 'tempo',
+    story: '泉が元気をなくして、物も動きも止まってしまった。しずくを結んで時間を動かそう。',
+    objective: '身の回りの物と動きの音・絵・文字を結ぶ', reward: '時の精霊 テンポ', rewardEmoji: '⏰',
+    itemIds: ['word-bag', 'word-cup', 'word-chair', 'word-table', 'word-key', 'word-clock', 'word-run', 'word-jump'],
+  },
+  {
+    id: 'q08', chapter: 8, title: '迷い鳥の地図', regionName: '記憶の図書館', mode: 'escape', guideId: 'nox', spiritId: 'luna',
+    story: '月の鳥が帰る道を忘れてしまった。動きの合図を集めて、夜の迷路から連れ出そう。',
+    objective: '行動の手がかりを組み合わせ、正しい道を選ぶ', reward: '月の精霊 ルナ', rewardEmoji: '🌙',
+    itemIds: ['word-walk', 'word-stop', 'word-listen', 'word-look', 'word-open', 'word-close', 'word-eat', 'word-drink'],
+  },
+  {
+    id: 'q09', chapter: 9, title: '月明かりのあいさつ', regionName: 'ささやきの森', mode: 'capture', guideId: 'tick',
+    story: '森の仲間が夜のお祭りへ集まってきた。あいさつの声を見つけて、みんなを輪へ招こう。',
+    objective: '短い英語のまとまりを、声・場面・意味で覚える', reward: '友情のランタン', rewardEmoji: '🏮',
+    itemIds: ['chunk-hello', 'chunk-good-morning', 'chunk-thank-you', 'chunk-youre-welcome', 'chunk-please', 'chunk-im-seven', 'chunk-my-name', 'chunk-i-like-cats'],
+  },
+  {
+    id: 'q10', chapter: 10, title: 'ドラゴンの試練', regionName: 'ほのおの闘技場', mode: 'arena', guideId: 'gald',
+    story: '言葉の嵐がアリーナを包んだよ。文の合図を聞き、ドラゴンと一緒に十の光を取り戻そう。',
+    objective: '文の意味を聞き取り、動きながら素早く使う', reward: '勇気の紋章', rewardEmoji: '🛡️',
+    itemIds: ['chunk-dont-like-rain', 'chunk-this-book', 'chunk-it-red', 'chunk-can-run', 'chunk-can-jump', 'chunk-yes-can', 'chunk-no-cant', 'chunk-where-book', 'dialogue-name', 'dialogue-how-are-you'],
+  },
+  {
+    id: 'q11', chapter: 11, title: '会話の泉', regionName: 'ことばの泉', mode: 'merge', guideId: 'mina',
+    story: '会話の橋が言葉のかけらに分かれてしまった。聞いた順に並べて、返事を完成させよう。',
+    objective: '単語を順番に組み、質問と返事をつなげる', reward: '会話の王冠', rewardEmoji: '👑',
+    itemIds: ['chunk-on-table', 'chunk-open-door', 'chunk-close-book', 'chunk-see-you', 'dialogue-like-cats', 'dialogue-book-where', 'dialogue-color', 'dialogue-how-many', 'reading-open-sign', 'reading-stop-sign'],
+  },
+  {
+    id: 'q12', chapter: 12, title: '図書館の封印', regionName: '記憶の図書館', mode: 'escape', guideId: 'lira',
+    story: '最後の本が開いた。会話・看板・時刻・地図を一つずつ読み、図書館の封印を解こう。',
+    objective: '複数の手がかりを組み合わせ、理由を持って出口を選ぶ', reward: '記憶の鍵', rewardEmoji: '🗝️',
+    itemIds: ['dialogue-can-swim', 'dialogue-goodbye', 'reading-library-time', 'reading-blue-door', 'reading-two-tickets', 'reading-meet-monday', 'reading-bus-eight', 'reading-key-table'],
+  },
 ];
 
 export const FINAL_QUEST: QuestDefinition = {
-  id: 'final',
-  title: '記憶の脱出ダンジョン',
-  regionName: '森の心臓部',
-  mode: 'escape',
-  final: true,
+  id: 'final', chapter: 13, title: '記憶の脱出ダンジョン', regionName: '森の心臓部', mode: 'escape', guideId: 'sage',
+  story: '十二の冒険で集めた光が、森の心臓部へ続く道を照らした。四つの部屋を自分の力で突破しよう。',
+  objective: '音・移動・語順・予定表を組み合わせて四つの部屋から脱出する', reward: 'はじまりの森の守り手', rewardEmoji: '🏆',
+  itemIds: ['word-key', 'word-red', 'word-blue', 'word-green', 'word-yellow', 'chunk-open-door', 'reading-library-time', 'reading-blue-door'], final: true,
 };
