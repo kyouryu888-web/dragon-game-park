@@ -107,6 +107,10 @@ export interface PlayerProgress {
   spirits: Record<string, SpiritState>;
   attempts: Attempt[];
   adventureDates: string[];
+  audioReview: {
+    approvedItemIds: string[];
+    flaggedItemIds: string[];
+  };
   settings: {
     soundOn: boolean;
     reducedMotion: boolean;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ENGLISH_QUEST_ITEMS, ENGLISH_QUEST_SPIRITS, FINAL_QUEST, ITEM_BY_ID, MAIN_QUESTS } from './englishQuestContent';
+import { ENGLISH_QUEST_GUIDES, ENGLISH_QUEST_ITEMS, ENGLISH_QUEST_SPIRITS, FINAL_QUEST, ITEM_BY_ID, MAIN_QUESTS } from './englishQuestContent';
 import {
   applyAttempt,
   composeQuestSession,
@@ -63,6 +63,38 @@ describe('English Quest content', () => {
     expect(ENGLISH_QUEST_SPIRITS.map((spirit) => spirit.unlockQuestStep)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
     expect(MAIN_QUESTS.filter((quest) => quest.spiritId)).toHaveLength(8);
   });
+
+  it('keeps choices, prerequisites and story references valid and acyclic', () => {
+    const itemIds = new Set(ENGLISH_QUEST_ITEMS.map((item) => item.id));
+    const guideIds = new Set(ENGLISH_QUEST_GUIDES.map((guide) => guide.id));
+    const spiritIds = new Set(ENGLISH_QUEST_SPIRITS.map((spirit) => spirit.id));
+
+    for (const item of ENGLISH_QUEST_ITEMS) {
+      expect(item.promptJa.trim()).not.toBe('');
+      expect(item.audioText.trim()).not.toBe('');
+      expect(new Set(item.choices).size).toBe(item.choices.length);
+      expect(item.prerequisites).not.toContain(item.id);
+      expect(item.prerequisites.every((id) => itemIds.has(id))).toBe(true);
+      expect(item.skillTags.length).toBeGreaterThan(0);
+    }
+
+    const visiting = new Set<string>();
+    const visited = new Set<string>();
+    const visit = (itemId: string) => {
+      if (visited.has(itemId)) return;
+      expect(visiting.has(itemId), `prerequisite cycle at ${itemId}`).toBe(false);
+      visiting.add(itemId);
+      for (const prerequisite of ITEM_BY_ID.get(itemId)?.prerequisites ?? []) visit(prerequisite);
+      visiting.delete(itemId);
+      visited.add(itemId);
+    };
+    for (const item of ENGLISH_QUEST_ITEMS) visit(item.id);
+
+    for (const quest of [...MAIN_QUESTS, FINAL_QUEST]) {
+      expect(guideIds.has(quest.guideId)).toBe(true);
+      expect(quest.spiritId === undefined || spiritIds.has(quest.spiritId)).toBe(true);
+    }
+  });
 });
 
 describe('English Quest scheduler', () => {
@@ -77,6 +109,19 @@ describe('English Quest scheduler', () => {
     const state = nextMasteryState(undefined, attempt);
     expect(state.stage).toBe(1);
     expect(state.dueAt).toBe('2026-08-01T00:00:00.000Z');
+  });
+
+  it('uses the complete 1, 3, 7, 14 and 30 day review ladder', () => {
+    const intervals = [1, 3, 7, 14, 30];
+    let state: ReturnType<typeof nextMasteryState> | undefined;
+    let now = new Date('2026-01-01T12:00:00.000Z');
+    for (const days of intervals) {
+      state = nextMasteryState(state, makeAttempt({
+        itemId: 'word-cat', mode: 'capture', correct: true, latencyMs: 800, now,
+      }));
+      expect(new Date(state.dueAt).getTime() - now.getTime()).toBe(days * 24 * 60 * 60 * 1000);
+      now = new Date(state.dueAt);
+    }
   });
 
   it('keeps the stage when a hint was needed and retries errors shortly', () => {
@@ -245,7 +290,22 @@ describe('English Quest persistence', () => {
     progress = applyAttempt(progress, makeAttempt({ itemId: 'word-cat', mode: 'capture', correct: true, latencyMs: 500, now: new Date('2026-08-03T00:00:00.000Z') }));
     const candidate = JSON.parse(serializeProgress(progress)) as Record<string, unknown>;
     delete candidate.adventureDates;
-    expect(normalizeProgress(candidate)?.adventureDates).toEqual(['2026-08-03']);
+    delete candidate.audioReview;
+    const normalized = normalizeProgress(candidate);
+    expect(normalized?.adventureDates).toEqual(['2026-08-03']);
+    expect(normalized?.audioReview).toEqual({ approvedItemIds: [], flaggedItemIds: [] });
+  });
+
+  it('keeps only valid, exclusive audio review results', () => {
+    const candidate = JSON.parse(serializeProgress(createInitialProgress())) as Record<string, unknown>;
+    candidate.audioReview = {
+      approvedItemIds: ['word-cat', 'word-cat', 'unknown'],
+      flaggedItemIds: ['word-cat', 'word-dog', 'unknown'],
+    };
+    expect(normalizeProgress(candidate)?.audioReview).toEqual({
+      approvedItemIds: ['word-cat'],
+      flaggedItemIds: ['word-dog'],
+    });
   });
 
   it('repairs unsafe nested values without losing a valid profile', () => {

@@ -33,6 +33,7 @@ export function createInitialProgress(profileName = 'ちいさな冒険者'): Pl
     spirits: Object.fromEntries(ENGLISH_QUEST_SPIRITS.map((spirit) => [spirit.id, 'locked'])) as Record<string, SpiritState>,
     attempts: [],
     adventureDates: [],
+    audioReview: { approvedItemIds: [], flaggedItemIds: [] },
     settings: {
       soundOn: true,
       reducedMotion: false,

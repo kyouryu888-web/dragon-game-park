@@ -39,6 +39,9 @@ export function ParentDashboard({
   const mastered = Object.values(progress.mastery).filter(isMastered).length;
   const captured = Object.values(progress.spirits).filter((state) => state !== 'locked').length;
   const audioItem = ENGLISH_QUEST_ITEMS[audioIndex];
+  const approvedAudio = new Set(progress.audioReview.approvedItemIds);
+  const flaggedAudio = new Set(progress.audioReview.flaggedItemIds);
+  const reviewedAudioCount = approvedAudio.size + flaggedAudio.size;
 
   useEffect(() => stopEnglishAudio, []);
 
@@ -72,6 +75,14 @@ export function ParentDashboard({
     onChange(imported);
     setPastedJson('');
     setMessage('貼り付けた学習データを復元しました。');
+  };
+  const markAudio = (status: 'approved' | 'flagged') => {
+    const approvedItemIds = progress.audioReview.approvedItemIds.filter((id) => id !== audioItem.id);
+    const flaggedItemIds = progress.audioReview.flaggedItemIds.filter((id) => id !== audioItem.id);
+    if (status === 'approved') approvedItemIds.push(audioItem.id);
+    else flaggedItemIds.push(audioItem.id);
+    onChange({ ...progress, audioReview: { approvedItemIds, flaggedItemIds } });
+    if (audioIndex < ENGLISH_QUEST_ITEMS.length - 1) setAudioIndex((value) => value + 1);
   };
 
   return (
@@ -158,7 +169,7 @@ export function ParentDashboard({
 
       <section className="eq-audio-review">
         <details>
-          <summary>🔊 英語の音声見本を確認する（100件）</summary>
+          <summary>🔊 英語の音声見本を確認する（{reviewedAudioCount}/100件）</summary>
           <div className="eq-audio-review-card">
             <span aria-hidden="true">{audioItem.emoji}</span>
             <div>
@@ -168,11 +179,15 @@ export function ParentDashboard({
             </div>
             <button type="button" onClick={() => playLearningItem(audioItem, true)}>▶ 音声を聞く</button>
           </div>
+          <div className="eq-audio-review-checks" aria-label="現在の音声の確認結果">
+            <button className={approvedAudio.has(audioItem.id) ? 'is-selected' : ''} type="button" onClick={() => markAudio('approved')}>✓ 聞き取りOK</button>
+            <button className={flaggedAudio.has(audioItem.id) ? 'is-selected is-flagged' : ''} type="button" onClick={() => markAudio('flagged')}>⚑ 要再確認</button>
+          </div>
           <div className="eq-audio-review-nav">
             <button type="button" disabled={audioIndex === 0} onClick={() => setAudioIndex((value) => Math.max(0, value - 1))}>← 前の音声</button>
             <button type="button" disabled={audioIndex === ENGLISH_QUEST_ITEMS.length - 1} onClick={() => setAudioIndex((value) => Math.min(ENGLISH_QUEST_ITEMS.length - 1, value + 1))}>次の音声 →</button>
           </div>
-          <p>端末内で再生するだけです。録音・送信・自動採点はしません。</p>
+          <p>確認結果もこの端末だけに保存します。録音・送信・自動採点はしません。</p>
         </details>
       </section>
     </main>
