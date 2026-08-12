@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from 'react';
+import { useState } from 'react';
 import type { MancalaConfig } from './features/mancala/mancalaTypes';
 import { HomePage } from './pages/HomePage';
 import { MancalaSetupPage } from './features/mancala/MancalaSetupPage';
@@ -14,10 +14,6 @@ import { UnoOnlineGamePage } from './features/uno/UnoOnlineGamePage';
 import type { UnoOnlineRoomInfo } from './features/uno/unoOnline';
 import { BackgammonPage } from './features/backgammon/BackgammonPage';
 
-const EnglishQuestPage = lazy(() =>
-  import('./features/englishQuest/EnglishQuestPage').then((module) => ({ default: module.EnglishQuestPage })),
-);
-
 type AppScreen =
   | 'home'
   | 'mancala-setup'
@@ -28,8 +24,7 @@ type AppScreen =
   | 'uno-game'
   | 'uno-room'
   | 'uno-online-game'
-  | 'backgammon'
-  | 'english-quest';
+  | 'backgammon';
 
 export default function App() {
   const [screen, setScreen] = useState<AppScreen>('home');
@@ -57,7 +52,6 @@ export default function App() {
           if (gameId === 'mancala') setScreen('mancala-setup');
           if (gameId === 'uno') setScreen('uno-room');
           if (gameId === 'backgammon') setScreen('backgammon');
-          if (gameId === 'english-quest') setScreen('english-quest');
         }}
       />
     );
@@ -110,22 +104,6 @@ export default function App() {
 
   if (screen === 'backgammon') {
     return <BackgammonPage onBackToHome={() => setScreen('home')} />;
-  }
-
-  if (screen === 'english-quest') {
-    return (
-      <Suspense fallback={(
-        <main
-          role="status"
-          aria-live="polite"
-          style={{ minHeight: '100dvh', display: 'grid', placeItems: 'center', color: '#ffe7a0', background: '#160f1c', fontWeight: 700 }}
-        >
-          🐉 英語の島を準備中…
-        </main>
-      )}>
-        <EnglishQuestPage onBackToHome={() => setScreen('home')} />
-      </Suspense>
-    );
   }
 
   if (screen === 'uno-setup') {

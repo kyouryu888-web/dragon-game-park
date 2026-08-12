@@ -16,13 +16,6 @@ export type GameInfo = {
  */
 export const games: GameInfo[] = [
   {
-    id: 'english-quest',
-    title: 'イングリッシュ ラーニング オデッセイ',
-    description: '音を聞き、精霊を集め、ことばの謎を解く学習RPG。英語がはじめてでも、8分の冒険から楽しめます。',
-    status: 'available',
-    themeLabel: '学習RPG',
-  },
-  {
     id: 'mancala',
     title: 'マンカラ',
     description: '古木の盤に石を配り、種を蒔くように陣を築く——いにしえより伝わる遊戯カラハ。',

@@ -6,7 +6,6 @@ import { Button } from '../components/Button';
 import { Embers } from '../components/Embers';
 
 const GAME_ICONS: Record<string, string> = {
-  'english-quest': '🐉',
   mancala: '🎯',
   uno: '🃏',
   backgammon: '🎲',
@@ -17,7 +16,6 @@ const GAME_ICONS: Record<string, string> = {
 
 // 金彩×熾火の世界観に馴染むアクセント
 const GAME_ACCENT: Record<string, string> = {
-  'english-quest': '#31b987',
   mancala:  '#c9a24b',
   uno:      '#b8502e',
   backgammon: '#e0733a',
@@ -28,7 +26,6 @@ const GAME_ACCENT: Record<string, string> = {
 
 // カードに刻むゲームごとの誘い文句
 const GAME_EN: Record<string, string> = {
-  'english-quest': 'ENGLISH LEARNING ODYSSEY',
   mancala: 'MANCALA',
   uno: 'UNO',
   backgammon: 'BACKGAMMON',
@@ -102,7 +99,7 @@ function GameCard({ game, onSelect }: { game: GameInfo; onSelect: () => void }) 
 
       {isAvail ? (
         <Button fullWidth onClick={onSelect}>
-          {game.id === 'english-quest' ? '英語の冒険へ出発する' : `${game.title}の盤へ進む`}
+          {`${game.title}の盤へ進む`}
         </Button>
       ) : (
         <div
