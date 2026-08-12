@@ -466,10 +466,10 @@ function UnoHandFan({
   onDrawRequest: () => void;
   onCardInfo: (card: UnoCard) => void;
 }) {
-  const playableCount = hand.filter((card) => canAct && playableIds.has(card.id)).length;
-  const maxSpread = hand.length <= 8 ? 48 : hand.length <= 14 ? 38 : playableCount >= 4 ? 34 : 29;
+  const isDense = hand.length > 14;
+  const maxSpread = hand.length <= 8 ? 54 : hand.length <= 14 ? 48 : hand.length <= 22 ? 42 : 38;
   const center = (hand.length - 1) / 2;
-  const fanWidth = Math.max(340, Math.min(980, 112 + Math.max(0, hand.length - 1) * maxSpread));
+  const fanWidth = Math.max(340, 116 + Math.max(0, hand.length - 1) * maxSpread);
 
   return (
     <section className="uno-hand-fan-panel">
@@ -479,19 +479,19 @@ function UnoHandFan({
       </div>
 
       <div className="uno-hand-scroll">
-        <div className="uno-hand-fan" style={{ width: fanWidth }}>
+        <div className={`uno-hand-fan ${isDense ? 'is-dense' : ''}`} style={{ width: fanWidth }}>
           {hand.map((card, index) => {
             const offset = index - center;
             const playable = canAct && playableIds.has(card.id);
             const hasHelp = hasCardEffectHelp(card, variant);
-            const rotation = hand.length <= 14 ? offset * 2.8 : offset * 1.35;
+            const rotation = isDense ? offset * 0.45 : offset * 2.8;
             return (
               <div
                 key={card.id}
                 className={`uno-hand-card ${playable ? 'is-playable' : ''}`}
                 style={{
                   left: 8 + index * maxSpread,
-                  transform: `translateY(${playable ? -34 : Math.abs(offset) * 1.4}px) rotate(${rotation}deg) scale(${playable ? 1.04 : 1})`,
+                  transform: `translateY(${playable ? -34 : isDense ? 0 : Math.abs(offset) * 1.4}px) rotate(${rotation}deg) scale(${playable ? 1.04 : 1})`,
                   zIndex: playable ? 100 + index : index,
                 }}
               >

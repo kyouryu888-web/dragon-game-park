@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '../../components/Button';
 import { Layout } from '../../components/Layout';
 import { supabase } from '../../lib/supabase';
-import type { UnoCard, UnoColor, UnoGameState, UnoPlayerId } from './unoTypes';
+import type { UnoCard, UnoColor, UnoGameState, UnoPlayerId, UnoVariant } from './unoTypes';
 import {
   applyAcceptDraw,
   applyColorChoice,
@@ -20,6 +20,7 @@ import { getUnoCardName, UNO_COLOR_LABELS } from './unoCardMeta';
 import { UnoTableView } from './UnoTableView';
 import { PendingPanel } from './UnoGamePage';
 import { UnoRulesPanel } from './UnoRulesPanel';
+import { createInitialUnoState } from './createInitialUnoState';
 import {
   canApplyUnoOnlineAction,
   getUnoOnlinePlayerId,
@@ -149,6 +150,20 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
   const canTakeTurn = !!gameState && canApplyUnoOnlineAction(gameState, myPlayerId, 'turn') && !isWriting && !isCpuThinking;
   const winner = gameState?.winnerPlayerId ? gameState.players.find((player) => player.id === gameState.winnerPlayerId) : null;
   const rankings = gameState ? getUnoRankings(gameState) : [];
+
+  const handleRematch = useCallback((variant?: UnoVariant) => {
+    if (!gameState || !isHostClient || isWriting) return;
+    const nextVariant = variant ?? gameState.variant;
+    if (nextVariant === 'hard' && gameState.players.length > 6) return;
+    void updateRemoteState((state) => createInitialUnoState({
+      variant: nextVariant,
+      playerConfigs: state.players.map((player) => ({
+        name: player.name,
+        isCpu: player.isCpu,
+        cpuLevel: player.cpuLevel ?? 'normal',
+      })),
+    }), '同じルームでもう一度遊びます。');
+  }, [gameState, isHostClient, isWriting, updateRemoteState]);
 
   const handlePlayCard = useCallback((card: UnoCard) => {
     if (!gameState || !canTakeTurn) return;
@@ -311,7 +326,30 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
               </div>
             ))}
           </div>
-          <Button fullWidth onClick={onBackToHome}>ホームへ戻る</Button>
+          <div style={{ display: 'grid', gap: 10 }}>
+            {isHostClient ? (
+              <div className="uno-rematch-panel">
+                <strong>同じルームで続けて遊ぶ</strong>
+                <span>ルームを作り直さずに再戦できます。先手は毎回、数字カードの大きさで決まります。</span>
+                <div className="uno-rematch-options">
+                  <button type="button" onClick={() => handleRematch('standard')} disabled={isWriting}>
+                    通常版で再戦
+                  </button>
+                  <button type="button" onClick={() => handleRematch('hard')} disabled={isWriting || gameState.players.length > 6}>
+                    ハード版で再戦
+                  </button>
+                </div>
+                {gameState.players.length > 6 && (
+                  <small>ハード版は6人までです。この人数では通常版だけ選べます。</small>
+                )}
+              </div>
+            ) : (
+              <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: 12, lineHeight: 1.6 }}>
+                ルームの主が「もう一度遊ぶ」を押すと、このまま新しいゲームに切り替わります。
+              </p>
+            )}
+            <Button fullWidth variant="ghost" onClick={onBackToHome}>ホームへ戻る</Button>
+          </div>
         </div>
       </Layout>
     );

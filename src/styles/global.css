@@ -1187,12 +1187,172 @@ button {
   z-index: 8;
   left: 50%;
   top: 48%;
-  width: min(86%, 360px);
+  width: min(90%, 390px);
   transform: translate(-50%, -50%);
 }
 .uno-table-overlay > div {
   margin: 0 !important;
-  box-shadow: 0 10px 34px rgba(58, 37, 24, 0.25) !important;
+  box-shadow: 0 18px 48px rgba(8, 5, 4, 0.58), 0 0 0 999px rgba(12, 8, 5, 0.48) !important;
+}
+.uno-pending-panel {
+  position: relative;
+  overflow: hidden;
+  border: 3px solid #f1ce74;
+  border-radius: 18px;
+  padding: 18px 16px 16px;
+  background:
+    linear-gradient(135deg, #fff8df, #ffeabd),
+    radial-gradient(circle at 20% 0%, rgba(255,255,255,0.95), transparent 42%);
+  color: #3b2414;
+  opacity: 1;
+  text-shadow: none;
+}
+.uno-pending-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.78), inset 0 -20px 34px rgba(174, 101, 38, 0.10);
+}
+.uno-pending-title {
+  position: relative;
+  margin: 0 0 9px;
+  color: #311707;
+  font-size: 18px;
+  font-weight: 950;
+  line-height: 1.35;
+  text-align: center;
+}
+.uno-pending-description {
+  position: relative;
+  margin: 0 0 12px;
+  color: #352013;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.65;
+  text-align: center;
+}
+.uno-pending-color-grid,
+.uno-pending-target-grid {
+  position: relative;
+  display: grid;
+  gap: 10px;
+}
+.uno-pending-color-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.uno-pending-color-button,
+.uno-pending-target-button {
+  min-height: 52px;
+  border-radius: 14px;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 950;
+  transition: transform 0.12s ease, filter 0.12s ease, box-shadow 0.12s ease;
+}
+.uno-pending-color-button {
+  border: 3px solid rgba(255,255,255,0.9);
+  background: var(--uno-choice-color);
+  color: #fff;
+  font-size: 17px;
+  box-shadow: 0 5px 16px rgba(35, 20, 8, 0.22), inset 0 0 0 1px rgba(0,0,0,0.16);
+}
+.uno-pending-color-button.is-yellow {
+  color: #3b2600;
+}
+.uno-pending-target-button {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+  border: 2px solid #b88932;
+  background: #fffdf8;
+  color: #4b2412;
+  padding: 10px 12px;
+  text-align: left;
+  box-shadow: 0 4px 12px rgba(58, 37, 24, 0.12);
+}
+.uno-pending-target-button strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.uno-pending-target-button span {
+  min-width: 54px;
+  border-radius: 999px;
+  padding: 4px 8px;
+  background: #f4e1b7;
+  color: #7a5010;
+  text-align: center;
+  font-size: 12px;
+}
+.uno-pending-status {
+  position: relative;
+  border: 2px solid #d2a243;
+  border-radius: 14px;
+  background: #fffdf8;
+  color: #7a5010;
+  font-weight: 950;
+  padding: 13px 12px;
+  text-align: center;
+}
+.uno-rematch-panel {
+  display: grid;
+  gap: 10px;
+  padding: 15px;
+  border: 2px solid #d8b030;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(255, 248, 223, 0.98), rgba(255, 235, 188, 0.98));
+  color: #332012;
+  text-align: left;
+  box-shadow: 0 12px 28px rgba(18, 10, 4, 0.22);
+}
+.uno-rematch-panel strong {
+  color: #3b2110;
+  font-size: 16px;
+}
+.uno-rematch-panel span,
+.uno-rematch-panel small {
+  color: #5d4030;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.55;
+}
+.uno-rematch-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+.uno-rematch-options button {
+  min-height: 48px;
+  border: 2px solid #9c6522;
+  border-radius: 14px;
+  background: #8d4d1f;
+  color: #fff8df;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 950;
+  box-shadow: 0 8px 18px rgba(61, 32, 9, 0.22);
+}
+.uno-rematch-options button:first-child {
+  background: #2f7d53;
+  border-color: #1e6540;
+}
+.uno-rematch-options button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+  filter: grayscale(0.5);
+}
+.uno-pending-color-button:hover,
+.uno-pending-target-button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.04);
+  box-shadow: 0 8px 18px rgba(58, 37, 24, 0.20);
+}
+.uno-pending-color-button:active,
+.uno-pending-target-button:active {
+  transform: translateY(0) scale(0.98);
 }
 .uno-hand-fan-panel {
   position: relative;
@@ -1220,18 +1380,26 @@ button {
 .uno-hand-scroll {
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 38px 4px 18px;
+  padding: 42px 8px 22px;
+  scrollbar-color: #d3a33f rgba(255,255,255,0.12);
+  scrollbar-width: thick;
 }
 .uno-hand-fan {
   position: relative;
   height: 178px;
   margin: 0 auto;
 }
+.uno-hand-fan.is-dense {
+  height: 164px;
+}
 .uno-hand-card {
   position: absolute;
   top: 8px;
   transform-origin: 50% 120%;
   transition: transform 0.14s ease, z-index 0.14s ease;
+}
+.uno-hand-fan.is-dense .uno-hand-card {
+  transform-origin: 50% 180%;
 }
 .uno-hand-card.is-playable {
   filter: drop-shadow(0 7px 12px rgba(70, 120, 40, 0.22));
@@ -1480,6 +1648,23 @@ button {
   .uno-table-overlay {
     width: calc(100% - 30px);
     top: 50%;
+  }
+  .uno-pending-panel {
+    padding: 16px 13px 14px;
+    border-radius: 16px;
+  }
+  .uno-pending-title {
+    font-size: 15px;
+  }
+  .uno-pending-description {
+    font-size: 12px;
+  }
+  .uno-pending-color-button,
+  .uno-pending-target-button {
+    min-height: 48px;
+  }
+  .uno-rematch-options {
+    grid-template-columns: 1fr;
   }
   .uno-opponent-stack {
     transform: scale(0.78);

@@ -503,16 +503,8 @@ export function applyDrawCard(state: UnoGameState): UnoGameState {
   if (state.pendingAction !== null) return state;
   if (state.pendingDrawCount > 0) return state; // applyAcceptDraw を使うべき
   if (getPlayableCards(state, state.currentPlayerId).length > 0) return state;
+  return applyInfiniteDraw(state);
 
-  if (state.variant === 'hard') {
-    return applyInfiniteDraw(state);
-  }
-
-  // standard: 1 枚引いてターン終了
-  let s = drawCardsForPlayer(state, state.currentPlayerId, 1);
-  s = checkElimination(s);
-  if (s.status === 'finished') return s;
-  return advanceTurn(s);
 }
 
 /**

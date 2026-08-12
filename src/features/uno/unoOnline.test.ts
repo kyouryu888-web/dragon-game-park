@@ -35,13 +35,14 @@ function row(patch: Partial<UnoRoomRow>): UnoRoomRow {
 }
 
 function state(): UnoGameState {
-  return createInitialUnoState({
+  const initial = createInitialUnoState({
     variant: 'standard',
     playerConfigs: [
       { name: 'A', isCpu: false, cpuLevel: 'normal' },
       { name: 'B', isCpu: false, cpuLevel: 'normal' },
     ],
   });
+  return { ...initial, currentPlayerId: 'player-1' };
 }
 
 describe('UNO online room helpers', () => {

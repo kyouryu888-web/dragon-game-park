@@ -9,6 +9,7 @@ import { Button } from '../../components/Button';
 import { MancalaBoard, PLANK_POSITIONS } from './MancalaBoard';
 import type { PlankSlideEntry } from './MancalaBoard';
 import { PLAYER_ACCENT_COLORS } from './MancalaPit';
+import { createInitialMancalaState } from './createInitialMancalaState';
 
 const STONE_ANIM_MS   = 400;
 const CAPTURE_ANIM_MS = 700;
@@ -178,7 +179,7 @@ export function MancalaOnlineGamePage({
       if (isAnimatingRef.current || isTransitioningRef.current) return;
       const gs = data.game_state as GameState;
       setGameState(prev =>
-        !prev || gs.turnCount > prev.turnCount ? gs : prev
+        !prev || gs.gameId !== prev.gameId || gs.turnCount > prev.turnCount ? gs : prev
       );
     };
 
@@ -205,7 +206,7 @@ export function MancalaOnlineGamePage({
           if (isAnimatingRef.current || isTransitioningRef.current) return;
           const gs = (payload.new as { game_state: GameState }).game_state;
           setGameState(prev =>
-            !prev || gs.turnCount >= prev.turnCount ? gs : prev
+            !prev || gs.gameId !== prev.gameId || gs.turnCount >= prev.turnCount ? gs : prev
           );
         }
       )
@@ -484,6 +485,42 @@ export function MancalaOnlineGamePage({
       });
   }, [gameState, myPlayerId, nameInput, roomCode]);
 
+  const handleRematch = useCallback(() => {
+    if (!gameState || myPlayerId !== 'player-1') return;
+
+    const nextState = createInitialMancalaState({
+      playerCount: gameState.playerCount,
+      players: gameState.players.map(p => ({
+        name: p.name,
+        isCpu: p.isCpu,
+        cpuLevel: p.cpuLevel,
+      })),
+    });
+
+    pendingFinalStateRef.current = null;
+    isTransitioningRef.current = false;
+    prevDisplayIdsRef.current = [];
+    setAnimSteps([]);
+    setAnimActiveIds([]);
+    setAnimIdx(0);
+    setCaptureAnimInfo(null);
+    setCapturePhase(null);
+    setBoardFading('none');
+    setEliminatingId(null);
+    setSlidingPlanks(null);
+    setSlideAtTarget(false);
+    setDisplayActiveIds(nextState.activePlayerIds);
+    setGameState(nextState);
+
+    supabase
+      .from('mancala_rooms')
+      .update({ game_state: nextState })
+      .eq('room_code', roomCode)
+      .then(({ error }) => {
+        if (error) console.error('[online] rematch failed:', error);
+      });
+  }, [gameState, myPlayerId, roomCode]);
+
   // ============================================================
   // 表示用ゲーム状態
   // displayActiveIds（脱落アニメーション管理済み）を使用
@@ -523,6 +560,7 @@ export function MancalaOnlineGamePage({
 
   const isMyTurn       = gameState.currentPlayerId === myPlayerId;
   const isFinished     = gameState.status === 'finished';
+  const isHostClient   = myPlayerId === 'player-1';
   const isMoving       = isAnimating || capturePhase !== null;
   const isTransitioning = boardFading !== 'none';
 
@@ -563,7 +601,16 @@ export function MancalaOnlineGamePage({
               );
             })}
           </div>
-          <Button onClick={onBackToHome}>ホームに戻る</Button>
+          <div style={{ display: 'grid', gap: 10 }}>
+            {isHostClient ? (
+              <Button onClick={handleRematch} fullWidth>同じルームでもう一度遊ぶ</Button>
+            ) : (
+              <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: 12, lineHeight: 1.6 }}>
+                ルームの主が「もう一度遊ぶ」を押すと、このまま新しいゲームに切り替わります。
+              </p>
+            )}
+            <Button onClick={onBackToHome} variant="ghost" fullWidth>ホームに戻る</Button>
+          </div>
         </div>
       </Layout>
     );
