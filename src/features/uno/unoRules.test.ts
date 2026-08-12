@@ -131,6 +131,25 @@ describe('UNO normal rules', () => {
     expect(next.deck).toHaveLength(1);
   });
 
+  it('draws until a playable card appears and plays it immediately', () => {
+    let state = baseState('standard');
+    state = {
+      ...state,
+      hands: { ...state.hands, 'player-1': [] },
+      deck: [
+        numberCard('not-playable', 'blue', 1),
+        numberCard('play-now', 'red', 8),
+        numberCard('deck-left', 'green', 2),
+      ],
+    };
+
+    const next = applyDrawCard(state);
+    expect(next.discardPile[0]?.id).toBe('play-now');
+    expect(next.hands['player-1'].map((card) => card.id)).toEqual(['not-playable']);
+    expect(next.deck.map((card) => card.id)).toEqual(['deck-left']);
+    expect(next.currentPlayerId).toBe('player-2');
+  });
+
   it('scores remaining cards by official UNO values and ranks by points', () => {
     const wild: UnoCard = { id: 'wild', kind: 'wild', symbol: 'wild' };
     expect(getUnoCardScore(numberCard('n', 'red', 7))).toBe(7);

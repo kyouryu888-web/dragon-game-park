@@ -8,6 +8,7 @@ import {
 import { chooseCpuMoveSequence } from './backgammonCpu';
 import { BackgammonPlayScreen } from './BackgammonPlayScreen';
 import { type BackgammonRoomInfo, type OnlinePayload, pushPayload, subscribeRoom } from './backgammonOnline';
+import { createInitialBackgammonState } from './createInitialBackgammonState';
 
 type BackgammonOnlineGameProps = {
   room: BackgammonRoomInfo;
@@ -53,6 +54,23 @@ export function BackgammonOnlineGame({
     seqRef.current = next.seq;
     setPayload(next);
     setSelected(null);
+    void pushPayload(room.roomCode, next);
+  }
+
+  function handleRematch() {
+    if (!iAmHost) {
+      showToast('ルームの主が「もう一度戦う」を押すと、このルームのまま再戦できます');
+      return;
+    }
+    const next: OnlinePayload = {
+      ...payload,
+      state: createInitialBackgammonState(),
+      seq: seqRef.current + 1,
+    };
+    seqRef.current = next.seq;
+    setPayload(next);
+    setSelected(null);
+    setAutoRun(false);
     void pushPayload(room.roomCode, next);
   }
 
@@ -219,7 +237,7 @@ export function BackgammonOnlineGame({
       en: iWin ? 'VICTORY' : 'DEFEAT',
       title: iWin ? '勝利!' : '敗北…',
       sub: iWin ? `${kindTxt}見事なり。遠方の相手を下した。` : `${kindTxt}${oppName}が勝利した。「また挑むがよい」`,
-      showRematch: false,
+      showRematch: true,
     };
   })();
 
@@ -279,7 +297,7 @@ export function BackgammonOnlineGame({
       onTapOffBot={() => { if (myColor === 'white' && offMove) doApplyMove(offMove); }}
       onQuit={handleQuit}
       over={over}
-      onRematch={() => {}}
+      onRematch={handleRematch}
       onBackToSettings={onExitToSettings}
       onBackToHome={onBackToHome}
     />

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { CSSProperties } from 'react';
 import { Button } from '../../components/Button';
 import { Layout } from '../../components/Layout';
 import type { UnoCard, UnoColor, UnoConfig, UnoGameState, UnoPlayer, UnoPlayerId } from './unoTypes';
@@ -352,17 +353,15 @@ export function PendingPanel({
     const player = state.players.find((p) => p.id === pending.chooserPlayerId);
     return (
       <ActionPanel title={`${player?.name ?? 'プレイヤー'}、色をえらんでください`}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+        <p className="uno-pending-description">次の場の色になります。見やすい色ボタンを1つ押してください。</p>
+        <div className="uno-pending-color-grid">
           {COLOR_BUTTONS.map(({ color, bg }) => (
-            <button key={color} onClick={() => onColorChoice(color)} style={{
-              border: '2px solid #fff',
-              background: bg,
-              color: color === 'yellow' ? '#3b2600' : '#fff',
-              borderRadius: 13,
-              padding: '12px 0',
-              fontWeight: 900,
-              cursor: 'pointer',
-            }}>
+            <button
+              key={color}
+              className={`uno-pending-color-button is-${color}`}
+              onClick={() => onColorChoice(color)}
+              style={{ '--uno-choice-color': bg } as CSSProperties}
+            >
               {UNO_COLOR_LABELS[color]}
             </button>
           ))}
@@ -375,11 +374,18 @@ export function PendingPanel({
     const player = state.players.find((p) => p.id === pending.swapperPlayerId);
     return (
       <ActionPanel title={`${player?.name ?? 'プレイヤー'}、こうかんする相手をえらんでください`}>
-        <div style={{ display: 'grid', gap: 8 }}>
+        <p className="uno-pending-description">選んだ相手と手札をすべて交換します。</p>
+        <div className="uno-pending-target-grid">
           {state.players.filter((p) => p.id !== pending.swapperPlayerId && !p.isEliminated).map((target) => (
-            <Button key={target.id} variant="secondary" onClick={() => onSwapPick(target.id)}>
-              {target.name} とこうかん ({state.hands[target.id]?.length ?? 0}まい)
-            </Button>
+            <button
+              key={target.id}
+              type="button"
+              className="uno-pending-target-button"
+              onClick={() => onSwapPick(target.id)}
+            >
+              <strong>{target.name}</strong>
+              <span>{state.hands[target.id]?.length ?? 0}まい</span>
+            </button>
           ))}
         </div>
       </ActionPanel>
@@ -390,18 +396,10 @@ export function PendingPanel({
     const target = state.players.find((p) => p.id === pending.targetPlayerId);
     return (
       <ActionPanel title="カラー ルーレット">
-        <p style={{ fontSize: 13, color: 'var(--text-mid)', lineHeight: 1.7, marginBottom: 10 }}>
+        <p className="uno-pending-description">
           {target?.name ?? '次の人'} が {UNO_COLOR_LABELS[pending.targetColor]} のカードを引くまで、対象プレイヤーに1まいずつ引かせます。
         </p>
-        <div className="cpu-thinking-pulse" style={{
-          border: '1.5px solid #e8c880',
-          borderRadius: 13,
-          background: '#1d1723',
-          color: 'var(--brown)',
-          fontWeight: 900,
-          padding: '11px 12px',
-          textAlign: 'center',
-        }}>
+        <div className="uno-pending-status cpu-thinking-pulse">
           自動で進めています...
         </div>
       </ActionPanel>
@@ -412,10 +410,10 @@ export function PendingPanel({
     const player = state.players.find((p) => p.id === pending.playerWithOneCard);
     return (
       <ActionPanel title="ウノ!">
-        <p style={{ fontSize: 13, color: 'var(--text-mid)', lineHeight: 1.7, marginBottom: 10 }}>
+        <p className="uno-pending-description">
           {player?.name ?? 'プレイヤー'} の手札があと1まいです。UNOは自動で宣言されます。
         </p>
-        <div style={{ display: 'grid', gap: 8 }}>
+        <div className="uno-pending-target-grid">
           <Button fullWidth onClick={() => onUnoDeclare(pending.playerWithOneCard)}>
             OK
           </Button>
@@ -429,15 +427,8 @@ export function PendingPanel({
 
 function ActionPanel({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div style={{
-      background: 'rgba(201,162,75,.12)',
-      border: '1.5px solid #e8c880',
-      borderRadius: 18,
-      padding: '15px 14px',
-      margin: '12px 0',
-      boxShadow: 'var(--shadow-sm)',
-    }}>
-      <h2 style={{ fontSize: 15, color: 'var(--brown)', marginBottom: 10 }}>{title}</h2>
+    <div className="uno-pending-panel">
+      <h2 className="uno-pending-title">{title}</h2>
       {children}
     </div>
   );

@@ -1,5 +1,49 @@
 # Dragon Game Park — Current Handoff
 
+## 2026-08-12 追記: UNOオンライン再戦選択・先手公平化・手札UI改善
+
+今回の作業:
+
+- `src/features/uno/createInitialUnoState.ts`
+  - UNO開始時に必ず `player-1` から始まる状態をやめた。
+  - 配布後、各プレイヤーが数字カードを1枚めくった想定で、最大数字を出したプレイヤーを `currentPlayerId` にする。
+  - 同点の場合は同点者からランダム。判定に使った数字カードはシャッフルして山札へ戻す。
+- `src/features/uno/unoRules.ts`
+  - 出せるカードがない時の山札ドローを、通常版でも「出せるカードが出るまで引き、その場で出す」に変更。
+  - ハード版の既存挙動に通常版を合わせた形。
+- `src/features/uno/unoRules.test.ts`
+  - 通常版で、出せないカードを引いた後、出せるカードを引いたら即場に出るテストを追加。
+- `src/features/uno/UnoOnlineGamePage.tsx`
+  - オンラインUNO終了後、ルーム主に「通常版で再戦」「ハード版で再戦」を表示。
+  - 同じ `uno_rooms` の `game_state` を初期化してルームを作り直さず続行する。
+  - ハード版は6人までなので、7人以上のルームではハード版再戦ボタンを無効化。
+- `src/features/uno/UnoTableView.tsx`
+  - 手札が15枚以上の時は扇形を抑え、横スクロール前提で重なりを浅くする `is-dense` 表示へ切替。
+  - 多枚数でもカード内容と「出せる」表示が隠れにくい方向へ調整。
+- `src/styles/global.css`
+  - UNO中央選択パネルを不透明寄りにし、暗幕・枠線・文字コントラストを強化。
+  - オンラインUNO再戦パネルと、通常版/ハード版の選択ボタンを追加。
+  - 多枚数手札用の横スクロールと `is-dense` スタイルを追加。
+
+検証済み:
+
+- `npx tsc --noEmit`: 成功
+- `npx vitest run src/features/uno/unoRules.test.ts src/features/uno/unoOnline.test.ts`: 2 files / 25 tests passed
+- `npm test -- --run`: 8 files / 146 tests passed
+- `npm run build`: 成功。既存の500kB超chunk警告のみ。
+- `npm run lint`: 終了コード0。既存のMancala/Backgammon警告のみ。
+- `git diff --check`: 成功。Windows改行予告のみ。
+
+未確認:
+
+- この実行環境ではバックグラウンドのVite起動がポリシーで止まり、ブラウザ実画面確認まではできていない。
+- 次に見るべき実画面:
+  1. UNOで色選択/7交換/ルーレットの中央パネルが暗い背景でも読めるか。
+  2. 手札15枚以上、24枚付近で横スクロールしながらカードが読めるか。
+  3. オンラインUNO終了後、ホストに通常版/ハード版再戦ボタンが出るか。
+  4. 再戦後、`player-1` 固定ではなく別プレイヤーが先手になることがあるか。
+  5. 通常版でも、出せない時に山札から出せるカードまで引き、そのカードが即場に出るか。
+
 更新日: 2026-08-12
 ブランチ: `main`
 実装PR: [#8](https://github.com/kyouryu888-web/dragon-game-park/pull/8)（2026-08-05 マージ済み）
@@ -86,3 +130,45 @@
 - 診断成績で物語や精霊を飛ばす進行。
 - 固定3〜4教材を全話で繰り返す実装。
 - 最終章で通常モードをもう一度行うだけの構成。
+## 2026-08-12 追記: オンライン同ルーム再戦とUNO選択パネル改善
+
+今回の作業:
+
+- UNO
+  - `src/features/uno/UnoGamePage.tsx`
+    - 色選択、7交換相手選択、カラー ルーレット、UNO自動宣言の中央パネルを専用CSSクラス化。
+    - 選択肢の説明文を追加し、色ボタン・相手選択ボタンを大きくして視認性と押しやすさを改善。
+  - `src/features/uno/UnoOnlineGamePage.tsx`
+    - ゲーム終了後、ホストが「同じルームでもう一度遊ぶ」を押すと同じ `uno_rooms` 行の `game_state` を新しい初期状態に差し替える。
+    - 参加者名、CPU設定、CPU強さ、通常版/ハード版を維持して再戦する。
+    - ゲスト側には、ルーム主が再戦開始すると自動で切り替わる説明を表示。
+- マンカラ
+  - `src/features/mancala/MancalaOnlineGamePage.tsx`
+    - ゲーム終了後、ホストが同じルームで再戦できるボタンを追加。
+    - 再戦時に `gameId` が変わった更新は `turnCount` が0へ戻っても受け取るよう、Realtime/poll受信条件を修正。
+    - プレイヤー名、CPU設定、CPU強さ、人数を維持して再戦する。
+- バックギャモン
+  - `src/features/backgammon/BackgammonOnlineGame.tsx`
+    - オンライン終了オーバーレイの「もう一度戦う」を有効化。
+    - ホストは同じ `backgammon_rooms` 行の `game_state` を初期化して再戦開始。
+    - ゲストが押した場合は、ルーム主が開始する必要がある旨をトースト表示。
+- 共通CSS
+  - `src/styles/global.css`
+    - `.uno-pending-panel` 系のスタイルを追加。
+    - 中央パネルの背景、枠、影、説明文、色ボタン、相手選択ボタンを高コントラスト化。
+    - モバイル幅でも選択パネルが潰れにくいよう調整。
+
+検証:
+
+- `npx tsc --noEmit`: 成功
+- `npx vitest run src/features/uno/unoRules.test.ts src/features/uno/unoOnline.test.ts src/features/mancala/mancalaRules.test.ts src/features/backgammon/backgammonRules.test.ts`: 4 files / 90 tests passed
+- `npm run build`: 成功。英語音声100件検証成功。Viteの500kB超chunk警告のみ。
+- `npm test -- --run`: 8 files / 145 tests passed
+- `npm run lint`: 終了。既存のBackgammon/Mancala警告のみ。
+- `git diff --check`: 成功。Windows改行予告のみ。
+- in-app browserで `http://127.0.0.1:5175/` を開き、トップページとUNOオンラインルーム画面の表示、console error 0件を確認。
+
+未確認・次に見ること:
+
+- Supabaseを使った実際の2タブ対戦で、各ゲーム終了後にホストが再戦ボタンを押し、ゲスト画面が同じルームのまま新しい盤面へ切り替わるか確認する。
+- UNOの色選択/7交換相手選択パネルはコードとビルドで確認済みだが、実プレイ中の発生状態で最終的な見た目をユーザーChrome上でも確認する。
