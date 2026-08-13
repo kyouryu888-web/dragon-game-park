@@ -1,8 +1,9 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 import type { UnoCard, UnoColor, UnoGameState, UnoPlayer, UnoPlayerId, UnoVariant } from './unoTypes';
 import { UNO_COLOR_LABELS } from './unoCardMeta';
 import { UnoCardView } from './UnoCardView';
+import { sortUnoHandByColor } from './unoCardUtils';
 
 const COLOR_DOTS: Record<UnoColor, string> = {
   red: '#df352c',
@@ -466,21 +467,22 @@ function UnoHandFan({
   onDrawRequest: () => void;
   onCardInfo: (card: UnoCard) => void;
 }) {
-  const isDense = hand.length > 14;
-  const maxSpread = hand.length <= 8 ? 58 : hand.length <= 14 ? 54 : hand.length <= 22 ? 58 : 56;
-  const center = (hand.length - 1) / 2;
-  const fanWidth = Math.max(340, 116 + Math.max(0, hand.length - 1) * maxSpread);
+  const sortedHand = useMemo(() => sortUnoHandByColor(hand), [hand]);
+  const isDense = sortedHand.length > 12;
+  const maxSpread = sortedHand.length <= 8 ? 58 : sortedHand.length <= 12 ? 54 : sortedHand.length <= 22 ? 62 : 64;
+  const center = (sortedHand.length - 1) / 2;
+  const fanWidth = Math.max(360, 124 + Math.max(0, sortedHand.length - 1) * maxSpread);
 
   return (
     <section className="uno-hand-fan-panel">
       <div className="uno-hand-fan-header">
         <strong>{player.name} の手札</strong>
-        <span>{hand.length}まい</span>
+        <span>{sortedHand.length}まい</span>
       </div>
 
       <div className="uno-hand-scroll">
         <div className={`uno-hand-fan ${isDense ? 'is-dense' : ''}`} style={{ width: fanWidth }}>
-          {hand.map((card, index) => {
+          {sortedHand.map((card, index) => {
             const offset = index - center;
             const playable = canAct && playableIds.has(card.id);
             const hasHelp = hasCardEffectHelp(card, variant);

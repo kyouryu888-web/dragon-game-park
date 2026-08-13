@@ -126,7 +126,7 @@ export type UnoStarterDraw = {
 export type UnoGameState = {
   gameId: string;
   variant: UnoVariant;
-  status: 'deciding-starter' | 'playing' | 'finished';
+  status: 'deciding-starter' | 'starter-ready' | 'playing' | 'finished';
 
   /** 全プレイヤー（順番がターン順）*/
   players: UnoPlayer[];

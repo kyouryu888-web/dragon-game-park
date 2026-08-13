@@ -1,5 +1,6 @@
 import type { UnoCard, UnoColor, UnoGameState, UnoPlayerId, UnoStarterDraw } from './unoTypes';
 import { getUnoCurrentScores, getUnoHandScore } from './unoScoring';
+import { isUnoCardAllowedInVariant } from './unoCardUtils';
 
 // ═══════════════════════════════════════════════
 // 内部ヘルパー（非公開）
@@ -67,6 +68,34 @@ function finishGame(state: UnoGameState, winnerPlayerId: UnoPlayerId): UnoGameSt
     winnerPlayerId,
     pendingAction: null,
     finalScores: getUnoCurrentScores(state),
+  };
+}
+
+function fallbackStandardCard(): UnoCard {
+  return { id: `fallback-${crypto.randomUUID()}`, kind: 'number', color: 'red', value: 0 };
+}
+
+export function sanitizeUnoStateForVariant(state: UnoGameState): UnoGameState {
+  if (state.variant === 'hard') return state;
+
+  const hands = Object.fromEntries(
+    Object.entries(state.hands).map(([playerId, hand]) => [
+      playerId,
+      hand.filter((card) => isUnoCardAllowedInVariant(card, state.variant)),
+    ]),
+  );
+  const deck = state.deck.filter((card) => isUnoCardAllowedInVariant(card, state.variant));
+  const discardPile = state.discardPile.filter((card) => isUnoCardAllowedInVariant(card, state.variant));
+  const starterDraws = state.starterDraws.filter((draw) => isUnoCardAllowedInVariant(draw.card, state.variant));
+
+  return {
+    ...state,
+    hands,
+    deck,
+    discardPile: discardPile.length > 0 ? discardPile : [deck[0] ?? fallbackStandardCard()],
+    starterDraws,
+    pendingDrawCount: 0,
+    lastDrawCardValue: 0,
   };
 }
 
@@ -196,6 +225,7 @@ function getNextActivePlayerAfter(state: UnoGameState, playerId: UnoPlayerId): U
 /** このカードが今出せるかどうかを判定する */
 export function canPlayCard(state: UnoGameState, card: UnoCard): boolean {
   if (state.status !== 'playing') return false;
+  if (!isUnoCardAllowedInVariant(card, state.variant)) return false;
   if (state.pendingAction?.kind === 'drawn-card-play') {
     if (state.pendingAction.cardId !== card.id) return false;
     return canPlayCard({ ...state, pendingAction: null }, card);
@@ -292,11 +322,19 @@ export function applyStarterDraw(state: UnoGameState): UnoGameState {
 
   return {
     ...s,
-    status: 'playing',
+    status: 'starter-ready',
     currentPlayerId: winnerId,
     starterDraws: allDraws,
     deck: [...s.deck, ...drawnCards],
-    turnCount: s.turnCount + 1,
+  };
+}
+
+export function applyStartGame(state: UnoGameState): UnoGameState {
+  if (state.status !== 'starter-ready') return state;
+  return {
+    ...state,
+    status: 'playing',
+    turnCount: state.turnCount + 1,
   };
 }
 
