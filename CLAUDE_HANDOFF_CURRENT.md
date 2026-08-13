@@ -1,5 +1,17 @@
 # Dragon Game Park — Current Handoff
 
+## 2026-08-13 追記: UNO改善を本番反映済み
+
+- ブランチ `codex/uno-start-draw-polish` の変更を `main` に `--no-ff` でマージコミットした。
+- マージコミット: `ccc728e404e9a0c704607e64580d2eb44548fc0c`
+- `git push origin main` 済み。Vercelのコミットステータスは `success`。
+- 本番URL `https://dragon-game-park.vercel.app/` は HTTP 200 を確認済み。
+- マージ後の `main` で以下を再実行済み:
+  - `npx tsc --noEmit`: 成功
+  - `npx vitest run`: 8 files / 150 tests passed
+  - `npm run build`: 成功。Viteの500kB超chunk警告のみ
+  - `npm run lint`: 成功。既存のMancala/Backgammon警告のみ
+
 ## 2026-08-13 追記: UNO開始判定・1枚ドロー・再戦設定UI
 
 今回の作業:
