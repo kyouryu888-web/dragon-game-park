@@ -1,4 +1,4 @@
-import type { UnoCard, UnoColor, UnoGameState, UnoPlayerId } from './unoTypes';
+import type { UnoCard, UnoColor, UnoGameState, UnoPlayerId, UnoStarterDraw } from './unoTypes';
 import { getUnoCurrentScores, getUnoHandScore } from './unoScoring';
 
 // ═══════════════════════════════════════════════
@@ -113,6 +113,10 @@ function advanceTurn(state: UnoGameState, playersToSkip = 1): UnoGameState {
   return { ...state, currentPlayerId: nextId, turnCount: state.turnCount + 1 };
 }
 
+function getStarterDrawValue(card: UnoCard): number {
+  return card.kind === 'number' ? card.value : 0;
+}
+
 // ─── hard: 0 のルール（全員が隣に手札を渡す）───────────────────
 function applyZeroRule(state: UnoGameState): UnoGameState {
   const active = getActivePlayers(state);
@@ -192,6 +196,10 @@ function getNextActivePlayerAfter(state: UnoGameState, playerId: UnoPlayerId): U
 /** このカードが今出せるかどうかを判定する */
 export function canPlayCard(state: UnoGameState, card: UnoCard): boolean {
   if (state.status !== 'playing') return false;
+  if (state.pendingAction?.kind === 'drawn-card-play') {
+    if (state.pendingAction.cardId !== card.id) return false;
+    return canPlayCard({ ...state, pendingAction: null }, card);
+  }
   if (state.pendingAction !== null) return false;
 
   // hard: ドロースタッキング中はドローカードのみ出せる
@@ -235,7 +243,61 @@ export function canPlayCard(state: UnoGameState, card: UnoCard): boolean {
 
 /** 手札から出せるカードの一覧を返す */
 export function getPlayableCards(state: UnoGameState, playerId: UnoPlayerId): UnoCard[] {
+  const pending = state.pendingAction;
+  if (pending?.kind === 'drawn-card-play') {
+    if (pending.playerId !== playerId) return [];
+    return (state.hands[playerId] ?? []).filter((c) => c.id === pending.cardId && canPlayCard(state, c));
+  }
   return (state.hands[playerId] ?? []).filter((c) => canPlayCard(state, c));
+}
+
+// ═══════════════════════════════════════════════
+// スタートプレイヤー決定
+// ═══════════════════════════════════════════════
+
+export function applyStarterDraw(state: UnoGameState): UnoGameState {
+  if (state.status !== 'deciding-starter') return state;
+
+  let s = state;
+  let contenders = getActivePlayers(s);
+  const allDraws: UnoStarterDraw[] = [];
+  const drawnCards: UnoCard[] = [];
+  let winnerId = contenders[0] ?? s.currentPlayerId;
+
+  for (let round = 1; contenders.length > 1 && round <= 12; round++) {
+    const roundDraws: UnoStarterDraw[] = [];
+
+    for (const playerId of contenders) {
+      s = reshuffleIfNeeded(s);
+      if (s.deck.length === 0) continue;
+      const [card, ...rest] = s.deck;
+      const draw = {
+        playerId,
+        card: card!,
+        value: getStarterDrawValue(card!),
+        round,
+      };
+      roundDraws.push(draw);
+      allDraws.push(draw);
+      drawnCards.push(card!);
+      s = { ...s, deck: rest };
+    }
+
+    if (roundDraws.length === 0) break;
+    const highValue = Math.max(...roundDraws.map((draw) => draw.value));
+    const winners = roundDraws.filter((draw) => draw.value === highValue);
+    winnerId = winners[0]?.playerId ?? winnerId;
+    contenders = winners.map((draw) => draw.playerId);
+  }
+
+  return {
+    ...s,
+    status: 'playing',
+    currentPlayerId: winnerId,
+    starterDraws: allDraws,
+    deck: [...s.deck, ...drawnCards],
+    turnCount: s.turnCount + 1,
+  };
 }
 
 // ═══════════════════════════════════════════════
@@ -244,7 +306,11 @@ export function getPlayableCards(state: UnoGameState, playerId: UnoPlayerId): Un
 
 export function applyPlayCard(state: UnoGameState, cardId: string): UnoGameState {
   if (state.status !== 'playing') return state;
-  if (state.pendingAction !== null) return state;
+  const drawnCardPending = state.pendingAction?.kind === 'drawn-card-play' ? state.pendingAction : null;
+  if (state.pendingAction !== null && !drawnCardPending) return state;
+  if (drawnCardPending && (drawnCardPending.playerId !== state.currentPlayerId || drawnCardPending.cardId !== cardId)) {
+    return state;
+  }
 
   const hand = state.hands[state.currentPlayerId] ?? [];
   const cardIdx = hand.findIndex((c) => c.id === cardId);
@@ -263,6 +329,7 @@ export function applyPlayCard(state: UnoGameState, cardId: string): UnoGameState
     discardPile: [card, ...state.discardPile],
     pendingDrawCount: state.variant === 'hard' ? state.pendingDrawCount : 0,
     lastDrawCardValue: state.variant === 'hard' ? state.lastDrawCardValue : 0,
+    pendingAction: null,
   };
 
   // ── 即座の勝利チェック（ワイルド色選択より前）──
@@ -495,21 +562,45 @@ export function applyColorChoice(state: UnoGameState, color: UnoColor): UnoGameS
 
 /**
  * 通常の「カードを引く」アクション。
- * - standard: 1 枚引いてターン終了
- * - hard: 出せるカードが引けるまで引き続け、出せたら即プレイ
+ * - 手札に出せるカードがあっても1枚引ける
+ * - 引いたカードが出せる場合は、その引いたカードだけを出せる
+ * - 引いたカードが出せない場合はターン終了
  */
 export function applyDrawCard(state: UnoGameState): UnoGameState {
   if (state.status !== 'playing') return state;
   if (state.pendingAction !== null) return state;
   if (state.pendingDrawCount > 0) return state; // applyAcceptDraw を使うべき
-  if (getPlayableCards(state, state.currentPlayerId).length > 0) return state;
-  return applyInfiniteDraw(state);
 
+  let s = reshuffleIfNeeded(state);
+  if (s.deck.length === 0) return advanceTurn(s);
+
+  const [drawn, ...rest] = s.deck;
+  const currentHand = s.hands[s.currentPlayerId] ?? [];
+  s = {
+    ...s,
+    deck: rest,
+    hands: { ...s.hands, [s.currentPlayerId]: [...currentHand, drawn!] },
+  };
+
+  s = checkElimination(s);
+  if (s.status === 'finished') return s;
+
+  if (canPlayCard(s, drawn!)) {
+    return { ...s, pendingAction: { kind: 'drawn-card-play', playerId: s.currentPlayerId, cardId: drawn!.id } };
+  }
+
+  return advanceTurn(s);
+}
+
+export function applyPassDrawnCard(state: UnoGameState): UnoGameState {
+  if (state.status !== 'playing') return state;
+  if (state.pendingAction?.kind !== 'drawn-card-play') return state;
+  return advanceTurn({ ...state, pendingAction: null });
 }
 
 /**
- * hard モード: 出せるカードが出るまで引き続ける（無限ドロー）。
- * 出せるカードを引いたらそのカードを即プレイ。
+ * 旧ハード版の無限ドロー補助。現在の通常ドローでは使わず、
+ * カラールーレットのような専用効果だけが複数ドローを扱う。
  */
 export function applyInfiniteDraw(state: UnoGameState): UnoGameState {
   let s = state;

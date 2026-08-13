@@ -2,28 +2,34 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '../../components/Button';
 import { Layout } from '../../components/Layout';
 import { supabase } from '../../lib/supabase';
-import type { UnoCard, UnoColor, UnoGameState, UnoPlayerId, UnoVariant } from './unoTypes';
+import type { UnoCard, UnoColor, UnoCpuLevel, UnoGameState, UnoPlayerConfig, UnoPlayerId, UnoVariant } from './unoTypes';
 import {
   applyAcceptDraw,
   applyColorChoice,
   applyColorRouletteStep,
   applyDrawCard,
+  applyPassDrawnCard,
   applyPlayCard,
+  applyStarterDraw,
   applySwapPick,
   applyUnoDeclaration,
   canPlayCard,
   getNextPlayerId,
   getPlayableCards,
 } from './unoRules';
-import { chooseUnoCpuAction } from './unoCpu';
+import { chooseUnoCpuAction, getUnoCpuDisplayName, getUnoCpuLevelLabel } from './unoCpu';
 import { getUnoCardName, UNO_COLOR_LABELS } from './unoCardMeta';
 import { UnoTableView } from './UnoTableView';
-import { PendingPanel } from './UnoGamePage';
+import { PendingPanel, StarterDecisionPanel } from './UnoGamePage';
 import { UnoRulesPanel } from './UnoRulesPanel';
 import { createInitialUnoState } from './createInitialUnoState';
 import {
   canApplyUnoOnlineAction,
+  getUnoGuestFieldByPlayerIndex,
+  getUnoSlotValue,
   getUnoOnlinePlayerId,
+  UNO_CPU_LEVELS,
+  UNO_GUEST_FIELDS,
   type UnoRoomRow,
 } from './unoOnline';
 import { getUnoRankings } from './unoScoring';
@@ -34,10 +40,11 @@ type UnoOnlineGamePageProps = {
   onBackToHome: () => void;
 };
 
-type UnoRoomGameRow = Pick<UnoRoomRow, 'game_state' | 'version' | 'host_id'>;
+const UNO_ROOM_SELECT = 'game_state, version, host_id, variant, player_count, guest_id, guest2_id, guest3_id, guest4_id, guest5_id, guest6_id, guest7_id, guest8_id, guest9_id';
 
 export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnlineGamePageProps) {
   const [gameState, setGameState] = useState<UnoGameState | null>(null);
+  const [roomRow, setRoomRow] = useState<UnoRoomRow | null>(null);
   const [roomVersion, setRoomVersion] = useState(0);
   const [isHostClient, setIsHostClient] = useState(myPlayerId === 'player-1');
   const [loading, setLoading] = useState(true);
@@ -45,18 +52,24 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
   const [isCpuThinking, setIsCpuThinking] = useState(false);
   const [showRules, setShowRules] = useState(false);
   const [message, setMessage] = useState('オンラインルームを読み込み中です。');
+  const [rematchVariant, setRematchVariant] = useState<UnoVariant>('standard');
+  const [rematchPlayerCount, setRematchPlayerCount] = useState(2);
+  const [rematchPlayers, setRematchPlayers] = useState<UnoPlayerConfig[]>([]);
+  const [rematchSeedGameId, setRematchSeedGameId] = useState<string | null>(null);
 
   const stateRef = useRef<UnoGameState | null>(null);
+  const rowRef = useRef<UnoRoomRow | null>(null);
   const versionRef = useRef(0);
   const writingRef = useRef(false);
   stateRef.current = gameState;
+  rowRef.current = roomRow;
   versionRef.current = roomVersion;
   writingRef.current = isWriting;
 
   const fetchLatest = useCallback(async (nextMessage?: string) => {
     const { data, error } = await supabase
       .from('uno_rooms')
-      .select('game_state, version, host_id')
+      .select(UNO_ROOM_SELECT)
       .eq('room_code', roomCode)
       .single();
 
@@ -66,7 +79,8 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
       return;
     }
 
-    const row = data as UnoRoomGameRow;
+    const row = data as UnoRoomRow;
+    setRoomRow(row);
     setGameState(row.game_state as UnoGameState);
     setRoomVersion(row.version);
     setIsHostClient(row.host_id === getUnoOnlinePlayerId() || myPlayerId === 'player-1');
@@ -94,7 +108,7 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
       })
       .eq('room_code', roomCode)
       .eq('version', version)
-      .select('game_state, version, host_id')
+      .select(UNO_ROOM_SELECT)
       .maybeSingle();
 
     if (error || !data) {
@@ -103,7 +117,8 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
       return;
     }
 
-    const row = data as UnoRoomGameRow;
+    const row = data as UnoRoomRow;
+    setRoomRow(row);
     setGameState(row.game_state as UnoGameState);
     setRoomVersion(row.version);
     if (nextMessage) setMessage(nextMessage);
@@ -124,6 +139,7 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
           if (cancelled) return;
           const row = payload.new as UnoRoomRow;
           if ((row.version ?? 0) < versionRef.current) return;
+          setRoomRow(row);
           setGameState(row.game_state as UnoGameState);
           setRoomVersion(row.version);
         },
@@ -151,19 +167,108 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
   const winner = gameState?.winnerPlayerId ? gameState.players.find((player) => player.id === gameState.winnerPlayerId) : null;
   const rankings = gameState ? getUnoRankings(gameState) : [];
 
-  const handleRematch = useCallback((variant?: UnoVariant) => {
-    if (!gameState || !isHostClient || isWriting) return;
-    const nextVariant = variant ?? gameState.variant;
-    if (nextVariant === 'hard' && gameState.players.length > 6) return;
-    void updateRemoteState((state) => createInitialUnoState({
-      variant: nextVariant,
-      playerConfigs: state.players.map((player) => ({
-        name: player.name,
-        isCpu: player.isCpu,
-        cpuLevel: player.cpuLevel ?? 'normal',
-      })),
-    }), '同じルームでもう一度遊びます。');
-  }, [gameState, isHostClient, isWriting, updateRemoteState]);
+  useEffect(() => {
+    if (gameState?.status !== 'finished') return;
+    if (rematchSeedGameId === gameState.gameId) return;
+    setRematchVariant(gameState.variant);
+    setRematchPlayerCount(gameState.players.length);
+    setRematchPlayers(gameState.players.map((player) => ({
+      name: player.name,
+      isCpu: player.isCpu,
+      cpuLevel: player.cpuLevel ?? 'normal',
+    })));
+    setRematchSeedGameId(gameState.gameId);
+  }, [gameState, rematchSeedGameId]);
+
+  const updateRematchPlayer = useCallback((index: number, patch: Partial<UnoPlayerConfig>) => {
+    setRematchPlayers((players) => {
+      const next = [...players];
+      const current = next[index] ?? {
+        name: index === 0 ? 'ホスト' : getUnoCpuDisplayName('normal'),
+        isCpu: index !== 0,
+        cpuLevel: 'normal' as UnoCpuLevel,
+      };
+      next[index] = { ...current, ...patch };
+      return next;
+    });
+  }, []);
+
+  const handleRematch = useCallback(() => {
+    const row = rowRef.current;
+    if (!gameState || !row || !isHostClient || isWriting) return;
+    if (rematchVariant === 'hard' && rematchPlayerCount > 6) return;
+
+    const playerConfigs = Array.from({ length: rematchPlayerCount }, (_, index) => {
+      const fallback: UnoPlayerConfig = {
+        name: index === 0 ? gameState.players[0]?.name ?? 'ホスト' : getUnoCpuDisplayName('normal'),
+        isCpu: index !== 0,
+        cpuLevel: 'normal',
+      };
+      const config = rematchPlayers[index] ?? fallback;
+      return {
+        name: config.name.trim() || fallback.name,
+        isCpu: index === 0 ? false : config.isCpu,
+        cpuLevel: config.cpuLevel ?? 'normal',
+      };
+    });
+
+    const missingHumanSlot = playerConfigs.findIndex((config, index) => {
+      if (index === 0 || config.isCpu) return false;
+      const slotValue = getUnoSlotValue(row, index);
+      return !slotValue || slotValue.startsWith('cpu-player-');
+    });
+    if (missingHumanSlot >= 0) {
+      setMessage(`プレイヤー${missingHumanSlot + 1}を人間にするには、その人が先にルームへ参加している必要があります。`);
+      return;
+    }
+
+    const guestUpdates: Partial<UnoRoomRow> = {};
+    for (const field of UNO_GUEST_FIELDS) guestUpdates[field] = null;
+    for (let index = 1; index < rematchPlayerCount; index++) {
+      const field = getUnoGuestFieldByPlayerIndex(index);
+      if (!field) continue;
+      guestUpdates[field] = playerConfigs[index]?.isCpu ? `cpu-player-${index + 1}` : getUnoSlotValue(row, index);
+    }
+
+    const next = createInitialUnoState({ variant: rematchVariant, playerConfigs });
+    const version = versionRef.current;
+    setIsWriting(true);
+    void supabase
+      .from('uno_rooms')
+      .update({
+        ...guestUpdates,
+        variant: rematchVariant,
+        player_count: rematchPlayerCount,
+        game_state: next,
+        version: version + 1,
+      })
+      .eq('room_code', roomCode)
+      .eq('version', version)
+      .select(UNO_ROOM_SELECT)
+      .maybeSingle()
+      .then(async ({ data, error }) => {
+        if (error || !data) {
+          await fetchLatest('ほかの操作が先に反映されました。最新状態に更新しました。');
+          setIsWriting(false);
+          return;
+        }
+        const nextRow = data as UnoRoomRow;
+        setRoomRow(nextRow);
+        setGameState(nextRow.game_state as UnoGameState);
+        setRoomVersion(nextRow.version);
+        setMessage('同じルームで新しいUNOを始めます。');
+        setIsWriting(false);
+      });
+  }, [
+    fetchLatest,
+    gameState,
+    isHostClient,
+    isWriting,
+    rematchPlayerCount,
+    rematchPlayers,
+    rematchVariant,
+    roomCode,
+  ]);
 
   const handlePlayCard = useCallback((card: UnoCard) => {
     if (!gameState || !canTakeTurn) return;
@@ -178,9 +283,22 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
     if (!gameState || !canTakeTurn) return;
     void updateRemoteState(
       (state) => applyDrawCard(state),
-      gameState.variant === 'hard' ? '出せるカードが出るまで引きます。' : `${myPlayer?.name ?? 'あなた'} が1まい引きました。`,
+      `${myPlayer?.name ?? 'あなた'} が山札から1まい引きました。`,
     );
   }, [canTakeTurn, gameState, myPlayer?.name, updateRemoteState]);
+
+  const handlePassDrawnCard = useCallback(() => {
+    if (!gameState || !canTakeTurn) return;
+    void updateRemoteState(
+      (state) => applyPassDrawnCard(state),
+      `${myPlayer?.name ?? 'あなた'} は引いたカードを出さずに進めました。`,
+    );
+  }, [canTakeTurn, gameState, myPlayer?.name, updateRemoteState]);
+
+  const handleDecideStarter = useCallback(() => {
+    if (!gameState || !isHostClient || isWriting) return;
+    void updateRemoteState((state) => applyStarterDraw(state), 'スタートプレイヤーが決まりました。');
+  }, [gameState, isHostClient, isWriting, updateRemoteState]);
 
   const handleAcceptDraw = useCallback(() => {
     if (!gameState || !canTakeTurn || gameState.pendingDrawCount <= 0) return;
@@ -253,6 +371,8 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
             return applyPlayCard(prev, action.cardId);
           case 'draw-card':
             return applyDrawCard(prev);
+          case 'pass-drawn-card':
+            return applyPassDrawnCard(prev);
           case 'accept-draw':
             return applyAcceptDraw(prev);
           case 'choose-color':
@@ -328,21 +448,30 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
           </div>
           <div style={{ display: 'grid', gap: 10 }}>
             {isHostClient ? (
-              <div className="uno-rematch-panel">
-                <strong>同じルームで続けて遊ぶ</strong>
-                <span>ルームを作り直さずに再戦できます。先手は毎回、数字カードの大きさで決まります。</span>
-                <div className="uno-rematch-options">
-                  <button type="button" onClick={() => handleRematch('standard')} disabled={isWriting}>
-                    通常版で再戦
-                  </button>
-                  <button type="button" onClick={() => handleRematch('hard')} disabled={isWriting || gameState.players.length > 6}>
-                    ハード版で再戦
-                  </button>
-                </div>
-                {gameState.players.length > 6 && (
-                  <small>ハード版は6人までです。この人数では通常版だけ選べます。</small>
-                )}
-              </div>
+              <RematchSettingsPanel
+                variant={rematchVariant}
+                playerCount={rematchPlayerCount}
+                players={rematchPlayers}
+                roomRow={roomRow}
+                isWriting={isWriting}
+                onVariantChange={(variant) => {
+                  setRematchVariant(variant);
+                  if (variant === 'hard' && rematchPlayerCount > 6) setRematchPlayerCount(6);
+                }}
+                onPlayerCountChange={(count) => {
+                  const nextCount = rematchVariant === 'hard' ? Math.min(count, 6) : count;
+                  setRematchPlayerCount(nextCount);
+                  setRematchPlayers((players) => {
+                    const next = [...players];
+                    for (let i = next.length; i < nextCount; i++) {
+                      next[i] = { name: getUnoCpuDisplayName('normal'), isCpu: true, cpuLevel: 'normal' };
+                    }
+                    return next;
+                  });
+                }}
+                onPlayerChange={updateRematchPlayer}
+                onStart={handleRematch}
+              />
             ) : (
               <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: 12, lineHeight: 1.6 }}>
                 ルームの主が「もう一度遊ぶ」を押すと、このまま新しいゲームに切り替わります。
@@ -368,7 +497,7 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
         </div>
 
         <div style={{
-          background: canTakeTurn ? 'rgba(138,111,58,.14)' : 'rgba(255,255,255,.06)',
+          background: gameState.status === 'deciding-starter' ? '#fff8df' : canTakeTurn ? 'rgba(138,111,58,.14)' : 'rgba(255,255,255,.06)',
           color: canTakeTurn ? '#2e7d32' : 'var(--text-muted)',
           border: `1.5px solid ${canTakeTurn ? '#9ac99b' : 'var(--border)'}`,
           borderRadius: 15,
@@ -378,7 +507,9 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
           fontSize: 13,
           fontWeight: 900,
         }}>
-          {canTakeTurn ? '⚔ そなたの番' : `${currentPlayer.name} の番…`}
+          {gameState.status === 'deciding-starter'
+            ? 'スタートプレイヤーを決めます'
+            : canTakeTurn ? '⚔ そなたの番' : `${currentPlayer.name} の番…`}
           <div style={{ marginTop: 4, fontSize: 12, fontWeight: 700 }}>
             {isCpuThinking ? 'CPU思考中...' : isWriting ? '同期中...' : message}
           </div>
@@ -396,12 +527,20 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
           isCpuThinking={isCpuThinking}
           message={message}
           viewPlayerId={myPlayerId}
-          pendingOverlay={gameState.pendingAction ? (
+          pendingOverlay={gameState.status === 'deciding-starter' ? (
+            <StarterDecisionPanel
+              state={gameState}
+              onDecideStarter={handleDecideStarter}
+              hostOnly
+              canDecide={isHostClient && !isWriting}
+            />
+          ) : gameState.pendingAction ? (
             <PendingPanel
               state={gameState}
               onColorChoice={handleColorChoice}
               onSwapPick={handleSwapPick}
               onUnoDeclare={handleUnoDeclare}
+              onPassDrawnCard={handlePassDrawnCard}
             />
           ) : null}
           onPlay={handlePlayCard}
@@ -432,5 +571,128 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
         </div>
       </div>
     </Layout>
+  );
+}
+
+function RematchSettingsPanel({
+  variant,
+  playerCount,
+  players,
+  roomRow,
+  isWriting,
+  onVariantChange,
+  onPlayerCountChange,
+  onPlayerChange,
+  onStart,
+}: {
+  variant: UnoVariant;
+  playerCount: number;
+  players: UnoPlayerConfig[];
+  roomRow: UnoRoomRow | null;
+  isWriting: boolean;
+  onVariantChange: (variant: UnoVariant) => void;
+  onPlayerCountChange: (count: number) => void;
+  onPlayerChange: (index: number, patch: Partial<UnoPlayerConfig>) => void;
+  onStart: () => void;
+}) {
+  const maxPlayers = variant === 'hard' ? 6 : 10;
+  const activePlayers = Array.from({ length: playerCount }, (_, index) => {
+    const fallback: UnoPlayerConfig = {
+      name: index === 0 ? 'ホスト' : getUnoCpuDisplayName('normal'),
+      isCpu: index !== 0,
+      cpuLevel: 'normal',
+    };
+    return players[index] ?? fallback;
+  });
+
+  return (
+    <div className="uno-rematch-panel">
+      <strong>同じルームで設定して再戦</strong>
+      <span>人数とCPUを選び直してから始めます。新しい対戦も、開始前にカードを引いて先手を決めます。</span>
+
+      <div className="uno-rematch-options">
+        <button type="button" onClick={() => onVariantChange('standard')} disabled={isWriting} className={variant === 'standard' ? 'is-selected' : ''}>
+          通常版
+        </button>
+        <button type="button" onClick={() => onVariantChange('hard')} disabled={isWriting} className={variant === 'hard' ? 'is-selected' : ''}>
+          ハード版
+        </button>
+      </div>
+
+      <div className="uno-rematch-count-grid" aria-label="人数選択">
+        {Array.from({ length: maxPlayers - 1 }, (_, index) => index + 2).map((count) => (
+          <button
+            key={count}
+            type="button"
+            className={playerCount === count ? 'is-selected' : ''}
+            onClick={() => onPlayerCountChange(count)}
+            disabled={isWriting}
+          >
+            {count}人
+          </button>
+        ))}
+      </div>
+
+      <div className="uno-rematch-player-list">
+        {activePlayers.map((player, index) => {
+          const slotValue = getUnoSlotValue(roomRow ?? {}, index);
+          const humanJoined = index === 0 || (!!slotValue && !slotValue.startsWith('cpu-player-'));
+          const cpuLevel = player.cpuLevel ?? 'normal';
+          return (
+            <div key={index} className="uno-rematch-player-row">
+              <div className="uno-rematch-player-head">
+                <strong>プレイヤー{index + 1}</strong>
+                <span>{index === 0 ? 'ルームの主' : humanJoined ? '参加済み' : player.isCpu ? 'CPU' : '未参加'}</span>
+              </div>
+              <input
+                value={player.name}
+                onChange={(event) => onPlayerChange(index, { name: event.target.value })}
+                placeholder={index === 0 ? 'ホスト' : player.isCpu ? getUnoCpuDisplayName(cpuLevel) : `プレイヤー${index + 1}`}
+                disabled={isWriting}
+              />
+              {index > 0 && (
+                <div className="uno-rematch-toggle">
+                  <button
+                    type="button"
+                    className={!player.isCpu ? 'is-selected' : ''}
+                    onClick={() => onPlayerChange(index, { isCpu: false })}
+                    disabled={isWriting || !humanJoined}
+                  >
+                    人間
+                  </button>
+                  <button
+                    type="button"
+                    className={player.isCpu ? 'is-selected' : ''}
+                    onClick={() => onPlayerChange(index, { isCpu: true, name: player.name || getUnoCpuDisplayName(cpuLevel) })}
+                    disabled={isWriting}
+                  >
+                    CPU
+                  </button>
+                </div>
+              )}
+              {player.isCpu && index > 0 && (
+                <div className="uno-rematch-level-grid">
+                  {UNO_CPU_LEVELS.map((level) => (
+                    <button
+                      key={level}
+                      type="button"
+                      className={cpuLevel === level ? 'is-selected' : ''}
+                      onClick={() => onPlayerChange(index, { cpuLevel: level, name: getUnoCpuDisplayName(level) })}
+                      disabled={isWriting}
+                    >
+                      {getUnoCpuLevelLabel(level).replace(/^[^ ]+ /, '')}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      <button type="button" className="uno-rematch-start-button" onClick={onStart} disabled={isWriting}>
+        この設定で再戦
+      </button>
+    </div>
   );
 }

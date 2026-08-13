@@ -54,7 +54,7 @@ export function UnoTableView({
     isUno: state.unoDeclaredIds.includes(player.id) && (state.hands[player.id]?.length ?? 0) === 1,
   }));
   const myIsUno = state.unoDeclaredIds.includes(myPlayer.id) && (state.hands[myPlayer.id]?.length ?? 0) === 1;
-  const canUseDeck = canAct && (state.pendingDrawCount > 0 || playableIds.size === 0);
+  const canUseDeck = canAct && (state.pendingDrawCount > 0 || state.pendingAction === null);
   const turnFlow = getTurnFlowPlayers(state);
   const directionLabel = state.direction === 'clockwise' ? '時計回り' : '反時計回り';
   const [helpCard, setHelpCard] = useState<UnoCard | null>(null);
@@ -467,7 +467,7 @@ function UnoHandFan({
   onCardInfo: (card: UnoCard) => void;
 }) {
   const isDense = hand.length > 14;
-  const maxSpread = hand.length <= 8 ? 54 : hand.length <= 14 ? 48 : hand.length <= 22 ? 42 : 38;
+  const maxSpread = hand.length <= 8 ? 58 : hand.length <= 14 ? 54 : hand.length <= 22 ? 58 : 56;
   const center = (hand.length - 1) / 2;
   const fanWidth = Math.max(340, 116 + Math.max(0, hand.length - 1) * maxSpread);
 
@@ -501,6 +501,7 @@ function UnoHandFan({
                   playable={playable}
                   onClick={playable ? () => onPlay(card) : undefined}
                 />
+                {isDense && <span className="uno-dense-card-label">{getCompactCardLabel(card)}</span>}
                 {hasHelp && (
                   <button
                     type="button"
@@ -534,7 +535,7 @@ function UnoHandFan({
           {pendingDrawCount > 0
             ? `中央の山札を押すと${pendingDrawCount}枚引きます`
             : canAct && playableIds.size > 0
-              ? '出せるカードがあります'
+              ? '引くと、引いたカードだけ出せます'
               : '出せない時は中央の山札を押します'}
         </span>
       </div>
@@ -545,6 +546,30 @@ function UnoHandFan({
 function hasCardEffectHelp(card: UnoCard, variant: UnoVariant): boolean {
   if (card.kind === 'number') return variant === 'hard' && (card.value === 0 || card.value === 7);
   return true;
+}
+
+function getCompactCardLabel(card: UnoCard): string {
+  if (card.kind === 'number') return `${card.value}`;
+  if (card.kind === 'action') {
+    const labels = {
+      skip: '休',
+      reverse: '反',
+      draw2: '+2',
+      draw4: '+4',
+      'discard-all': '全',
+    } as const;
+    return labels[card.symbol];
+  }
+  const labels = {
+    wild: '色',
+    'wild-draw4': '+4',
+    'wild-draw6': '+6',
+    'wild-draw10': '+10',
+    'wild-reverse-draw4': '反4',
+    'wild-color-roulette': 'ル',
+    'wild-skip-all': '全休',
+  } as const;
+  return labels[card.symbol];
 }
 
 function CardHelpPanel({

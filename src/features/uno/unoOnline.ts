@@ -183,7 +183,10 @@ export function canApplyUnoOnlineAction(
   const pending = state.pendingAction;
 
   if (action === 'turn') {
-    return pending === null && state.currentPlayerId === myPlayerId;
+    return (
+      state.currentPlayerId === myPlayerId &&
+      (pending === null || (pending.kind === 'drawn-card-play' && pending.playerId === myPlayerId))
+    );
   }
   if (action === 'color-pick') {
     return pending?.kind === 'color-pick' && pending.chooserPlayerId === myPlayerId;

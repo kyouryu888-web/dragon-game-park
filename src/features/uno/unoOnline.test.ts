@@ -42,7 +42,7 @@ function state(): UnoGameState {
       { name: 'B', isCpu: false, cpuLevel: 'normal' },
     ],
   });
-  return { ...initial, currentPlayerId: 'player-1' };
+  return { ...initial, status: 'playing', currentPlayerId: 'player-1' };
 }
 
 describe('UNO online room helpers', () => {
@@ -97,6 +97,15 @@ describe('UNO online room helpers', () => {
 describe('UNO online action permissions', () => {
   it('allows only the current player to take turn actions', () => {
     const s = state();
+    expect(canApplyUnoOnlineAction(s, 'player-1', 'turn')).toBe(true);
+    expect(canApplyUnoOnlineAction(s, 'player-2', 'turn')).toBe(false);
+  });
+
+  it('allows the current player to play only a drawn playable card', () => {
+    const s: UnoGameState = {
+      ...state(),
+      pendingAction: { kind: 'drawn-card-play', playerId: 'player-1', cardId: 'drawn' },
+    };
     expect(canApplyUnoOnlineAction(s, 'player-1', 'turn')).toBe(true);
     expect(canApplyUnoOnlineAction(s, 'player-2', 'turn')).toBe(false);
   });

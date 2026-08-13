@@ -4,6 +4,7 @@ import { getCardDrawValue, getNextPlayerId, getPlayableCards } from './unoRules'
 export type UnoCpuAction =
   | { type: 'play-card'; cardId: string; color?: UnoColor }
   | { type: 'draw-card' }
+  | { type: 'pass-drawn-card' }
   | { type: 'accept-draw' }
   | { type: 'choose-color'; color: UnoColor }
   | { type: 'choose-swap'; targetPlayerId: UnoPlayerId }
@@ -115,6 +116,10 @@ export function chooseUnoCpuAction(
     return target ? { type: 'choose-swap', targetPlayerId: target.id } : null;
   }
   if (pending?.kind === 'color-roulette') return { type: 'roulette-step' };
+  if (pending?.kind === 'drawn-card-play' && pending.playerId === playerId) {
+    const drawnCard = (state.hands[playerId] ?? []).find((card) => card.id === pending.cardId);
+    return drawnCard ? { type: 'play-card', cardId: drawnCard.id, color: drawnCard.kind === 'wild' ? chooseUnoColor(state, playerId) : undefined } : { type: 'pass-drawn-card' };
+  }
 
   if (state.currentPlayerId !== playerId) return null;
 
