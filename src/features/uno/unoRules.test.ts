@@ -10,12 +10,15 @@ import {
   applyPassDrawnCard,
   applyPlayCard,
   applyStarterDraw,
+  applyStartGame,
   applySwapPick,
   canPlayCard,
   getPlayableCards,
+  sanitizeUnoStateForVariant,
 } from './unoRules';
 import { getUnoCpuDisplayName } from './unoCpu';
 import { getUnoCardScore, getUnoHandScore, getUnoRankings } from './unoScoring';
+import { isUnoCardAllowedInVariant, sortUnoHandByColor } from './unoCardUtils';
 
 const players: UnoPlayerConfig[] = [
   { name: 'A', isCpu: false, cpuLevel: 'normal' },
@@ -82,6 +85,11 @@ describe('UNO deck and setup', () => {
     expect(createHardDeck()).toHaveLength(144);
   });
 
+  it('does not include hard-only cards in the standard deck', () => {
+    expect(createStandardDeck().every((card) => isUnoCardAllowedInVariant(card, 'standard'))).toBe(true);
+    expect(createHardDeck().some((card) => !isUnoCardAllowedInVariant(card, 'standard'))).toBe(true);
+  });
+
   it('deals 7 cards to each player and leaves a top discard', () => {
     const state = createInitialUnoState({ variant: 'standard', playerConfigs: players });
     expect(state.status).toBe('deciding-starter');
@@ -135,13 +143,34 @@ describe('UNO normal rules', () => {
     };
 
     const next = applyStarterDraw(state);
-    expect(next.status).toBe('playing');
+    expect(next.status).toBe('starter-ready');
     expect(next.currentPlayerId).toBe('player-3');
     expect(next.starterDraws.map((draw) => [draw.playerId, draw.value])).toEqual([
       ['player-1', 5],
       ['player-2', 0],
       ['player-3', 7],
     ]);
+  });
+
+  it('starts the game only after the starter draw is confirmed', () => {
+    let state = baseState3('standard');
+    state = {
+      ...state,
+      status: 'deciding-starter',
+      deck: [
+        numberCard('p1-draw', 'red', 5),
+        numberCard('p2-draw', 'blue', 8),
+        numberCard('p3-draw', 'green', 7),
+      ],
+    };
+
+    const decided = applyStarterDraw(state);
+    expect(decided.status).toBe('starter-ready');
+    expect(canPlayCard(decided, numberCard('red-play', 'red', 1))).toBe(false);
+
+    const started = applyStartGame(decided);
+    expect(started.status).toBe('playing');
+    expect(started.currentPlayerId).toBe('player-2');
   });
 
   it('redraws only tied starter candidates until one player is highest', () => {
@@ -160,12 +189,54 @@ describe('UNO normal rules', () => {
 
     const next = applyStarterDraw(state);
     expect(next.currentPlayerId).toBe('player-2');
+    expect(next.status).toBe('starter-ready');
     expect(next.starterDraws.map((draw) => [draw.round, draw.playerId, draw.value])).toEqual([
       [1, 'player-1', 6],
       [1, 'player-2', 6],
       [1, 'player-3', 2],
       [2, 'player-1', 3],
       [2, 'player-2', 8],
+    ]);
+  });
+
+  it('blocks and sanitizes hard-only cards in standard games', () => {
+    const hardOnly: UnoCard = { id: 'hard-only', kind: 'wild', symbol: 'wild-color-roulette' };
+    const standardDraw4: UnoCard = { id: 'draw4', kind: 'wild', symbol: 'wild-draw4' };
+    const state: UnoGameState = {
+      ...baseState('standard'),
+      hands: { 'player-1': [hardOnly, numberCard('red-1', 'red', 1)], 'player-2': [] },
+      deck: [hardOnly, numberCard('blue-2', 'blue', 2)],
+      discardPile: [hardOnly, numberCard('red-top', 'red', 5)],
+      starterDraws: [{ playerId: 'player-1', card: hardOnly, value: 0, round: 1 }],
+    };
+
+    expect(canPlayCard(state, hardOnly)).toBe(false);
+    expect(canPlayCard(state, standardDraw4)).toBe(true);
+
+    const clean = sanitizeUnoStateForVariant(state);
+    expect(clean.hands['player-1'].map((card) => card.id)).toEqual(['red-1']);
+    expect(clean.deck.map((card) => card.id)).toEqual(['blue-2']);
+    expect(clean.discardPile[0]?.id).toBe('red-top');
+    expect(clean.starterDraws).toEqual([]);
+  });
+
+  it('sorts hands by color and then card face for readability', () => {
+    const hand: UnoCard[] = [
+      { id: 'wild', kind: 'wild', symbol: 'wild' },
+      numberCard('blue-1', 'blue', 1),
+      draw2('red-draw2', 'red'),
+      numberCard('red-0', 'red', 0),
+      numberCard('yellow-9', 'yellow', 9),
+      numberCard('green-3', 'green', 3),
+    ];
+
+    expect(sortUnoHandByColor(hand).map((card) => card.id)).toEqual([
+      'red-0',
+      'red-draw2',
+      'yellow-9',
+      'green-3',
+      'blue-1',
+      'wild',
     ]);
   });
 

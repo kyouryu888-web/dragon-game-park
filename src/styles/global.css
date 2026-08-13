@@ -1311,44 +1311,86 @@ button {
 .uno-starter-draw-grid {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+  grid-template-columns: 1fr;
+  gap: 10px;
   margin: 0 0 12px;
 }
-.uno-starter-draw-grid > div {
+.uno-starter-round {
   display: grid;
-  grid-template-columns: 1fr auto;
   gap: 8px;
+}
+.uno-starter-round-title {
+  color: #7a5010;
+  font-size: 12px;
+}
+.uno-starter-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 10px;
   align-items: center;
-  min-height: 42px;
+  min-height: 76px;
   padding: 8px 10px;
-  border-radius: 12px;
+  border-radius: 14px;
   border: 2px solid #d2ae61;
   background: #fffdf8;
   color: #3b2414;
   box-shadow: 0 2px 8px rgba(58, 37, 24, 0.10);
 }
-.uno-starter-draw-grid strong {
+.uno-starter-card .uno-card {
+  width: 54px !important;
+  min-width: 54px;
+}
+.uno-starter-card strong {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.uno-starter-draw-grid span {
+.uno-starter-card span {
   display: grid;
   place-items: center;
-  width: 34px;
+  min-width: 44px;
   height: 34px;
+  padding: 0 8px;
   border-radius: 999px;
   background: #352013;
   color: #fff3c9;
   font-weight: 950;
 }
-.uno-starter-draw-grid > div.is-best {
+.uno-starter-card.is-best {
   border-color: #2f7d53;
   background: #e9f7e8;
+  box-shadow: 0 0 0 4px rgba(47, 125, 83, 0.18), 0 8px 20px rgba(47, 125, 83, 0.16);
 }
-.uno-starter-draw-grid > div.is-best span {
+.uno-starter-card.is-best span {
   background: #2f7d53;
+}
+.uno-room-code-card {
+  display: inline-grid;
+  gap: 10px;
+  justify-items: center;
+  margin: 8px auto;
+  padding: 16px 24px;
+  border: 2px solid #e8c870;
+  border-radius: 18px;
+  background: rgba(255, 253, 248, 0.96);
+  color: var(--brown);
+}
+.uno-room-code-card span {
+  font-family: monospace;
+  font-size: 34px;
+  font-weight: 950;
+  letter-spacing: 10px;
+}
+.uno-room-code-card button {
+  min-height: 38px;
+  border-radius: 12px;
+  border: 1.5px solid #b88932;
+  background: #fffdf8;
+  color: var(--brown);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 900;
 }
 .uno-rematch-panel {
   display: grid;
@@ -1526,7 +1568,7 @@ button {
   margin: 0 auto;
 }
 .uno-hand-fan.is-dense {
-  height: 164px;
+  height: 174px;
 }
 .uno-hand-card {
   position: absolute;

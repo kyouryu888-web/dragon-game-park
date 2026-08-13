@@ -11,11 +11,13 @@ import {
   applyPassDrawnCard,
   applyPlayCard,
   applyStarterDraw,
+  applyStartGame,
   applySwapPick,
   applyUnoDeclaration,
   canPlayCard,
   getNextPlayerId,
   getPlayableCards,
+  sanitizeUnoStateForVariant,
 } from './unoRules';
 import { chooseUnoCpuAction, getUnoCpuDisplayName, getUnoCpuLevelLabel } from './unoCpu';
 import { getUnoCardName, UNO_COLOR_LABELS } from './unoCardMeta';
@@ -25,9 +27,11 @@ import { UnoRulesPanel } from './UnoRulesPanel';
 import { createInitialUnoState } from './createInitialUnoState';
 import {
   canApplyUnoOnlineAction,
+  countUnoJoined,
   getUnoGuestFieldByPlayerIndex,
   getUnoSlotValue,
   getUnoOnlinePlayerId,
+  isUnoRoomReady,
   UNO_CPU_LEVELS,
   UNO_GUEST_FIELDS,
   type UnoRoomRow,
@@ -80,8 +84,9 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
     }
 
     const row = data as UnoRoomRow;
+    const cleanState = sanitizeUnoStateForVariant(row.game_state as UnoGameState);
     setRoomRow(row);
-    setGameState(row.game_state as UnoGameState);
+    setGameState(cleanState);
     setRoomVersion(row.version);
     setIsHostClient(row.host_id === getUnoOnlinePlayerId() || myPlayerId === 'player-1');
     if (nextMessage) setMessage(nextMessage);
@@ -118,8 +123,9 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
     }
 
     const row = data as UnoRoomRow;
+    const cleanState = sanitizeUnoStateForVariant(row.game_state as UnoGameState);
     setRoomRow(row);
-    setGameState(row.game_state as UnoGameState);
+    setGameState(cleanState);
     setRoomVersion(row.version);
     if (nextMessage) setMessage(nextMessage);
     setIsWriting(false);
@@ -139,8 +145,9 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
           if (cancelled) return;
           const row = payload.new as UnoRoomRow;
           if ((row.version ?? 0) < versionRef.current) return;
+          const cleanState = sanitizeUnoStateForVariant(row.game_state as UnoGameState);
           setRoomRow(row);
-          setGameState(row.game_state as UnoGameState);
+          setGameState(cleanState);
           setRoomVersion(row.version);
         },
       )
@@ -212,22 +219,17 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
       };
     });
 
-    const missingHumanSlot = playerConfigs.findIndex((config, index) => {
-      if (index === 0 || config.isCpu) return false;
-      const slotValue = getUnoSlotValue(row, index);
-      return !slotValue || slotValue.startsWith('cpu-player-');
-    });
-    if (missingHumanSlot >= 0) {
-      setMessage(`プレイヤー${missingHumanSlot + 1}を人間にするには、その人が先にルームへ参加している必要があります。`);
-      return;
-    }
-
     const guestUpdates: Partial<UnoRoomRow> = {};
     for (const field of UNO_GUEST_FIELDS) guestUpdates[field] = null;
     for (let index = 1; index < rematchPlayerCount; index++) {
       const field = getUnoGuestFieldByPlayerIndex(index);
       if (!field) continue;
-      guestUpdates[field] = playerConfigs[index]?.isCpu ? `cpu-player-${index + 1}` : getUnoSlotValue(row, index);
+      const existingSlot = getUnoSlotValue(row, index);
+      guestUpdates[field] = playerConfigs[index]?.isCpu
+        ? `cpu-player-${index + 1}`
+        : existingSlot && !existingSlot.startsWith('cpu-player-')
+          ? existingSlot
+          : null;
     }
 
     const next = createInitialUnoState({ variant: rematchVariant, playerConfigs });
@@ -256,7 +258,7 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
         setRoomRow(nextRow);
         setGameState(nextRow.game_state as UnoGameState);
         setRoomVersion(nextRow.version);
-        setMessage('同じルームで新しいUNOを始めます。');
+        setMessage(isUnoRoomReady(nextRow) ? '同じルームで新しいUNOを始めます。' : '人間プレイヤーの参加を待っています。');
         setIsWriting(false);
       });
   }, [
@@ -297,7 +299,13 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
 
   const handleDecideStarter = useCallback(() => {
     if (!gameState || !isHostClient || isWriting) return;
-    void updateRemoteState((state) => applyStarterDraw(state), 'スタートプレイヤーが決まりました。');
+    void updateRemoteState((state) => applyStarterDraw(state), '引いたカードを確認してください。');
+  }, [gameState, isHostClient, isWriting, updateRemoteState]);
+
+  const handleStartGame = useCallback(() => {
+    if (!gameState || !isHostClient || isWriting) return;
+    const starterName = gameState.players.find((player) => player.id === gameState.currentPlayerId)?.name ?? 'スタートプレイヤー';
+    void updateRemoteState((state) => applyStartGame(state), `${starterName} から始めます。`);
   }, [gameState, isHostClient, isWriting, updateRemoteState]);
 
   const handleAcceptDraw = useCallback(() => {
@@ -407,6 +415,21 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
         <div style={{ textAlign: 'center', padding: '60px 20px' }}>
           <p style={{ color: 'var(--text-muted)', marginBottom: 20 }}>ルームの気配が途絶えた…。</p>
           <Button onClick={onBackToHome}>ホームへ戻る</Button>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (roomRow && !isUnoRoomReady(roomRow)) {
+    return (
+      <Layout>
+        <div style={{ padding: '36px 20px' }}>
+          <UnoOnlineWaitingPanel
+            roomCode={roomCode}
+            joinedCount={countUnoJoined(roomRow)}
+            playerCount={roomRow.player_count}
+            onBackToHome={onBackToHome}
+          />
         </div>
       </Layout>
     );
@@ -527,10 +550,11 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
           isCpuThinking={isCpuThinking}
           message={message}
           viewPlayerId={myPlayerId}
-          pendingOverlay={gameState.status === 'deciding-starter' ? (
+          pendingOverlay={gameState.status === 'deciding-starter' || gameState.status === 'starter-ready' ? (
             <StarterDecisionPanel
               state={gameState}
               onDecideStarter={handleDecideStarter}
+              onStartGame={handleStartGame}
               hostOnly
               canDecide={isHostClient && !isWriting}
             />
@@ -571,6 +595,43 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
         </div>
       </div>
     </Layout>
+  );
+}
+
+function UnoOnlineWaitingPanel({
+  roomCode,
+  joinedCount,
+  playerCount,
+  onBackToHome,
+}: {
+  roomCode: string;
+  joinedCount: number;
+  playerCount: number;
+  onBackToHome: () => void;
+}) {
+  const [copyMessage, setCopyMessage] = useState('');
+
+  async function copyRoomCode() {
+    try {
+      await navigator.clipboard.writeText(roomCode);
+      setCopyMessage('コピーしました');
+    } catch {
+      setCopyMessage('コピーできませんでした。コードを選んでコピーしてください。');
+    }
+  }
+
+  return (
+    <div className="uno-rematch-panel" style={{ textAlign: 'center' }}>
+      <strong>参加待ちです</strong>
+      <span>人間プレイヤーにこのコードを送って、ルームに参加してもらってください。</span>
+      <div className="uno-room-code-card">
+        <span>{roomCode}</span>
+        <button type="button" onClick={copyRoomCode}>コードをコピー</button>
+      </div>
+      {copyMessage && <small>{copyMessage}</small>}
+      <span>{joinedCount} / {playerCount} 人参加済み</span>
+      <Button variant="ghost" fullWidth onClick={onBackToHome}>ホームへ戻る</Button>
+    </div>
   );
 }
 
@@ -656,7 +717,7 @@ function RematchSettingsPanel({
                     type="button"
                     className={!player.isCpu ? 'is-selected' : ''}
                     onClick={() => onPlayerChange(index, { isCpu: false })}
-                    disabled={isWriting || !humanJoined}
+                    disabled={isWriting}
                   >
                     人間
                   </button>

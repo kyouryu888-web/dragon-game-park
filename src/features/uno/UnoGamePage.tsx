@@ -12,6 +12,7 @@ import {
   applyPassDrawnCard,
   applyPlayCard,
   applyStarterDraw,
+  applyStartGame,
   applySwapPick,
   applyUnoDeclaration,
   canPlayCard,
@@ -23,6 +24,7 @@ import { UNO_COLOR_LABELS, getUnoCardName } from './unoCardMeta';
 import { UnoRulesPanel } from './UnoRulesPanel';
 import { UnoTableView } from './UnoTableView';
 import { getUnoRankings, type UnoRankingEntry } from './unoScoring';
+import { UnoCardView } from './UnoCardView';
 
 const COLOR_BUTTONS: Array<{ color: UnoColor; bg: string }> = [
   { color: 'red', bg: '#df352c' },
@@ -100,8 +102,13 @@ export function UnoGamePage({ config, onBackToSetup, onBackToHome }: UnoGamePage
   }, [applyState, canHumanAct, currentPlayer.name]);
 
   const handleDecideStarter = useCallback(() => {
-    applyState((state) => applyStarterDraw(state), 'スタートプレイヤーが決まりました。');
+    applyState((state) => applyStarterDraw(state), '引いたカードを確認してください。');
   }, [applyState]);
+
+  const handleStartGame = useCallback(() => {
+    const starterName = gameState.players.find((player) => player.id === gameState.currentPlayerId)?.name ?? 'スタートプレイヤー';
+    applyState((state) => applyStartGame(state), `${starterName} から始めます。`);
+  }, [applyState, gameState.currentPlayerId, gameState.players]);
 
   const handleAcceptDraw = useCallback(() => {
     if (!canHumanAct || gameState.pendingDrawCount <= 0) return;
@@ -266,8 +273,8 @@ export function UnoGamePage({ config, onBackToSetup, onBackToHome }: UnoGamePage
               canAct={canHumanAct}
               isCpuThinking={isCpuThinking}
               message={message}
-              pendingOverlay={gameState.status === 'deciding-starter' ? (
-                <StarterDecisionPanel state={gameState} onDecideStarter={handleDecideStarter} />
+              pendingOverlay={gameState.status === 'deciding-starter' || gameState.status === 'starter-ready' ? (
+                <StarterDecisionPanel state={gameState} onDecideStarter={handleDecideStarter} onStartGame={handleStartGame} />
               ) : pending ? (
                 <PendingPanel
                   state={gameState}
@@ -468,43 +475,60 @@ export function PendingPanel({
 export function StarterDecisionPanel({
   state,
   onDecideStarter,
+  onStartGame,
   hostOnly = false,
   canDecide = true,
 }: {
   state: UnoGameState;
   onDecideStarter: () => void;
+  onStartGame: () => void;
   hostOnly?: boolean;
   canDecide?: boolean;
 }) {
   const latestRound = state.starterDraws.reduce((max, draw) => Math.max(max, draw.round), 0);
-  const latestDraws = latestRound > 0 ? state.starterDraws.filter((draw) => draw.round === latestRound) : [];
-  const bestValue = latestDraws.length > 0 ? Math.max(...latestDraws.map((draw) => draw.value)) : null;
+  const rounds = Array.from({ length: latestRound }, (_, index) => index + 1);
+  const finalDraws = latestRound > 0 ? state.starterDraws.filter((draw) => draw.round === latestRound) : [];
+  const bestValue = finalDraws.length > 0 ? Math.max(...finalDraws.map((draw) => draw.value)) : null;
+  const starter = state.players.find((player) => player.id === state.currentPlayerId);
+  const isReady = state.status === 'starter-ready';
 
   return (
     <ActionPanel title="スタートプレイヤー決定">
       <p className="uno-pending-description">
         全員が山札から1まい引きます。数字がいちばん大きい人から始めます。記号やワイルドは0です。
       </p>
-      {latestDraws.length > 0 && (
+      {rounds.length > 0 && (
         <div className="uno-starter-draw-grid">
-          {latestDraws.map((draw) => {
-            const player = state.players.find((p) => p.id === draw.playerId);
-            return (
-              <div key={`${draw.round}-${draw.playerId}-${draw.card.id}`} className={draw.value === bestValue ? 'is-best' : ''}>
-                <strong>{player?.name ?? 'プレイヤー'}</strong>
-                <span>{draw.value}</span>
-              </div>
-            );
-          })}
+          {rounds.map((round) => (
+            <div key={round} className="uno-starter-round">
+              {latestRound > 1 && <strong className="uno-starter-round-title">{round}回目</strong>}
+              {state.starterDraws.filter((draw) => draw.round === round).map((draw) => {
+                const player = state.players.find((p) => p.id === draw.playerId);
+                const isBest = isReady && draw.round === latestRound && draw.value === bestValue;
+                return (
+                  <div key={`${draw.round}-${draw.playerId}-${draw.card.id}`} className={`uno-starter-card ${isBest ? 'is-best' : ''}`}>
+                    <strong>{player?.name ?? 'プレイヤー'}</strong>
+                    <UnoCardView card={draw.card} compact variant={state.variant} />
+                    <span>{draw.value}点</span>
+                  </div>
+                );
+              })}
+            </div>
+          ))}
         </div>
       )}
+      {isReady && (
+        <p className="uno-start-status">
+          スタートプレイヤーは <strong>{starter?.name ?? 'プレイヤー'}</strong> です。
+        </p>
+      )}
       <div className="uno-pending-target-grid">
-        <Button fullWidth onClick={onDecideStarter} disabled={!canDecide}>
-          カードを引いて決める
+        <Button fullWidth onClick={isReady ? onStartGame : onDecideStarter} disabled={!canDecide}>
+          {isReady ? 'ゲーム開始' : 'カードを引いて決める'}
         </Button>
       </div>
       {hostOnly && !canDecide && (
-        <p className="uno-pending-description">ルームを作った人が開始します。</p>
+        <p className="uno-pending-description">ルームを作った人が操作します。</p>
       )}
     </ActionPanel>
   );

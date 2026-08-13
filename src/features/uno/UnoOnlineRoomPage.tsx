@@ -3,7 +3,7 @@ import { Button } from '../../components/Button';
 import { Layout } from '../../components/Layout';
 import { supabase } from '../../lib/supabase';
 import { getUnoCpuDisplayName, getUnoCpuLevelLabel } from './unoCpu';
-import type { UnoCpuLevel, UnoVariant } from './unoTypes';
+import type { UnoCpuLevel, UnoGameState, UnoPlayerId, UnoVariant } from './unoTypes';
 import {
   buildUnoCpuPrefill,
   countUnoJoined,
@@ -12,6 +12,7 @@ import {
   findRejoinPlayerId,
   generateUnoRoomCode,
   getSavedUnoOnlineName,
+  getUnoGuestFieldByPlayerIndex,
   getUnoOnlinePlayerId,
   isUnoRoomReady,
   renameUnoPlayer,
@@ -49,6 +50,7 @@ export function UnoOnlineRoomPage({ onGameStart, onBack }: UnoOnlineRoomPageProp
   const [joinedCount, setJoinedCount] = useState(1);
   const [waitingPlayerCount, setWaitingPlayerCount] = useState(2);
   const [myWaitingPlayerId, setMyWaitingPlayerId] = useState('player-1');
+  const [copyMessage, setCopyMessage] = useState('');
 
   const maxPlayers = variant === 'hard' ? 6 : 10;
   const activeSlots = slots.slice(0, playerCount - 1);
@@ -65,6 +67,29 @@ export function UnoOnlineRoomPage({ onGameStart, onBack }: UnoOnlineRoomPageProp
   function handleNameChange(name: string) {
     setMyName(name);
     saveUnoOnlineName(name);
+  }
+
+  async function copyRoomCode() {
+    if (!roomCode) return;
+    try {
+      await navigator.clipboard.writeText(roomCode);
+      setCopyMessage('コピーしました');
+    } catch {
+      setCopyMessage('コピーできませんでした。コードを選んでコピーしてください。');
+    }
+  }
+
+  function findNameRejoinSlot(row: UnoRoomRow, currentState: UnoGameState | null, name: string): { playerId: UnoPlayerId; field: string } | null {
+    const trimmed = name.trim();
+    if (!trimmed || !currentState) return null;
+    for (let index = 1; index < row.player_count; index++) {
+      const field = getUnoGuestFieldByPlayerIndex(index);
+      const player = currentState.players[index];
+      const slotValue = field ? row[field] : null;
+      if (!field || !player || player.isCpu || !slotValue || slotValue.startsWith('cpu-player-')) continue;
+      if (player.name.trim() === trimmed) return { playerId: `player-${index + 1}`, field };
+    }
+    return null;
   }
 
   async function handleCreate() {
@@ -132,6 +157,7 @@ export function UnoOnlineRoomPage({ onGameStart, onBack }: UnoOnlineRoomPageProp
     }
 
     const row = data as UnoRoomRow;
+    const currentState = row.game_state as UnoGameState | null;
     const rejoinPlayerId = findRejoinPlayerId(row, playerId);
     if (rejoinPlayerId) {
       setRoomCode(code);
@@ -143,6 +169,31 @@ export function UnoOnlineRoomPage({ onGameStart, onBack }: UnoOnlineRoomPageProp
       return;
     }
 
+    const nameRejoin = findNameRejoinSlot(row, currentState, myName);
+    if (nameRejoin) {
+      const { data: updated, error: updateError } = await supabase
+        .from('uno_rooms')
+        .update({ [nameRejoin.field]: playerId, version: row.version + 1 })
+        .eq('room_code', code)
+        .eq('version', row.version)
+        .select('*')
+        .maybeSingle();
+
+      if (updateError || !updated) {
+        setError('再入室の途中で部屋の状態が変わりました。もう一度「参加する」を押してください。');
+        return;
+      }
+
+      const updatedRow = updated as UnoRoomRow;
+      setRoomCode(code);
+      setMyWaitingPlayerId(nameRejoin.playerId);
+      setWaitingPlayerCount(updatedRow.player_count);
+      setJoinedCount(countUnoJoined(updatedRow));
+      if (isUnoRoomReady(updatedRow)) onGameStart({ roomCode: code, myPlayerId: nameRejoin.playerId });
+      else setPageState('waiting');
+      return;
+    }
+
     const openSlot = findOpenUnoSlot(row);
     if (!openSlot) {
       setError('このUNOルームは満員です。');
@@ -150,7 +201,6 @@ export function UnoOnlineRoomPage({ onGameStart, onBack }: UnoOnlineRoomPageProp
     }
 
     const guestName = myName.trim() || `挑戦者${openSlot.playerIndex + 1}`;
-    const currentState = row.game_state as Parameters<typeof renameUnoPlayer>[0] | null;
     const updatedState = currentState
       ? renameUnoPlayer(currentState, openSlot.playerIndex, guestName)
       : undefined;
@@ -239,7 +289,8 @@ export function UnoOnlineRoomPage({ onGameStart, onBack }: UnoOnlineRoomPageProp
             相手にこのコードを送ってください。
           </p>
           <div style={{
-            display: 'inline-block',
+            display: 'inline-grid',
+            gap: 10,
             fontSize: 34,
             fontWeight: 900,
             letterSpacing: 10,
@@ -251,8 +302,31 @@ export function UnoOnlineRoomPage({ onGameStart, onBack }: UnoOnlineRoomPageProp
             padding: '18px 32px',
             marginBottom: 20,
           }}>
-            {roomCode}
+            <span>{roomCode}</span>
+            <button
+              type="button"
+              onClick={copyRoomCode}
+              style={{
+                minHeight: 38,
+                borderRadius: 12,
+                border: '1.5px solid #b88932',
+                background: '#fffdf8',
+                color: 'var(--brown)',
+                fontFamily: 'inherit',
+                fontSize: 13,
+                fontWeight: 900,
+                letterSpacing: 0,
+                cursor: 'pointer',
+              }}
+            >
+              コードをコピー
+            </button>
           </div>
+          {copyMessage && (
+            <div style={{ fontSize: 12, color: 'var(--brown)', fontWeight: 900, marginTop: -10, marginBottom: 14 }}>
+              {copyMessage}
+            </div>
+          )}
           <div style={{ fontSize: 14, color: 'var(--text-muted)', fontWeight: 900, marginBottom: 20 }}>
             {joinedCount} / {waitingPlayerCount} 人参加済み
           </div>
@@ -335,7 +409,7 @@ export function UnoOnlineRoomPage({ onGameStart, onBack }: UnoOnlineRoomPageProp
           <h2 style={sectionTitleStyle}>ルームに参加</h2>
           <input
             type="text"
-            placeholder="ABC123"
+            placeholder="ここにコードを入力"
             maxLength={6}
             value={inputCode}
             onChange={(event) => {
@@ -345,7 +419,7 @@ export function UnoOnlineRoomPage({ onGameStart, onBack }: UnoOnlineRoomPageProp
             onKeyDown={(event) => {
               if (event.key === 'Enter') void handleJoin();
             }}
-            style={{ ...inputStyle, fontSize: 22, letterSpacing: 8, textAlign: 'center', fontFamily: 'monospace' }}
+            style={{ ...inputStyle, fontSize: 22, letterSpacing: inputCode ? 8 : 0, textAlign: 'center', fontFamily: inputCode ? 'monospace' : 'inherit' }}
           />
           <div style={{ marginTop: 12 }}>
             <Button fullWidth variant="secondary" onClick={handleJoin}>
