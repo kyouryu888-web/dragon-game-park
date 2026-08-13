@@ -10,7 +10,7 @@ const STANDARD_RULES = [
 const HARD_RULES = [
   ['25まいでアウト', '手札が25まい以上で負けです。'],
   ['ドローをかさねる', '同じか大きいドローで返せます。'],
-  ['むげんドロー', '出せるカードが出るまで引きます。'],
+  ['山札から1まい', '引いたカードが出せる時は、そのカードだけ出せます。'],
   ['7 スワップ', 'えらんだ人と手札をぜんぶこうかん。'],
   ['0 パス', '全員がとなりの人に手札をわたします。'],
   ['カラー ルーレット', 'えらんだ色が出るまでひきつづけます。'],
@@ -23,7 +23,7 @@ export function UnoRulesPanel({ variant }: { variant: UnoVariant }) {
   return (
     <div style={{
       background: variant === 'hard' ? '#2a1114' : '#241d2b',
-      color: variant === 'hard' ? 'rgba(201,162,75,.12)' : 'var(--text-mid)',
+      color: variant === 'hard' ? '#f0dfae' : 'var(--text-mid)',
       border: `1.5px solid ${variant === 'hard' ? '#c33a30' : 'var(--border)'}`,
       borderRadius: 16,
       padding: '14px 14px',

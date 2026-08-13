@@ -18,34 +18,6 @@ function takeFirstNumberCard(deck: UnoCard[]): { topCard: UnoCard; deck: UnoCard
   };
 }
 
-function chooseStarterByNumberDraw(deck: UnoCard[], playerIds: UnoPlayerId[]): { starterId: UnoPlayerId; deck: UnoCard[] } {
-  if (playerIds.length === 0) return { starterId: 'player-1', deck };
-
-  let workingDeck = deck;
-  const drawn: Array<{ playerId: UnoPlayerId; card: UnoCard; value: number }> = [];
-
-  for (const playerId of playerIds) {
-    const cardIndex = workingDeck.findIndex((card) => card.kind === 'number');
-    if (cardIndex < 0) {
-      const fallback = playerIds[Math.floor(Math.random() * playerIds.length)] ?? playerIds[0]!;
-      return { starterId: fallback, deck: [...workingDeck, ...shuffleDeck(drawn.map((entry) => entry.card))] };
-    }
-
-    const card = workingDeck[cardIndex]!;
-    workingDeck = workingDeck.filter((_, index) => index !== cardIndex);
-    drawn.push({ playerId, card, value: card.kind === 'number' ? card.value : 0 });
-  }
-
-  const highValue = Math.max(...drawn.map((entry) => entry.value));
-  const winners = drawn.filter((entry) => entry.value === highValue);
-  const starter = winners[Math.floor(Math.random() * winners.length)] ?? winners[0] ?? drawn[0];
-
-  return {
-    starterId: starter?.playerId ?? playerIds[0]!,
-    deck: [...workingDeck, ...shuffleDeck(drawn.map((entry) => entry.card))],
-  };
-}
-
 export function createInitialUnoState(config: UnoConfig): UnoGameState {
   const rawDeck = config.variant === 'hard' ? createHardDeck() : createStandardDeck();
   let deck = shuffleDeck(rawDeck);
@@ -72,18 +44,16 @@ export function createInitialUnoState(config: UnoConfig): UnoGameState {
     deck = deck.slice(INITIAL_HAND_SIZE);
   }
 
-  const { starterId, deck: deckAfterStarterDraw } = chooseStarterByNumberDraw(deck, playerIds);
-  deck = deckAfterStarterDraw;
-
   return {
     gameId: crypto.randomUUID(),
     variant: config.variant,
-    status: 'playing',
+    status: 'deciding-starter',
     players,
     hands,
     deck,
     discardPile: [topCard],
-    currentPlayerId: starterId,
+    currentPlayerId: playerIds[0] ?? 'player-1',
+    starterDraws: [],
     direction: 'clockwise',
     activeColor: topCard.kind === 'wild' ? 'red' : topCard.color,
     pendingDrawCount: 0,

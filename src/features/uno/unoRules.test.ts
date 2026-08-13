@@ -7,9 +7,12 @@ import {
   applyColorChoice,
   applyColorRouletteStep,
   applyDrawCard,
+  applyPassDrawnCard,
   applyPlayCard,
+  applyStarterDraw,
   applySwapPick,
   canPlayCard,
+  getPlayableCards,
 } from './unoRules';
 import { getUnoCpuDisplayName } from './unoCpu';
 import { getUnoCardScore, getUnoHandScore, getUnoRankings } from './unoScoring';
@@ -43,6 +46,7 @@ function baseState(variant: 'standard' | 'hard' = 'standard'): UnoGameState {
     deck: [],
     discardPile: [numberCard('top', 'red', 5)],
     currentPlayerId: 'player-1',
+    starterDraws: [],
     direction: 'clockwise',
     activeColor: 'red',
     pendingDrawCount: 0,
@@ -80,6 +84,7 @@ describe('UNO deck and setup', () => {
 
   it('deals 7 cards to each player and leaves a top discard', () => {
     const state = createInitialUnoState({ variant: 'standard', playerConfigs: players });
+    expect(state.status).toBe('deciding-starter');
     expect(state.hands['player-1']).toHaveLength(7);
     expect(state.hands['player-2']).toHaveLength(7);
     expect(state.discardPile).toHaveLength(1);
@@ -117,37 +122,100 @@ describe('UNO normal rules', () => {
     expect(next.currentPlayerId).toBe('player-1');
   });
 
-  it('does not draw from the deck while a playable card is available', () => {
+  it('decides the starter by drawing number values before play begins', () => {
+    let state = baseState3('standard');
+    state = {
+      ...state,
+      status: 'deciding-starter',
+      deck: [
+        numberCard('p1-draw', 'red', 5),
+        { id: 'p2-draw', kind: 'action', color: 'blue', symbol: 'reverse' },
+        numberCard('p3-draw', 'green', 7),
+      ],
+    };
+
+    const next = applyStarterDraw(state);
+    expect(next.status).toBe('playing');
+    expect(next.currentPlayerId).toBe('player-3');
+    expect(next.starterDraws.map((draw) => [draw.playerId, draw.value])).toEqual([
+      ['player-1', 5],
+      ['player-2', 0],
+      ['player-3', 7],
+    ]);
+  });
+
+  it('redraws only tied starter candidates until one player is highest', () => {
+    let state = baseState3('standard');
+    state = {
+      ...state,
+      status: 'deciding-starter',
+      deck: [
+        numberCard('p1-tie', 'red', 6),
+        numberCard('p2-tie', 'blue', 6),
+        numberCard('p3-low', 'green', 2),
+        numberCard('p1-redraw', 'yellow', 3),
+        numberCard('p2-redraw', 'yellow', 8),
+      ],
+    };
+
+    const next = applyStarterDraw(state);
+    expect(next.currentPlayerId).toBe('player-2');
+    expect(next.starterDraws.map((draw) => [draw.round, draw.playerId, draw.value])).toEqual([
+      [1, 'player-1', 6],
+      [1, 'player-2', 6],
+      [1, 'player-3', 2],
+      [2, 'player-1', 3],
+      [2, 'player-2', 8],
+    ]);
+  });
+
+  it('allows drawing even when a playable card is available, but only the drawn card may be played', () => {
     let state = baseState('standard');
     state = {
       ...state,
-      hands: { ...state.hands, 'player-1': [numberCard('playable', 'red', 1)] },
-      deck: [numberCard('deck-card', 'blue', 2)],
+      hands: { ...state.hands, 'player-1': [numberCard('old-playable', 'red', 1)] },
+      deck: [numberCard('drawn-playable', 'red', 2)],
     };
 
     const next = applyDrawCard(state);
-    expect(next).toBe(state);
-    expect(next.hands['player-1']).toHaveLength(1);
-    expect(next.deck).toHaveLength(1);
+    expect(next.pendingAction).toEqual({ kind: 'drawn-card-play', playerId: 'player-1', cardId: 'drawn-playable' });
+    expect(getPlayableCards(next, 'player-1').map((card) => card.id)).toEqual(['drawn-playable']);
+
+    const blocked = applyPlayCard(next, 'old-playable');
+    expect(blocked).toBe(next);
+
+    const played = applyPlayCard(next, 'drawn-playable');
+    expect(played.discardPile[0]?.id).toBe('drawn-playable');
+    expect(played.currentPlayerId).toBe('player-2');
   });
 
-  it('draws until a playable card appears and plays it immediately', () => {
+  it('ends the turn when the drawn card cannot be played', () => {
     let state = baseState('standard');
     state = {
       ...state,
       hands: { ...state.hands, 'player-1': [] },
-      deck: [
-        numberCard('not-playable', 'blue', 1),
-        numberCard('play-now', 'red', 8),
-        numberCard('deck-left', 'green', 2),
-      ],
+      deck: [numberCard('not-playable', 'blue', 1), numberCard('deck-left', 'green', 2)],
     };
 
     const next = applyDrawCard(state);
-    expect(next.discardPile[0]?.id).toBe('play-now');
+    expect(next.discardPile[0]?.id).toBe('top');
     expect(next.hands['player-1'].map((card) => card.id)).toEqual(['not-playable']);
     expect(next.deck.map((card) => card.id)).toEqual(['deck-left']);
     expect(next.currentPlayerId).toBe('player-2');
+  });
+
+  it('can pass after drawing a playable card', () => {
+    let state = baseState('standard');
+    state = {
+      ...state,
+      deck: [numberCard('drawn-playable', 'red', 2)],
+    };
+
+    const next = applyDrawCard(state);
+    const passed = applyPassDrawnCard(next);
+    expect(passed.pendingAction).toBeNull();
+    expect(passed.discardPile[0]?.id).toBe('top');
+    expect(passed.currentPlayerId).toBe('player-2');
   });
 
   it('scores remaining cards by official UNO values and ranks by points', () => {

@@ -62,7 +62,7 @@ export type UnoPlayerConfig = {
 
 export type UnoConfig = {
   variant: UnoVariant;
-  /** playerConfigs[0] が最初の手番 */
+  /** プレイヤーの並び順。最初の手番は開始前のカード引きで決める */
   playerConfigs: UnoPlayerConfig[];
 };
 
@@ -98,19 +98,35 @@ export type PendingUnoWindow = {
   declared: boolean;
 };
 
+/** 山札から1枚引いた後、その引いたカードだけ出せる状態 */
+export type PendingDrawnCardPlay = {
+  kind: 'drawn-card-play';
+  playerId: UnoPlayerId;
+  cardId: string;
+};
+
 export type PendingAction =
   | PendingColorPick
   | PendingSwapPick
   | PendingColorRoulette
   | PendingUnoWindow
+  | PendingDrawnCardPlay
   | null;
+
+/** ゲーム開始前に、スタートプレイヤー決定のために引いたカード */
+export type UnoStarterDraw = {
+  playerId: UnoPlayerId;
+  card: UnoCard;
+  value: number;
+  round: number;
+};
 
 // ---- ゲーム全体の状態 ----
 
 export type UnoGameState = {
   gameId: string;
   variant: UnoVariant;
-  status: 'playing' | 'finished';
+  status: 'deciding-starter' | 'playing' | 'finished';
 
   /** 全プレイヤー（順番がターン順）*/
   players: UnoPlayer[];
@@ -126,6 +142,9 @@ export type UnoGameState = {
 
   /** 現在手番のプレイヤーID */
   currentPlayerId: UnoPlayerId;
+
+  /** 開始前のスタートプレイヤー決定に使ったカード */
+  starterDraws: UnoStarterDraw[];
 
   /** 進行方向 */
   direction: 'clockwise' | 'counterclockwise';
