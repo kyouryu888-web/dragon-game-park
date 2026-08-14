@@ -493,7 +493,7 @@ export function StarterDecisionPanel({
   const isReady = state.status === 'starter-ready';
 
   return (
-    <ActionPanel title="スタートプレイヤー決定">
+    <ActionPanel title="スタートプレイヤー決定" className="uno-starter-panel">
       <p className="uno-pending-description">
         全員が山札から1まい引きます。数字がいちばん大きい人から始めます。記号やワイルドは0です。
       </p>
@@ -534,9 +534,17 @@ export function StarterDecisionPanel({
   );
 }
 
-function ActionPanel({ title, children }: { title: string; children: React.ReactNode }) {
+function ActionPanel({
+  title,
+  children,
+  className = '',
+}: {
+  title: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
-    <div className="uno-pending-panel">
+    <div className={`uno-pending-panel ${className}`.trim()}>
       <h2 className="uno-pending-title">{title}</h2>
       {children}
     </div>

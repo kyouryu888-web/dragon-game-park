@@ -1185,13 +1185,17 @@ button {
 .uno-table-overlay {
   position: absolute;
   z-index: 8;
-  left: 50%;
-  top: 48%;
-  width: min(90%, 390px);
-  transform: translate(-50%, -50%);
+  inset: 12px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
 }
 .uno-table-overlay > div {
+  width: min(100%, 390px);
+  max-height: 100%;
   margin: 0 !important;
+  pointer-events: auto;
   box-shadow: 0 18px 48px rgba(8, 5, 4, 0.68), 0 0 0 999px rgba(12, 8, 5, 0.62) !important;
 }
 .uno-pending-panel {
@@ -1313,7 +1317,24 @@ button {
   display: grid;
   grid-template-columns: 1fr;
   gap: 10px;
+  min-height: 0;
   margin: 0 0 12px;
+  padding: 3px 7px 3px 3px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+.uno-starter-panel {
+  display: flex;
+  flex-direction: column;
+}
+.uno-starter-panel > .uno-pending-description,
+.uno-starter-panel > .uno-start-status,
+.uno-starter-panel > .uno-pending-target-grid {
+  flex: 0 0 auto;
+}
+.uno-starter-panel > .uno-starter-draw-grid {
+  flex: 1 1 auto;
 }
 .uno-starter-round {
   display: grid;
@@ -1328,8 +1349,8 @@ button {
   grid-template-columns: minmax(0, 1fr) auto auto;
   gap: 10px;
   align-items: center;
-  min-height: 76px;
-  padding: 8px 10px;
+  min-height: 66px;
+  padding: 6px 9px;
   border-radius: 14px;
   border: 2px solid #d2ae61;
   background: #fffdf8;
@@ -1337,8 +1358,8 @@ button {
   box-shadow: 0 2px 8px rgba(58, 37, 24, 0.10);
 }
 .uno-starter-card .uno-card {
-  width: 54px !important;
-  min-width: 54px;
+  width: 46px !important;
+  min-width: 46px;
 }
 .uno-starter-card strong {
   overflow: hidden;
@@ -1845,8 +1866,7 @@ button {
     font-size: 13px;
   }
   .uno-table-overlay {
-    width: calc(100% - 30px);
-    top: 50%;
+    inset: 10px;
   }
   .uno-pending-panel {
     padding: 16px 13px 14px;
@@ -1864,6 +1884,22 @@ button {
   }
   .uno-starter-draw-grid {
     grid-template-columns: 1fr;
+    gap: 7px;
+  }
+  .uno-starter-card {
+    grid-template-columns: minmax(0, 1fr) 44px 42px;
+    gap: 7px;
+    min-height: 60px;
+    padding: 5px 7px;
+  }
+  .uno-starter-card .uno-card {
+    width: 42px !important;
+    min-width: 42px;
+  }
+  .uno-starter-card span {
+    min-width: 40px;
+    height: 30px;
+    padding: 0 5px;
   }
   .uno-rematch-options {
     grid-template-columns: 1fr;
