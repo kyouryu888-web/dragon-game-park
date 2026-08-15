@@ -201,9 +201,15 @@ export function BabanukiPlayScreen({ config, onBackToSetup, onBackToHome }: Prop
 
   const currentPlayer = getPlayer(logic, logic.currentPlayerId);
   const currentName = currentPlayer.name || (currentPlayer.isCpu ? getCpuDisplayName(currentPlayer.cpuLevel) : 'プレイヤー');
-  const pendingDeclarer = logic.pendingShuffle ? getPlayer(logic, logic.pendingShuffle.declarerId) : null;
-  const pendingDeclarerName = pendingDeclarer
-    ? pendingDeclarer.name || (pendingDeclarer.isCpu ? getCpuDisplayName(pendingDeclarer.cpuLevel) : 'プレイヤー')
+  const activeShuffleEvent = playback.activeEvent?.kind === 'shuffle' ? playback.activeEvent : null;
+  const shufflePresentation = logic.pendingShuffle
+    ? { ...logic.pendingShuffle, stage: 'dice' as const }
+    : activeShuffleEvent
+      ? { declarerId: activeShuffleEvent.declarerId, dice: activeShuffleEvent.dice, stage: 'moving' as const }
+      : null;
+  const shuffleDeclarer = shufflePresentation ? getPlayer(logic, shufflePresentation.declarerId) : null;
+  const shuffleDeclarerName = shuffleDeclarer
+    ? shuffleDeclarer.name || (shuffleDeclarer.isCpu ? getCpuDisplayName(shuffleDeclarer.cpuLevel) : 'プレイヤー')
     : '';
   const shuffleState: 'ready' | 'used' | 'locked' = !viewer.shuffleRight
     ? 'used'
@@ -264,6 +270,7 @@ export function BabanukiPlayScreen({ config, onBackToSetup, onBackToHome }: Prop
         shuffleState={shuffleState}
         canShuffle={!isAnimating && canDeclareShuffle(logic, VIEWER_ID)}
         onShuffle={() => setLogic((s) => declareShuffle(s, VIEWER_ID))}
+        shuffleDice={shufflePresentation?.stage === 'moving' ? shufflePresentation.dice : null}
       />
 
       {/* 引く札の確認 */}
@@ -327,10 +334,11 @@ export function BabanukiPlayScreen({ config, onBackToSetup, onBackToHome }: Prop
         )}
       </div>
 
-      {logic.phase === 'rolling' && logic.pendingShuffle && (
+      {shufflePresentation && (
         <DiceResultPanel
-          dice={logic.pendingShuffle.dice}
-          declarerName={pendingDeclarerName}
+          dice={shufflePresentation.dice}
+          declarerName={shuffleDeclarerName}
+          stage={shufflePresentation.stage}
         />
       )}
 

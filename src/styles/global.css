@@ -2060,6 +2060,57 @@ button {
   will-change: transform, left, top;
 }
 
+@keyframes babanuki-shuffle-stack-glow {
+  0%, 100% { filter: drop-shadow(0 0 7px rgba(198, 128, 255, .55)); }
+  50% { filter: drop-shadow(0 0 18px rgba(236, 200, 255, .95)) brightness(1.18); }
+}
+.babanuki-flying.is-shuffle-stack {
+  animation: babanuki-shuffle-stack-glow .62s ease-in-out infinite;
+}
+
+@keyframes babanuki-table-surge {
+  0%, 100% { box-shadow: inset 0 0 18px rgba(120, 70, 160, .18), 0 0 0 rgba(180, 110, 230, 0); }
+  50% { box-shadow: inset 0 0 45px rgba(166, 92, 218, .38), 0 0 34px rgba(180, 110, 230, .28); }
+}
+.babanuki-table-surface.is-shuffling {
+  animation: babanuki-table-surge 1s ease-in-out infinite;
+}
+
+@keyframes babanuki-vortex-spin {
+  0% { opacity: 0; transform: translate(-50%, -50%) rotate(-160deg) scale(.3); }
+  35% { opacity: 1; }
+  100% { opacity: .72; transform: translate(-50%, -50%) rotate(200deg) scale(1.18); }
+}
+.babanuki-shuffle-vortex {
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  z-index: 0;
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #efd7ff;
+  font-size: 38px;
+  border: 2px solid rgba(206, 153, 244, .56);
+  background: radial-gradient(circle, rgba(112, 55, 148, .42), rgba(39, 21, 52, 0) 68%);
+  box-shadow: 0 0 24px rgba(186, 111, 233, .45), inset 0 0 20px rgba(234, 205, 255, .2);
+  pointer-events: none;
+  animation: babanuki-vortex-spin 1.25s cubic-bezier(.2,.8,.3,1) both;
+}
+.babanuki-table-surface.is-dice-4 .babanuki-shuffle-vortex {
+  animation: babanuki-skull-pulse 1.1s ease-in-out both;
+  border-color: rgba(190, 185, 175, .48);
+  background: radial-gradient(circle, rgba(88, 78, 92, .48), rgba(25, 22, 28, 0) 68%);
+}
+@keyframes babanuki-skull-pulse {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(1.8); filter: blur(5px); }
+  45% { opacity: 1; transform: translate(-50%, -50%) scale(.9); filter: blur(0); }
+  70% { transform: translate(-50%, -50%) scale(1.1) rotate(-5deg); }
+  100% { opacity: .82; transform: translate(-50%, -50%) scale(1) rotate(0); }
+}
+
 /* 勝ち抜けた座席の退場 */
 .babanuki-seat { transition: opacity 0.44s ease, transform 0.44s ease, left 0.58s ease, top 0.58s ease; }
 .babanuki-seat.is-leaving { opacity: 0; transform: scale(0.15) translateY(-10px); }
@@ -2072,6 +2123,66 @@ button {
 .babanuki-window { animation: babanuki-window-in 0.22s ease both; }
 @keyframes babanuki-window-bar { from { width: 100%; } to { width: 0%; } }
 
+/* シャッフルタイムの2段階結果パネル */
+.babanuki-shuffle-showcase {
+  position: fixed;
+  z-index: 9996;
+  top: 88px;
+  right: 16px;
+  overflow: hidden;
+  width: min(350px, calc(100vw - 32px));
+  margin: 0;
+  padding: 13px 14px 14px;
+  border-radius: 14px;
+  text-align: center;
+  color: #eadff2;
+  background:
+    radial-gradient(circle at 50% 0, rgba(140, 73, 185, .34), transparent 48%),
+    linear-gradient(160deg, rgba(49, 27, 65, .97), rgba(23, 15, 31, .96));
+  border: 1px solid rgba(207, 153, 244, .72);
+  box-shadow: 0 0 26px rgba(137, 72, 181, .32), inset 0 0 24px rgba(199, 145, 239, .08);
+  pointer-events: none;
+  animation: babanuki-showcase-in .3s ease both;
+}
+.babanuki-shuffle-showcase::before {
+  content: '';
+  position: absolute;
+  inset: -70% -25%;
+  pointer-events: none;
+  background: conic-gradient(from 0deg, transparent, rgba(224, 185, 255, .08), transparent 24%);
+  animation: babanuki-showcase-beam 2.8s linear infinite;
+}
+@keyframes babanuki-showcase-in {
+  from { opacity: 0; transform: translateY(10px) scale(.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes babanuki-showcase-beam { to { transform: rotate(360deg); } }
+.babanuki-shuffle-eyebrow {
+  position: relative;
+  font-family: Cinzel, serif;
+  font-size: 10px;
+  letter-spacing: .34em;
+  color: #c999eb;
+}
+.babanuki-shuffle-declarer { position: relative; margin-top: 3px; font-size: 12px; color: #d7c7df; }
+.babanuki-shuffle-steps {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin: 8px auto 3px;
+  font-size: 10px;
+  color: #76687d;
+}
+.babanuki-shuffle-steps span { padding: 3px 6px; border-radius: 999px; }
+.babanuki-shuffle-steps .is-done { color: #aa8dbb; }
+.babanuki-shuffle-steps .is-active {
+  color: #301b0a;
+  background: linear-gradient(180deg, #f0db93, #caa554);
+  box-shadow: 0 0 12px rgba(230, 200, 119, .42);
+}
+
 /* サイコロ */
 @keyframes babanuki-dice-roll {
   0%   { transform: rotate(-200deg) scale(0.4); opacity: 0; }
@@ -2079,7 +2190,69 @@ button {
   75%  { transform: rotate(-8deg) scale(0.97); }
   100% { transform: rotate(0) scale(1); opacity: 1; }
 }
-.babanuki-dice { animation: babanuki-dice-roll 1.05s cubic-bezier(.2,.9,.3,1) both; }
+.babanuki-dice {
+  position: relative;
+  margin: 5px 0 2px;
+  font-size: 58px;
+  line-height: 1;
+  color: #f4e6ff;
+  text-shadow: 0 0 20px rgba(216, 164, 255, .72);
+  animation: babanuki-dice-roll 1.42s cubic-bezier(.2,.9,.3,1) both;
+}
+.babanuki-shuffle-route {
+  position: relative;
+  min-height: 62px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  color: #f2ddff;
+  animation: babanuki-route-in .42s ease both;
+}
+@keyframes babanuki-route-in {
+  from { opacity: 0; transform: scale(.7); }
+  to { opacity: 1; transform: scale(1); }
+}
+.babanuki-route-card { font-size: 38px; filter: drop-shadow(0 0 9px rgba(209, 157, 246, .65)); }
+.babanuki-route-symbol { font-size: 38px; color: #e7c76d; animation: babanuki-route-pulse .7s ease-in-out infinite alternate; }
+.babanuki-shuffle-skull { font-size: 48px; animation: babanuki-skull-wobble .8s ease-in-out infinite alternate; }
+@keyframes babanuki-route-pulse { to { transform: scale(1.2) rotate(8deg); filter: brightness(1.28); } }
+@keyframes babanuki-skull-wobble { to { transform: rotate(7deg) scale(1.08); filter: drop-shadow(0 0 12px rgba(210, 190, 220, .5)); } }
+.babanuki-shuffle-label { position: relative; font-size: 17px; font-weight: 800; color: #e8cb73; }
+.babanuki-shuffle-route-text { position: relative; margin-top: 3px; font-size: 14px; font-weight: 700; color: #eedfff; }
+.babanuki-shuffle-detail { position: relative; margin-top: 3px; font-size: 11px; line-height: 1.45; color: #c9b8d1; }
+.babanuki-shuffle-note {
+  position: relative;
+  display: inline-block;
+  margin-top: 7px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-size: 10px;
+  color: #dcc9e7;
+  background: rgba(111, 74, 142, .28);
+  border: 1px solid rgba(178, 129, 211, .32);
+}
+.babanuki-shuffle-showcase.is-dice-4 { border-color: rgba(175, 169, 184, .62); }
+
+@media (max-width: 430px) {
+  .babanuki-shuffle-showcase {
+    top: auto;
+    right: 10px;
+    bottom: 10px;
+    left: 10px;
+    width: auto;
+    padding: 9px 10px 10px;
+  }
+  .babanuki-shuffle-steps { gap: 3px; font-size: 9px; }
+  .babanuki-shuffle-steps span { padding: 3px 4px; }
+  .babanuki-dice { margin: 2px 0 1px; font-size: 46px; }
+  .babanuki-shuffle-route { min-height: 48px; }
+  .babanuki-route-card, .babanuki-route-symbol { font-size: 30px; }
+  .babanuki-shuffle-skull { font-size: 38px; }
+  .babanuki-shuffle-label { font-size: 15px; }
+  .babanuki-shuffle-detail { font-size: 10px; }
+  .babanuki-shuffle-note { margin-top: 5px; }
+}
 
 /* 最弱王の戴冠式 */
 @keyframes babanuki-blackout { from { opacity: 0; } to { opacity: 1; } }

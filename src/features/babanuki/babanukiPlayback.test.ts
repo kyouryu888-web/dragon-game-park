@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import type { BabanukiState, Card } from './babanukiTypes';
-import { applyEventToDisplay } from './babanukiPlayback';
+import {
+  DICE_MS,
+  SHUFFLE_MS,
+  SHUFFLE_RESULT_HOLD_MS,
+  applyEventToDisplay,
+  eventDuration,
+} from './babanukiPlayback';
 
 const cards: Card[] = [
   { id: 'spade-1', suit: 'spade', rank: 1 },
@@ -52,5 +58,23 @@ describe('シャッフルの表示状態', () => {
       mapping: { 'player-1': 'player-1', 'player-2': 'player-2', 'player-3': 'player-3' },
     });
     expect(next.players.map((player) => player.spotlightCardId)).toEqual(['spade-1', 'heart-2', 'joker']);
+  });
+});
+
+describe('シャッフルの演出時間', () => {
+  const mapping = { 'player-1': 'player-2', 'player-2': 'player-3', 'player-3': 'player-1' };
+
+  it('サイコロ結果を読める時間を確保する', () => {
+    expect(DICE_MS).toBe(1700);
+  });
+
+  it('通常移動のあとに結果を読む停止時間を置く', () => {
+    expect(eventDuration({ kind: 'shuffle', declarerId: 'player-1', dice: 1, mapping }))
+      .toBe(SHUFFLE_MS + SHUFFLE_RESULT_HOLD_MS);
+  });
+
+  it('出目3は中央へ集める段階と再配布の2段階を見せる', () => {
+    expect(eventDuration({ kind: 'shuffle', declarerId: 'player-1', dice: 3, mapping }))
+      .toBe(SHUFFLE_MS * 2 + SHUFFLE_RESULT_HOLD_MS);
   });
 });

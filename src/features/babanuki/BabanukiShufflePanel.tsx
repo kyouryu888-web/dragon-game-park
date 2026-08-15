@@ -3,26 +3,9 @@
  * ローカル対局・オンライン対局のどちらからも使う。
  */
 
-const DICE_FACES = ['', '⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+import { describeDice } from './babanukiShuffleDescription';
 
-export function describeDice(dice: number): { label: string; detail: string } {
-  switch (dice) {
-    case 1:
-      return { label: '右回り', detail: '全員の手札がそのまま左隣へ渡る' };
-    case 2:
-      return { label: '左回り', detail: '全員の手札がそのまま右隣へ渡る' };
-    case 3:
-      return { label: 'シャッフル交換', detail: '全員の手札をランダムに配り直す。誰と入れ替わったかは分からない' };
-    case 4:
-      return { label: 'ドクロ', detail: '何も起きない。権利だけが消える' };
-    case 5:
-      return { label: '右2回り', detail: '全員の手札が2つ左隣へ渡る' };
-    case 6:
-      return { label: '左2回り', detail: '全員の手札が2つ右隣へ渡る' };
-    default:
-      return { label: '', detail: '' };
-  }
-}
+const DICE_FACES = ['', '⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
 
 /**
  * シャッフルタイムの宣言ボタン。
@@ -59,23 +42,51 @@ export function ShuffleDeclareButton({ onDeclare }: { onDeclare: () => void }) {
   );
 }
 
-export function DiceResultPanel({ dice, declarerName }: { dice: number; declarerName: string }) {
-  const { label, detail } = describeDice(dice);
+export function DiceResultPanel({
+  dice,
+  declarerName,
+  stage = 'dice',
+}: {
+  dice: number;
+  declarerName: string;
+  stage?: 'dice' | 'moving';
+}) {
+  const { label, detail, route, symbol, note } = describeDice(dice);
   return (
     <div
-      style={{
-        marginTop: 8, padding: '12px', borderRadius: 10,
-        background: 'rgba(46,28,62,.85)',
-        border: '1px solid rgba(160,100,210,.55)',
-        textAlign: 'center',
-      }}
+      className={`babanuki-shuffle-showcase is-${stage} is-dice-${dice}`}
+      role="status"
+      aria-live="polite"
     >
-      <div style={{ fontSize: 11, color: '#b8a6cf', marginBottom: 4 }}>{declarerName} がシャッフルタイムを宣言！</div>
-      <div key={dice} className="babanuki-dice" style={{ fontSize: 46, lineHeight: 1, color: '#f0dcff' }}>
-        {DICE_FACES[dice] ?? ''}
+      <div className="babanuki-shuffle-eyebrow">SHUFFLE TIME</div>
+      <div className="babanuki-shuffle-declarer">{declarerName} がシャッフルタイムを宣言！</div>
+
+      <div className="babanuki-shuffle-steps" aria-hidden="true">
+        <span className={stage === 'dice' ? 'is-active' : 'is-done'}>1　サイコロ判定</span>
+        <span>→</span>
+        <span className={stage === 'moving' ? 'is-active' : ''}>2　手札を移動</span>
       </div>
-      <div style={{ fontSize: 15, fontWeight: 'bold', color: '#e6c877', marginTop: 4 }}>{label}</div>
-      <div style={{ fontSize: 11, color: '#c9b48f', marginTop: 2 }}>{detail}</div>
+
+      {stage === 'dice' ? (
+        <div key={dice} className="babanuki-dice">{DICE_FACES[dice] ?? ''}</div>
+      ) : (
+        <div key={`route-${dice}`} className="babanuki-shuffle-route" aria-hidden="true">
+          {dice === 4 ? (
+            <span className="babanuki-shuffle-skull">💀</span>
+          ) : (
+            <>
+              <span className="babanuki-route-card">🂠</span>
+              <span className="babanuki-route-symbol">{symbol}</span>
+              <span className="babanuki-route-card">🂠</span>
+            </>
+          )}
+        </div>
+      )}
+
+      <div className="babanuki-shuffle-label">出目 {dice}　{label}</div>
+      <div className="babanuki-shuffle-route-text">{route}</div>
+      <div className="babanuki-shuffle-detail">{detail}</div>
+      <div className="babanuki-shuffle-note">{note}</div>
     </div>
   );
 }

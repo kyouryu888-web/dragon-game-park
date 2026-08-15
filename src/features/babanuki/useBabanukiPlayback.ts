@@ -74,6 +74,9 @@ function buildEffect(
     }
     case 'shuffle': {
       const entries = Object.entries(event.mapping);
+      // 出目4はカードを動かさない。結果パネルと盤面中央のドクロだけを見せる。
+      if (event.dice === 4) return EMPTY_EFFECT;
+
       const hidden: string[] = [];
       for (const [fromId] of entries) {
         const player = display.players.find((p) => p.id === fromId);
@@ -89,7 +92,7 @@ function buildEffect(
           card: null,
           faceUp: false,
           durationMs: SHUFFLE_MS,
-          stack: 3,
+          stack: 4,
         }));
         const deal: Flight[] = entries.map(([, toId]) => ({
           id: nextId(),
@@ -98,7 +101,7 @@ function buildEffect(
           card: null,
           faceUp: false,
           durationMs: SHUFFLE_MS,
-          stack: 3,
+          stack: 4,
           delayMs: SHUFFLE_MS,
         }));
         return { flights: [...gather, ...deal], hidden, pairFlashPlayerId: null, leavingPlayerId: null };
@@ -114,7 +117,7 @@ function buildEffect(
             card: null,
             faceUp: false,
             durationMs: SHUFFLE_MS,
-            stack: 3,
+            stack: 4,
           })),
         hidden,
         pairFlashPlayerId: null,
@@ -190,6 +193,7 @@ export function useBabanukiPlayback(logic: BabanukiState, viewerId: string) {
   return {
     display,
     isAnimating: queue.length > 0,
+    activeEvent: queue[0] ?? null,
     flights: effect.flights,
     hidden: effect.hidden,
     pairFlashPlayerId: effect.pairFlashPlayerId,

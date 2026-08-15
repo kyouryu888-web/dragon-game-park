@@ -9,10 +9,14 @@ import type { BabanukiEvent, BabanukiState, Card } from './babanukiTypes';
 
 export const DRAW_MS = 520;
 export const PAIR_MS = 620;
-export const SHUFFLE_MS = 900;
+/** 手札の束が席から席へ移動する時間。シャッフルタイムはゲームの見せ場なので少し長め。 */
+export const SHUFFLE_MS = 1250;
+/** 移動先へ着いたあと、結果を読めるように盤面を止めておく時間。 */
+export const SHUFFLE_RESULT_HOLD_MS = 500;
 export const ELIM_MS = 480;
 export const SEAT_SLIDE_MS = 580;
-export const DICE_MS = 1100;
+/** 宣言・サイコロ・出目の説明を見せてから手札移動へ進むまで。 */
+export const DICE_MS = 1700;
 
 export function eventDuration(event: BabanukiEvent): number {
   switch (event.kind) {
@@ -24,7 +28,7 @@ export function eventDuration(event: BabanukiEvent): number {
       return PAIR_MS;
     case 'shuffle':
       // 出目3は「中央に集めてから配り直す」2段構えなので長い
-      return event.dice === 3 ? SHUFFLE_MS * 2 : SHUFFLE_MS;
+      return (event.dice === 3 ? SHUFFLE_MS * 2 : SHUFFLE_MS) + SHUFFLE_RESULT_HOLD_MS;
     case 'finish':
       return ELIM_MS + SEAT_SLIDE_MS;
     case 'game-end':
