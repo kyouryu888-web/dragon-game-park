@@ -2028,6 +2028,11 @@ button {
 }
 .babanuki-card.is-eyeing { animation: babanuki-eyeing 0.62s ease-in-out infinite; }
 
+/* 共通 .btn の押下変形で中央配置が外れ、タップ終了時に当たり判定が逃げるのを防ぐ */
+.babanuki-shuffle-button.btn:not(:disabled):active {
+  transform: translate(-50%, -50%) scale(0.96) !important;
+}
+
 /* 引く相手の手札を促す明滅 */
 @keyframes babanuki-target-pulse {
   0%, 100% { box-shadow: 0 0 0 1px rgba(230,200,119,.25), 0 0 10px rgba(230,200,119,.15); }

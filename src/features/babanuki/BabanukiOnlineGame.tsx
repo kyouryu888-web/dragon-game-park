@@ -4,6 +4,7 @@ import { CPU_THINK_MS } from './babanukiTypes';
 import {
   activePlayers,
   canDeclareShuffle,
+  createBabanukiRematchState,
   declareShuffle,
   drawCard,
   getPlayer,
@@ -119,6 +120,7 @@ function OnlineBoard({ logic, viewerId, isHost, applyAction, onBackToRoom, onBac
   const drawCandidateRef = useRef<number | null>(null);
   const spotlightDecisionRef = useRef<string | null>(null);
   const lastTapRef = useRef<{ index: number; at: number } | null>(null);
+  const previousPhaseRef = useRef(logic.phase);
 
   const viewer = logic.players.find((p) => p.id === viewerId) ?? logic.players[0];
   const drawTargetId = useMemo(
@@ -126,6 +128,19 @@ function OnlineBoard({ logic, viewerId, isHost, applyAction, onBackToRoom, onBac
     [logic],
   );
   const canDraw = !isAnimating && logic.phase === 'awaiting-draw' && logic.currentPlayerId === viewerId;
+
+  // ホストが同じルームで再戦を始めたら、ゲスト側も前局の選択状態を捨てて新しい盤面へ移る。
+  useEffect(() => {
+    const previous = previousPhaseRef.current;
+    previousPhaseRef.current = logic.phase;
+    if (previous !== 'finished' || logic.phase === 'finished') return;
+    lastTapRef.current = null;
+    drawCandidateRef.current = null;
+    spotlightDecisionRef.current = null;
+    setSelectedIndex(null);
+    setDrawCandidate(null);
+    setHesitationIndex(null);
+  }, [logic.phase]);
 
   /**
    * タイマーを張り直す条件。**`logic` そのものを依存に入れてはいけない。**
@@ -273,8 +288,19 @@ function OnlineBoard({ logic, viewerId, isHost, applyAction, onBackToRoom, onBac
     setSelectedIndex(null);
   };
 
+  const clearBluff = () => {
+    const cardId = viewer.spotlightCardId;
+    if (!cardId || isAnimating) return;
+    setSelectedIndex(null);
+    applyAction((state) => setSpotlight(state, viewerId, cardId));
+  };
+
   const currentPlayer = getPlayer(logic, logic.currentPlayerId);
   const currentName = currentPlayer.name || (currentPlayer.isCpu ? getCpuDisplayName(currentPlayer.cpuLevel) : 'プレイヤー');
+  const pendingDeclarer = logic.pendingShuffle ? getPlayer(logic, logic.pendingShuffle.declarerId) : null;
+  const pendingDeclarerName = pendingDeclarer
+    ? pendingDeclarer.name || (pendingDeclarer.isCpu ? getCpuDisplayName(pendingDeclarer.cpuLevel) : 'プレイヤー')
+    : '';
   const shuffleState: 'ready' | 'used' | 'locked' = !viewer.shuffleRight
     ? 'used'
     : activePlayers(logic).length <= 2
@@ -382,15 +408,23 @@ function OnlineBoard({ logic, viewerId, isHost, applyAction, onBackToRoom, onBac
             </button>
           </div>
         )}
+        {viewer.spotlightCardId && (
+          <button
+            type="button"
+            className="btn"
+            onClick={clearBluff}
+            disabled={isAnimating}
+            style={{ marginTop: 7, padding: '7px 14px', borderRadius: 8, border: '1px solid rgba(200,140,240,.55)', background: 'rgba(70,42,88,.82)', color: '#ead8f5', fontSize: 12, cursor: isAnimating ? 'default' : 'pointer' }}
+          >
+            ブラフを解除
+          </button>
+        )}
       </div>
 
       {logic.phase === 'rolling' && logic.pendingShuffle && (
         <DiceResultPanel
           dice={logic.pendingShuffle.dice}
-          declarerName={
-            getPlayer(logic, logic.pendingShuffle.declarerId).name ||
-            getCpuDisplayName(getPlayer(logic, logic.pendingShuffle.declarerId).cpuLevel)
-          }
+          declarerName={pendingDeclarerName}
         />
       )}
 
@@ -398,8 +432,10 @@ function OnlineBoard({ logic, viewerId, isHost, applyAction, onBackToRoom, onBac
         <BabanukiFinale
           state={logic}
           viewerId={viewerId}
-          onRestart={onBackToRoom}
-          restartLabel="ルーム設定へ"
+          onRestart={isHost ? () => applyAction((state) => createBabanukiRematchState(state)) : undefined}
+          restartLabel="同じ設定で再戦"
+          onChangeSettings={isHost ? onBackToRoom : undefined}
+          waitingMessage={isHost ? undefined : 'ホストが再戦を選ぶと、このまま自動で次の対局が始まります。'}
           onBackToHome={onBackToHome}
         />
       )}

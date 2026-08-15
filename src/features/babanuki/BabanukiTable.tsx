@@ -299,9 +299,10 @@ export function BabanukiTable({
         {/* 自分のシャッフルボタン（手札のすぐ上・盤面の下端中央）。他プレイヤーの札と同じくらいの大きさ */}
         <button
           type="button"
-          className="btn"
+          className="btn babanuki-shuffle-button"
           disabled={!canShuffle}
           onClick={onShuffle}
+          aria-label="シャッフルタイム"
           title={
             shuffleState === 'used'
               ? 'シャッフルタイムは使用済み'
@@ -311,6 +312,7 @@ export function BabanukiTable({
           }
           style={{
             position: 'absolute', left: '50%', top: '92%', transform: 'translate(-50%,-50%)',
+            zIndex: 6,
             width: 40, height: 38, borderRadius: 10, padding: 0,
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
             lineHeight: 1,

@@ -4,6 +4,7 @@ import {
   buildShuffleMapping,
   canAnyoneDeclareShuffle,
   canDeclareShuffle,
+  createBabanukiRematchState,
   createDeck,
   createInitialBabanukiState,
   declareShuffle,
@@ -354,19 +355,59 @@ describe('シャッフルの適用', () => {
     expect(next.phase).toBe('awaiting-draw');
   });
 
-  it('手札がそのままの形で渡るので、飛び出しも一緒に移る', () => {
+  it('手札が動く出目では、全員のブラフが自然に解除される', () => {
     const state = makeState([
       makePlayer(1, [card('spade', 1), card('heart', 1)], { spotlightCardId: 'heart-1' }),
-      makePlayer(2, [card('spade', 2)]),
-      makePlayer(3, [card('spade', 3)]),
+      makePlayer(2, [card('spade', 2)], { spotlightCardId: 'spade-2' }),
+      makePlayer(3, [card('spade', 3)], { spotlightCardId: 'spade-3' }),
     ], {
       phase: 'rolling',
       pendingShuffle: { declarerId: 'player-1', dice: 1 },
     });
     const next = resolveShuffle(state, Math.random);
-    // player-1 の手札は左隣の player-2 へ渡る
-    expect(next.players[1].spotlightCardId).toBe('heart-1');
-    expect(next.players[0].spotlightCardId).toBeNull();
+    expect(next.players.every((player) => player.spotlightCardId === null)).toBe(true);
+  });
+
+  it('出目4で手札が動かなければブラフは残る', () => {
+    const state = makeState([
+      makePlayer(1, [joker, card('heart', 1)], { spotlightCardId: 'heart-1' }),
+      makePlayer(2, [card('spade', 2)]),
+      makePlayer(3, [card('spade', 3)]),
+    ], {
+      phase: 'rolling',
+      pendingShuffle: { declarerId: 'player-1', dice: 4 },
+    });
+    const next = resolveShuffle(state, Math.random);
+    expect(next.players[0].spotlightCardId).toBe('heart-1');
+  });
+});
+
+describe('同じ設定で再戦', () => {
+  it('人数・名前・人/CPU・強さを保ち、対局状態と演出連番を更新する', () => {
+    const state = makeState([
+      makePlayer(1, [joker], { name: 'ホスト', finishedRank: null, shuffleRight: false }),
+      makePlayer(2, [], { name: 'ゲスト', finishedRank: 1 }),
+      makePlayer(3, [], { name: '炎竜', isCpu: true, cpuLevel: 'hard', finishedRank: 2 }),
+    ], {
+      phase: 'finished',
+      finishOrder: ['player-2', 'player-3'],
+      loserId: 'player-1',
+      eventSeq: 27,
+    });
+
+    const next = createBabanukiRematchState(state, () => 0.5);
+
+    expect(next.players.map(({ name, isCpu, cpuLevel }) => ({ name, isCpu, cpuLevel }))).toEqual([
+      { name: 'ホスト', isCpu: false, cpuLevel: 'normal' },
+      { name: 'ゲスト', isCpu: false, cpuLevel: 'normal' },
+      { name: '炎竜', isCpu: true, cpuLevel: 'hard' },
+    ]);
+    expect(next.phase).toBe('awaiting-draw');
+    expect(next.finishOrder).toEqual([]);
+    expect(next.loserId).toBeNull();
+    expect(next.players.every((player) => player.finishedRank === null && player.shuffleRight)).toBe(true);
+    expect(next.events).toEqual([]);
+    expect(next.eventSeq).toBe(28);
   });
 });
 

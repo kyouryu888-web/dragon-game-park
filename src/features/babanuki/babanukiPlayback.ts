@@ -83,16 +83,14 @@ export function applyEventToDisplay(state: BabanukiState, event: BabanukiEvent):
     }
     case 'shuffle': {
       const handsById = new Map<string, Card[]>();
-      const spotlights = new Map<string, string | null>();
       for (const [fromId, toId] of Object.entries(event.mapping)) {
         handsById.set(toId, (find(fromId)?.hand ?? []).slice());
-        spotlights.set(toId, find(fromId)?.spotlightCardId ?? null);
       }
       for (const [id, hand] of handsById.entries()) {
         const player = find(id);
         if (!player) continue;
         player.hand = hand;
-        player.spotlightCardId = spotlights.get(id) ?? null;
+        if (event.dice !== 4) player.spotlightCardId = null;
       }
       return draft;
     }

@@ -39,11 +39,14 @@ function Confetti() {
 type Props = {
   state: BabanukiState;
   viewerId: string;
-  onRestart: () => void;
-  /** 「もう一度」ボタンの文言（オンラインではルームへ戻る） */
+  /** 同じ設定で再戦できる場合だけ渡す */
+  onRestart?: () => void;
+  /** 「もう一度」ボタンの文言 */
   restartLabel?: string;
   /** 人数やCPUの強さを変えてから遊び直したいとき。無ければボタンを出さない */
   onChangeSettings?: () => void;
+  /** オンラインのゲストなど、自分では再戦を開始できないときの案内 */
+  waitingMessage?: string;
   onBackToHome: () => void;
 };
 
@@ -55,6 +58,7 @@ export function BabanukiFinale({
   onRestart,
   restartLabel = 'もう一度',
   onChangeSettings,
+  waitingMessage,
   onBackToHome,
 }: Props) {
   const [stage, setStage] = useState(0);
@@ -168,9 +172,11 @@ export function BabanukiFinale({
             })}
 
             <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
-              <button type="button" className="btn" onClick={onRestart} style={{ flex: 1, padding: '11px 0', borderRadius: 8, border: '1px solid rgba(200,140,240,.6)', background: 'linear-gradient(180deg,#5a3478,#3a2050)', color: '#f0dcff', fontSize: 14, cursor: 'pointer' }}>
-                {restartLabel}
-              </button>
+              {onRestart && (
+                <button type="button" className="btn" onClick={onRestart} style={{ flex: 1, padding: '11px 0', borderRadius: 8, border: '1px solid rgba(200,140,240,.6)', background: 'linear-gradient(180deg,#5a3478,#3a2050)', color: '#f0dcff', fontSize: 14, cursor: 'pointer' }}>
+                  {restartLabel}
+                </button>
+              )}
               {onChangeSettings && (
                 <button type="button" className="btn" onClick={onChangeSettings} style={{ flex: 1, padding: '11px 0', borderRadius: 8, border: '1px solid rgba(201,162,75,.5)', background: 'rgba(60,44,30,.8)', color: '#e6c877', fontSize: 14, cursor: 'pointer' }}>
                   設定を変える
@@ -180,6 +186,11 @@ export function BabanukiFinale({
             <button type="button" className="btn" onClick={onBackToHome} style={{ width: '100%', marginTop: 10, padding: '11px 0', borderRadius: 8, border: '1px solid rgba(140,120,90,.4)', background: 'rgba(30,26,22,.8)', color: '#c9b48f', fontSize: 14, cursor: 'pointer' }}>
               ホームへ
             </button>
+            {waitingMessage && (
+              <p style={{ fontSize: 12, color: '#c9b48f', marginTop: 10, textAlign: 'center' }}>
+                {waitingMessage}
+              </p>
+            )}
             {onChangeSettings && (
               <p style={{ fontSize: 11, color: '#7a6f5c', marginTop: 8, textAlign: 'center' }}>
                 「設定を変える」で人数やドラゴンの強さを選び直せます
