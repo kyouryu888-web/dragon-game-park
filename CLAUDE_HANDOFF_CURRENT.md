@@ -1,5 +1,49 @@
 # Dragon Game Park — Current Handoff
 
+## 2026-08-15 追記: ババ抜きのデバッグ（進行停止バグを2件修正）
+
+**バグ1（致命的・修正済み）: CPUの手番中に手札を触り続けると進行が永久に止まる。**
+CPUの「3秒考える」タイマーを張る `useEffect` の依存配列に `logic`（状態オブジェクト全体）を
+入れていたため、並べ替えやブラフのたびに新しい状態が作られてタイマーがリセットされ、
+CPUが永遠に引かなくなっていた。90msごとに自分の手札をタップし続ける乱打テストで再現し、
+**局面が本当に変わったときだけ張り直す `turnKey`（`currentPlayerId:phase:eventSeq`）**へ変更して解消。
+最新状態は `logicRef` から読む。`BabanukiPlayScreen.tsx` と `BabanukiOnlineGame.tsx` の両方。
+
+**バグ2（オンライン・予防的修正）: 書き込み中の操作が捨てられて手が消える。**
+`applyAction` が `writingRef` で「書き込み中なら無視」していたため、並べ替えの通信中に
+CPUの手番が来るとその手が消えて進行が止まりうる。**書き込みをPromiseで直列につなぐ**方式に変更。
+updater は実行時点の最新状態に対して走るので、順番待ちでも結果は正しい。
+
+**追加した回帰テスト**: `babanukiSimulation.test.ts`。3〜6人×40シード＝160局をCPUの判断で
+最後まで自動対局させ、毎ステップで不変条件（札は常に53枚・重複なし・ジョーカーは捨て札に
+出ない・順位は連番・宣言できるのはジョーカー保持者だけ）を検査する。
+シャッフル権が1人1回までであること、ブラフが引かれるまで外れないことも別途検査。
+
+## 2026-08-14 追記: 4つ目のゲーム「最弱王ババ抜き」を追加（オンラインは未検証）
+
+仕様は **`docs/babanuki-spec.md` が唯一の正**。新ゲーム追加の手順は `docs/NEW_GAME_CHECKLIST.md`。
+
+実装したもの（`src/features/babanuki/`）:
+
+- `babanukiRules.ts` / `babanukiCpu.ts` … 純ルールとCPU。テスト38件（`npm test` 全体で192件パス）
+- `useBabanukiPlayback.ts` … `BabanukiState.events` を1つずつ再生する共通フック。
+  ローカルもオンラインも同じ演出になる
+- `BabanukiTable.tsx` … 座席・手札の描画と、カードの飛行アニメ
+  （スロットの矩形を控えて `position: fixed` を double-RAF ＋ CSS transition で移動）
+- `BabanukiFinale.tsx` … 最弱王の戴冠式（暗転→スポットライト→ジョーカー→💀の王冠→称号→順位表）
+- `babanukiOnline.ts` ほか … ルームコード方式。`version` 付き update の楽観ロックで
+  シャッフルタイムの同時宣言を裁定。CPUと締め切り判定はホストのみ実行
+- keyframes は `src/styles/global.css` の末尾に `babanuki-` 接頭辞で追加
+- 配線4箇所（`games.ts` / `HomePage.tsx`の3マップ / `App.tsx` / featureフォルダ）は完了
+
+検証済み: ローカル対戦を3人・6人で通しプレイ（375px幅・横スクロールなし）、
+引く／ペア捨て／シャッフルタイム（宣言→サイコロ→手札移動）／勝ち抜け／戴冠式の演出、
+`npx tsc -b` と `npm run build` と `npx vitest run`。
+
+**未検証: オンライン対戦。** `supabase/babanuki_rooms.sql` をユーザーがSupabaseで実行するまで
+テーブルが無いため、ルーム作成が「ルームを開けなかった」で失敗する（クラッシュはしない）。
+SQL実行後に2タブで疎通確認すること。
+
 ## 2026-08-14 追記: UNOスタートプレイヤー決定パネルの進行不能修正
 
 - 人数や同点再抽選が増えると抽選結果一覧が中央テーブルの外へ伸び、「ゲーム開始」ボタンが見えず押せなくなる不具合を修正した。
