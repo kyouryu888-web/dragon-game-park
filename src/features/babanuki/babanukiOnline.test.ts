@@ -1,4 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+vi.mock('../../lib/supabase', () => ({ supabase: {} }));
+
 import {
   BABANUKI_ONLINE_PLAYER_ID_KEY,
   getOnlinePlayerId,

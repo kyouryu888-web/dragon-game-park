@@ -9,6 +9,8 @@
 再入室扱いになる不具合を再現した。参加者IDを全タブ共通の `localStorage` に保存していたのが原因。
 `babanukiOnline.ts` をタブ単位の `sessionStorage`（`dgp-babanuki-online-player-id`）へ変更し、
 同じタブではIDを維持し、別タブでは別IDになる回帰テストを追加した。
+PR #12 の初回CIでは、このテストがSupabase環境変数の無いCI上で通信クライアントを生成して
+失敗したため、テスト内でSupabaseクライアントをモックし、外部環境に依存しない形へ修正した。
 
 修正後の実ブラウザ確認（ホスト＋ゲスト＋CPUの3人ルーム）:
 
