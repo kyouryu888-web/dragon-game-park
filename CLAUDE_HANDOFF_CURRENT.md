@@ -1,5 +1,15 @@
 # Dragon Game Park — Current Handoff
 
+## 2026-08-15 追記: 最弱王ババ抜きを本番公開
+
+- 実装PR: [#12](https://github.com/kyouryu888-web/dragon-game-park/pull/12)
+- 機能のマージコミット: `55c227996eaa688a4ec0bae8dd2b8a22e4e82f5b`
+- PR先端とマージコミットの両方で GitHub Actions `build-and-test` と Vercel が成功
+- 本番URL: `https://dragon-game-park.vercel.app/`
+- 本番でトップ画面の「最弱王ババ抜き」表示、オンラインルーム作成、6桁コード表示、
+  待機画面、ルームを閉じて削除できることを確認。ブラウザconsole error/warningは0件
+- 本番確認用ルームは削除し、Supabase REST応答が空配列 `[]` であることを確認
+
 ## 2026-08-15 追記: 最弱王ババ抜きのオンライン疎通確認完了
 
 ユーザーが `supabase/babanuki_rooms.sql` を Supabase SQL Editor で実行し、
