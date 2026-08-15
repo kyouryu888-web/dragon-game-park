@@ -10,6 +10,7 @@ import { MancalaBoard, PLANK_POSITIONS } from './MancalaBoard';
 import type { PlankSlideEntry } from './MancalaBoard';
 import { PLAYER_ACCENT_COLORS } from './MancalaPit';
 import { createInitialMancalaState } from './createInitialMancalaState';
+import { GameEndActions } from '../../components/GameEndActions';
 
 const STONE_ANIM_MS   = 400;
 const CAPTURE_ANIM_MS = 700;
@@ -116,11 +117,12 @@ function rotateForDisplay(ids: PlayerId[], myId: PlayerId): PlayerId[] {
 type MancalaOnlineGamePageProps = {
   roomCode:     string;
   myPlayerId:   PlayerId;
+  onBackToSetup: () => void;
   onBackToHome: () => void;
 };
 
 export function MancalaOnlineGamePage({
-  roomCode, myPlayerId, onBackToHome,
+  roomCode, myPlayerId, onBackToSetup, onBackToHome,
 }: MancalaOnlineGamePageProps) {
 
   // ── ゲーム状態 ──
@@ -552,7 +554,7 @@ export function MancalaOnlineGamePage({
       <Layout>
         <div style={{ textAlign: 'center', padding: '60px 20px' }}>
           <p style={{ color: 'var(--text-muted)', marginBottom: 24 }}>ルームの気配が途絶えた…</p>
-          <Button onClick={onBackToHome}>ホームに戻る</Button>
+          <Button onClick={onBackToHome}>ゲーム選択に戻る</Button>
         </div>
       </Layout>
     );
@@ -602,14 +604,18 @@ export function MancalaOnlineGamePage({
             })}
           </div>
           <div style={{ display: 'grid', gap: 10 }}>
-            {isHostClient ? (
-              <Button onClick={handleRematch} fullWidth>同じルームでもう一度遊ぶ</Button>
-            ) : (
+            {!isHostClient && (
               <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: 12, lineHeight: 1.6 }}>
                 ルームの主が「もう一度遊ぶ」を押すと、このまま新しいゲームに切り替わります。
               </p>
             )}
-            <Button onClick={onBackToHome} variant="ghost" fullWidth>ホームに戻る</Button>
+            <GameEndActions
+              onRematch={isHostClient ? handleRematch : undefined}
+              onChangeSettings={onBackToSetup}
+              onBackToSetup={onBackToSetup}
+              onBackToHome={onBackToHome}
+              canRematch={isHostClient}
+            />
           </div>
         </div>
       </Layout>
@@ -754,7 +760,7 @@ export function MancalaOnlineGamePage({
       )}
 
       <div style={{ marginTop: 14 }}>
-        <Button variant="ghost" fullWidth onClick={onBackToHome}>← ホームに戻る</Button>
+        <Button variant="ghost" fullWidth onClick={onBackToHome}>ゲーム選択に戻る</Button>
       </div>
     </Layout>
   );

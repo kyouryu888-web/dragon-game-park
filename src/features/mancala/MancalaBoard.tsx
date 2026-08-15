@@ -401,7 +401,7 @@ function Board3P({
   return (
     <div style={{
       position: 'relative', width: '100%',
-      maxWidth: TRI_W, aspectRatio: `${TRI_W}/${TRI_H}`, margin: '0 auto',
+      maxWidth: 'var(--mancala-triangle-max, 420px)', aspectRatio: `${TRI_W}/${TRI_H}`, margin: '0 auto',
     }}>
       <svg
         viewBox={`0 0 ${TRI_W} ${TRI_H}`}

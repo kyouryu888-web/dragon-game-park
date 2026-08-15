@@ -278,9 +278,9 @@ export function BabanukiTable({
         className={`babanuki-table-surface${shuffleDice !== null ? ` is-shuffling is-dice-${shuffleDice}` : ''}`}
         style={{
           position: 'relative',
-          height: 268,
+          height: 'var(--babanuki-table-height, 268px)',
           margin: '0 auto 6px',
-          maxWidth: 420,
+          maxWidth: 'var(--babanuki-table-max, 420px)',
           borderRadius: '50%',
           background: 'radial-gradient(ellipse at 50% 45%, rgba(90,50,120,.28), rgba(20,12,28,.55) 70%)',
           border: '1px solid rgba(140,90,180,.28)',

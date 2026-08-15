@@ -154,8 +154,8 @@ export function BackgammonPage({ onBackToHome }: BackgammonPageProps) {
       display: 'flex', justifyContent: 'center',
       fontFamily: BG.serifJa, color: BG.text, touchAction: 'manipulation',
     }}>
-      <div style={{
-        width: '100%', maxWidth: 430, minHeight: '100vh', position: 'relative', overflow: 'hidden',
+      <div className={`backgammon-page-shell is-${screen}`} style={{
+        width: '100%', minHeight: '100vh', position: 'relative', overflow: 'hidden',
         background: [
           'radial-gradient(ellipse 120% 55% at 50% 108%, rgba(224,115,58,.22) 0%, rgba(224,115,58,.05) 45%, transparent 70%)',
           'repeating-linear-gradient(0deg, rgba(255,255,255,.014) 0px, rgba(255,255,255,.014) 1px, transparent 1px, transparent 7px)',

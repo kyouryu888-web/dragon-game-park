@@ -37,16 +37,18 @@ import {
   type UnoRoomRow,
 } from './unoOnline';
 import { getUnoRankings } from './unoScoring';
+import { GameEndActions } from '../../components/GameEndActions';
 
 type UnoOnlineGamePageProps = {
   roomCode: string;
   myPlayerId: UnoPlayerId;
+  onBackToSetup: () => void;
   onBackToHome: () => void;
 };
 
 const UNO_ROOM_SELECT = 'game_state, version, host_id, variant, player_count, guest_id, guest2_id, guest3_id, guest4_id, guest5_id, guest6_id, guest7_id, guest8_id, guest9_id';
 
-export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnlineGamePageProps) {
+export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToSetup, onBackToHome }: UnoOnlineGamePageProps) {
   const [gameState, setGameState] = useState<UnoGameState | null>(null);
   const [roomRow, setRoomRow] = useState<UnoRoomRow | null>(null);
   const [roomVersion, setRoomVersion] = useState(0);
@@ -414,7 +416,7 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
       <Layout>
         <div style={{ textAlign: 'center', padding: '60px 20px' }}>
           <p style={{ color: 'var(--text-muted)', marginBottom: 20 }}>ルームの気配が途絶えた…。</p>
-          <Button onClick={onBackToHome}>ホームへ戻る</Button>
+          <Button onClick={onBackToHome}>ゲーム選択に戻る</Button>
         </div>
       </Layout>
     );
@@ -500,7 +502,13 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
                 ルームの主が「もう一度遊ぶ」を押すと、このまま新しいゲームに切り替わります。
               </p>
             )}
-            <Button fullWidth variant="ghost" onClick={onBackToHome}>ホームへ戻る</Button>
+            <GameEndActions
+              onRematch={isHostClient ? handleRematch : undefined}
+              onChangeSettings={onBackToSetup}
+              onBackToSetup={onBackToSetup}
+              onBackToHome={onBackToHome}
+              canRematch={isHostClient}
+            />
           </div>
         </div>
       </Layout>
@@ -591,7 +599,7 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToHome }: UnoOnl
         {showRules && <div style={{ marginTop: 8 }}><UnoRulesPanel variant={gameState.variant} /></div>}
 
         <div style={{ marginTop: 14 }}>
-          <Button variant="ghost" fullWidth onClick={onBackToHome}>ホームへ戻る</Button>
+          <Button variant="ghost" fullWidth onClick={onBackToHome}>ゲーム選択に戻る</Button>
         </div>
       </div>
     </Layout>
@@ -630,7 +638,7 @@ function UnoOnlineWaitingPanel({
       </div>
       {copyMessage && <small>{copyMessage}</small>}
       <span>{joinedCount} / {playerCount} 人参加済み</span>
-      <Button variant="ghost" fullWidth onClick={onBackToHome}>ホームへ戻る</Button>
+      <Button variant="ghost" fullWidth onClick={onBackToHome}>ゲーム選択に戻る</Button>
     </div>
   );
 }

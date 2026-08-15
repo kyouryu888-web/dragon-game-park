@@ -314,17 +314,24 @@ function OnlineBoard({ logic, viewerId, isHost, applyAction, onBackToRoom, onBac
       : 'ready';
 
   return (
-    <div style={{ minHeight: '100vh', padding: '10px 12px 28px', color: '#e0d3b8' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+    <div className="babanuki-game-screen" style={{ minHeight: '100vh', padding: '10px 12px 28px', color: '#e0d3b8' }}>
+      <div className="babanuki-top-nav">
         <button
           type="button"
           className="btn"
           onClick={onBackToRoom}
           style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid rgba(140,120,90,.4)', background: 'rgba(30,26,22,.8)', color: '#c9b48f', fontSize: 12, cursor: 'pointer' }}
         >
-          ← ルーム
+          ゲーム設定に戻る
         </button>
         <span style={{ fontFamily: 'Cinzel,serif', fontSize: 12, letterSpacing: '.2em', color: '#8a7a58' }}>BABANUKI ONLINE</span>
+        <button
+          type="button"
+          className="btn babanuki-home-button"
+          onClick={onBackToHome}
+        >
+          ゲーム選択に戻る
+        </button>
       </div>
 
       <div
@@ -441,8 +448,8 @@ function OnlineBoard({ logic, viewerId, isHost, applyAction, onBackToRoom, onBac
           state={logic}
           viewerId={viewerId}
           onRestart={isHost ? () => applyAction((state) => createBabanukiRematchState(state)) : undefined}
-          restartLabel="同じ設定で再戦"
           onChangeSettings={isHost ? onBackToRoom : undefined}
+          onBackToSetup={onBackToRoom}
           waitingMessage={isHost ? undefined : 'ホストが再戦を選ぶと、このまま自動で次の対局が始まります。'}
           onBackToHome={onBackToHome}
         />

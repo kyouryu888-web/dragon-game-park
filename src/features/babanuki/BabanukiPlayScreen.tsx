@@ -218,17 +218,24 @@ export function BabanukiPlayScreen({ config, onBackToSetup, onBackToHome }: Prop
       : 'ready';
 
   return (
-    <div style={{ minHeight: '100vh', padding: '10px 12px 28px', color: '#e0d3b8' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+    <div className="babanuki-game-screen" style={{ minHeight: '100vh', padding: '10px 12px 28px', color: '#e0d3b8' }}>
+      <div className="babanuki-top-nav">
         <button
           type="button"
           className="btn"
           onClick={onBackToSetup}
           style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid rgba(140,120,90,.4)', background: 'rgba(30,26,22,.8)', color: '#c9b48f', fontSize: 12, cursor: 'pointer' }}
         >
-          ← 設定
+          ゲーム設定に戻る
         </button>
         <span style={{ fontFamily: 'Cinzel,serif', fontSize: 12, letterSpacing: '.2em', color: '#8a7a58' }}>BABANUKI</span>
+        <button
+          type="button"
+          className="btn babanuki-home-button"
+          onClick={onBackToHome}
+        >
+          ゲーム選択に戻る
+        </button>
       </div>
 
       {/* 手番バナー */}
@@ -351,6 +358,7 @@ export function BabanukiPlayScreen({ config, onBackToSetup, onBackToHome }: Prop
             setLogic((state) => createBabanukiRematchState(state));
           }}
           onChangeSettings={onBackToSetup}
+          onBackToSetup={onBackToSetup}
           onBackToHome={onBackToHome}
         />
       )}
