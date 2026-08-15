@@ -13,6 +13,7 @@ import { UnoOnlineRoomPage } from './features/uno/UnoOnlineRoomPage';
 import { UnoOnlineGamePage } from './features/uno/UnoOnlineGamePage';
 import type { UnoOnlineRoomInfo } from './features/uno/unoOnline';
 import { BackgammonPage } from './features/backgammon/BackgammonPage';
+import { BabanukiPage } from './features/babanuki/BabanukiPage';
 
 type AppScreen =
   | 'home'
@@ -24,7 +25,8 @@ type AppScreen =
   | 'uno-game'
   | 'uno-room'
   | 'uno-online-game'
-  | 'backgammon';
+  | 'backgammon'
+  | 'babanuki';
 
 export default function App() {
   const [screen, setScreen] = useState<AppScreen>('home');
@@ -52,6 +54,7 @@ export default function App() {
           if (gameId === 'mancala') setScreen('mancala-setup');
           if (gameId === 'uno') setScreen('uno-room');
           if (gameId === 'backgammon') setScreen('backgammon');
+          if (gameId === 'babanuki') setScreen('babanuki');
         }}
       />
     );
@@ -104,6 +107,10 @@ export default function App() {
 
   if (screen === 'backgammon') {
     return <BackgammonPage onBackToHome={() => setScreen('home')} />;
+  }
+
+  if (screen === 'babanuki') {
+    return <BabanukiPage onBackToHome={() => setScreen('home')} />;
   }
 
   if (screen === 'uno-setup') {

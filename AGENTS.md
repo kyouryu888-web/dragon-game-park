@@ -3,12 +3,14 @@
 家族向けミニゲーム集サイト。Vite + React + TypeScript、状態同期に Supabase、
 ホスティングは Vercel（`main` へのマージで自動的に本番デプロイされる）。
 
-現在のゲーム: マンカラ・UNO・バックギャモン（すべて `src/features/<game>/` 配下）。
+現在のゲーム: マンカラ・UNO・バックギャモン・最弱王ババ抜き（すべて `src/features/<game>/` 配下）。
 
 ## 作業を始める前に
 
 - **今なにをやっている途中か**は `CLAUDE_HANDOFF_CURRENT.md` を読んでください。前回の作業内容・
   方針・次にやることがまとまっています。
+- **最弱王ババ抜きの作業を引き継ぐ場合**は `handoffs/2026-08-15-babanuki-codex-handoff.md` と
+  ルールの唯一の正である `docs/babanuki-spec.md` を読んでください。
 - **新しいゲームを追加する・既存ゲームの配線を触る**場合は、`CLAUDE_HANDOFF_CURRENT.md` の
   「サイト全体のアーキテクチャ」節にある配線箇所とファイル構成パターンに従ってください。
 

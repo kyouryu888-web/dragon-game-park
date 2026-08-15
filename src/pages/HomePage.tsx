@@ -9,6 +9,7 @@ const GAME_ICONS: Record<string, string> = {
   mancala: '🎯',
   uno: '🃏',
   backgammon: '🎲',
+  babanuki: '💀',
   reversi: '⚫',
   gomoku: '🔵',
   checkers: '♟️',
@@ -19,6 +20,7 @@ const GAME_ACCENT: Record<string, string> = {
   mancala:  '#c9a24b',
   uno:      '#b8502e',
   backgammon: '#e0733a',
+  babanuki: '#6f4a8e',
   reversi:  '#8a6f3a',
   gomoku:   '#5c7a8a',
   checkers: '#8a6f3a',
@@ -29,6 +31,7 @@ const GAME_EN: Record<string, string> = {
   mancala: 'MANCALA',
   uno: 'UNO',
   backgammon: 'BACKGAMMON',
+  babanuki: 'BABANUKI',
 };
 
 type HomePageProps = {

@@ -36,6 +36,13 @@ export const games: GameInfo[] = [
     status: 'available',
     themeLabel: 'カードゲーム',
   },
+  {
+    id: 'babanuki',
+    title: '最弱王ババ抜き',
+    description: 'ジョーカーを最後まで抱えた者が最弱王。1人1回のシャッフルタイムが、膠着した盤面を根こそぎひっくり返す。',
+    status: 'available',
+    themeLabel: 'カードゲーム',
+  },
   // 将来追加するゲームの例（コメントアウト中）：
   // {
   //   id: 'reversi',
