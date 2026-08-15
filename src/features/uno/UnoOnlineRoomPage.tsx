@@ -26,6 +26,9 @@ import {
 type PageState = 'menu' | 'creating' | 'waiting';
 
 type UnoOnlineRoomPageProps = {
+  initialMode?: 'create' | 'join';
+  initialName?: string;
+  initialCode?: string;
   onGameStart: (info: UnoOnlineRoomInfo) => void;
   onBack: () => void;
 };
@@ -38,14 +41,15 @@ function defaultSlots(): UnoOnlinePlayerSlot[] {
   }));
 }
 
-export function UnoOnlineRoomPage({ onGameStart, onBack }: UnoOnlineRoomPageProps) {
+export function UnoOnlineRoomPage({ initialMode = 'create', initialName = '', initialCode = '', onGameStart, onBack }: UnoOnlineRoomPageProps) {
   const [pageState, setPageState] = useState<PageState>('menu');
+  const [entryMode, setEntryMode] = useState<'create' | 'join'>(initialMode);
   const [variant, setVariant] = useState<UnoVariant>('standard');
   const [playerCount, setPlayerCount] = useState(2);
   const [slots, setSlots] = useState<UnoOnlinePlayerSlot[]>(defaultSlots);
-  const [myName, setMyName] = useState(getSavedUnoOnlineName);
+  const [myName, setMyName] = useState(() => initialName || getSavedUnoOnlineName());
   const [roomCode, setRoomCode] = useState('');
-  const [inputCode, setInputCode] = useState('');
+  const [inputCode, setInputCode] = useState(initialCode);
   const [error, setError] = useState('');
   const [joinedCount, setJoinedCount] = useState(1);
   const [waitingPlayerCount, setWaitingPlayerCount] = useState(2);
@@ -349,8 +353,13 @@ export function UnoOnlineRoomPage({ onGameStart, onBack }: UnoOnlineRoomPageProp
     <Layout>
       <div style={{ paddingTop: 16, paddingBottom: 40 }}>
         <h1 style={{ fontSize: 20, fontWeight: 900, color: 'var(--brown)', textAlign: 'center', marginBottom: 20 }}>
-          UNO ─ 遠方の者との決闘
+          III. UNOのルーム設定
         </h1>
+
+        <div className="game-setup-tabs" style={{ marginBottom: 14 }}>
+          <button type="button" className={entryMode === 'create' ? 'is-selected' : ''} onClick={() => setEntryMode('create')}>ルームを作成</button>
+          <button type="button" className={entryMode === 'join' ? 'is-selected' : ''} onClick={() => setEntryMode('join')}>コードで参加</button>
+        </div>
 
         <section style={panelStyle}>
           <h2 style={sectionTitleStyle}>名を刻む（なくてもよい）</h2>
@@ -358,13 +367,13 @@ export function UnoOnlineRoomPage({ onGameStart, onBack }: UnoOnlineRoomPageProp
             type="text"
             value={myName}
             onChange={(event) => handleNameChange(event.target.value)}
-            placeholder="挑戦者の名"
+            placeholder="挑戦者の名（なくてもよい）"
             maxLength={12}
             style={inputStyle}
           />
         </section>
 
-        <section style={panelStyle}>
+        {entryMode === 'create' ? <section style={panelStyle}>
           <h2 style={sectionTitleStyle}>ルームを作る</h2>
           <div className="mode-cards" style={{ marginBottom: 14 }}>
             <ModeButton selected={variant === 'standard'} title="通常版" text="2〜10人" onClick={() => updateVariant('standard')} />
@@ -403,13 +412,13 @@ export function UnoOnlineRoomPage({ onGameStart, onBack }: UnoOnlineRoomPageProp
           <Button fullWidth onClick={handleCreate} disabled={pageState === 'creating'}>
             {pageState === 'creating' ? '作成中...' : 'ルームを作る'}
           </Button>
-        </section>
+        </section> : null}
 
-        <section style={panelStyle}>
+        {entryMode === 'join' ? <section style={panelStyle}>
           <h2 style={sectionTitleStyle}>ルームに参加</h2>
           <input
             type="text"
-            placeholder="ここにコードを入力"
+            placeholder="コードを入力"
             maxLength={6}
             value={inputCode}
             onChange={(event) => {
@@ -426,7 +435,7 @@ export function UnoOnlineRoomPage({ onGameStart, onBack }: UnoOnlineRoomPageProp
               参加する
             </Button>
           </div>
-        </section>
+        </section> : null}
 
         {error && (
           <div style={{
@@ -443,7 +452,7 @@ export function UnoOnlineRoomPage({ onGameStart, onBack }: UnoOnlineRoomPageProp
         )}
 
         <Button variant="ghost" fullWidth onClick={onBack}>
-          戻る
+          ゲーム設定に戻る
         </Button>
       </div>
     </Layout>

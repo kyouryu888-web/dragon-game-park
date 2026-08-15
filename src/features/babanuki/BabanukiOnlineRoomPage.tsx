@@ -17,6 +17,9 @@ import {
 type PageState = 'menu' | 'create' | 'waiting';
 
 type Props = {
+  initialMode?: 'create' | 'join';
+  initialName?: string;
+  initialCode?: string;
   onGameStart: (info: BabanukiRoomInfo) => void;
   onBack: () => void;
 };
@@ -27,12 +30,13 @@ function defaultSlots(): OnlineSlot[] {
   return Array.from({ length: MAX_PLAYERS - 1 }, () => ({ isCpu: false, cpuLevel: 'normal' as CpuLevel }));
 }
 
-export function BabanukiOnlineRoomPage({ onGameStart, onBack }: Props) {
+export function BabanukiOnlineRoomPage({ initialMode = 'create', initialName = '', initialCode = '', onGameStart, onBack }: Props) {
   const [page, setPage] = useState<PageState>('menu');
-  const [myName, setMyName] = useState(() => getSavedOnlineName());
+  const [entryMode, setEntryMode] = useState<'create' | 'join'>(initialMode);
+  const [myName, setMyName] = useState(() => initialName || getSavedOnlineName());
   const [playerCount, setPlayerCount] = useState(4);
   const [slots, setSlots] = useState<OnlineSlot[]>(defaultSlots);
-  const [inputCode, setInputCode] = useState('');
+  const [inputCode, setInputCode] = useState(initialCode);
   const [roomCode, setRoomCode] = useState('');
   const [myPlayerId, setMyPlayerId] = useState('player-1');
   const [error, setError] = useState('');
@@ -119,7 +123,7 @@ export function BabanukiOnlineRoomPage({ onGameStart, onBack }: Props) {
           onClick={page === 'menu' ? onBack : () => setPage('menu')}
           style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid rgba(140,120,90,.4)', background: 'rgba(30,26,22,.8)', color: '#c9b48f', fontSize: 12, cursor: 'pointer' }}
         >
-          ← 戻る
+          ← ゲーム設定に戻る
         </button>
         <span style={{ fontFamily: 'Cinzel,serif', fontSize: 12, letterSpacing: '.2em', color: '#8a7a58' }}>BABANUKI ONLINE</span>
       </div>
@@ -132,49 +136,56 @@ export function BabanukiOnlineRoomPage({ onGameStart, onBack }: Props) {
 
       {page === 'menu' && (
         <>
+          <div className="game-setup-tabs" style={{ marginBottom: 16 }}>
+            <button type="button" className={entryMode === 'create' ? 'is-selected' : ''} onClick={() => setEntryMode('create')}>ルームを作成</button>
+            <button type="button" className={entryMode === 'join' ? 'is-selected' : ''} onClick={() => setEntryMode('join')}>コードで参加</button>
+          </div>
           <div style={{ fontSize: 12, color: '#b5a68c', marginBottom: 6 }}>あなたの名前</div>
           <input
             className="bg-dark-input"
             value={myName}
             onChange={(e) => setMyName(e.target.value)}
-            placeholder="プレイヤー"
+            placeholder="挑戦者の名（なくてもよい）"
             maxLength={10}
             style={{ ...inputStyle, marginBottom: 18 }}
           />
 
-          <button
-            type="button"
-            className="btn"
-            onClick={() => setPage('create')}
-            style={{ width: '100%', padding: '13px 0', borderRadius: 10, marginBottom: 18, cursor: 'pointer', border: '1px solid rgba(200,140,240,.6)', background: 'linear-gradient(180deg,#5a3478,#3a2050)', color: '#f0dcff', fontSize: 16, fontWeight: 'bold' }}
-          >
-            ルームを作る
-          </button>
-
-          <div style={{ fontSize: 12, color: '#b5a68c', marginBottom: 6 }}>コードで参加する</div>
-          <input
-            className="bg-dark-input"
-            value={inputCode}
-            onChange={(e) => setInputCode(e.target.value.toUpperCase())}
-            placeholder="ここにコードを入力"
-            maxLength={6}
-            style={{
-              ...inputStyle,
-              // プレースホルダーは日本語なので字間を空けない
-              letterSpacing: inputCode ? '.3em' : 'normal',
-              textAlign: 'center',
-              marginBottom: 10,
-            }}
-          />
-          <button
-            type="button"
-            className="btn"
-            disabled={busy}
-            onClick={handleJoin}
-            style={{ width: '100%', padding: '12px 0', borderRadius: 10, cursor: 'pointer', border: '1px solid rgba(201,162,75,.5)', background: 'rgba(60,44,30,.8)', color: '#e6c877', fontSize: 14 }}
-          >
-            参加する
-          </button>
+          {entryMode === 'create' ? (
+            <button
+              type="button"
+              className="btn"
+              onClick={() => setPage('create')}
+              style={{ width: '100%', padding: '13px 0', borderRadius: 10, cursor: 'pointer', border: '1px solid rgba(200,140,240,.6)', background: 'linear-gradient(180deg,#5a3478,#3a2050)', color: '#f0dcff', fontSize: 16, fontWeight: 'bold' }}
+            >
+              対戦人数と席を設定する
+            </button>
+          ) : (
+            <>
+              <div style={{ fontSize: 12, color: '#b5a68c', marginBottom: 6 }}>コードで参加する</div>
+              <input
+                className="bg-dark-input"
+                value={inputCode}
+                onChange={(e) => setInputCode(e.target.value.toUpperCase())}
+                placeholder="コードを入力"
+                maxLength={6}
+                style={{
+                  ...inputStyle,
+                  letterSpacing: inputCode ? '.3em' : 'normal',
+                  textAlign: 'center',
+                  marginBottom: 10,
+                }}
+              />
+              <button
+                type="button"
+                className="btn"
+                disabled={busy}
+                onClick={handleJoin}
+                style={{ width: '100%', padding: '12px 0', borderRadius: 10, cursor: 'pointer', border: '1px solid rgba(201,162,75,.5)', background: 'rgba(60,44,30,.8)', color: '#e6c877', fontSize: 14 }}
+              >
+                参加する
+              </button>
+            </>
+          )}
         </>
       )}
 

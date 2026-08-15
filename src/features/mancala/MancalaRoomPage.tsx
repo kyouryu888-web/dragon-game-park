@@ -11,6 +11,9 @@ export type OnlineRoomInfo = {
 };
 
 type MancalaRoomPageProps = {
+  initialMode?: 'create' | 'join';
+  initialName?: string;
+  initialCode?: string;
   onGameStart: (info: OnlineRoomInfo) => void;
   onBack: () => void;
 };
@@ -77,15 +80,16 @@ const CPU_LEVELS: { level: CpuLevel; label: string }[] = [
   { level: 'very-hard', label: 'ゴッドドラゴン' },
 ];
 
-export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
+export function MancalaRoomPage({ initialMode = 'create', initialName = '', initialCode = '', onGameStart, onBack }: MancalaRoomPageProps) {
   const [pageState,          setPageState]          = useState<PageState>('menu');
+  const [entryMode,          setEntryMode]          = useState<'create' | 'join'>(initialMode);
   const [playerCount,        setPlayerCount]        = useState<2 | 3 | 4>(2);
   // cpuSlots[0]=player-2, cpuSlots[1]=player-3, cpuSlots[2]=player-4
   const [cpuSlots,           setCpuSlots]           = useState<[boolean, boolean, boolean]>([false, false, false]);
   const [cpuLevels,          setCpuLevels]          = useState<[CpuLevel, CpuLevel, CpuLevel]>(['normal', 'normal', 'normal']);
-  const [myName,             setMyName]             = useState<string>(getOnlinePlayerName);
+  const [myName,             setMyName]             = useState<string>(() => initialName || getOnlinePlayerName());
   const [roomCode,           setRoomCode]           = useState('');
-  const [inputCode,          setInputCode]          = useState('');
+  const [inputCode,          setInputCode]          = useState(initialCode);
   const [error,              setError]              = useState('');
   const [myWaitingPlayerId,  setMyWaitingPlayerId]  = useState<PlayerId>('player-1');
   const [joinedCount,        setJoinedCount]        = useState(1);
@@ -413,8 +417,13 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
           fontSize: 20, fontWeight: 'bold',
           color: 'var(--brown)', textAlign: 'center', marginBottom: 24,
         }}>
-          🌐 オンライン対戦
+          III. マンカラのルーム設定
         </h1>
+
+        <div className="game-setup-tabs" style={{ marginBottom: 16 }}>
+          <button type="button" className={entryMode === 'create' ? 'is-selected' : ''} onClick={() => setEntryMode('create')}>ルームを作成</button>
+          <button type="button" className={entryMode === 'join' ? 'is-selected' : ''} onClick={() => setEntryMode('join')}>コードで参加</button>
+        </div>
 
         {/* ── プレイヤー名入力 ── */}
         <div style={{
@@ -426,7 +435,7 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
           </div>
           <input
             type="text"
-            placeholder="例：たろう"
+            placeholder="挑戦者の名（なくてもよい）"
             maxLength={12}
             value={myName}
             onChange={e => handleNameChange(e.target.value)}
@@ -445,7 +454,7 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
         </div>
 
         {/* ── ルームを作る ── */}
-        <div style={{
+        {entryMode === 'create' ? <div style={{
           background: '#1d1723', border: '1.5px solid var(--border)',
           borderRadius: 18, padding: '20px', marginBottom: 16,
         }}>
@@ -545,10 +554,10 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
           <Button fullWidth onClick={handleCreate} disabled={pageState === 'creating'}>
             {pageState === 'creating' ? '作成中...' : 'ルームを作る'}
           </Button>
-        </div>
+        </div> : null}
 
         {/* ── ルームに参加する ── */}
-        <div style={{
+        {entryMode === 'join' ? <div style={{
           background: '#1d1723', border: '1.5px solid var(--border)',
           borderRadius: 18, padding: '20px', marginBottom: 16,
         }}>
@@ -560,7 +569,7 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
           </p>
           <input
             type="text"
-            placeholder="例: ABC123"
+            placeholder="コードを入力"
             maxLength={6}
             value={inputCode}
             onChange={e => { setInputCode(e.target.value.toUpperCase()); setError(''); }}
@@ -575,7 +584,7 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
           <Button fullWidth variant="secondary" onClick={handleJoin}>
             参加する
           </Button>
-        </div>
+        </div> : null}
 
         {error && (
           <div style={{
@@ -587,7 +596,7 @@ export function MancalaRoomPage({ onGameStart, onBack }: MancalaRoomPageProps) {
         )}
 
         <Button variant="ghost" fullWidth onClick={onBack}>
-          ← 戻る
+          ゲーム設定に戻る
         </Button>
       </div>
     </Layout>

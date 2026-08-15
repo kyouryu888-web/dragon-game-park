@@ -1,13 +1,24 @@
 import { useMemo, useState } from 'react';
 import { Button } from '../../components/Button';
-import { Layout } from '../../components/Layout';
+import {
+  GameSetupShell,
+  SetupChoiceTabs,
+  SetupModeCard,
+  SetupStep,
+  SetupSummary,
+} from '../../components/GameSetupFlow';
 import type { UnoConfig, UnoCpuLevel, UnoPlayerConfig, UnoVariant } from './unoTypes';
 import { getUnoCpuDisplayName, getUnoCpuLevelLabel } from './unoCpu';
 import { UnoRulesPanel } from './UnoRulesPanel';
-import { UnoCardView } from './UnoCardView';
 
 const STORAGE_KEY = 'dragon-game-park:uno-config-v1';
 const CPU_LEVELS: UnoCpuLevel[] = ['very-easy', 'easy', 'normal', 'hard', 'very-hard'];
+
+export type UnoOnlineEntry = {
+  mode: 'create' | 'join';
+  name: string;
+  code: string;
+};
 
 function defaultPlayers(): UnoPlayerConfig[] {
   return Array.from({ length: 10 }, (_, index) => ({
@@ -40,27 +51,24 @@ function saveConfig(config: UnoConfig): void {
 type UnoSetupPageProps = {
   onStart: (config: UnoConfig) => void;
   onBack: () => void;
-  onOnlinePlay: () => void;
+  onOnlinePlay: (entry: UnoOnlineEntry) => void;
 };
 
 export function UnoSetupPage({ onStart, onBack, onOnlinePlay }: UnoSetupPageProps) {
   const saved = useMemo(() => loadSavedConfig(), []);
   const [variant, setVariant] = useState<UnoVariant>(saved?.variant ?? 'standard');
-  const [playerCount, setPlayerCount] = useState(() => {
-    const savedCount = saved?.playerConfigs.length ?? 2;
-    return Math.min(Math.max(savedCount, 2), saved?.variant === 'hard' ? 6 : 10);
-  });
+  const [playerCount, setPlayerCount] = useState(() => Math.min(Math.max(saved?.playerConfigs.length ?? 2, 2), saved?.variant === 'hard' ? 6 : 10));
   const [players, setPlayers] = useState<UnoPlayerConfig[]>(() => {
     const base = defaultPlayers();
     if (!saved?.playerConfigs) return base;
-    return base.map((cfg, index) => ({ ...cfg, ...saved.playerConfigs[index] }));
+    return base.map((config, index) => ({ ...config, ...saved.playerConfigs[index], isCpu: index > 0 }));
   });
-  const [showRules, setShowRules] = useState(true);
+  const [mode, setMode] = useState<'cpu' | 'online'>('cpu');
+  const [onlineTab, setOnlineTab] = useState<'create' | 'join'>('create');
+  const [joinCode, setJoinCode] = useState('');
+  const [showRules, setShowRules] = useState(false);
 
   const maxPlayers = variant === 'hard' ? 6 : 10;
-  const activePlayers = players.slice(0, playerCount);
-  const humanCount = activePlayers.filter((p) => !p.isCpu).length;
-  const cpuCount = activePlayers.filter((p) => p.isCpu).length;
 
   function updateVariant(nextVariant: UnoVariant) {
     setVariant(nextVariant);
@@ -68,15 +76,19 @@ export function UnoSetupPage({ onStart, onBack, onOnlinePlay }: UnoSetupPageProp
   }
 
   function updatePlayer(index: number, patch: Partial<UnoPlayerConfig>) {
-    setPlayers((prev) => prev.map((player, i) => (i === index ? { ...player, ...patch } : player)));
+    setPlayers((previous) => previous.map((player, playerIndex) => playerIndex === index ? { ...player, ...patch } : player));
   }
 
   function handleStart() {
+    if (mode === 'online') {
+      onOnlinePlay({ mode: onlineTab, name: players[0]?.name ?? '', code: joinCode.trim().toUpperCase() });
+      return;
+    }
     const config: UnoConfig = {
       variant,
-      playerConfigs: players.slice(0, playerCount).map((player) => ({
+      playerConfigs: players.slice(0, playerCount).map((player, index) => ({
         name: player.name,
-        isCpu: player.isCpu,
+        isCpu: index > 0,
         cpuLevel: player.cpuLevel ?? 'normal',
       })),
     };
@@ -85,289 +97,84 @@ export function UnoSetupPage({ onStart, onBack, onOnlinePlay }: UnoSetupPageProp
   }
 
   return (
-    <Layout>
-      <div style={{ paddingTop: 'var(--setup-pt)', paddingBottom: 46 }}>
-        <button
-          onClick={onBack}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: 'var(--text-mid)',
-            cursor: 'pointer',
-            fontSize: 14,
-            padding: '8px 0',
-            marginBottom: 14,
-          }}
-        >
-          ← ゲーム選択へ戻る
-        </button>
-
-        <div style={{ textAlign: 'center', marginBottom: 20 }}>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 10 }}>
-            <UnoCardView hidden compact variant={variant} />
-            <UnoCardView
-              compact
-              variant={variant}
-              card={{ id: 'sample', kind: 'wild', symbol: variant === 'hard' ? 'wild-draw10' : 'wild' }}
-            />
-          </div>
-          <h1 style={{ fontSize: 25, fontWeight: 'bold', color: 'var(--brown)', marginBottom: 6 }}>
-            UNO
-          </h1>
-          <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.7 }}>
-            みんなで遊べるカードゲーム。ハード版はドローとこうかんが大暴れします。
-          </p>
-        </div>
-
-        <div style={{
-          background: '#1d1723',
-          border: '1.5px solid var(--border-light)',
-          borderRadius: 22,
-          boxShadow: 'var(--shadow-md)',
-          padding: '20px 16px',
-          display: 'grid',
-          gap: 18,
-        }}>
-          <section>
-            <h2 style={sectionTitleStyle}>モード</h2>
-            <div className="mode-cards" style={{ marginBottom: 0 }}>
-              <ModeButton
-                selected={variant === 'standard'}
-                title="通常版"
-                text="2〜10人。わかりやすいUNOです。"
-                onClick={() => updateVariant('standard')}
-              />
-              <ModeButton
-                selected={variant === 'hard'}
-                title="ハード版"
-                text="2〜6人。25まいでアウトの凶悪ルールです。"
-                danger
-                onClick={() => updateVariant('hard')}
-              />
-            </div>
-          </section>
-
-          <section>
-            <h2 style={sectionTitleStyle}>プレイヤー人数</h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 6 }}>
-              {Array.from({ length: maxPlayers - 1 }, (_, i) => i + 2).map((count) => (
-                <button
-                  key={count}
-                  onClick={() => setPlayerCount(count)}
-                  style={{
-                    padding: '9px 0',
-                    borderRadius: 12,
-                    border: `2px solid ${playerCount === count ? '#c9a24b' : 'var(--border)'}`,
-                    background: playerCount === count ? 'rgba(201,162,75,.12)' : '#191320',
-                    color: playerCount === count ? '#f0dfae' : 'var(--text-mid)',
-                    fontWeight: 900,
-                    cursor: 'pointer',
-                  }}
-                >
-                  {count}人
-                </button>
-              ))}
-            </div>
-            <p style={{ marginTop: 8, textAlign: 'center', fontSize: 12, color: 'var(--text-muted)' }}>
-              人間 {humanCount}人 / CPU {cpuCount}体
-            </p>
-          </section>
-
-          <section>
-            <h2 style={sectionTitleStyle}>プレイヤー設定</h2>
-            <div style={{ display: 'grid', gap: 10 }}>
-              {Array.from({ length: playerCount }, (_, index) => (
-                <PlayerSetupRow
-                  key={index}
-                  index={index}
-                  config={players[index]!}
-                  onChange={(patch) => updatePlayer(index, patch)}
-                />
-              ))}
-            </div>
-          </section>
-
-          <div style={{ display: 'grid', gap: 9 }}>
-            <Button fullWidth onClick={handleStart}>
-              この場の者と遊ぶ
-            </Button>
-            <Button fullWidth variant="secondary" onClick={onOnlinePlay}>
-              遠方の者と対戦
-            </Button>
-          </div>
-        </div>
-
-        <div style={{ marginTop: 16 }}>
-          <button
-            onClick={() => setShowRules((show) => !show)}
-            style={{
-              width: '100%',
-              background: variant === 'hard' ? '#2a1114' : '#191320',
-              color: variant === 'hard' ? '#fff4e4' : 'var(--text-mid)',
-              border: `1.5px solid ${variant === 'hard' ? '#b93530' : 'var(--border)'}`,
-              borderRadius: 14,
-              padding: '12px 16px',
-              fontWeight: 900,
-              cursor: 'pointer',
-              display: 'flex',
-              justifyContent: 'space-between',
-            }}
-          >
-            <span>カードとルールの説明</span>
-            <span>{showRules ? '閉じる' : '開く'}</span>
-          </button>
-          {showRules && <div style={{ marginTop: 8 }}><UnoRulesPanel variant={variant} /></div>}
-        </div>
-      </div>
-    </Layout>
-  );
-}
-
-const sectionTitleStyle: React.CSSProperties = {
-  fontSize: 13,
-  fontWeight: 'bold',
-  color: 'var(--text-muted)',
-  marginBottom: 10,
-  letterSpacing: 0.5,
-};
-
-function ModeButton({
-  selected,
-  title,
-  text,
-  danger = false,
-  onClick,
-}: {
-  selected: boolean;
-  title: string;
-  text: string;
-  danger?: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        textAlign: 'left',
-        borderRadius: 16,
-        border: `2px solid ${selected ? (danger ? '#c83b32' : '#c9a24b') : 'var(--border)'}`,
-        background: selected
-          ? danger ? '#321316' : 'rgba(201,162,75,.12)'
-          : '#191320',
-        color: selected && danger ? 'rgba(201,162,75,.12)' : 'var(--text)',
-        padding: '14px 14px',
-        cursor: 'pointer',
-      }}
+    <GameSetupShell
+      theme="uno"
+      icon="🃏"
+      title="UNO"
+      englishTitle="UNO"
+      description="色と数字をつないで手札を燃やし尽くすカードの決闘。通常版とハード版を選べます。"
+      onBack={onBack}
     >
-      <div style={{ fontSize: 16, fontWeight: 900, marginBottom: 4 }}>{title}</div>
-      <div style={{ fontSize: 12, lineHeight: 1.55, color: selected && danger ? 'rgba(224,115,58,.2)' : 'var(--text-muted)' }}>{text}</div>
-    </button>
-  );
-}
+      <SetupStep numeral="I" title="名を刻む">
+        <input
+          className="game-setup-input"
+          value={players[0]?.name ?? ''}
+          onChange={(event) => updatePlayer(0, { name: event.target.value, isCpu: false })}
+          placeholder="挑戦者の名（なくてもよい）"
+          maxLength={12}
+        />
+      </SetupStep>
 
-function PlayerSetupRow({
-  index,
-  config,
-  onChange,
-}: {
-  index: number;
-  config: UnoPlayerConfig;
-  onChange: (patch: Partial<UnoPlayerConfig>) => void;
-}) {
-  const cpuLevel = config.cpuLevel ?? 'normal';
-  const accent = ['#c83b32', '#2581d8', '#25a85a', '#d9a520', '#8a55c7'][index % 5]!;
-  return (
-    <div style={{
-      borderRadius: 15,
-      border: `1.5px solid ${config.isCpu ? '#8a6f3a' : 'var(--border)'}`,
-      background: config.isCpu ? 'rgba(138,111,58,.14)' : '#191320',
-      padding: '12px',
-      display: 'grid',
-      gap: 10,
-    }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <div style={{
-          width: 30,
-          height: 30,
-          borderRadius: '50%',
-          background: accent,
-          color: '#fff',
-          display: 'grid',
-          placeItems: 'center',
-          fontWeight: 900,
-          flexShrink: 0,
-        }}>
-          {index + 1}
+      <SetupStep numeral="II" title="対戦方法を選ぶ">
+        <div className="game-setup-mode-grid game-setup-mode-grid-card-game">
+          <SetupModeCard selected={mode === 'cpu'} icon="🐉" title="ドラゴンと対戦" code="VS CPU" description="あなた1人とCPUで対戦" onClick={() => setMode('cpu')} />
+          <SetupModeCard selected={mode === 'online'} icon="♜" title="遠方の者と対戦" code="ONLIE" description="離れた端末からルームコードで参加" onClick={() => setMode('online')} />
         </div>
-        <strong style={{ fontSize: 13, flex: 1 }}>プレイヤー{index + 1}</strong>
-        <div style={{ display: 'flex', gap: 4 }}>
-          {[
-            { label: '人間', isCpu: false },
-            { label: 'CPU', isCpu: true },
-          ].map((role) => {
-            const selected = config.isCpu === role.isCpu;
-            return (
-              <button
-                key={role.label}
-                onClick={() => onChange({ isCpu: role.isCpu })}
-                style={{
-                  padding: '5px 10px',
-                  borderRadius: 9,
-                  border: `1.5px solid ${selected ? accent : 'var(--border)'}`,
-                  background: selected ? 'rgba(201,162,75,.16)' : 'transparent',
-                  color: selected ? '#7a3a10' : 'var(--text-muted)',
-                  fontWeight: 900,
-                  cursor: 'pointer',
-                }}
-              >
-                {role.label}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-      <input
-        type="text"
-        value={config.name}
-        onChange={(event) => onChange({ name: event.target.value })}
-        placeholder={config.isCpu ? getUnoCpuDisplayName(cpuLevel) : `プレイヤー${index + 1}`}
-        maxLength={12}
-        style={{
-          width: '100%',
-          border: '1.5px solid var(--border)',
-          borderRadius: 10,
-          padding: '8px 10px',
-          fontSize: 14,
-          fontFamily: 'inherit',
-          outline: 'none',
-          background: '#1d1723',
-        }}
-      />
-      {config.isCpu && (
-        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
-          {CPU_LEVELS.map((level) => {
-            const selected = cpuLevel === level;
-            return (
-              <button
-                key={level}
-                onClick={() => onChange({ cpuLevel: level })}
-                style={{
-                  padding: '5px 8px',
-                  borderRadius: 9,
-                  border: `1.5px solid ${selected ? '#8a6f3a' : 'var(--border)'}`,
-                  background: selected ? 'rgba(138,111,58,.14)' : 'transparent',
-                  color: selected ? '#1f641f' : 'var(--text-muted)',
-                  fontSize: 11,
-                  fontWeight: 900,
-                  cursor: 'pointer',
-                }}
-              >
-                {getUnoCpuLevelLabel(level)}
-              </button>
-            );
-          })}
-        </div>
+        {mode === 'online' ? (
+          <div className="game-setup-online-panel">
+            <SetupChoiceTabs value={onlineTab} onChange={setOnlineTab} />
+            {onlineTab === 'join' ? (
+              <input
+                className="game-setup-input game-setup-code-input"
+                value={joinCode}
+                onChange={(event) => setJoinCode(event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
+                placeholder="コードを入力"
+                maxLength={6}
+              />
+            ) : null}
+          </div>
+        ) : null}
+      </SetupStep>
+
+      {mode === 'cpu' ? (
+        <SetupStep numeral="III" title="対戦相手を決める" description="カードゲームのため、同じ端末で人どうしの対戦は行いません。">
+          <div className="game-setup-tabs" style={{ marginBottom: 12 }}>
+            <button type="button" className={variant === 'standard' ? 'is-selected' : ''} onClick={() => updateVariant('standard')}>通常版</button>
+            <button type="button" className={variant === 'hard' ? 'is-selected' : ''} onClick={() => updateVariant('hard')}>ハード版</button>
+          </div>
+          <div className="game-setup-count-grid">
+            {Array.from({ length: maxPlayers - 1 }, (_, index) => index + 2).map((count) => (
+              <button key={count} type="button" className={playerCount === count ? 'is-selected' : ''} onClick={() => setPlayerCount(count)}>{count}人</button>
+            ))}
+          </div>
+          <div className="game-setup-opponent-list">
+            {players.slice(1, playerCount).map((player, index) => (
+              <div className="game-setup-opponent-row" key={index}>
+                <strong>{player.name || getUnoCpuDisplayName(player.cpuLevel ?? 'normal')}</strong>
+                <span className="game-setup-role-tabs"><button type="button" className="is-selected">CPU</button></span>
+                <select className="game-setup-select" value={player.cpuLevel ?? 'normal'} onChange={(event) => updatePlayer(index + 1, { isCpu: true, cpuLevel: event.target.value as UnoCpuLevel })}>
+                  {CPU_LEVELS.map((level) => <option key={level} value={level}>{getUnoCpuLevelLabel(level)}</option>)}
+                </select>
+              </div>
+            ))}
+          </div>
+          <SetupSummary>人間1人 / CPU {playerCount - 1}体、{variant === 'hard' ? 'ハード版' : '通常版'}で対戦します。</SetupSummary>
+        </SetupStep>
+      ) : (
+        <SetupStep numeral="III" title={onlineTab === 'create' ? 'ルームを作る' : 'コードで参加する'}>
+          <SetupSummary>{onlineTab === 'create' ? '次の画面でUNOの種類・人数・人間/CPUの席を設定します。' : '入力したコードのルームへ参加します。'}</SetupSummary>
+        </SetupStep>
       )}
-    </div>
+
+      <div className="game-setup-cta">
+        <Button fullWidth onClick={handleStart} disabled={mode === 'online' && onlineTab === 'join' && joinCode.length !== 6}>
+          {mode === 'cpu' ? 'この設定で対戦する' : onlineTab === 'create' ? 'ルーム設定へ進む' : 'このコードで参加する'}
+        </Button>
+        <button type="button" className="game-setup-rules-toggle" onClick={() => setShowRules((show) => !show)}>
+          {showRules ? 'カードとルールを閉じる' : 'カードとルールを見る'}
+        </button>
+        {showRules ? <div style={{ marginTop: 10 }}><UnoRulesPanel variant={variant} /></div> : null}
+      </div>
+    </GameSetupShell>
   );
 }

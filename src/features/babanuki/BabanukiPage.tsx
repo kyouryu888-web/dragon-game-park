@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import type { BabanukiConfig } from './babanukiTypes';
 import { MAX_PLAYERS, MIN_PLAYERS } from './babanukiTypes';
-import { BabanukiSettingsScreen } from './BabanukiSettingsScreen';
+import { BabanukiSettingsScreen, type BabanukiOnlineEntry } from './BabanukiSettingsScreen';
 import { BabanukiPlayScreen } from './BabanukiPlayScreen';
 import { BabanukiOnlineRoomPage } from './BabanukiOnlineRoomPage';
 import { BabanukiOnlineGame } from './BabanukiOnlineGame';
@@ -56,6 +56,7 @@ export function BabanukiPage({ onBackToHome }: Props) {
   const [screen, setScreen] = useState<Screen>('settings');
   const [config, setConfig] = useState<BabanukiConfig>(() => loadSavedConfig() ?? DEFAULT_CONFIG);
   const [roomInfo, setRoomInfo] = useState<BabanukiRoomInfo | null>(null);
+  const [onlineEntry, setOnlineEntry] = useState<BabanukiOnlineEntry>({ mode: 'create', name: '', code: '' });
 
   const updateConfig = (next: BabanukiConfig) => {
     setConfig(next);
@@ -68,7 +69,15 @@ export function BabanukiPage({ onBackToHome }: Props) {
   }, []);
 
   if (screen === 'room') {
-    return <BabanukiOnlineRoomPage onGameStart={handleGameStart} onBack={() => setScreen('settings')} />;
+    return (
+      <BabanukiOnlineRoomPage
+        initialMode={onlineEntry.mode}
+        initialName={onlineEntry.name}
+        initialCode={onlineEntry.code}
+        onGameStart={handleGameStart}
+        onBack={() => setScreen('settings')}
+      />
+    );
   }
 
   if (screen === 'online-play' && roomInfo) {
@@ -96,7 +105,10 @@ export function BabanukiPage({ onBackToHome }: Props) {
       config={config}
       onChange={updateConfig}
       onStart={() => setScreen('play')}
-      onOnlinePlay={() => setScreen('room')}
+      onOnlinePlay={(entry) => {
+        setOnlineEntry(entry);
+        setScreen('room');
+      }}
       onBack={onBackToHome}
     />
   );

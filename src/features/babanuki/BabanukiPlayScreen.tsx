@@ -3,6 +3,7 @@ import type { BabanukiConfig, BabanukiState } from './babanukiTypes';
 import {
   activePlayers,
   canDeclareShuffle,
+  createBabanukiRematchState,
   createInitialBabanukiState,
   declareShuffle,
   drawCard,
@@ -191,8 +192,25 @@ export function BabanukiPlayScreen({ config, onBackToSetup, onBackToHome }: Prop
     setSelectedIndex(null);
   };
 
+  const clearBluff = () => {
+    const cardId = viewer.spotlightCardId;
+    if (!cardId || isAnimating) return;
+    setSelectedIndex(null);
+    setLogic((state) => setSpotlight(state, VIEWER_ID, cardId));
+  };
+
   const currentPlayer = getPlayer(logic, logic.currentPlayerId);
   const currentName = currentPlayer.name || (currentPlayer.isCpu ? getCpuDisplayName(currentPlayer.cpuLevel) : 'プレイヤー');
+  const activeShuffleEvent = playback.activeEvent?.kind === 'shuffle' ? playback.activeEvent : null;
+  const shufflePresentation = logic.pendingShuffle
+    ? { ...logic.pendingShuffle, stage: 'dice' as const }
+    : activeShuffleEvent
+      ? { declarerId: activeShuffleEvent.declarerId, dice: activeShuffleEvent.dice, stage: 'moving' as const }
+      : null;
+  const shuffleDeclarer = shufflePresentation ? getPlayer(logic, shufflePresentation.declarerId) : null;
+  const shuffleDeclarerName = shuffleDeclarer
+    ? shuffleDeclarer.name || (shuffleDeclarer.isCpu ? getCpuDisplayName(shuffleDeclarer.cpuLevel) : 'プレイヤー')
+    : '';
   const shuffleState: 'ready' | 'used' | 'locked' = !viewer.shuffleRight
     ? 'used'
     : activePlayers(logic).length <= 2
@@ -200,17 +218,24 @@ export function BabanukiPlayScreen({ config, onBackToSetup, onBackToHome }: Prop
       : 'ready';
 
   return (
-    <div style={{ minHeight: '100vh', padding: '10px 12px 28px', color: '#e0d3b8' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+    <div className="babanuki-game-screen" style={{ minHeight: '100vh', padding: '10px 12px 28px', color: '#e0d3b8' }}>
+      <div className="babanuki-top-nav">
         <button
           type="button"
           className="btn"
           onClick={onBackToSetup}
           style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid rgba(140,120,90,.4)', background: 'rgba(30,26,22,.8)', color: '#c9b48f', fontSize: 12, cursor: 'pointer' }}
         >
-          ← 設定
+          ゲーム設定に戻る
         </button>
         <span style={{ fontFamily: 'Cinzel,serif', fontSize: 12, letterSpacing: '.2em', color: '#8a7a58' }}>BABANUKI</span>
+        <button
+          type="button"
+          className="btn babanuki-home-button"
+          onClick={onBackToHome}
+        >
+          ゲーム選択に戻る
+        </button>
       </div>
 
       {/* 手番バナー */}
@@ -252,6 +277,7 @@ export function BabanukiPlayScreen({ config, onBackToSetup, onBackToHome }: Prop
         shuffleState={shuffleState}
         canShuffle={!isAnimating && canDeclareShuffle(logic, VIEWER_ID)}
         onShuffle={() => setLogic((s) => declareShuffle(s, VIEWER_ID))}
+        shuffleDice={shufflePresentation?.stage === 'moving' ? shufflePresentation.dice : null}
       />
 
       {/* 引く札の確認 */}
@@ -302,15 +328,24 @@ export function BabanukiPlayScreen({ config, onBackToSetup, onBackToHome }: Prop
             </button>
           </div>
         )}
+        {viewer.spotlightCardId && (
+          <button
+            type="button"
+            className="btn"
+            onClick={clearBluff}
+            disabled={isAnimating}
+            style={{ marginTop: 7, padding: '7px 14px', borderRadius: 8, border: '1px solid rgba(200,140,240,.55)', background: 'rgba(70,42,88,.82)', color: '#ead8f5', fontSize: 12, cursor: isAnimating ? 'default' : 'pointer' }}
+          >
+            ブラフを解除
+          </button>
+        )}
       </div>
 
-      {logic.phase === 'rolling' && logic.pendingShuffle && (
+      {shufflePresentation && (
         <DiceResultPanel
-          dice={logic.pendingShuffle.dice}
-          declarerName={
-            getPlayer(logic, logic.pendingShuffle.declarerId).name ||
-            getCpuDisplayName(getPlayer(logic, logic.pendingShuffle.declarerId).cpuLevel)
-          }
+          dice={shufflePresentation.dice}
+          declarerName={shuffleDeclarerName}
+          stage={shufflePresentation.stage}
         />
       )}
 
@@ -320,9 +355,10 @@ export function BabanukiPlayScreen({ config, onBackToSetup, onBackToHome }: Prop
           viewerId={VIEWER_ID}
           onRestart={() => {
             setSelectedIndex(null);
-            setLogic(createInitialBabanukiState(config));
+            setLogic((state) => createBabanukiRematchState(state));
           }}
           onChangeSettings={onBackToSetup}
+          onBackToSetup={onBackToSetup}
           onBackToHome={onBackToHome}
         />
       )}

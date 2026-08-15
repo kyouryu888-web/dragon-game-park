@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { Button } from '../../components/Button';
+import { GameEndActions } from '../../components/GameEndActions';
 import { Layout } from '../../components/Layout';
 import type { UnoCard, UnoColor, UnoConfig, UnoGameState, UnoPlayer, UnoPlayerId } from './unoTypes';
 import { createInitialUnoState } from './createInitialUnoState';
@@ -313,10 +314,10 @@ export function UnoGamePage({ config, onBackToSetup, onBackToHome }: UnoGamePage
               </Button>
               <div className="game-nav-secondary">
                 <Button variant="secondary" fullWidth onClick={onBackToSetup}>
-                  UNO設定へ戻る
+                  ゲーム設定に戻る
                 </Button>
                 <Button variant="secondary" fullWidth onClick={onBackToHome}>
-                  ゲーム選択へ戻る
+                  ゲーム選択に戻る
                 </Button>
               </div>
             </div>
@@ -604,13 +605,12 @@ function ResultPanel({
           </div>
         ))}
       </div>
-      <div className="game-nav-buttons" style={{ marginTop: 0 }}>
-        <Button fullWidth onClick={onRestart}>もう一度戦う</Button>
-        <div className="game-nav-secondary">
-          <Button fullWidth variant="secondary" onClick={onBackToSetup}>UNO設定へ戻る</Button>
-          <Button fullWidth variant="secondary" onClick={onBackToHome}>ゲーム選択へ戻る</Button>
-        </div>
-      </div>
+      <GameEndActions
+        onRematch={onRestart}
+        onChangeSettings={onBackToSetup}
+        onBackToSetup={onBackToSetup}
+        onBackToHome={onBackToHome}
+      />
     </div>
   );
 }

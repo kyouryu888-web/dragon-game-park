@@ -48,6 +48,8 @@ type Props = {
   /** 今この瞬間に押せるか（ジョーカー保持・このターン未使用・アニメ中でない） */
   canShuffle: boolean;
   onShuffle: () => void;
+  /** 手札移動演出中の出目。盤面中央の見せ場演出に使う */
+  shuffleDice?: number | null;
 };
 
 const SUIT_MARK: Record<string, string> = {
@@ -151,16 +153,17 @@ function FlyingCard({
     };
   }, []);
 
-  const width = 34;
-  const height = 48;
+  const stack = flight.stack ?? 1;
+  const isShuffleStack = stack > 1;
+  const width = isShuffleStack ? 42 : 34;
+  const height = isShuffleStack ? 58 : 48;
   const start = { left: from.left + from.width / 2 - width / 2, top: from.top + from.height / 2 - height / 2 };
   const end = { left: to.left + to.width / 2 - width / 2, top: to.top + to.height / 2 - height / 2 };
   const pos = atTarget ? end : start;
-  const stack = flight.stack ?? 1;
 
   return (
     <div
-      className="babanuki-flying"
+      className={`babanuki-flying${isShuffleStack ? ' is-shuffle-stack' : ''}`}
       style={{
         left: pos.left,
         top: pos.top,
@@ -170,7 +173,7 @@ function FlyingCard({
       }}
     >
       <div style={{ position: 'relative', width, height }}>
-        {Array.from({ length: Math.min(stack, 3) }, (_, i) => (
+        {Array.from({ length: Math.min(stack, 4) }, (_, i) => (
           <div key={i} style={{ position: 'absolute', left: i * 3, top: -i * 3 }}>
             {flight.faceUp && flight.card ? (
               <CardFace card={flight.card} width={width} height={height} />
@@ -203,6 +206,7 @@ export function BabanukiTable({
   shuffleState,
   canShuffle,
   onShuffle,
+  shuffleDice = null,
 }: Props) {
   const hiddenIds = useMemo(() => new Set(hidden), [hidden]);
   const elsRef = useRef(new Map<string, HTMLElement>());
@@ -271,16 +275,22 @@ export function BabanukiTable({
     <div style={{ position: 'relative' }}>
       {/* ---- テーブル（他のプレイヤー＋中央の捨て札） ---- */}
       <div
+        className={`babanuki-table-surface${shuffleDice !== null ? ` is-shuffling is-dice-${shuffleDice}` : ''}`}
         style={{
           position: 'relative',
-          height: 268,
+          height: 'var(--babanuki-table-height, 268px)',
           margin: '0 auto 6px',
-          maxWidth: 420,
+          maxWidth: 'var(--babanuki-table-max, 420px)',
           borderRadius: '50%',
           background: 'radial-gradient(ellipse at 50% 45%, rgba(90,50,120,.28), rgba(20,12,28,.55) 70%)',
           border: '1px solid rgba(140,90,180,.28)',
         }}
       >
+        {shuffleDice !== null && (
+          <div className="babanuki-shuffle-vortex" aria-hidden="true">
+            <span>{shuffleDice === 4 ? '💀' : shuffleDice === 3 ? '✦' : shuffleDice === 1 || shuffleDice === 5 ? '↻' : '↺'}</span>
+          </div>
+        )}
         {/* 中央の捨て札 */}
         <div
           ref={registerSlot('pile')}
@@ -299,9 +309,10 @@ export function BabanukiTable({
         {/* 自分のシャッフルボタン（手札のすぐ上・盤面の下端中央）。他プレイヤーの札と同じくらいの大きさ */}
         <button
           type="button"
-          className="btn"
+          className="btn babanuki-shuffle-button"
           disabled={!canShuffle}
           onClick={onShuffle}
+          aria-label="シャッフルタイム"
           title={
             shuffleState === 'used'
               ? 'シャッフルタイムは使用済み'
@@ -311,6 +322,7 @@ export function BabanukiTable({
           }
           style={{
             position: 'absolute', left: '50%', top: '92%', transform: 'translate(-50%,-50%)',
+            zIndex: 6,
             width: 40, height: 38, borderRadius: 10, padding: 0,
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
             lineHeight: 1,

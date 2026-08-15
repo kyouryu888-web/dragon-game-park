@@ -1,5 +1,6 @@
 import type { GameState, PlayerId } from './backgammonTypes';
-import { BG, Brand, ChevronLeft, DragonIcon, GoldButton } from './BackgammonUi';
+import { BG, Brand, ChevronLeft, DragonIcon } from './BackgammonUi';
+import { GameEndActions } from '../../components/GameEndActions';
 
 // 盤の並び（デザインと同一）: white のホームは右下、black のホームは右上
 const TOP_L = [12, 13, 14, 15, 16, 17];
@@ -64,7 +65,7 @@ export type BackgammonPlayScreenProps = {
 
 function Checker({
   owner, size, label, ring, pulse,
-}: { owner: PlayerId; size: number; label?: string; ring?: boolean; pulse?: boolean }) {
+}: { owner: PlayerId; size: number | string; label?: string; ring?: boolean; pulse?: boolean }) {
   return (
     <div style={{
       width: size, height: size, borderRadius: '50%',
@@ -74,7 +75,7 @@ function Checker({
         : '0 2px 4px rgba(0,0,0,.5)',
       animation: pulse ? 'pickPulse 1.6s ease-in-out infinite' : 'none',
       boxSizing: 'border-box', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontSize: size < 24 ? 10 : 11, fontWeight: 700, color: CHECKER_TC[owner], flex: 'none',
+      fontSize: 'clamp(10px, 1.2vw, 13px)', fontWeight: 700, color: CHECKER_TC[owner], flex: 'none',
     }}>
       {label ?? ''}
     </div>
@@ -103,7 +104,7 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
         <Checker
           key={k}
           owner={pt!.owner}
-          size={24}
+          size="var(--backgammon-checker-size)"
           label={last && count > 5 ? String(count) : ''}
           ring={last && isSel}
           pulse={last && pickable}
@@ -164,14 +165,14 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
     const checkers = [];
     for (let k = 0; k < show; k++) {
       checkers.push(
-        <Checker key={k} owner={side} size={22} label={k === show - 1 && n > 4 ? String(n) : ''} />,
+        <Checker key={k} owner={side} size="var(--backgammon-bar-checker-size)" label={k === show - 1 && n > 4 ? String(n) : ''} />,
       );
     }
     return (
       <div
         onClick={props.onTapBar}
         style={{
-          width: 26, flex: 'none', position: 'relative', margin: '0 1px', borderRadius: 3,
+          width: 'var(--backgammon-bar-width)', flex: 'none', position: 'relative', margin: '0 1px', borderRadius: 3,
           background: row === 'top'
             ? 'linear-gradient(180deg,#3f2d18,#241a0e)'
             : 'linear-gradient(180deg,#241a0e,#3f2d18)',
@@ -283,7 +284,7 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
   };
 
   return (
-    <div style={{
+    <div className="backgammon-play-screen" style={{
       position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column',
       minHeight: '100vh', padding: '0 8px 14px',
     }}>
@@ -313,7 +314,7 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
             color: BG.dim, fontFamily: BG.serifEn, fontSize: 11, letterSpacing: '.14em',
           }}
         >
-          TOP
+          ゲーム選択に戻る
         </button>
       </div>
 
@@ -332,14 +333,14 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
           boxShadow: 'inset 0 0 24px rgba(0,0,0,.7)', padding: '4px 3px',
         }}>
           {/* top row */}
-          <div style={{ display: 'flex', height: 126 }}>
+          <div style={{ display: 'flex', height: 'var(--backgammon-point-row-height)' }}>
             {TOP_L.map((i) => renderPoint(i, 'top'))}
             {renderBar('black', 'top')}
             {TOP_R.map((i) => renderPoint(i, 'top'))}
           </div>
 
           {/* middle strip */}
-          <div style={{ height: 62, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, position: 'relative' }}>
+          <div style={{ height: 'var(--backgammon-middle-height)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, position: 'relative' }}>
             <div style={{
               position: 'absolute', left: 6, right: 6, top: '50%', height: 1,
               background: 'linear-gradient(90deg,transparent,rgba(201,162,75,.25),transparent)',
@@ -374,7 +375,7 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
           </div>
 
           {/* bottom row */}
-          <div style={{ display: 'flex', height: 126 }}>
+          <div style={{ display: 'flex', height: 'var(--backgammon-point-row-height)' }}>
             {BOT_L.map((i) => renderPoint(i, 'bottom'))}
             {renderBar('white', 'bottom')}
             {BOT_R.map((i) => renderPoint(i, 'bottom'))}
@@ -432,33 +433,13 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
             {props.over.title}
           </div>
           <div style={{ fontSize: 13.5, color: BG.textMid, lineHeight: 1.8 }}>{props.over.sub}</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '100%', maxWidth: 280, marginTop: 16 }}>
-            {props.over.showRematch && (
-              <GoldButton onClick={props.onRematch} minHeight={52} fontSize={15} letterSpacing=".16em">
-                もう一度戦う
-              </GoldButton>
-            )}
-            <button
-              onClick={props.onBackToSettings}
-              style={{
-                minHeight: 48, borderRadius: 6, cursor: 'pointer',
-                border: '1px solid rgba(201,162,75,.4)', background: 'rgba(201,162,75,.07)',
-                color: '#d8c79a', fontFamily: BG.serifJa, fontSize: 14, letterSpacing: '.12em',
-              }}
-            >
-              設定に戻る
-            </button>
-            <button
-              onClick={props.onBackToHome}
-              style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 44,
-                background: 'none', border: 'none', cursor: 'pointer',
-                color: BG.dim, fontSize: 12.5, letterSpacing: '.1em', fontFamily: BG.serifJa,
-              }}
-            >
-              dragon-game-park のTOPへ
-            </button>
-          </div>
+          <GameEndActions
+            onRematch={props.over.showRematch ? props.onRematch : undefined}
+            canRematch={props.over.showRematch}
+            onChangeSettings={props.onBackToSettings}
+            onBackToSetup={props.onBackToSettings}
+            onBackToHome={props.onBackToHome}
+          />
         </div>
       )}
     </div>

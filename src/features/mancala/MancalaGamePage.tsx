@@ -5,6 +5,7 @@ import { applyMove, getEffectiveOppositePitId } from './mancalaRules';
 import { chooseCpuMove } from './mancalaCpu';
 import { Layout } from '../../components/Layout';
 import { Button } from '../../components/Button';
+import { GameEndActions } from '../../components/GameEndActions';
 import { MancalaBoard, PLANK_POSITIONS } from './MancalaBoard';
 import type { PlankSlideEntry } from './MancalaBoard';
 import { PLAYER_ACCENT_COLORS } from './MancalaPit';
@@ -646,10 +647,10 @@ export function MancalaGamePage({ config, onBackToSetup, onBackToHome }: Mancala
             </Button>
             <div className="game-nav-secondary">
               <Button variant="secondary" fullWidth onClick={onBackToSetup}>
-                マンカラ設定画面へ戻る
+                ゲーム設定に戻る
               </Button>
               <Button variant="secondary" fullWidth onClick={onBackToHome}>
-                焚き火のもとへ戻る
+                ゲーム選択に戻る
               </Button>
             </div>
           </div>
@@ -757,19 +758,12 @@ function RankingPanel({
       </div>
 
       {/* ボタン */}
-      <div className="game-nav-buttons" style={{ marginTop: 0 }}>
-        <Button fullWidth onClick={onRestart}>
-          もう一度戦う
-        </Button>
-        <div className="game-nav-secondary">
-          <Button variant="secondary" fullWidth onClick={onBackToSetup}>
-            マンカラ設定画面へ戻る
-          </Button>
-          <Button variant="secondary" fullWidth onClick={onBackToHome}>
-            焚き火のもとへ戻る
-          </Button>
-        </div>
-      </div>
+      <GameEndActions
+        onRematch={onRestart}
+        onChangeSettings={onBackToSetup}
+        onBackToSetup={onBackToSetup}
+        onBackToHome={onBackToHome}
+      />
     </div>
   );
 }

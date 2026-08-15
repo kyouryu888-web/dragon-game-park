@@ -264,6 +264,30 @@ export function createInitialBabanukiState(
   return state;
 }
 
+/** 現在の人数・名前・人/CPU・CPU強さを保ったまま、新しい対局を始める。 */
+export function createBabanukiRematchState(
+  state: BabanukiState,
+  rng: Rng = Math.random,
+): BabanukiState {
+  const fresh = createInitialBabanukiState(
+    {
+      playerCount: state.players.length,
+      players: state.players.map((player) => ({
+        name: player.name,
+        isCpu: player.isCpu,
+        cpuLevel: player.cpuLevel,
+      })),
+    },
+    rng,
+  );
+
+  // オンラインの購読側が「新しい局面」と確実に判定できるよう、連番は単調増加させる。
+  // 初期ペア捨ては初回表示と同様に完成後の盤面を即表示し、前局の盤面からは再生しない。
+  fresh.events = [];
+  fresh.eventSeq = state.eventSeq + 1;
+  return fresh;
+}
+
 // ---------------------------------------------------------------- 手札の操作
 
 /** 手札の並べ替え（自分の手札のみ） */
@@ -416,16 +440,15 @@ export function resolveShuffle(state: BabanukiState, rng: Rng = Math.random): Ba
   const mapping = buildShuffleMapping(state, dice, rng);
 
   const handsById = new Map<string, Card[]>();
-  const spotlightByTarget = new Map<string, string | null>();
   for (const [fromId, toId] of Object.entries(mapping)) {
     handsById.set(toId, getPlayer(state, fromId).hand.slice());
-    spotlightByTarget.set(toId, getPlayer(state, fromId).spotlightCardId);
   }
   for (const [id, hand] of handsById.entries()) {
     const player = mutablePlayer(draft, id);
     player.hand = hand;
-    // 手札は「そのままの形で」渡るので、飛び出しも一緒に移る
-    player.spotlightCardId = spotlightByTarget.get(id) ?? null;
+    // 実際に手札が動く出目では、前の持ち主が付けたブラフを自然に解除する。
+    // 出目4（ドクロ）は何も動かないため、そのまま残す。
+    if (dice !== 4) player.spotlightCardId = null;
   }
 
   events.push({ kind: 'shuffle', declarerId, dice, mapping });
