@@ -10,7 +10,7 @@ import type { BabanukiConfig, BabanukiState, CpuLevel, PlayerConfig } from './ba
 import { createInitialBabanukiState } from './babanukiRules';
 import { getCpuDisplayName } from './babanukiCpu';
 
-const PLAYER_ID_KEY = 'dgp-online-player-id';
+export const BABANUKI_ONLINE_PLAYER_ID_KEY = 'dgp-babanuki-online-player-id';
 const PLAYER_NAME_KEY = 'dragon-game-park:babanuki-online-name';
 
 /** 座席2〜6に対応する列名 */
@@ -41,10 +41,14 @@ export type OnlineSlot = {
 };
 
 export function getOnlinePlayerId(): string {
-  let id = localStorage.getItem(PLAYER_ID_KEY);
+  // タブごとに別の参加者として扱う。localStorage は同じブラウザの全タブで
+  // 共有されるため、2タブ対戦ではゲストがホストとして再入室してしまう。
+  let id = sessionStorage.getItem(BABANUKI_ONLINE_PLAYER_ID_KEY);
   if (!id) {
-    id = crypto.randomUUID();
-    localStorage.setItem(PLAYER_ID_KEY, id);
+    id = typeof crypto !== 'undefined' && crypto.randomUUID
+      ? crypto.randomUUID()
+      : Math.random().toString(36).slice(2);
+    sessionStorage.setItem(BABANUKI_ONLINE_PLAYER_ID_KEY, id);
   }
   return id;
 }
