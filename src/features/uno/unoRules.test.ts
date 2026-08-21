@@ -7,6 +7,7 @@ import {
   applyColorChoice,
   applyColorRouletteStep,
   applyDrawCard,
+  applyInfiniteDraw,
   applyPassDrawnCard,
   applyPlayCard,
   applyStarterDraw,
@@ -31,6 +32,10 @@ function numberCard(id: string, color: UnoColor, value: 0 | 1 | 2 | 3 | 4 | 5 | 
 
 function draw2(id: string, color: UnoColor): UnoCard {
   return { id, kind: 'action', color, symbol: 'draw2' };
+}
+
+function actionCard(id: string, color: UnoColor, symbol: 'skip' | 'reverse'): UnoCard {
+  return { id, kind: 'action', color, symbol };
 }
 
 function baseState(variant: 'standard' | 'hard' = 'standard'): UnoGameState {
@@ -130,6 +135,113 @@ describe('UNO normal rules', () => {
     expect(next.currentPlayerId).toBe('player-1');
   });
 
+  it('applies standard draw2 before finishing when it is the last card', () => {
+    let state = baseState('standard');
+    state = {
+      ...state,
+      hands: {
+        ...state.hands,
+        'player-1': [draw2('last-draw2', 'red')],
+        'player-2': [numberCard('target-card', 'blue', 7)],
+      },
+      deck: [numberCard('penalty-a', 'green', 3), numberCard('penalty-b', 'yellow', 4)],
+    };
+
+    const next = applyPlayCard(state, 'last-draw2');
+    expect(next.status).toBe('finished');
+    expect(next.winnerPlayerId).toBe('player-1');
+    expect(next.hands['player-2'].map((card) => card.id)).toEqual([
+      'target-card',
+      'penalty-a',
+      'penalty-b',
+    ]);
+    expect(next.finalScores?.['player-2']).toBe(14);
+  });
+
+  it('applies standard wild draw4 before finishing when it is the last card', () => {
+    let state = baseState3('standard');
+    state = {
+      ...state,
+      hands: {
+        ...state.hands,
+        'player-1': [{ id: 'last-wild-draw4', kind: 'wild', symbol: 'wild-draw4' }],
+        'player-2': [numberCard('target-card', 'blue', 1)],
+      },
+      deck: [
+        numberCard('penalty-a', 'green', 1),
+        numberCard('penalty-b', 'green', 2),
+        numberCard('penalty-c', 'green', 3),
+        numberCard('penalty-d', 'green', 4),
+      ],
+    };
+
+    const next = applyPlayCard(state, 'last-wild-draw4');
+    expect(next.status).toBe('finished');
+    expect(next.winnerPlayerId).toBe('player-1');
+    expect(next.pendingAction).toBeNull();
+    expect(next.hands['player-2']).toHaveLength(5);
+    expect(next.hands['player-3']).toHaveLength(0);
+  });
+
+  it('applies standard draw2 to the next player and continues two seats ahead', () => {
+    let state = baseState3('standard');
+    state = {
+      ...state,
+      hands: { ...state.hands, 'player-1': [draw2('d2', 'red'), numberCard('left', 'blue', 1)] },
+      deck: [numberCard('penalty-a', 'green', 3), numberCard('penalty-b', 'yellow', 4)],
+    };
+
+    const next = applyPlayCard(state, 'd2');
+    expect(next.hands['player-2']).toHaveLength(2);
+    expect(next.currentPlayerId).toBe('player-3');
+  });
+
+  it.each([
+    ['skip clockwise', 'skip', 'clockwise', 'player-3', 'clockwise'],
+    ['skip counterclockwise', 'skip', 'counterclockwise', 'player-2', 'counterclockwise'],
+    ['reverse clockwise', 'reverse', 'clockwise', 'player-3', 'counterclockwise'],
+    ['reverse counterclockwise', 'reverse', 'counterclockwise', 'player-2', 'clockwise'],
+  ] as const)('%s advances to the correct player', (_label, symbol, direction, expectedPlayerId, expectedDirection) => {
+    let state = baseState3('standard');
+    const card = actionCard('action', 'red', symbol);
+    state = {
+      ...state,
+      direction,
+      hands: { ...state.hands, 'player-1': [card, numberCard('left', 'blue', 1)] },
+    };
+
+    const next = applyPlayCard(state, card.id);
+    expect(next.currentPlayerId).toBe(expectedPlayerId);
+    expect(next.direction).toBe(expectedDirection);
+  });
+
+  it('applies wild draw4 after color selection and skips the target', () => {
+    let state = baseState3('standard');
+    state = {
+      ...state,
+      hands: {
+        ...state.hands,
+        'player-1': [
+          { id: 'wild-draw4', kind: 'wild', symbol: 'wild-draw4' },
+          numberCard('left', 'blue', 1),
+        ],
+      },
+      deck: [
+        numberCard('penalty-a', 'red', 1),
+        numberCard('penalty-b', 'yellow', 2),
+        numberCard('penalty-c', 'green', 3),
+        numberCard('penalty-d', 'blue', 4),
+      ],
+    };
+
+    state = applyPlayCard(state, 'wild-draw4');
+    expect(state.pendingAction?.kind).toBe('color-pick');
+    const next = applyColorChoice(state, 'blue');
+    expect(next.hands['player-2']).toHaveLength(4);
+    expect(next.currentPlayerId).toBe('player-3');
+    expect(next.activeColor).toBe('blue');
+  });
+
   it('decides the starter by drawing number values before play begins', () => {
     let state = baseState3('standard');
     state = {
@@ -218,6 +330,36 @@ describe('UNO normal rules', () => {
     expect(clean.deck.map((card) => card.id)).toEqual(['blue-2']);
     expect(clean.discardPile[0]?.id).toBe('red-top');
     expect(clean.starterDraws).toEqual([]);
+  });
+
+  it('moves a legal deck card to the discard pile without duplicating it while sanitizing', () => {
+    const hardOnly: UnoCard = { id: 'hard-top', kind: 'wild', symbol: 'wild-color-roulette' };
+    const deckCard = numberCard('replacement-top', 'blue', 2);
+    const state: UnoGameState = {
+      ...baseState('standard'),
+      deck: [deckCard],
+      discardPile: [hardOnly],
+    };
+
+    const clean = sanitizeUnoStateForVariant(state);
+    expect(clean.discardPile.map((card) => card.id)).toEqual(['replacement-top']);
+    expect(clean.deck).toEqual([]);
+    const allIds = [...clean.deck, ...clean.discardPile].map((card) => card.id);
+    expect(new Set(allIds).size).toBe(allIds.length);
+  });
+
+  it('clears hard-only or orphaned pending actions while sanitizing a standard game', () => {
+    const state: UnoGameState = {
+      ...baseState('standard'),
+      pendingAction: { kind: 'swap-pick', swapperPlayerId: 'player-1' },
+    };
+    expect(sanitizeUnoStateForVariant(state).pendingAction).toBeNull();
+
+    const orphanedDraw: UnoGameState = {
+      ...state,
+      pendingAction: { kind: 'drawn-card-play', playerId: 'player-1', cardId: 'missing-card' },
+    };
+    expect(sanitizeUnoStateForVariant(orphanedDraw).pendingAction).toBeNull();
   });
 
   it('sorts hands by color and then card face for readability', () => {
@@ -364,6 +506,63 @@ describe('UNO hard rules', () => {
     expect(next.winnerPlayerId).toBe('player-2');
   });
 
+  it('moves exactly once to the next seat when accepting a draw causes a knockout', () => {
+    let state = baseState3('hard');
+    state = {
+      ...state,
+      currentPlayerId: 'player-1',
+      pendingDrawCount: 2,
+      lastDrawCardValue: 2,
+      hands: {
+        ...state.hands,
+        'player-1': Array.from({ length: 23 }, (_, i) => numberCard(`accept-hand-${i}`, 'blue', 1)),
+      },
+      deck: [numberCard('ko-a', 'green', 2), numberCard('ko-b', 'yellow', 3)],
+    };
+
+    const next = applyAcceptDraw(state);
+    expect(next.players.find((player) => player.id === 'player-1')?.isEliminated).toBe(true);
+    expect(next.currentPlayerId).toBe('player-2');
+    expect(next.pendingDrawCount).toBe(0);
+    expect(next.pendingAction).toBeNull();
+  });
+
+  it('ends the turn cleanly when a normal draw causes a knockout', () => {
+    let state = baseState3('hard');
+    state = {
+      ...state,
+      currentPlayerId: 'player-1',
+      hands: {
+        ...state.hands,
+        'player-1': Array.from({ length: 24 }, (_, i) => numberCard(`normal-hand-${i}`, 'blue', 1)),
+      },
+      deck: [numberCard('playable-ko-card', 'red', 2)],
+    };
+
+    const next = applyDrawCard(state);
+    expect(next.players.find((player) => player.id === 'player-1')?.isEliminated).toBe(true);
+    expect(next.currentPlayerId).toBe('player-2');
+    expect(next.pendingAction).toBeNull();
+  });
+
+  it('ends legacy infinite draw cleanly when it causes a knockout', () => {
+    let state = baseState3('hard');
+    state = {
+      ...state,
+      currentPlayerId: 'player-1',
+      hands: {
+        ...state.hands,
+        'player-1': Array.from({ length: 24 }, (_, i) => numberCard(`infinite-hand-${i}`, 'blue', 1)),
+      },
+      deck: [numberCard('infinite-ko-card', 'red', 2)],
+    };
+
+    const next = applyInfiniteDraw(state);
+    expect(next.players.find((player) => player.id === 'player-1')?.isEliminated).toBe(true);
+    expect(next.currentPlayerId).toBe('player-2');
+    expect(next.pendingAction).toBeNull();
+  });
+
   it('7 swaps hands with a chosen player', () => {
     let state = baseState('hard');
     state = {
@@ -379,6 +578,26 @@ describe('UNO hard rules', () => {
     const next = applySwapPick(state, 'player-2');
     expect(next.hands['player-1'].map((c) => c.id)).toEqual(['yours']);
     expect(next.hands['player-2'].map((c) => c.id)).toEqual(['mine']);
+  });
+
+  it('rejects an invalid or eliminated swap target', () => {
+    let state = baseState3('hard');
+    state = {
+      ...state,
+      pendingAction: { kind: 'swap-pick', swapperPlayerId: 'player-1' },
+      hands: {
+        ...state.hands,
+        'player-1': [numberCard('mine', 'blue', 1)],
+        'player-2': [numberCard('theirs', 'green', 2)],
+      },
+      players: state.players.map((player) =>
+        player.id === 'player-2' ? { ...player, isEliminated: true } : player,
+      ),
+    };
+
+    expect(applySwapPick(state, 'missing-player')).toBe(state);
+    expect(applySwapPick(state, 'player-1')).toBe(state);
+    expect(applySwapPick(state, 'player-2')).toBe(state);
   });
 
   it('0 passes every hand to the next player', () => {
@@ -446,6 +665,26 @@ describe('UNO hard rules', () => {
     expect(next.pendingAction).toBeNull();
     expect(next.currentPlayerId).toBe('player-3');
     expect(next.status).toBe('playing');
+  });
+
+  it('ends color roulette cleanly when no card can be drawn', () => {
+    let state = baseState3('hard');
+    state = {
+      ...state,
+      currentPlayerId: 'player-1',
+      pendingAction: { kind: 'color-roulette', targetPlayerId: 'player-2', targetColor: 'yellow' },
+      hands: {
+        ...state.hands,
+        'player-2': [numberCard('old-blue', 'blue', 4)],
+      },
+      deck: [],
+      discardPile: [numberCard('only-discard', 'red', 5)],
+    };
+
+    const next = applyColorRouletteStep(state);
+    expect(next.pendingAction).toBeNull();
+    expect(next.currentPlayerId).toBe('player-3');
+    expect(next.hands['player-2'].map((card) => card.id)).toEqual(['old-blue']);
   });
 
   it('wild draw 10 waits for color choice then starts a draw stack', () => {

@@ -84,16 +84,35 @@ export function sanitizeUnoStateForVariant(state: UnoGameState): UnoGameState {
       hand.filter((card) => isUnoCardAllowedInVariant(card, state.variant)),
     ]),
   );
-  const deck = state.deck.filter((card) => isUnoCardAllowedInVariant(card, state.variant));
-  const discardPile = state.discardPile.filter((card) => isUnoCardAllowedInVariant(card, state.variant));
+  let deck = state.deck.filter((card) => isUnoCardAllowedInVariant(card, state.variant));
+  let discardPile = state.discardPile.filter((card) => isUnoCardAllowedInVariant(card, state.variant));
   const starterDraws = state.starterDraws.filter((draw) => isUnoCardAllowedInVariant(draw.card, state.variant));
+
+  if (discardPile.length === 0) {
+    const [replacementTop, ...remainingDeck] = deck;
+    discardPile = [replacementTop ?? fallbackStandardCard()];
+    deck = remainingDeck;
+  }
+
+  let pendingAction = state.pendingAction;
+  if (pendingAction?.kind === 'swap-pick' || pendingAction?.kind === 'color-roulette') {
+    pendingAction = null;
+  } else if (pendingAction?.kind === 'drawn-card-play') {
+    const drawnCardPending = pendingAction;
+    if (!hands[drawnCardPending.playerId]?.some((card) => card.id === drawnCardPending.cardId)) {
+      pendingAction = null;
+    }
+  } else if (pendingAction?.kind === 'color-pick' && discardPile[0]?.kind !== 'wild') {
+    pendingAction = null;
+  }
 
   return {
     ...state,
     hands,
     deck,
-    discardPile: discardPile.length > 0 ? discardPile : [deck[0] ?? fallbackStandardCard()],
+    discardPile,
     starterDraws,
+    pendingAction,
     pendingDrawCount: 0,
     lastDrawCardValue: 0,
   };
@@ -127,10 +146,6 @@ function checkElimination(state: UnoGameState): UnoGameState {
       return finishGame(s, remaining[0]!.id);
     }
 
-    // 脱落したプレイヤーが手番だった場合は次へ
-    if (s.currentPlayerId === player.id) {
-      s = advanceTurn(s);
-    }
   }
 
   return s;
@@ -139,6 +154,12 @@ function checkElimination(state: UnoGameState): UnoGameState {
 /** ターンを進める。playersToSkip=1 で通常進行、2 でスキップ */
 function advanceTurn(state: UnoGameState, playersToSkip = 1): UnoGameState {
   const nextId = getNextPlayerId(state, playersToSkip);
+  return { ...state, currentPlayerId: nextId, turnCount: state.turnCount + 1 };
+}
+
+/** 脱落したプレイヤーの席を基準に、進行方向の次の生存者へ進める。 */
+function advanceAfterPlayer(state: UnoGameState, playerId: UnoPlayerId): UnoGameState {
+  const nextId = getNextActivePlayerAfter(state, playerId);
   return { ...state, currentPlayerId: nextId, turnCount: state.turnCount + 1 };
 }
 
@@ -370,10 +391,19 @@ export function applyPlayCard(state: UnoGameState, cardId: string): UnoGameState
     pendingAction: null,
   };
 
-  // ── 即座の勝利チェック（ワイルド色選択より前）──
-  // discard-all 以外: 手札 0 枚 → 勝利
+  // ── 勝利チェック ──
+  // 通常版のドロー系を最後に出した場合も、相手のペナルティーを解決してから得点を確定する。
   if (newHand.length === 0 && !(card.kind === 'action' && card.symbol === 'discard-all')) {
-    return finishGame(s, state.currentPlayerId);
+    const finalState = card.kind === 'wild' ? s : { ...s, activeColor: card.color };
+    if (state.variant === 'standard' && card.kind === 'action' && card.symbol === 'draw2') {
+      const targetPlayerId = getNextPlayerId(finalState);
+      return finishGame(drawCardsForPlayer(finalState, targetPlayerId, 2), state.currentPlayerId);
+    }
+    if (state.variant === 'standard' && card.kind === 'wild' && card.symbol === 'wild-draw4') {
+      const targetPlayerId = getNextPlayerId(finalState);
+      return finishGame(drawCardsForPlayer(finalState, targetPlayerId, 4), state.currentPlayerId);
+    }
+    return finishGame(finalState, state.currentPlayerId);
   }
 
   // ── カードの効果を適用 ──
@@ -609,6 +639,7 @@ export function applyDrawCard(state: UnoGameState): UnoGameState {
   if (state.pendingAction !== null) return state;
   if (state.pendingDrawCount > 0) return state; // applyAcceptDraw を使うべき
 
+  const drawingPlayerId = state.currentPlayerId;
   let s = reshuffleIfNeeded(state);
   if (s.deck.length === 0) return advanceTurn(s);
 
@@ -622,9 +653,12 @@ export function applyDrawCard(state: UnoGameState): UnoGameState {
 
   s = checkElimination(s);
   if (s.status === 'finished') return s;
+  if (s.players.find((player) => player.id === drawingPlayerId)?.isEliminated) {
+    return advanceAfterPlayer({ ...s, pendingAction: null }, drawingPlayerId);
+  }
 
   if (canPlayCard(s, drawn!)) {
-    return { ...s, pendingAction: { kind: 'drawn-card-play', playerId: s.currentPlayerId, cardId: drawn!.id } };
+    return { ...s, pendingAction: { kind: 'drawn-card-play', playerId: drawingPlayerId, cardId: drawn!.id } };
   }
 
   return advanceTurn(s);
@@ -641,6 +675,7 @@ export function applyPassDrawnCard(state: UnoGameState): UnoGameState {
  * カラールーレットのような専用効果だけが複数ドローを扱う。
  */
 export function applyInfiniteDraw(state: UnoGameState): UnoGameState {
+  const drawingPlayerId = state.currentPlayerId;
   let s = state;
   const MAX = 200;
 
@@ -660,6 +695,9 @@ export function applyInfiniteDraw(state: UnoGameState): UnoGameState {
     // 脱落チェック
     s = checkElimination(s);
     if (s.status === 'finished') return s;
+    if (s.players.find((player) => player.id === drawingPlayerId)?.isEliminated) {
+      return advanceAfterPlayer({ ...s, pendingAction: null }, drawingPlayerId);
+    }
 
     // 引いたカードが出せるなら即プレイ
     if (canPlayCard(s, drawn!)) {
@@ -680,10 +718,14 @@ export function applyAcceptDraw(state: UnoGameState): UnoGameState {
   if (state.pendingDrawCount === 0) return state;
 
   const count = state.pendingDrawCount;
+  const drawingPlayerId = state.currentPlayerId;
   let s: UnoGameState = { ...state, pendingDrawCount: 0, lastDrawCardValue: 0 };
-  s = drawCardsForPlayer(s, s.currentPlayerId, count);
+  s = drawCardsForPlayer(s, drawingPlayerId, count);
   s = checkElimination(s);
   if (s.status === 'finished') return s;
+  if (s.players.find((player) => player.id === drawingPlayerId)?.isEliminated) {
+    return advanceAfterPlayer({ ...s, pendingAction: null }, drawingPlayerId);
+  }
   return advanceTurn(s);
 }
 
@@ -695,6 +737,15 @@ export function applySwapPick(state: UnoGameState, targetPlayerId: UnoPlayerId):
   if (state.pendingAction?.kind !== 'swap-pick') return state;
 
   const swapperId = state.pendingAction.swapperPlayerId;
+  const swapper = state.players.find((player) => player.id === swapperId);
+  const target = state.players.find((player) => player.id === targetPlayerId);
+  if (
+    !swapper || swapper.isEliminated ||
+    !target || target.isEliminated ||
+    targetPlayerId === swapperId
+  ) {
+    return state;
+  }
   const swapperHand = state.hands[swapperId] ?? [];
   const targetHand = state.hands[targetPlayerId] ?? [];
 
@@ -725,7 +776,17 @@ export function applyColorRouletteStep(state: UnoGameState): UnoGameState {
     return { ...state, pendingAction: null, currentPlayerId: nextId, turnCount: state.turnCount + 1 };
   }
 
-  let s = drawCardsForPlayer(state, targetPlayerId, 1);
+  let s = reshuffleIfNeeded(state);
+  if (s.deck.length === 0) {
+    return advanceAfterPlayer({ ...s, pendingAction: null }, targetPlayerId);
+  }
+
+  const handSizeBeforeDraw = (s.hands[targetPlayerId] ?? []).length;
+  s = drawCardsForPlayer(s, targetPlayerId, 1);
+  const drawnCard = s.hands[targetPlayerId]?.[handSizeBeforeDraw];
+  if (!drawnCard) {
+    return advanceAfterPlayer({ ...s, pendingAction: null }, targetPlayerId);
+  }
 
   // 脱落チェック
   s = checkElimination(s);
@@ -736,9 +797,6 @@ export function applyColorRouletteStep(state: UnoGameState): UnoGameState {
     const nextId = getNextActivePlayerAfter({ ...s, pendingAction: null }, targetPlayerId);
     return { ...s, pendingAction: null, currentPlayerId: nextId, turnCount: s.turnCount + 1 };
   }
-
-  const hand = s.hands[targetPlayerId] ?? [];
-  const drawnCard = hand[hand.length - 1];
 
   // 引いたカードが目標色なら終了
   if (drawnCard && drawnCard.kind !== 'wild' && drawnCard.color === targetColor) {
