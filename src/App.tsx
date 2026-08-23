@@ -14,6 +14,7 @@ import { UnoOnlineGamePage } from './features/uno/UnoOnlineGamePage';
 import type { UnoOnlineRoomInfo } from './features/uno/unoOnline';
 import { BackgammonPage } from './features/backgammon/BackgammonPage';
 import { BabanukiPage } from './features/babanuki/BabanukiPage';
+import { DEFAULT_ONLINE_ENTRY_MODE } from './components/gameSetupDefaults';
 
 type AppScreen =
   | 'home'
@@ -45,9 +46,9 @@ export default function App() {
     ],
   });
   const [onlineRoomInfo, setOnlineRoomInfo] = useState<OnlineRoomInfo | null>(null);
-  const [mancalaOnlineEntry, setMancalaOnlineEntry] = useState<MancalaOnlineEntry>({ mode: 'create', name: '', code: '' });
+  const [mancalaOnlineEntry, setMancalaOnlineEntry] = useState<MancalaOnlineEntry>({ mode: DEFAULT_ONLINE_ENTRY_MODE, name: '', code: '' });
   const [unoOnlineRoomInfo, setUnoOnlineRoomInfo] = useState<UnoOnlineRoomInfo | null>(null);
-  const [unoOnlineEntry, setUnoOnlineEntry] = useState<UnoOnlineEntry>({ mode: 'create', name: '', code: '' });
+  const [unoOnlineEntry, setUnoOnlineEntry] = useState<UnoOnlineEntry>({ mode: DEFAULT_ONLINE_ENTRY_MODE, name: '', code: '' });
 
   if (screen === 'home') {
     return (

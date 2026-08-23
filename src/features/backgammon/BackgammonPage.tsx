@@ -8,6 +8,7 @@ import {
   createRoom, fetchRoom, joinRoom, subscribeRoom,
 } from './backgammonOnline';
 import { BG, BackButton, Brand } from './BackgammonUi';
+import { DEFAULT_ONLINE_ENTRY_MODE, DEFAULT_SETUP_MODE } from '../../components/gameSetupDefaults';
 
 const CONFIG_STORAGE_KEY = 'dragon-game-park:backgammon-config-v2';
 
@@ -23,7 +24,7 @@ function loadSavedConfig(): BackgammonConfig | null {
   } catch { return null; }
 }
 
-const DEFAULT_CONFIG: BackgammonConfig = { mode: 'cpu', name: '', name2: '', cpuLevel: 'normal' };
+const DEFAULT_CONFIG: BackgammonConfig = { mode: DEFAULT_SETUP_MODE, name: '', name2: '', cpuLevel: 'normal' };
 
 type BackgammonPageProps = {
   onBackToHome: () => void;
@@ -31,8 +32,11 @@ type BackgammonPageProps = {
 
 export function BackgammonPage({ onBackToHome }: BackgammonPageProps) {
   const [screen, setScreen] = useState<Screen>('settings');
-  const [config, setConfig] = useState<BackgammonConfig>(() => loadSavedConfig() ?? DEFAULT_CONFIG);
-  const [onlineTab, setOnlineTab] = useState<'create' | 'join'>('create');
+  const [config, setConfig] = useState<BackgammonConfig>(() => ({
+    ...(loadSavedConfig() ?? DEFAULT_CONFIG),
+    mode: DEFAULT_SETUP_MODE,
+  }));
+  const [onlineTab, setOnlineTab] = useState<'create' | 'join'>(DEFAULT_ONLINE_ENTRY_MODE);
   const [joinCode, setJoinCode] = useState('');
   const [room, setRoom] = useState<BackgammonRoomInfo | null>(null);
   const [roomPayload, setRoomPayload] = useState<OnlinePayload | null>(null);

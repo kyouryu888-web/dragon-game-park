@@ -7,6 +7,7 @@ import {
   SetupStep,
   SetupSummary,
 } from '../../components/GameSetupFlow';
+import { DEFAULT_ONLINE_ENTRY_MODE, DEFAULT_SETUP_MODE } from '../../components/gameSetupDefaults';
 import type { BabanukiConfig, CpuLevel } from './babanukiTypes';
 import { MAX_PLAYERS, MIN_PLAYERS } from './babanukiTypes';
 import { CPU_LEVELS, getCpuLevelLabel } from './babanukiCpu';
@@ -28,8 +29,8 @@ type Props = {
 const PLAYER_COUNTS = Array.from({ length: MAX_PLAYERS - MIN_PLAYERS + 1 }, (_, i) => MIN_PLAYERS + i);
 
 export function BabanukiSettingsScreen({ config, onChange, onStart, onOnlinePlay, onBack }: Props) {
-  const [mode, setMode] = useState<'cpu' | 'online'>('cpu');
-  const [onlineTab, setOnlineTab] = useState<'create' | 'join'>('create');
+  const [mode, setMode] = useState<'cpu' | 'online'>(DEFAULT_SETUP_MODE);
+  const [onlineTab, setOnlineTab] = useState<'create' | 'join'>(DEFAULT_ONLINE_ENTRY_MODE);
   const [joinCode, setJoinCode] = useState('');
 
   const setPlayerCount = (count: number) => {

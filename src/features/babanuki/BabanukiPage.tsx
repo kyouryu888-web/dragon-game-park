@@ -6,6 +6,7 @@ import { BabanukiPlayScreen } from './BabanukiPlayScreen';
 import { BabanukiOnlineRoomPage } from './BabanukiOnlineRoomPage';
 import { BabanukiOnlineGame } from './BabanukiOnlineGame';
 import type { BabanukiRoomInfo } from './babanukiOnline';
+import { DEFAULT_ONLINE_ENTRY_MODE } from '../../components/gameSetupDefaults';
 
 const CONFIG_KEY = 'dragon-game-park:babanuki-config-v1';
 
@@ -56,7 +57,7 @@ export function BabanukiPage({ onBackToHome }: Props) {
   const [screen, setScreen] = useState<Screen>('settings');
   const [config, setConfig] = useState<BabanukiConfig>(() => loadSavedConfig() ?? DEFAULT_CONFIG);
   const [roomInfo, setRoomInfo] = useState<BabanukiRoomInfo | null>(null);
-  const [onlineEntry, setOnlineEntry] = useState<BabanukiOnlineEntry>({ mode: 'create', name: '', code: '' });
+  const [onlineEntry, setOnlineEntry] = useState<BabanukiOnlineEntry>({ mode: DEFAULT_ONLINE_ENTRY_MODE, name: '', code: '' });
 
   const updateConfig = (next: BabanukiConfig) => {
     setConfig(next);

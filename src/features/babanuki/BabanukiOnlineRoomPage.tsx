@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { DEFAULT_ONLINE_ENTRY_MODE, shouldAutoJoinOnlineRoom } from '../../components/gameSetupDefaults';
 import type { CpuLevel } from './babanukiTypes';
 import { MAX_PLAYERS, MIN_PLAYERS } from './babanukiTypes';
 import { CPU_LEVELS, getCpuLevelLabel } from './babanukiCpu';
@@ -14,7 +15,7 @@ import {
   subscribeRoom,
 } from './babanukiOnline';
 
-type PageState = 'menu' | 'create' | 'waiting';
+type PageState = 'menu' | 'create' | 'joining' | 'waiting';
 
 type Props = {
   initialMode?: 'create' | 'join';
@@ -30,8 +31,10 @@ function defaultSlots(): OnlineSlot[] {
   return Array.from({ length: MAX_PLAYERS - 1 }, () => ({ isCpu: false, cpuLevel: 'normal' as CpuLevel }));
 }
 
-export function BabanukiOnlineRoomPage({ initialMode = 'create', initialName = '', initialCode = '', onGameStart, onBack }: Props) {
-  const [page, setPage] = useState<PageState>('menu');
+export function BabanukiOnlineRoomPage({ initialMode = DEFAULT_ONLINE_ENTRY_MODE, initialName = '', initialCode = '', onGameStart, onBack }: Props) {
+  const shouldAutoJoin = shouldAutoJoinOnlineRoom(initialMode, initialCode);
+  const autoJoinStartedRef = useRef(false);
+  const [page, setPage] = useState<PageState>(shouldAutoJoin ? 'joining' : 'menu');
   const [entryMode, setEntryMode] = useState<'create' | 'join'>(initialMode);
   const [myName, setMyName] = useState(() => initialName || getSavedOnlineName());
   const [playerCount, setPlayerCount] = useState(4);
@@ -74,8 +77,10 @@ export function BabanukiOnlineRoomPage({ initialMode = 'create', initialName = '
     const code = inputCode.trim().toUpperCase();
     if (code.length !== 6) {
       setError('紋章は6文字だ');
+      setPage('menu');
       return;
     }
+    setPage('joining');
     setBusy(true);
     setError('');
     try {
@@ -86,10 +91,19 @@ export function BabanukiOnlineRoomPage({ initialMode = 'create', initialName = '
       setPage('waiting');
     } catch (e) {
       setError(e instanceof Error ? e.message : 'ルームに入れなかった');
+      setPage('menu');
     } finally {
       setBusy(false);
     }
   };
+
+  useEffect(() => {
+    if (!shouldAutoJoin || autoJoinStartedRef.current) return;
+    autoJoinStartedRef.current = true;
+    void handleJoin();
+    // 初期コードを1回だけ処理し、Realtimeによる再描画では再参加しない。
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleCopy = async () => {
     try {
@@ -113,6 +127,19 @@ export function BabanukiOnlineRoomPage({ initialMode = 'create', initialName = '
   } as const;
 
   const cpuCount = slots.slice(0, playerCount - 1).filter((s) => s.isCpu).length;
+
+  if (page === 'joining') {
+    return (
+      <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', padding: 24, color: '#e0d3b8' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div className="cpu-thinking-pulse" style={{ fontSize: 18, fontWeight: 900, color: '#e6c877', marginBottom: 10 }}>
+            ババ抜きルームへ参加しています...
+          </div>
+          <p style={{ fontSize: 13, color: '#b5a68c' }}>コードを確認しています。少しだけお待ちください。</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ minHeight: '100vh', padding: '14px 16px 32px', color: '#e0d3b8' }}>

@@ -7,6 +7,7 @@ import {
   SetupStep,
   SetupSummary,
 } from '../../components/GameSetupFlow';
+import { DEFAULT_ONLINE_ENTRY_MODE, DEFAULT_SETUP_MODE } from '../../components/gameSetupDefaults';
 import type { UnoConfig, UnoCpuLevel, UnoPlayerConfig, UnoVariant } from './unoTypes';
 import { getUnoCpuDisplayName, getUnoCpuLevelLabel } from './unoCpu';
 import { UnoRulesPanel } from './UnoRulesPanel';
@@ -63,8 +64,8 @@ export function UnoSetupPage({ onStart, onBack, onOnlinePlay }: UnoSetupPageProp
     if (!saved?.playerConfigs) return base;
     return base.map((config, index) => ({ ...config, ...saved.playerConfigs[index], isCpu: index > 0 }));
   });
-  const [mode, setMode] = useState<'cpu' | 'online'>('cpu');
-  const [onlineTab, setOnlineTab] = useState<'create' | 'join'>('create');
+  const [mode, setMode] = useState<'cpu' | 'online'>(DEFAULT_SETUP_MODE);
+  const [onlineTab, setOnlineTab] = useState<'create' | 'join'>(DEFAULT_ONLINE_ENTRY_MODE);
   const [joinCode, setJoinCode] = useState('');
   const [showRules, setShowRules] = useState(false);
 

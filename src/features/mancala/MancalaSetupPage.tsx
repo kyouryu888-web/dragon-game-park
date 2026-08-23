@@ -9,6 +9,7 @@ import {
   SetupStep,
   SetupSummary,
 } from '../../components/GameSetupFlow';
+import { DEFAULT_ONLINE_ENTRY_MODE, DEFAULT_SETUP_MODE } from '../../components/gameSetupDefaults';
 
 const CONFIG_STORAGE_KEY = 'dragon-game-park:mancala-config-v2';
 const CPU_LEVELS: { level: CpuLevel; label: string }[] = [
@@ -60,8 +61,8 @@ export function MancalaSetupPage({ onStart, onBack, onOnlinePlay }: Props) {
   const saved = useMemo(() => loadSavedConfig(), []);
   const [playerCount, setPlayerCount] = useState<2 | 3 | 4>(saved?.playerCount ?? 2);
   const [players, setPlayers] = useState<PlayerConfig[]>(() => Array.from({ length: 4 }, (_, index) => ({ ...DEFAULT_PLAYERS[index], ...saved?.players[index] })));
-  const [mode, setMode] = useState<'cpu' | 'local' | 'online'>('cpu');
-  const [onlineTab, setOnlineTab] = useState<'create' | 'join'>('create');
+  const [mode, setMode] = useState<'cpu' | 'local' | 'online'>(DEFAULT_SETUP_MODE);
+  const [onlineTab, setOnlineTab] = useState<'create' | 'join'>(DEFAULT_ONLINE_ENTRY_MODE);
   const [joinCode, setJoinCode] = useState('');
   const [showRules, setShowRules] = useState(false);
 

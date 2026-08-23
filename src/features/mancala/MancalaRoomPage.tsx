@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { PlayerId, GameState, CpuLevel } from './mancalaTypes';
 import { supabase } from '../../lib/supabase';
 import { createInitialMancalaState } from './createInitialMancalaState';
 import { Layout } from '../../components/Layout';
 import { Button } from '../../components/Button';
+import { DEFAULT_ONLINE_ENTRY_MODE, shouldAutoJoinOnlineRoom } from '../../components/gameSetupDefaults';
 
 export type OnlineRoomInfo = {
   roomCode: string;
@@ -18,7 +19,7 @@ type MancalaRoomPageProps = {
   onBack: () => void;
 };
 
-type PageState = 'menu' | 'creating' | 'waiting' | 'select-role';
+type PageState = 'menu' | 'creating' | 'joining' | 'waiting' | 'select-role';
 
 type RoomRow = {
   room_code: string;
@@ -80,8 +81,10 @@ const CPU_LEVELS: { level: CpuLevel; label: string }[] = [
   { level: 'very-hard', label: 'ゴッドドラゴン' },
 ];
 
-export function MancalaRoomPage({ initialMode = 'create', initialName = '', initialCode = '', onGameStart, onBack }: MancalaRoomPageProps) {
-  const [pageState,          setPageState]          = useState<PageState>('menu');
+export function MancalaRoomPage({ initialMode = DEFAULT_ONLINE_ENTRY_MODE, initialName = '', initialCode = '', onGameStart, onBack }: MancalaRoomPageProps) {
+  const shouldAutoJoin = shouldAutoJoinOnlineRoom(initialMode, initialCode);
+  const autoJoinStartedRef = useRef(false);
+  const [pageState,          setPageState]          = useState<PageState>(shouldAutoJoin ? 'joining' : 'menu');
   const [entryMode,          setEntryMode]          = useState<'create' | 'join'>(initialMode);
   const [playerCount,        setPlayerCount]        = useState<2 | 3 | 4>(2);
   // cpuSlots[0]=player-2, cpuSlots[1]=player-3, cpuSlots[2]=player-4
@@ -203,11 +206,13 @@ export function MancalaRoomPage({ initialMode = 'create', initialName = '', init
   // ───── ルームに参加する ─────
   async function handleJoin() {
     setError('');
+    setPageState('joining');
     const code     = inputCode.trim().toUpperCase();
     const playerId = getOnlinePlayerId();
 
     if (code.length !== 6) {
       setError('6文字のルームコードを入力してください');
+      setPageState('menu');
       return;
     }
 
@@ -219,6 +224,7 @@ export function MancalaRoomPage({ initialMode = 'create', initialName = '', init
 
     if (fetchErr || !data) {
       setError('ルームが見つかりません。コードを確認してください');
+      setPageState('menu');
       return;
     }
 
@@ -267,6 +273,7 @@ export function MancalaRoomPage({ initialMode = 'create', initialName = '', init
         setPageState('select-role');
       } else {
         setError('このルームはすでに満員です。新しいルームを作成してください。');
+        setPageState('menu');
       }
       return;
     }
@@ -292,6 +299,7 @@ export function MancalaRoomPage({ initialMode = 'create', initialName = '', init
 
     if (updateErr) {
       setError('その紋章のルームには入れなかった。コードを確かめられよ');
+      setPageState('menu');
       return;
     }
 
@@ -306,6 +314,27 @@ export function MancalaRoomPage({ initialMode = 'create', initialName = '', init
     } else {
       setPageState('waiting');
     }
+  }
+
+  useEffect(() => {
+    if (!shouldAutoJoin || autoJoinStartedRef.current) return;
+    autoJoinStartedRef.current = true;
+    void handleJoin();
+    // 初期コードを1回だけ処理し、Realtimeによる再描画では再参加しない。
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (pageState === 'joining') {
+    return (
+      <Layout>
+        <div style={{ textAlign: 'center', padding: '72px 20px' }}>
+          <div className="cpu-thinking-pulse" style={{ fontSize: 18, fontWeight: 900, color: 'var(--brown)', marginBottom: 10 }}>
+            マンカラルームへ参加しています...
+          </div>
+          <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>コードを確認しています。少しだけお待ちください。</p>
+        </div>
+      </Layout>
+    );
   }
 
   // ───── 役割選択画面（UUID不一致の再参加） ─────
