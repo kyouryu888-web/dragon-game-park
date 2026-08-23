@@ -415,7 +415,7 @@ function UnoCenterPile({
               onClick={canDraw ? onDeckClick : undefined}
             />
           </div>
-          <span>{pendingDrawCount > 0 ? `${pendingDrawCount}枚引く` : `山札 ${deckCount}`}</span>
+          <span>{pendingDrawCount > 0 ? `合計${pendingDrawCount}枚引く` : `山札 ${deckCount}`}</span>
         </div>
         <div className="uno-center-card-wrap">
           <div className="uno-card-info-anchor">
@@ -531,11 +531,13 @@ function UnoHandFan({
           onClick={onDrawRequest}
           disabled={!canUseDeck}
         >
-          {pendingDrawCount > 0 ? `${pendingDrawCount}まい引く` : '山札から引く'}
+          {pendingDrawCount > 0 ? `合計${pendingDrawCount}まい引く` : '山札から引く'}
         </button>
         <span className={`uno-draw-hint ${canUseDeck ? 'is-active' : ''}`}>
-          {pendingDrawCount > 0
-            ? `中央の山札を押すと${pendingDrawCount}枚引きます`
+          {pendingDrawCount > 0 && playableIds.size > 0
+            ? '出せるドローカードで次の人へ返せます'
+            : pendingDrawCount > 0
+              ? `中央の山札を押すと合計${pendingDrawCount}枚引きます`
             : canAct && playableIds.size > 0
               ? '引くと、引いたカードだけ出せます'
               : '出せない時は中央の山札を押します'}

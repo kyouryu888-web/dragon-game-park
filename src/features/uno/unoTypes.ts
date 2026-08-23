@@ -89,6 +89,8 @@ export type PendingColorRoulette = {
   kind: 'color-roulette';
   targetPlayerId: UnoPlayerId;
   targetColor: UnoColor;
+  /** このルーレットで引いた枚数。既存の保存状態では未設定の場合がある。 */
+  drawnCount?: number;
 };
 
 /** UNO 宣言猶予ウィンドウ */

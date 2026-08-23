@@ -573,7 +573,7 @@ export function applyColorChoice(state: UnoGameState, color: UnoColor): UnoGameS
     return {
       ...s,
       activeColor: color,
-      pendingAction: { kind: 'color-roulette', targetPlayerId: targetId, targetColor: color },
+      pendingAction: { kind: 'color-roulette', targetPlayerId: targetId, targetColor: color, drawnCount: 0 },
     };
   }
 
@@ -763,6 +763,13 @@ export function applyColorRouletteStep(state: UnoGameState): UnoGameState {
   if (!drawnCard) {
     return advanceAfterPlayer({ ...s, pendingAction: null }, targetPlayerId);
   }
+  s = {
+    ...s,
+    pendingAction: {
+      ...state.pendingAction,
+      drawnCount: (state.pendingAction.drawnCount ?? 0) + 1,
+    },
+  };
 
   // 脱落チェック
   s = checkElimination(s);

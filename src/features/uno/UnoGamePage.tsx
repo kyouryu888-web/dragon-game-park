@@ -26,6 +26,8 @@ import { UnoRulesPanel } from './UnoRulesPanel';
 import { UnoTableView } from './UnoTableView';
 import { getUnoRankings, type UnoRankingEntry } from './unoScoring';
 import { UnoCardView } from './UnoCardView';
+import { UnoCinematicOverlay } from './UnoCinematicOverlay';
+import { useUnoCinematics } from './useUnoCinematics';
 
 const COLOR_BUTTONS: Array<{ color: UnoColor; bg: string }> = [
   { color: 'red', bg: '#df352c' },
@@ -47,6 +49,7 @@ export function UnoGamePage({ config, onBackToSetup, onBackToHome }: UnoGamePage
   const [message, setMessage] = useState('カードを出すか、引いてください。');
   const stateRef = useRef(gameState);
   stateRef.current = gameState;
+  const { activeEvent: cinematicEvent, isBlocking: isCinematicBlocking } = useUnoCinematics(gameState);
 
   const isHard = gameState.variant === 'hard';
   const currentPlayer = gameState.players.find((p) => p.id === gameState.currentPlayerId)!;
@@ -72,6 +75,7 @@ export function UnoGamePage({ config, onBackToSetup, onBackToHome }: UnoGamePage
   const canHumanAct =
     gameState.status === 'playing' &&
     !isCpuThinking &&
+    !isCinematicBlocking &&
     !currentIsCpu &&
     (pending === null || (pending.kind === 'drawn-card-play' && pending.playerId === gameState.currentPlayerId));
 
@@ -150,6 +154,10 @@ export function UnoGamePage({ config, onBackToSetup, onBackToHome }: UnoGamePage
   }, [gameState.deck.length, gameState.hands, gameState.players, pending]);
 
   useEffect(() => {
+    if (isCinematicBlocking) {
+      setIsCpuThinking(false);
+      return;
+    }
     if (gameState.status !== 'playing') {
       setIsCpuThinking(false);
       return;
@@ -218,6 +226,7 @@ export function UnoGamePage({ config, onBackToSetup, onBackToHome }: UnoGamePage
     gameState.turnCount,
     gameState.players,
     rouletteProgressKey,
+    isCinematicBlocking,
   ]);
 
   const rankings = useMemo(() => {
@@ -226,6 +235,7 @@ export function UnoGamePage({ config, onBackToSetup, onBackToHome }: UnoGamePage
 
   return (
     <Layout>
+      <UnoCinematicOverlay event={cinematicEvent} />
       <div style={{ paddingTop: 'var(--game-page-pt)', paddingBottom: 'var(--game-page-pb)' }}>
         <div style={{ textAlign: 'center', marginBottom: 12 }}>
           <h1 style={{ fontSize: 18, color: 'var(--brown)', marginBottom: 3 }}>
@@ -432,7 +442,7 @@ export function PendingPanel({
           {target?.name ?? '次の人'} が {UNO_COLOR_LABELS[pending.targetColor]} のカードを引くまで、対象プレイヤーに1まいずつ引かせます。
         </p>
         <div className="uno-pending-status cpu-thinking-pulse">
-          自動で進めています...
+          自動で進めています...　{pending.drawnCount ?? 0}まい引きました
         </div>
       </ActionPanel>
     );

@@ -25,6 +25,8 @@ import { UnoTableView } from './UnoTableView';
 import { PendingPanel, StarterDecisionPanel } from './UnoGamePage';
 import { UnoRulesPanel } from './UnoRulesPanel';
 import { createInitialUnoState } from './createInitialUnoState';
+import { UnoCinematicOverlay } from './UnoCinematicOverlay';
+import { useUnoCinematics } from './useUnoCinematics';
 import {
   canApplyUnoOnlineAction,
   countUnoJoined,
@@ -71,6 +73,7 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToSetup, onBackT
   rowRef.current = roomRow;
   versionRef.current = roomVersion;
   writingRef.current = isWriting;
+  const { activeEvent: cinematicEvent, isBlocking: isCinematicBlocking } = useUnoCinematics(gameState);
 
   const fetchLatest = useCallback(async (nextMessage?: string) => {
     const { data, error } = await supabase
@@ -172,7 +175,7 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToSetup, onBackT
   const nextPlayerId = useMemo(() => (gameState ? getNextPlayerId(gameState) : myPlayerId), [gameState, myPlayerId]);
   const myHand = gameState?.hands[myPlayerId] ?? [];
   const playableCards = gameState ? getPlayableCards(gameState, myPlayerId) : [];
-  const canTakeTurn = !!gameState && canApplyUnoOnlineAction(gameState, myPlayerId, 'turn') && !isWriting && !isCpuThinking;
+  const canTakeTurn = !!gameState && canApplyUnoOnlineAction(gameState, myPlayerId, 'turn') && !isWriting && !isCpuThinking && !isCinematicBlocking;
   const winner = gameState?.winnerPlayerId ? gameState.players.find((player) => player.id === gameState.winnerPlayerId) : null;
   const rankings = gameState ? getUnoRankings(gameState) : [];
 
@@ -336,6 +339,10 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToSetup, onBackT
   }, [gameState, myPlayerId, updateRemoteState]);
 
   useEffect(() => {
+    if (isCinematicBlocking) {
+      setIsCpuThinking(false);
+      return;
+    }
     if (!gameState || !isHostClient || isWriting || gameState.status !== 'playing') {
       setIsCpuThinking(false);
       return;
@@ -399,7 +406,7 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToSetup, onBackT
     }, 760);
 
     return () => clearTimeout(id);
-  }, [gameState, isHostClient, isWriting, updateRemoteState]);
+  }, [gameState, isCinematicBlocking, isHostClient, isWriting, updateRemoteState]);
 
   if (loading) {
     return (
@@ -440,6 +447,7 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToSetup, onBackT
   if (gameState.status === 'finished') {
     return (
       <Layout>
+        <UnoCinematicOverlay event={cinematicEvent} />
         <div style={{ paddingTop: 32, paddingBottom: 40, textAlign: 'center' }}>
           <div style={{ fontSize: 48, marginBottom: 10 }}>WIN</div>
           <h1 style={{ fontSize: 22, color: 'var(--brown)', marginBottom: 12 }}>
@@ -517,6 +525,7 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToSetup, onBackT
 
   return (
     <Layout>
+      <UnoCinematicOverlay event={cinematicEvent} />
       <div style={{ paddingTop: 'var(--game-page-pt)', paddingBottom: 'var(--game-page-pb)' }}>
         <div style={{ textAlign: 'center', marginBottom: 12 }}>
           <h1 style={{ fontSize: 18, color: 'var(--brown)', marginBottom: 3 }}>

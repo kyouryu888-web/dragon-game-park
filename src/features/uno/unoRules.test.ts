@@ -764,6 +764,7 @@ describe('UNO hard rules', () => {
 
     state = applyColorRouletteStep(state);
     expect(state.pendingAction?.kind).toBe('color-roulette');
+    expect(state.pendingAction?.kind === 'color-roulette' ? state.pendingAction.drawnCount : null).toBe(1);
     state = applyColorRouletteStep(state);
     expect(state.pendingAction).toBeNull();
     expect(state.currentPlayerId).toBe('player-1');
@@ -782,7 +783,12 @@ describe('UNO hard rules', () => {
     };
 
     const next = applyColorChoice(state, 'yellow');
-    expect(next.pendingAction).toEqual({ kind: 'color-roulette', targetPlayerId: 'player-3', targetColor: 'yellow' });
+    expect(next.pendingAction).toEqual({
+      kind: 'color-roulette',
+      targetPlayerId: 'player-3',
+      targetColor: 'yellow',
+      drawnCount: 0,
+    });
   });
 
   it('color roulette ends and advances when the target is knocked out', () => {
