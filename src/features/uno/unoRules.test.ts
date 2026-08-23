@@ -14,6 +14,7 @@ import {
   applyStartGame,
   applySwapPick,
   canPlayCard,
+  getCardDrawValue,
   getPlayableCards,
   sanitizeUnoStateForVariant,
 } from './unoRules';
@@ -122,7 +123,7 @@ describe('UNO normal rules', () => {
     expect(canPlayCard(state, { id: 'wild', kind: 'wild', symbol: 'wild' })).toBe(true);
   });
 
-  it('applies standard draw2 immediately and skips the target', () => {
+  it('starts a standard draw2 stack and lets the target accept it', () => {
     let state = baseState('standard');
     state = {
       ...state,
@@ -130,8 +131,13 @@ describe('UNO normal rules', () => {
       deck: [numberCard('draw-a', 'green', 3), numberCard('draw-b', 'yellow', 4)],
     };
 
-    const next = applyPlayCard(state, 'd2');
+    const pending = applyPlayCard(state, 'd2');
+    expect(pending.pendingDrawCount).toBe(2);
+    expect(pending.currentPlayerId).toBe('player-2');
+
+    const next = applyAcceptDraw(pending);
     expect(next.hands['player-2']).toHaveLength(2);
+    expect(next.pendingDrawCount).toBe(0);
     expect(next.currentPlayerId).toBe('player-1');
   });
 
@@ -183,7 +189,7 @@ describe('UNO normal rules', () => {
     expect(next.hands['player-3']).toHaveLength(0);
   });
 
-  it('applies standard draw2 to the next player and continues two seats ahead', () => {
+  it('moves past a standard draw target after they accept the cards', () => {
     let state = baseState3('standard');
     state = {
       ...state,
@@ -191,7 +197,9 @@ describe('UNO normal rules', () => {
       deck: [numberCard('penalty-a', 'green', 3), numberCard('penalty-b', 'yellow', 4)],
     };
 
-    const next = applyPlayCard(state, 'd2');
+    const pending = applyPlayCard(state, 'd2');
+    expect(pending.currentPlayerId).toBe('player-2');
+    const next = applyAcceptDraw(pending);
     expect(next.hands['player-2']).toHaveLength(2);
     expect(next.currentPlayerId).toBe('player-3');
   });
@@ -215,7 +223,7 @@ describe('UNO normal rules', () => {
     expect(next.direction).toBe(expectedDirection);
   });
 
-  it('applies wild draw4 after color selection and skips the target', () => {
+  it('starts a wild draw4 stack after color selection', () => {
     let state = baseState3('standard');
     state = {
       ...state,
@@ -236,7 +244,11 @@ describe('UNO normal rules', () => {
 
     state = applyPlayCard(state, 'wild-draw4');
     expect(state.pendingAction?.kind).toBe('color-pick');
-    const next = applyColorChoice(state, 'blue');
+    const pending = applyColorChoice(state, 'blue');
+    expect(pending.pendingDrawCount).toBe(4);
+    expect(pending.currentPlayerId).toBe('player-2');
+
+    const next = applyAcceptDraw(pending);
     expect(next.hands['player-2']).toHaveLength(4);
     expect(next.currentPlayerId).toBe('player-3');
     expect(next.activeColor).toBe('blue');
@@ -468,6 +480,132 @@ describe('UNO normal rules', () => {
     expect(next.pendingAction).toBeNull();
     expect(next.unoDeclaredIds).toContain('player-1');
     expect(next.currentPlayerId).toBe('player-2');
+  });
+});
+
+describe('UNO draw stacking', () => {
+  it('lets standard players answer draw 2 with draw 2 or wild draw 4', () => {
+    const drawTwo = draw2('draw-two', 'blue');
+    const wildDrawFour: UnoCard = { id: 'wild-draw-four', kind: 'wild', symbol: 'wild-draw4' };
+    const state: UnoGameState = {
+      ...baseState3('standard'),
+      pendingDrawCount: 2,
+      lastDrawCardValue: 2,
+      hands: {
+        'player-1': [drawTwo, wildDrawFour, numberCard('left', 'green', 4)],
+        'player-2': [],
+        'player-3': [],
+      },
+    };
+
+    expect(canPlayCard(state, drawTwo)).toBe(true);
+    expect(canPlayCard(state, wildDrawFour)).toBe(true);
+
+    const stacked = applyPlayCard(state, 'draw-two');
+    expect(stacked.pendingDrawCount).toBe(4);
+    expect(stacked.lastDrawCardValue).toBe(2);
+    expect(stacked.currentPlayerId).toBe('player-2');
+  });
+
+  it('only accepts an equal or greater draw card in standard games', () => {
+    const drawTwo = draw2('draw-two', 'blue');
+    const wildDrawFour: UnoCard = { id: 'wild-draw-four', kind: 'wild', symbol: 'wild-draw4' };
+    const state: UnoGameState = {
+      ...baseState('standard'),
+      pendingDrawCount: 4,
+      lastDrawCardValue: 4,
+      hands: {
+        'player-1': [drawTwo, wildDrawFour, numberCard('left', 'green', 4)],
+        'player-2': [],
+      },
+    };
+
+    expect(canPlayCard(state, drawTwo)).toBe(false);
+    expect(canPlayCard(state, wildDrawFour)).toBe(true);
+  });
+
+  it('adds a standard wild draw 4 to the pending total after choosing a color', () => {
+    const state: UnoGameState = {
+      ...baseState3('standard'),
+      pendingDrawCount: 2,
+      lastDrawCardValue: 2,
+      hands: {
+        'player-1': [
+          { id: 'wild-draw-four', kind: 'wild', symbol: 'wild-draw4' },
+          numberCard('left', 'green', 4),
+        ],
+        'player-2': [],
+        'player-3': [],
+      },
+    };
+
+    const choosing = applyPlayCard(state, 'wild-draw-four');
+    expect(choosing.pendingAction?.kind).toBe('color-pick');
+
+    const stacked = applyColorChoice(choosing, 'blue');
+    expect(stacked.pendingDrawCount).toBe(6);
+    expect(stacked.lastDrawCardValue).toBe(4);
+    expect(stacked.activeColor).toBe('blue');
+    expect(stacked.currentPlayerId).toBe('player-2');
+  });
+
+  it('preserves a valid standard draw stack while sanitizing online state', () => {
+    const state: UnoGameState = {
+      ...baseState('standard'),
+      pendingDrawCount: 6,
+      lastDrawCardValue: 4,
+    };
+
+    const clean = sanitizeUnoStateForVariant(state);
+    expect(clean.pendingDrawCount).toBe(6);
+    expect(clean.lastDrawCardValue).toBe(4);
+  });
+
+  it('treats wild reverse draw 4 as a stackable draw 4 in hard games', () => {
+    const reverseDrawFour: UnoCard = {
+      id: 'reverse-draw-four',
+      kind: 'wild',
+      symbol: 'wild-reverse-draw4',
+    };
+    const state: UnoGameState = {
+      ...baseState3('hard'),
+      pendingDrawCount: 4,
+      lastDrawCardValue: 4,
+      hands: {
+        'player-1': [reverseDrawFour, numberCard('left', 'green', 4)],
+        'player-2': [],
+        'player-3': [],
+      },
+    };
+
+    expect(getCardDrawValue(reverseDrawFour)).toBe(4);
+    expect(canPlayCard(state, reverseDrawFour)).toBe(true);
+
+    const choosing = applyPlayCard(state, 'reverse-draw-four');
+    const stacked = applyColorChoice(choosing, 'yellow');
+    expect(stacked.direction).toBe('counterclockwise');
+    expect(stacked.pendingDrawCount).toBe(8);
+    expect(stacked.lastDrawCardValue).toBe(4);
+    expect(stacked.currentPlayerId).toBe('player-3');
+  });
+
+  it('does not let wild reverse draw 4 answer a larger draw stack', () => {
+    const reverseDrawFour: UnoCard = {
+      id: 'reverse-draw-four',
+      kind: 'wild',
+      symbol: 'wild-reverse-draw4',
+    };
+    const state: UnoGameState = {
+      ...baseState('hard'),
+      pendingDrawCount: 6,
+      lastDrawCardValue: 6,
+      hands: {
+        'player-1': [reverseDrawFour, numberCard('left', 'green', 4)],
+        'player-2': [],
+      },
+    };
+
+    expect(canPlayCard(state, reverseDrawFour)).toBe(false);
   });
 });
 
