@@ -89,6 +89,8 @@ export type PendingColorRoulette = {
   kind: 'color-roulette';
   targetPlayerId: UnoPlayerId;
   targetColor: UnoColor;
+  /** このルーレットで引いた枚数。既存の保存状態では未設定の場合がある。 */
+  drawnCount?: number;
 };
 
 /** UNO 宣言猶予ウィンドウ */
@@ -152,10 +154,10 @@ export type UnoGameState = {
   /** 現在の有効な色（ワイルド後は選択色）*/
   activeColor: UnoColor;
 
-  /** hard モード: ドロースタッキング累積枚数 */
+  /** ドロースタッキングの累積枚数 */
   pendingDrawCount: number;
 
-  /** hard モード: スタック可否判定用（最後に出されたドローカードの枚数）*/
+  /** スタック可否判定用（最後に出されたドローカードの枚数）*/
   lastDrawCardValue: number;
 
   /** 割り込み状態 */

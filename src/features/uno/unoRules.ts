@@ -106,6 +106,10 @@ export function sanitizeUnoStateForVariant(state: UnoGameState): UnoGameState {
     pendingAction = null;
   }
 
+  const hasValidStandardDrawStack =
+    state.pendingDrawCount > 0 &&
+    (state.lastDrawCardValue === 2 || state.lastDrawCardValue === 4);
+
   return {
     ...state,
     hands,
@@ -113,8 +117,8 @@ export function sanitizeUnoStateForVariant(state: UnoGameState): UnoGameState {
     discardPile,
     starterDraws,
     pendingAction,
-    pendingDrawCount: 0,
-    lastDrawCardValue: 0,
+    pendingDrawCount: hasValidStandardDrawStack ? state.pendingDrawCount : 0,
+    lastDrawCardValue: hasValidStandardDrawStack ? state.lastDrawCardValue : 0,
   };
 }
 
@@ -200,6 +204,7 @@ export function getCardDrawValue(card: UnoCard): number {
     if (card.symbol === 'wild-draw4') return 4;
     if (card.symbol === 'wild-draw6') return 6;
     if (card.symbol === 'wild-draw10') return 10;
+    if (card.symbol === 'wild-reverse-draw4') return 4;
   }
   return 0;
 }
@@ -253,13 +258,12 @@ export function canPlayCard(state: UnoGameState, card: UnoCard): boolean {
   }
   if (state.pendingAction !== null) return false;
 
-  // hard: ドロースタッキング中はドローカードのみ出せる
-  if (state.pendingDrawCount > 0 && state.variant === 'hard') {
+  // ドロースタッキング中は、直前と同じか大きいドローカードのみ出せる。
+  if (state.pendingDrawCount > 0) {
     if (card.kind === 'wild') {
-      // wild-color-roulette / wild-reverse-draw4 / wild-skip-all はスタック不可
+      // ドロー効果を持たないワイルドはスタック不可。
       if (
         card.symbol === 'wild-color-roulette' ||
-        card.symbol === 'wild-reverse-draw4' ||
         card.symbol === 'wild-skip-all' ||
         card.symbol === 'wild'
       )
@@ -268,9 +272,6 @@ export function canPlayCard(state: UnoGameState, card: UnoCard): boolean {
     const drawValue = getCardDrawValue(card);
     return drawValue > 0 && drawValue >= state.lastDrawCardValue;
   }
-
-  // standard: ドローカード出された場合はカードを出せない（受け取るのみ）
-  if (state.pendingDrawCount > 0 && state.variant === 'standard') return false;
 
   // ワイルドは常に出せる
   if (card.kind === 'wild') return true;
@@ -386,8 +387,8 @@ export function applyPlayCard(state: UnoGameState, cardId: string): UnoGameState
     ...state,
     hands: { ...state.hands, [state.currentPlayerId]: newHand },
     discardPile: [card, ...state.discardPile],
-    pendingDrawCount: state.variant === 'hard' ? state.pendingDrawCount : 0,
-    lastDrawCardValue: state.variant === 'hard' ? state.lastDrawCardValue : 0,
+    pendingDrawCount: state.pendingDrawCount,
+    lastDrawCardValue: state.lastDrawCardValue,
     pendingAction: null,
   };
 
@@ -485,15 +486,6 @@ function applyActionEffect(
     }
 
     case 'draw2': {
-      if (s.variant === 'standard') {
-        // 即座適用: 次のプレイヤーが 2 枚引いてスキップ
-        const nextId = getNextPlayerId(s);
-        s = drawCardsForPlayer(s, nextId, 2);
-        s = checkElimination(s);
-        if (s.status === 'finished') return s;
-        return checkUnoWindowAndAdvance(s, playerId, newHand.length, 2);
-      }
-      // hard: スタッキング
       return checkUnoWindowAndAdvance(
         { ...s, pendingDrawCount: s.pendingDrawCount + 2, lastDrawCardValue: 2 },
         playerId,
@@ -581,7 +573,7 @@ export function applyColorChoice(state: UnoGameState, color: UnoColor): UnoGameS
     return {
       ...s,
       activeColor: color,
-      pendingAction: { kind: 'color-roulette', targetPlayerId: targetId, targetColor: color },
+      pendingAction: { kind: 'color-roulette', targetPlayerId: targetId, targetColor: color, drawnCount: 0 },
     };
   }
 
@@ -592,32 +584,16 @@ export function applyColorChoice(state: UnoGameState, color: UnoColor): UnoGameS
     s = { ...s, direction: newDir };
 
     if (pendingDrawAfterColor > 0) {
-      if (s.variant === 'hard') {
-        s = { ...s, pendingDrawCount: s.pendingDrawCount + pendingDrawAfterColor, lastDrawCardValue: pendingDrawAfterColor };
-        return advanceTurn(s);
-      }
-      // standard: 次のプレイヤーに即適用してスキップ
-      const nextId = getNextPlayerId(s);
-      s = drawCardsForPlayer(s, nextId, pendingDrawAfterColor);
-      s = checkElimination(s);
-      if (s.status === 'finished') return s;
-      return advanceTurn(s, 2);
+      s = { ...s, pendingDrawCount: s.pendingDrawCount + pendingDrawAfterColor, lastDrawCardValue: pendingDrawAfterColor };
+      return advanceTurn(s);
     }
     return advanceTurn(s);
   }
 
   // 通常のドローワイルド（wild-draw4, wild-draw6, wild-draw10）
   if (pendingDrawAfterColor > 0) {
-    if (s.variant === 'hard') {
-      s = { ...s, pendingDrawCount: s.pendingDrawCount + pendingDrawAfterColor, lastDrawCardValue: pendingDrawAfterColor };
-      return advanceTurn(s);
-    }
-    // standard: 次のプレイヤーに即適用してスキップ
-    const nextId = getNextPlayerId(s);
-    s = drawCardsForPlayer(s, nextId, pendingDrawAfterColor);
-    s = checkElimination(s);
-    if (s.status === 'finished') return s;
-    return advanceTurn(s, 2);
+    s = { ...s, pendingDrawCount: s.pendingDrawCount + pendingDrawAfterColor, lastDrawCardValue: pendingDrawAfterColor };
+    return advanceTurn(s);
   }
 
   // 普通の wild（色だけ変える）
@@ -710,7 +686,7 @@ export function applyInfiniteDraw(state: UnoGameState): UnoGameState {
 }
 
 /**
- * hard モード: ドロースタッキングを受け入れる（pendingDrawCount 枚引いてターン終了）。
+ * ドロースタッキングを受け入れる（pendingDrawCount 枚引いてターン終了）。
  */
 export function applyAcceptDraw(state: UnoGameState): UnoGameState {
   if (state.status !== 'playing') return state;
@@ -787,6 +763,13 @@ export function applyColorRouletteStep(state: UnoGameState): UnoGameState {
   if (!drawnCard) {
     return advanceAfterPlayer({ ...s, pendingAction: null }, targetPlayerId);
   }
+  s = {
+    ...s,
+    pendingAction: {
+      ...state.pendingAction,
+      drawnCount: (state.pendingAction.drawnCount ?? 0) + 1,
+    },
+  };
 
   // 脱落チェック
   s = checkElimination(s);

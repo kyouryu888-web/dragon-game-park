@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '../../components/Button';
+import { DEFAULT_ONLINE_ENTRY_MODE, shouldAutoJoinOnlineRoom } from '../../components/gameSetupDefaults';
 import { Layout } from '../../components/Layout';
 import { supabase } from '../../lib/supabase';
 import { getUnoCpuDisplayName, getUnoCpuLevelLabel } from './unoCpu';
@@ -23,7 +24,7 @@ import {
   type UnoRoomRow,
 } from './unoOnline';
 
-type PageState = 'menu' | 'creating' | 'waiting';
+type PageState = 'menu' | 'creating' | 'joining' | 'waiting';
 
 type UnoOnlineRoomPageProps = {
   initialMode?: 'create' | 'join';
@@ -41,8 +42,10 @@ function defaultSlots(): UnoOnlinePlayerSlot[] {
   }));
 }
 
-export function UnoOnlineRoomPage({ initialMode = 'create', initialName = '', initialCode = '', onGameStart, onBack }: UnoOnlineRoomPageProps) {
-  const [pageState, setPageState] = useState<PageState>('menu');
+export function UnoOnlineRoomPage({ initialMode = DEFAULT_ONLINE_ENTRY_MODE, initialName = '', initialCode = '', onGameStart, onBack }: UnoOnlineRoomPageProps) {
+  const shouldAutoJoin = shouldAutoJoinOnlineRoom(initialMode, initialCode);
+  const autoJoinStartedRef = useRef(false);
+  const [pageState, setPageState] = useState<PageState>(shouldAutoJoin ? 'joining' : 'menu');
   const [entryMode, setEntryMode] = useState<'create' | 'join'>(initialMode);
   const [variant, setVariant] = useState<UnoVariant>('standard');
   const [playerCount, setPlayerCount] = useState(2);
@@ -141,11 +144,13 @@ export function UnoOnlineRoomPage({ initialMode = 'create', initialName = '', in
 
   async function handleJoin() {
     setError('');
+    setPageState('joining');
     const code = inputCode.trim().toUpperCase();
     const playerId = getUnoOnlinePlayerId();
 
     if (code.length !== 6) {
       setError('6文字のルームコードを入力してください。');
+      setPageState('menu');
       return;
     }
 
@@ -157,6 +162,7 @@ export function UnoOnlineRoomPage({ initialMode = 'create', initialName = '', in
 
     if (fetchError || !data) {
       setError('UNOルームが見つかりません。コードを確認してください。');
+      setPageState('menu');
       return;
     }
 
@@ -185,6 +191,7 @@ export function UnoOnlineRoomPage({ initialMode = 'create', initialName = '', in
 
       if (updateError || !updated) {
         setError('再入室の途中で部屋の状態が変わりました。もう一度「参加する」を押してください。');
+        setPageState('menu');
         return;
       }
 
@@ -201,6 +208,7 @@ export function UnoOnlineRoomPage({ initialMode = 'create', initialName = '', in
     const openSlot = findOpenUnoSlot(row);
     if (!openSlot) {
       setError('このUNOルームは満員です。');
+      setPageState('menu');
       return;
     }
 
@@ -225,6 +233,7 @@ export function UnoOnlineRoomPage({ initialMode = 'create', initialName = '', in
 
     if (updateError || !updated) {
       setError('扉は既に閉ざされていた。別のルームを探されよ');
+      setPageState('menu');
       return;
     }
 
@@ -241,6 +250,14 @@ export function UnoOnlineRoomPage({ initialMode = 'create', initialName = '', in
       setPageState('waiting');
     }
   }
+
+  useEffect(() => {
+    if (!shouldAutoJoin || autoJoinStartedRef.current) return;
+    autoJoinStartedRef.current = true;
+    void handleJoin();
+    // 初期コードを1回だけ処理し、Realtimeによる再描画では再参加しない。
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (pageState !== 'waiting' || !roomCode) return;
@@ -279,6 +296,19 @@ export function UnoOnlineRoomPage({ initialMode = 'create', initialName = '', in
   }, [pageState, roomCode, myWaitingPlayerId, onGameStart]);
 
   const cpuCount = useMemo(() => activeSlots.filter((slot) => slot.isCpu).length, [activeSlots]);
+
+  if (pageState === 'joining') {
+    return (
+      <Layout>
+        <div style={{ textAlign: 'center', padding: '72px 20px' }}>
+          <div className="cpu-thinking-pulse" style={{ fontSize: 18, fontWeight: 900, color: 'var(--brown)', marginBottom: 10 }}>
+            UNOルームへ参加しています...
+          </div>
+          <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>コードを確認しています。少しだけお待ちください。</p>
+        </div>
+      </Layout>
+    );
+  }
 
   if (pageState === 'waiting') {
     const isHost = myWaitingPlayerId === 'player-1';

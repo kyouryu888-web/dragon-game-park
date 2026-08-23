@@ -415,7 +415,7 @@ function UnoCenterPile({
               onClick={canDraw ? onDeckClick : undefined}
             />
           </div>
-          <span>{pendingDrawCount > 0 ? `${pendingDrawCount}枚引く` : `山札 ${deckCount}`}</span>
+          <span>{pendingDrawCount > 0 ? `合計${pendingDrawCount}枚引く` : `山札 ${deckCount}`}</span>
         </div>
         <div className="uno-center-card-wrap">
           <div className="uno-card-info-anchor">
@@ -531,11 +531,13 @@ function UnoHandFan({
           onClick={onDrawRequest}
           disabled={!canUseDeck}
         >
-          {pendingDrawCount > 0 ? `${pendingDrawCount}まい引く` : '山札から引く'}
+          {pendingDrawCount > 0 ? `合計${pendingDrawCount}まい引く` : '山札から引く'}
         </button>
         <span className={`uno-draw-hint ${canUseDeck ? 'is-active' : ''}`}>
-          {pendingDrawCount > 0
-            ? `中央の山札を押すと${pendingDrawCount}枚引きます`
+          {pendingDrawCount > 0 && playableIds.size > 0
+            ? '出せるドローカードで次の人へ返せます'
+            : pendingDrawCount > 0
+              ? `中央の山札を押すと合計${pendingDrawCount}枚引きます`
             : canAct && playableIds.size > 0
               ? '引くと、引いたカードだけ出せます'
               : '出せない時は中央の山札を押します'}
@@ -650,8 +652,8 @@ function getCardEffectDetail(card: UnoCard, variant: UnoVariant): { title: strin
     const actionDetails: Record<string, { title: string; description: string }> = {
       skip: { title: 'スキップ', description: '次の人を1回休みにします。' },
       reverse: { title: 'リバース', description: '進む向きを反対にします。' },
-      draw2: { title: 'ドロー2', description: '次の人に2枚引かせます。' },
-      draw4: { title: 'ドロー4', description: '次の人に4枚引かせます。ハード版では色つきの強いドローカードです。' },
+      draw2: { title: 'ドロー2', description: '次の人に2枚引かせます。同じか大きいドローカードで重ねられます。' },
+      draw4: { title: 'ドロー4', description: '次の人に4枚引かせます。同じか大きいドローカードで重ねられます。' },
       'discard-all': { title: 'ぜんぶすてる', description: '同じ色の手札をまとめて全部出せます。' },
     };
     const detail = actionDetails[card.symbol]!;
@@ -664,10 +666,10 @@ function getCardEffectDetail(card: UnoCard, variant: UnoVariant): { title: strin
 
   const wildDetails: Record<string, { title: string; description: string }> = {
     wild: { title: 'ワイルド', description: '好きな色を選べます。' },
-    'wild-draw4': { title: 'ワイルド ドロー4', description: '好きな色を選び、次の人に4枚引かせます。' },
+    'wild-draw4': { title: 'ワイルド ドロー4', description: '好きな色を選び、次の人に4枚引かせます。ドロー4として重ねられます。' },
     'wild-draw6': { title: 'ワイルド ドロー6', description: '好きな色を選び、次の人に6枚引かせます。' },
     'wild-draw10': { title: 'ワイルド ドロー10', description: '好きな色を選び、次の人に10枚引かせます。' },
-    'wild-reverse-draw4': { title: 'ワイルド リバース ドロー4', description: '進む向きを反対にして、新しく次の人になった人に4枚引かせます。' },
+    'wild-reverse-draw4': { title: 'ワイルド リバース ドロー4', description: '進む向きを反対にして、新しく次の人になった人に4枚引かせます。ドロー4として重ねられます。' },
     'wild-color-roulette': { title: 'カラー ルーレット', description: '選んだ色のカードが出るまで、次の人に1枚ずつ引かせます。' },
     'wild-skip-all': { title: 'みんなスキップ', description: '自分以外の全員を1回休みにして、もう一度自分の番になります。' },
   };
@@ -683,16 +685,16 @@ const STANDARD_CARD_GUIDE = [
   { title: '数字カード', description: '同じ色か同じ数字なら出せます。点数は数字そのままです。' },
   { title: 'スキップ', description: '次の人を1回休みにします。20点です。' },
   { title: 'リバース', description: '進む向きを反対にします。20点です。' },
-  { title: 'ドロー2', description: '次の人に2枚引かせます。20点です。' },
+  { title: 'ドロー2', description: '次の人に2枚引かせます。同じか大きいドローで返せます。20点です。' },
   { title: 'ワイルド', description: '好きな色を選べます。50点です。' },
-  { title: 'ワイルド ドロー4', description: '好きな色を選び、次の人に4枚引かせます。50点です。' },
+  { title: 'ワイルド ドロー4', description: '好きな色を選び、次の人に4枚引かせます。ドロー4として重ねられます。50点です。' },
 ];
 
 const HARD_CARD_GUIDE = [
   ...STANDARD_CARD_GUIDE,
   { title: 'ドロー4', description: '色つきのドロー4です。ドロー重ねに使えます。20点です。' },
   { title: 'ドロー6 / ドロー10', description: '次の人に6枚または10枚引かせます。ワイルドなので色も選べます。50点です。' },
-  { title: 'リバース ドロー4', description: '向きを反対にして、新しく次の人になった人に4枚引かせます。50点です。' },
+  { title: 'リバース ドロー4', description: '向きを反対にして、新しく次の人になった人に4枚引かせます。ドロー4として重ねられます。50点です。' },
   { title: '7', description: 'だれか1人と手札を全部交換します。7点です。' },
   { title: '0', description: '全員が進行方向の次の人に手札を全部わたします。0点です。' },
   { title: 'ぜんぶすてる', description: '同じ色の手札をまとめて全部出せます。20点です。' },
