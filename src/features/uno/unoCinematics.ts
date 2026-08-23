@@ -42,6 +42,9 @@ export type UnoCinematicEvent =
   | UnoKnockoutEvent
   | UnoRouletteEvent;
 
+/** 全面カットインの総時間。導入・退出を除いて約1.7秒の可読時間を確保する。 */
+export const UNO_CINEMATIC_DURATION_MS = 2400;
+
 function getPlayer(state: UnoGameState, playerId: UnoPlayerId): UnoPlayer | undefined {
   return state.players.find((player) => player.id === playerId);
 }
@@ -200,7 +203,7 @@ export function detectUnoCinematicEvents(
 export function getUnoCinematicDuration(event: UnoCinematicEvent): number {
   if (event.kind === 'roulette-step') return 350;
   if (event.kind === 'roulette-safe') return 800;
-  return 1600;
+  return UNO_CINEMATIC_DURATION_MS;
 }
 
 export function isBlockingUnoCinematic(event: UnoCinematicEvent | null): boolean {
