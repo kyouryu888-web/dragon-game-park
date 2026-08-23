@@ -1,8 +1,9 @@
+import type { CSSProperties } from 'react';
 import drawCounterImage from './assets/draw-counter.webp';
 import forcedDrawImage from './assets/forced-draw.webp';
 import knockoutImage from './assets/knockout.webp';
 import { UNO_COLOR_LABELS } from './unoCardMeta';
-import type { UnoCinematicEvent } from './unoCinematics';
+import { getUnoCinematicDuration, type UnoCinematicEvent } from './unoCinematics';
 
 const IMAGE_BY_KIND = {
   'draw-counter': drawCounterImage,
@@ -19,6 +20,7 @@ export function UnoCinematicOverlay({ event }: { event: UnoCinematicEvent | null
       <div
         key={event.key}
         className={`uno-roulette-cinematic ${event.kind === 'roulette-safe' ? 'is-safe' : ''}`}
+        style={({ '--uno-roulette-duration': `${getUnoCinematicDuration(event)}ms` } as CSSProperties)}
         role="status"
         aria-live="assertive"
       >
@@ -55,6 +57,7 @@ export function UnoCinematicOverlay({ event }: { event: UnoCinematicEvent | null
     <div
       key={event.key}
       className={`uno-cinematic-overlay is-${event.kind}`}
+      style={({ '--uno-cinematic-duration': `${getUnoCinematicDuration(event)}ms` } as CSSProperties)}
       role="status"
       aria-live="assertive"
       aria-atomic="true"

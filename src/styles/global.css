@@ -1380,6 +1380,7 @@ button {
 
 /* UNO draw / counter / knockout cinematics */
 .uno-cinematic-overlay {
+  --uno-cinematic-duration: 2400ms;
   position: fixed;
   z-index: 120;
   inset: 0;
@@ -1389,7 +1390,7 @@ button {
   background: rgba(10, 5, 9, 0.92);
   pointer-events: none;
   isolation: isolate;
-  animation: uno-cinematic-backdrop 1600ms ease both;
+  animation: uno-cinematic-backdrop var(--uno-cinematic-duration) ease both;
 }
 .uno-cinematic-side-lines {
   position: absolute;
@@ -1402,7 +1403,7 @@ button {
     rgba(235, 180, 48, 0.2) 5deg 5.8deg,
     transparent 5.8deg 9deg
   );
-  animation: uno-cinematic-lines 1600ms ease-out both;
+  animation: uno-cinematic-lines var(--uno-cinematic-duration) ease-out both;
 }
 .uno-cinematic-panel {
   position: relative;
@@ -1416,14 +1417,14 @@ button {
   background: #16080a;
   box-shadow: 0 0 0 2px rgba(28, 11, 8, 0.95), 0 24px 80px rgba(0, 0, 0, 0.78), 0 0 48px rgba(218, 58, 28, 0.48);
   transform-origin: center;
-  animation: uno-cinematic-panel-in 1600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: uno-cinematic-panel-in var(--uno-cinematic-duration) cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 .uno-cinematic-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
-  animation: uno-cinematic-image-push 1600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: uno-cinematic-image-push var(--uno-cinematic-duration) cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 .uno-cinematic-shade {
   position: absolute;
@@ -1448,11 +1449,11 @@ button {
   color: #ffe8a5;
   font-size: clamp(15px, 4.5vw, 25px);
   font-weight: 950;
-  animation: uno-cinematic-copy-top 1600ms ease both;
+  animation: uno-cinematic-copy-top var(--uno-cinematic-duration) ease both;
 }
 .uno-cinematic-copy.is-bottom {
   bottom: 4%;
-  animation: uno-cinematic-copy-bottom 1600ms ease both;
+  animation: uno-cinematic-copy-bottom var(--uno-cinematic-duration) ease both;
 }
 .uno-cinematic-copy.is-bottom strong {
   max-width: 100%;
@@ -1521,6 +1522,7 @@ button {
 .uno-cinematic-flying-cards i:nth-child(7) { --uno-card-x: 25%; --uno-card-y: -400%; --uno-card-rotate: 4deg; --uno-card-left: 46%; animation-delay: 260ms !important; }
 
 .uno-roulette-cinematic {
+  --uno-roulette-duration: 350ms;
   position: fixed;
   z-index: 121;
   top: max(18px, env(safe-area-inset-top));
@@ -1538,12 +1540,11 @@ button {
   box-shadow: 0 12px 34px rgba(0, 0, 0, 0.55), 0 0 22px rgba(226, 190, 73, 0.32);
   pointer-events: none;
   transform: translateX(-50%);
-  animation: uno-roulette-cinematic-in 350ms ease both;
+  animation: uno-roulette-cinematic-in var(--uno-roulette-duration) ease both;
 }
 .uno-roulette-cinematic.is-safe {
   border-color: #65c875;
   box-shadow: 0 12px 34px rgba(0, 0, 0, 0.55), 0 0 22px rgba(72, 194, 91, 0.42);
-  animation-duration: 800ms;
 }
 .uno-roulette-cinematic-wheel {
   grid-row: 1 / 3;
@@ -1600,42 +1601,42 @@ button {
 
 @keyframes uno-cinematic-backdrop {
   0% { opacity: 0; }
-  10%, 84% { opacity: 1; }
+  8%, 92% { opacity: 1; }
   100% { opacity: 0; }
 }
 @keyframes uno-cinematic-lines {
   0% { opacity: 0; scale: 0.65; rotate: -5deg; }
-  18%, 80% { opacity: 1; scale: 1; rotate: 0deg; }
+  12%, 90% { opacity: 1; scale: 1; rotate: 0deg; }
   100% { opacity: 0; scale: 1.12; }
 }
 @keyframes uno-cinematic-panel-in {
   0% { opacity: 0; transform: translateX(-115%) skewX(-7deg) scale(0.92); }
-  17% { opacity: 1; transform: translateX(0) skewX(0) scale(1); }
-  82% { opacity: 1; transform: translateX(0) scale(1); }
+  12% { opacity: 1; transform: translateX(0) skewX(0) scale(1); }
+  92% { opacity: 1; transform: translateX(0) scale(1); }
   100% { opacity: 0; transform: translateX(112%) skewX(6deg) scale(0.96); }
 }
 @keyframes uno-cinematic-knockout-panel {
   0% { opacity: 0; transform: scale(1.28) rotate(-2deg); }
-  14% { opacity: 1; transform: scale(0.98) rotate(1deg); }
-  19% { transform: translateX(-7px) rotate(-1deg); }
-  24% { transform: translateX(7px) rotate(1deg); }
-  29%, 82% { opacity: 1; transform: translateX(0) rotate(0); }
+  10% { opacity: 1; transform: scale(0.98) rotate(1deg); }
+  14% { transform: translateX(-7px) rotate(-1deg); }
+  18% { transform: translateX(7px) rotate(1deg); }
+  22%, 92% { opacity: 1; transform: translateX(0) rotate(0); }
   100% { opacity: 0; transform: scale(0.94); }
 }
 @keyframes uno-cinematic-image-push {
   0% { scale: 1.12; filter: brightness(1.35); }
-  20% { scale: 1; filter: brightness(1); }
-  82% { scale: 1.03; filter: brightness(1); }
+  12% { scale: 1; filter: brightness(1); }
+  92% { scale: 1.03; filter: brightness(1); }
   100% { scale: 1.08; filter: brightness(0.7); }
 }
 @keyframes uno-cinematic-copy-top {
   0%, 10% { opacity: 0; translate: 0 -18px; }
-  23%, 82% { opacity: 1; translate: 0 0; }
+  18%, 90% { opacity: 1; translate: 0 0; }
   100% { opacity: 0; }
 }
 @keyframes uno-cinematic-copy-bottom {
-  0%, 16% { opacity: 0; translate: 0 24px; scale: 0.84; }
-  30%, 82% { opacity: 1; translate: 0 0; scale: 1; }
+  0%, 10% { opacity: 0; translate: 0 24px; scale: 0.84; }
+  18%, 90% { opacity: 1; translate: 0 0; scale: 1; }
   100% { opacity: 0; }
 }
 @keyframes uno-counter-card-fly {
@@ -1683,9 +1684,11 @@ button {
   .uno-cinematic-panel,
   .uno-cinematic-image,
   .uno-cinematic-copy,
-  .uno-cinematic-side-lines,
+  .uno-cinematic-side-lines {
+    animation: uno-cinematic-reduced var(--uno-cinematic-duration) ease both !important;
+  }
   .uno-roulette-cinematic {
-    animation: uno-cinematic-reduced 300ms ease both !important;
+    animation: uno-cinematic-reduced var(--uno-roulette-duration) ease both !important;
   }
   .uno-cinematic-flying-cards,
   .uno-roulette-cinematic-wheel,
@@ -1695,7 +1698,7 @@ button {
 }
 @keyframes uno-cinematic-reduced {
   0%, 100% { opacity: 0; }
-  18%, 78% { opacity: 1; }
+  8%, 92% { opacity: 1; }
 }
 .uno-opponent-stack {
   position: relative;

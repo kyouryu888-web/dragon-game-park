@@ -1,5 +1,7 @@
+import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import type { UnoCard, UnoGameState, UnoPlayerId } from './unoTypes';
+import { UnoCinematicOverlay } from './UnoCinematicOverlay';
 import {
   detectUnoCinematicEvents,
   getUnoCinematicDuration,
@@ -219,8 +221,26 @@ describe('UNO cinematic event detection', () => {
     };
 
     expect(isBlockingUnoCinematic(counter)).toBe(true);
-    expect(getUnoCinematicDuration(counter)).toBe(1600);
+    expect(getUnoCinematicDuration(counter)).toBe(2400);
     expect(isBlockingUnoCinematic(roulette)).toBe(false);
     expect(getUnoCinematicDuration(roulette)).toBe(350);
   });
+
+  it('passes the same 2.4 second duration to the full-screen CSS animation', () => {
+    const counter = {
+      kind: 'draw-counter' as const,
+      key: 'counter-duration',
+      playerId: 'player-1' as const,
+      playerName: 'ドラゴン',
+      addedCount: 4,
+      totalCount: 8,
+      cardName: 'ワイルド ドロー4',
+      reversed: false,
+    };
+
+    const html = renderToStaticMarkup(UnoCinematicOverlay({ event: counter }));
+
+    expect(html).toContain('--uno-cinematic-duration:2400ms');
+  });
+
 });

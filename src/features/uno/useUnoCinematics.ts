@@ -40,11 +40,9 @@ export function useUnoCinematics(state: UnoGameState | null) {
 
   useEffect(() => {
     if (!activeEvent) return;
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const duration = prefersReducedMotion ? 300 : getUnoCinematicDuration(activeEvent);
     const timeoutId = window.setTimeout(() => {
       setQueue((current) => current.slice(1));
-    }, duration);
+    }, getUnoCinematicDuration(activeEvent));
     return () => window.clearTimeout(timeoutId);
   }, [activeEvent]);
 
