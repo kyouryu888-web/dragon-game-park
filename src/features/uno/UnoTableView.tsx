@@ -4,6 +4,8 @@ import type { UnoCard, UnoColor, UnoGameState, UnoPlayer, UnoPlayerId, UnoVarian
 import { UNO_COLOR_LABELS } from './unoCardMeta';
 import { UnoCardView } from './UnoCardView';
 import { sortUnoHandByColor } from './unoCardUtils';
+import { UnoRouletteStatus } from './UnoRouletteStatus';
+import type { UnoRoulettePresentation } from './unoCinematics';
 
 const COLOR_DOTS: Record<UnoColor, string> = {
   red: '#df352c',
@@ -24,6 +26,7 @@ type UnoTableViewProps = {
   isCpuThinking: boolean;
   message: string;
   viewPlayerId?: UnoPlayerId;
+  roulettePresentation?: UnoRoulettePresentation | null;
   pendingOverlay?: ReactNode;
   onPlay: (card: UnoCard) => void;
   onDraw: () => void;
@@ -42,6 +45,7 @@ export function UnoTableView({
   isCpuThinking,
   message,
   viewPlayerId = 'player-1',
+  roulettePresentation = null,
   pendingOverlay,
   onPlay,
   onDraw,
@@ -54,6 +58,15 @@ export function UnoTableView({
     placement: getOpponentPlacement(index, opponents.length),
     isUno: state.unoDeclaredIds.includes(player.id) && (state.hands[player.id]?.length ?? 0) === 1,
   }));
+  const rouletteTargetPlacement = roulettePresentation?.playerId === myPlayer.id
+    ? { left: 50, top: 91 }
+    : opponentSeats.find(({ player }) => player.id === roulettePresentation?.playerId)?.placement.target;
+  const rouletteFlightStyle = rouletteTargetPlacement
+    ? ({
+        '--uno-roulette-target-left': `${rouletteTargetPlacement.left}%`,
+        '--uno-roulette-target-top': `${rouletteTargetPlacement.top}%`,
+      } as CSSProperties)
+    : undefined;
   const myIsUno = state.unoDeclaredIds.includes(myPlayer.id) && (state.hands[myPlayer.id]?.length ?? 0) === 1;
   const canUseDeck = canAct && (state.pendingDrawCount > 0 || state.pendingAction === null);
   const turnFlow = getTurnFlowPlayers(state);
@@ -62,6 +75,7 @@ export function UnoTableView({
   const [showCardGuide, setShowCardGuide] = useState(false);
   const [unoFlash, setUnoFlash] = useState<{ playerId: string; playerName: string } | null>(null);
   const prevUnoIds = useRef<string[]>([]);
+  const rouletteStatusRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const prev = prevUnoIds.current;
@@ -77,6 +91,22 @@ export function UnoTableView({
     const t = setTimeout(() => setUnoFlash(null), 2300);
     return () => clearTimeout(t);
   }, [state.unoDeclaredIds, state.players, state.status]);
+
+  useEffect(() => {
+    if (!roulettePresentation?.sequenceKey) return;
+    const frameId = window.requestAnimationFrame(() => {
+      const element = rouletteStatusRef.current;
+      if (!element) return;
+      const bounds = element.getBoundingClientRect();
+      if (bounds.top >= 8 && bounds.bottom <= window.innerHeight - 8) return;
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      element.scrollIntoView({
+        behavior: reduceMotion ? 'auto' : 'smooth',
+        block: 'nearest',
+      });
+    });
+    return () => window.cancelAnimationFrame(frameId);
+  }, [roulettePresentation?.sequenceKey]);
 
   return (
     <section className={`uno-table-view ${state.variant === 'hard' ? 'is-hard' : ''}`}>
@@ -118,6 +148,12 @@ export function UnoTableView({
         />
       )}
 
+      {roulettePresentation && (
+        <div ref={rouletteStatusRef} className="uno-roulette-status-anchor">
+          <UnoRouletteStatus presentation={roulettePresentation} />
+        </div>
+      )}
+
       <div className="uno-table-arena">
         <div className="uno-table-glow" />
 
@@ -133,6 +169,7 @@ export function UnoTableView({
               isNext={player.id === nextPlayerId}
               variant={state.variant}
               isUno={isUno}
+              rouletteStepKey={roulettePresentation?.playerId === player.id ? roulettePresentation.stepKey : null}
             />
           );
         })}
@@ -149,6 +186,19 @@ export function UnoTableView({
           onDeckClick={state.pendingDrawCount > 0 ? onAcceptDraw : onDraw}
           onCardInfo={setHelpCard}
         />
+
+        {roulettePresentation &&
+          roulettePresentation.drawnCount > 0 &&
+          rouletteFlightStyle && (
+            <span
+              key={roulettePresentation.stepKey}
+              className="uno-roulette-flight"
+              style={rouletteFlightStyle}
+              aria-hidden="true"
+            >
+              <span className="uno-roulette-flight-card" />
+            </span>
+          )}
 
         {unoFlash && (
           <div className="uno-flash-overlay" aria-live="polite" aria-atomic="true">
@@ -167,6 +217,7 @@ export function UnoTableView({
           isCurrent={myPlayer.id === state.currentPlayerId}
           isNext={myPlayer.id === nextPlayerId}
           isUno={myIsUno}
+          rouletteStepKey={roulettePresentation?.playerId === myPlayer.id ? roulettePresentation.stepKey : null}
         />
       </div>
 
@@ -202,6 +253,19 @@ type SeatSlot =
 type SeatPlacement = {
   slot?: SeatSlot;
   style?: CSSProperties;
+  target: { left: number; top: number };
+};
+
+const SEAT_TARGETS: Record<SeatSlot, { left: number; top: number }> = {
+  top: { left: 50, top: 14 },
+  'upper-left': { left: 28, top: 18 },
+  'upper-right': { left: 72, top: 18 },
+  left: { left: 16, top: 47 },
+  right: { left: 84, top: 47 },
+  'far-left': { left: 13, top: 40 },
+  'far-right': { left: 87, top: 40 },
+  'top-left': { left: 36, top: 13 },
+  'top-right': { left: 64, top: 13 },
 };
 
 
@@ -215,7 +279,8 @@ function getOpponentPlacement(index: number, total: number): SeatPlacement {
   };
   if (total <= 5) {
     const layout = layouts[total] ?? layouts[5];
-    return { slot: layout[Math.min(index, layout.length - 1)]! };
+    const slot = layout[Math.min(index, layout.length - 1)]!;
+    return { slot, target: SEAT_TARGETS[slot] };
   }
 
   const progress = total <= 1 ? 0.5 : index / (total - 1);
@@ -231,6 +296,7 @@ function getOpponentPlacement(index: number, total: number): SeatPlacement {
       left: `${left}%`,
       top: `${top}%`,
     },
+    target: { left, top },
   };
 }
 
@@ -274,6 +340,7 @@ function UnoOpponentSeat({
   isNext,
   variant,
   isUno,
+  rouletteStepKey,
 }: {
   player: UnoPlayer;
   cardCount: number;
@@ -283,12 +350,15 @@ function UnoOpponentSeat({
   isNext: boolean;
   variant: UnoVariant;
   isUno: boolean;
+  rouletteStepKey: string | null;
 }) {
   return (
     <div
       className={`uno-seat ${slot ? `uno-seat-${slot}` : 'uno-seat-arc'} ${isCurrent ? 'is-current' : ''} ${isNext ? 'is-next' : ''}`}
       style={style}
+      data-player-id={player.id}
     >
+      {rouletteStepKey && <span key={rouletteStepKey} className="uno-seat-roulette-pulse" aria-hidden="true" />}
       <OpponentCardStack count={cardCount} variant={variant} />
       <SeatBadge player={player} cardCount={cardCount} isCurrent={isCurrent} isNext={isNext} isUno={isUno} />
     </div>
@@ -301,15 +371,21 @@ function UnoSelfSeat({
   isCurrent,
   isNext,
   isUno,
+  rouletteStepKey,
 }: {
   player: UnoPlayer;
   cardCount: number;
   isCurrent: boolean;
   isNext: boolean;
   isUno: boolean;
+  rouletteStepKey: string | null;
 }) {
   return (
-    <div className={`uno-seat uno-seat-bottom ${isCurrent ? 'is-current' : ''} ${isNext ? 'is-next' : ''}`}>
+    <div
+      className={`uno-seat uno-seat-bottom ${isCurrent ? 'is-current' : ''} ${isNext ? 'is-next' : ''}`}
+      data-player-id={player.id}
+    >
+      {rouletteStepKey && <span key={rouletteStepKey} className="uno-seat-roulette-pulse" aria-hidden="true" />}
       <SeatBadge player={player} cardCount={cardCount} isCurrent={isCurrent} isNext={isNext} self isUno={isUno} />
     </div>
   );

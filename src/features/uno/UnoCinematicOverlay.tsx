@@ -2,8 +2,7 @@ import type { CSSProperties } from 'react';
 import drawCounterImage from './assets/draw-counter.webp';
 import forcedDrawImage from './assets/forced-draw.webp';
 import knockoutImage from './assets/knockout.webp';
-import { UNO_COLOR_LABELS } from './unoCardMeta';
-import { getUnoCinematicDuration, type UnoCinematicEvent } from './unoCinematics';
+import { getUnoCinematicDuration, type UnoFullScreenCinematicEvent } from './unoCinematics';
 
 const IMAGE_BY_KIND = {
   'draw-counter': drawCounterImage,
@@ -11,28 +10,8 @@ const IMAGE_BY_KIND = {
   knockout: knockoutImage,
 } as const;
 
-export function UnoCinematicOverlay({ event }: { event: UnoCinematicEvent | null }) {
+export function UnoCinematicOverlay({ event }: { event: UnoFullScreenCinematicEvent | null }) {
   if (!event) return null;
-
-  if (event.kind === 'roulette-step' || event.kind === 'roulette-safe') {
-    const colorLabel = UNO_COLOR_LABELS[event.targetColor];
-    return (
-      <div
-        key={event.key}
-        className={`uno-roulette-cinematic ${event.kind === 'roulette-safe' ? 'is-safe' : ''}`}
-        style={({ '--uno-roulette-duration': `${getUnoCinematicDuration(event)}ms` } as CSSProperties)}
-        role="status"
-        aria-live="assertive"
-      >
-        <span className="uno-roulette-cinematic-wheel" aria-hidden="true" />
-        <span className="uno-roulette-cinematic-card" aria-hidden="true" />
-        <strong>
-          {event.kind === 'roulette-safe' ? `${colorLabel}が出た！ セーフ！` : `${colorLabel}が出るまで…`}
-        </strong>
-        <span>{event.playerName}　{event.drawnCount}まい目</span>
-      </div>
-    );
-  }
 
   const image = IMAGE_BY_KIND[event.kind];
   const isCounter = event.kind === 'draw-counter';
@@ -81,7 +60,7 @@ export function UnoCinematicOverlay({ event }: { event: UnoCinematicEvent | null
   );
 }
 
-function knockoutCauseText(event: Extract<UnoCinematicEvent, { kind: 'knockout' }>): string {
+function knockoutCauseText(event: Extract<UnoFullScreenCinematicEvent, { kind: 'knockout' }>): string {
   if (event.cause === 'color-roulette') {
     return `カラー ルーレット ${event.count ?? 1}まい目`;
   }

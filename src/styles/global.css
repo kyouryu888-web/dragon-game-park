@@ -1521,82 +1521,161 @@ button {
 .uno-cinematic-flying-cards i:nth-child(6) { --uno-card-x: 300%; --uno-card-y: -210%; --uno-card-rotate: 44deg; --uno-card-left: 84%; animation-delay: 220ms !important; }
 .uno-cinematic-flying-cards i:nth-child(7) { --uno-card-x: 25%; --uno-card-y: -400%; --uno-card-rotate: 4deg; --uno-card-left: 46%; animation-delay: 260ms !important; }
 
-.uno-roulette-cinematic {
-  --uno-roulette-duration: 350ms;
-  position: fixed;
-  z-index: 121;
-  top: max(18px, env(safe-area-inset-top));
-  left: 50%;
-  display: grid;
-  grid-template-columns: 50px 38px minmax(0, 1fr);
-  grid-template-rows: auto auto;
-  align-items: center;
-  width: min(92vw, 430px);
+.uno-roulette-status-anchor {
+  scroll-margin-block: 8px;
+}
+.uno-roulette-status {
+  --uno-roulette-target-color: #f2c436;
+  width: min(100%, 430px);
+  min-height: 88px;
+  margin: 0 auto 10px;
   border: 2px solid #e8c75f;
   border-radius: 8px;
-  padding: 10px 12px;
-  color: #fff6cf;
+  padding: 9px 12px;
+  color: #fff7d6;
   background: #21101b;
-  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.55), 0 0 22px rgba(226, 190, 73, 0.32);
-  pointer-events: none;
-  transform: translateX(-50%);
-  animation: uno-roulette-cinematic-in var(--uno-roulette-duration) ease both;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.42), 0 0 18px rgba(226, 190, 73, 0.24);
+  letter-spacing: 0;
+  animation: uno-roulette-status-in 180ms ease-out both;
 }
-.uno-roulette-cinematic.is-safe {
-  border-color: #65c875;
-  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.55), 0 0 22px rgba(72, 194, 91, 0.42);
+.uno-roulette-status.is-safe {
+  border-color: #75d487;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.42), 0 0 22px rgba(80, 205, 103, 0.38);
+  animation: uno-roulette-safe-pulse 1200ms ease both;
 }
-.uno-roulette-cinematic-wheel {
-  grid-row: 1 / 3;
-  width: 42px;
-  height: 42px;
+.uno-roulette-status-visual {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  min-height: 66px;
+}
+.uno-roulette-status-wheel {
+  width: 44px;
+  height: 44px;
   border: 3px solid #fff4bc;
   border-radius: 50%;
   background: conic-gradient(#df352c 0 25%, #f2c436 25% 50%, #25a85a 50% 75%, #2581d8 75%);
-  animation: uno-roulette-wheel-spin 350ms linear both;
+  box-shadow: 0 0 0 4px rgba(255, 244, 188, 0.08), 0 0 16px var(--uno-roulette-target-color);
+  animation: uno-roulette-wheel-spin 520ms linear infinite;
 }
-.uno-roulette-cinematic-card {
-  position: relative;
-  grid-row: 1 / 3;
-  width: 29px;
-  height: 40px;
+.uno-roulette-status.is-safe .uno-roulette-status-wheel {
+  background: var(--uno-roulette-target-color);
+  animation: none;
+}
+.uno-roulette-status-copy {
+  display: grid;
+  min-width: 0;
+  gap: 1px;
+}
+.uno-roulette-status-eyebrow {
+  color: #e8cc83;
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.4;
+}
+.uno-roulette-status-copy > strong {
+  min-width: 0;
+  font-size: 18px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.uno-roulette-status-meta {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+}
+.uno-roulette-status-player {
+  display: -webkit-box;
+  min-width: 0;
+  overflow: hidden;
+  color: #fff7d6;
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.uno-roulette-status-count {
+  flex: 0 0 auto;
+  border: 1px solid rgba(255, 244, 188, 0.5);
+  border-radius: 999px;
+  padding: 1px 8px;
+  color: #fff7d6;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 16px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.uno-roulette-status.is-safe .uno-roulette-status-count {
+  border-color: #75d487;
+  color: #d9ffe0;
+  background: rgba(80, 205, 103, 0.16);
+}
+.uno-screen-reader-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.uno-roulette-flight {
+  --uno-roulette-target-left: 50%;
+  --uno-roulette-target-top: 14%;
+  position: absolute;
+  z-index: 9;
+  left: 42%;
+  top: 52%;
+  width: 30px;
+  height: 42px;
+  pointer-events: none;
+  animation: uno-roulette-card-flight 520ms cubic-bezier(0.2, 0.72, 0.2, 1) both;
+}
+.uno-roulette-flight-card {
+  position: absolute;
+  inset: 0;
   border: 2px solid #f2d37b;
   border-radius: 5px;
-  background: #65151b;
-  transform: rotate(8deg);
-  animation: uno-roulette-card-drop 350ms ease-out both;
+  background: repeating-linear-gradient(135deg, rgba(255,255,255,.05) 0 7px, transparent 7px 14px), #65151b;
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);
 }
-.uno-roulette-cinematic-card::before,
-.uno-roulette-cinematic-card::after {
+.uno-roulette-flight-card::before,
+.uno-roulette-flight-card::after {
   content: '';
   position: absolute;
   border-radius: 50%;
   background: #f1d78c;
 }
-.uno-roulette-cinematic-card::before {
+.uno-roulette-flight-card::before {
   left: 9px;
-  top: 16px;
+  top: 17px;
   width: 8px;
   height: 7px;
 }
-.uno-roulette-cinematic-card::after {
+.uno-roulette-flight-card::after {
   left: 7px;
-  top: 9px;
+  top: 10px;
   width: 4px;
   height: 4px;
   box-shadow: 7px 0 #f1d78c, -2px 6px #f1d78c, 9px 6px #f1d78c;
 }
-.uno-roulette-cinematic strong {
-  min-width: 0;
-  font-size: 15px;
-  overflow-wrap: anywhere;
-}
-.uno-roulette-cinematic > span:last-child {
-  min-width: 0;
-  color: #e8cc83;
-  font-size: 12px;
-  font-weight: 800;
-  overflow-wrap: anywhere;
+.uno-seat-roulette-pulse {
+  position: absolute;
+  z-index: -1;
+  inset: -8px -12px;
+  border: 3px solid #f5d66e;
+  border-radius: 10px;
+  pointer-events: none;
+  animation: uno-roulette-seat-pulse 520ms ease-out both;
 }
 
 @keyframes uno-cinematic-backdrop {
@@ -1649,16 +1728,31 @@ button {
   22% { opacity: 1; }
   100% { opacity: 0; transform: translateY(760%) rotate(var(--uno-card-rotate)) scale(0.62); }
 }
-@keyframes uno-roulette-cinematic-in {
-  0% { opacity: 0; transform: translate(-50%, -18px) scale(0.92); }
-  30%, 78% { opacity: 1; transform: translate(-50%, 0) scale(1); }
-  100% { opacity: 0; transform: translate(-50%, -5px) scale(0.98); }
-}
 @keyframes uno-roulette-wheel-spin { to { rotate: 360deg; } }
-@keyframes uno-roulette-card-drop {
-  0% { opacity: 0; translate: 0 -32px; rotate: -18deg; }
-  60% { opacity: 1; translate: 0 2px; rotate: 10deg; }
-  100% { opacity: 0; translate: 0 10px; rotate: 15deg; }
+@keyframes uno-roulette-status-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes uno-roulette-safe-pulse {
+  0% { opacity: 0; transform: scale(0.96); }
+  15%, 88% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.99); }
+}
+@keyframes uno-roulette-card-flight {
+  0% { left: 42%; top: 52%; opacity: 0; transform: translate(-50%, -50%) rotate(-16deg) scale(0.72); }
+  14% { opacity: 1; transform: translate(-50%, -50%) rotate(8deg) scale(1.08); }
+  82% { opacity: 1; }
+  100% {
+    left: var(--uno-roulette-target-left);
+    top: var(--uno-roulette-target-top);
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(24deg) scale(0.72);
+  }
+}
+@keyframes uno-roulette-seat-pulse {
+  0% { opacity: 0; transform: scale(0.72); box-shadow: 0 0 0 rgba(245, 214, 110, 0); }
+  42% { opacity: 1; transform: scale(1.06); box-shadow: 0 0 24px rgba(245, 214, 110, 0.72); }
+  100% { opacity: 0; transform: scale(1); box-shadow: 0 0 6px rgba(245, 214, 110, 0); }
 }
 
 @media (max-width: 600px) {
@@ -1679,6 +1773,22 @@ button {
   }
 }
 
+@media (max-width: 340px) {
+  .uno-roulette-status {
+    min-height: 108px;
+    padding-block: 5px;
+    padding-inline: 10px;
+  }
+  .uno-roulette-status-meta {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px;
+  }
+  .uno-roulette-status-count {
+    justify-self: start;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .uno-cinematic-overlay,
   .uno-cinematic-panel,
@@ -1687,13 +1797,14 @@ button {
   .uno-cinematic-side-lines {
     animation: uno-cinematic-reduced var(--uno-cinematic-duration) ease both !important;
   }
-  .uno-roulette-cinematic {
-    animation: uno-cinematic-reduced var(--uno-roulette-duration) ease both !important;
-  }
   .uno-cinematic-flying-cards,
-  .uno-roulette-cinematic-wheel,
-  .uno-roulette-cinematic-card {
+  .uno-roulette-flight,
+  .uno-seat-roulette-pulse {
     display: none;
+  }
+  .uno-roulette-status,
+  .uno-roulette-status-wheel {
+    animation: none !important;
   }
 }
 @keyframes uno-cinematic-reduced {
