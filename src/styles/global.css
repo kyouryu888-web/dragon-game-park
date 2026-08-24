@@ -540,7 +540,6 @@ button {
     --backgammon-middle-height: 82px;
   }
   .board-container { max-width: 900px; }
-  .uno-table-arena { min-height: 620px; }
   .babanuki-game-screen { max-width: 1180px; margin: 0 auto; }
   .babanuki-game-screen { --babanuki-table-max: 720px; --babanuki-table-height: 370px; }
 }
@@ -1076,6 +1075,14 @@ button {
   --uno-table-accent: #c9a227;
   --uno-table-ring: #a8842a;
 }
+.uno-play-layout {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.uno-board-column {
+  min-width: 0;
+}
 .uno-turn-flow {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -1270,6 +1277,32 @@ button {
 }
 .uno-seat-arc .uno-seat-badge strong {
   max-width: 92px;
+}
+.uno-seat-arc.is-crowded {
+  min-width: 70px;
+  gap: 2px;
+}
+.uno-seat-arc.is-crowded .uno-opponent-stack {
+  width: 74px;
+  height: 30px;
+  margin-bottom: 0;
+  transform: scale(0.58);
+  transform-origin: center bottom;
+}
+.uno-seat-arc.is-crowded .uno-seat-badge {
+  min-width: 68px;
+  max-width: 76px;
+  padding: 3px 4px;
+  column-gap: 3px;
+  font-size: 9px;
+}
+.uno-seat-arc.is-crowded .uno-seat-badge strong {
+  max-width: 68px;
+  font-size: 9px;
+}
+.uno-table-arena.is-crowded .uno-center-pile {
+  top: 57%;
+  width: min(46vw, 230px);
 }
 .uno-seat-badge {
   position: relative;
@@ -2418,6 +2451,7 @@ button {
 }
 .uno-hand-fan {
   position: relative;
+  width: var(--uno-hand-fan-width, 360px);
   height: 178px;
   margin: 0 auto;
 }
@@ -2426,7 +2460,9 @@ button {
 }
 .uno-hand-card {
   position: absolute;
+  left: var(--uno-hand-card-left, 0);
   top: 8px;
+  transform: var(--uno-hand-card-transform, none);
   transform-origin: 50% 120%;
   transition: transform 0.14s ease, z-index 0.14s ease;
 }
@@ -2522,6 +2558,95 @@ button {
   background: rgba(201,162,75,.25);
   border-color: #dfb74f;
   color: #e6c877;
+}
+
+@media (min-width: 900px) {
+  .uno-table-view {
+    --uno-pc-arena-height: clamp(410px, calc(100dvh - 292px), 560px);
+  }
+  .uno-play-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) clamp(320px, 32vw, 390px);
+    grid-template-areas: "board hand";
+    align-items: stretch;
+    gap: 12px;
+  }
+  .uno-play-layout.has-roulette {
+    grid-template-areas:
+      "board roulette"
+      "board hand";
+    grid-template-rows: auto minmax(0, 1fr);
+    row-gap: 8px;
+  }
+  .uno-board-column {
+    grid-area: board;
+    display: grid;
+    grid-template-rows: var(--uno-pc-arena-height) auto;
+    align-content: start;
+  }
+  .uno-table-arena {
+    width: 100%;
+    height: var(--uno-pc-arena-height);
+    min-height: var(--uno-pc-arena-height);
+  }
+  .uno-roulette-status-anchor {
+    grid-area: roulette;
+    min-width: 0;
+  }
+  .uno-roulette-status {
+    width: 100%;
+    margin-bottom: 0;
+  }
+  .uno-hand-fan-panel {
+    grid-area: hand;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    align-self: stretch;
+    min-width: 0;
+    min-height: 0;
+    max-height: calc(var(--uno-pc-arena-height) + 36px);
+    margin-top: 0;
+    padding: 12px 10px;
+  }
+  .uno-hand-scroll {
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 28px 4px 24px;
+    scrollbar-width: thin;
+  }
+  .uno-hand-fan,
+  .uno-hand-fan.is-dense {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, 92px);
+    grid-auto-rows: 106px;
+    justify-content: center;
+    align-content: start;
+    gap: 0 6px;
+    width: 100%;
+    height: auto;
+    min-height: 100%;
+    margin: 0;
+  }
+  .uno-hand-card,
+  .uno-hand-fan.is-dense .uno-hand-card {
+    position: relative;
+    left: auto;
+    top: auto;
+    justify-self: center;
+    transform: none;
+    transform-origin: 50% 50%;
+  }
+  .uno-hand-card.is-playable {
+    transform: translateY(-5px);
+  }
+  .uno-dense-card-label {
+    display: none;
+  }
+  .uno-hand-actions {
+    margin-top: 6px;
+  }
 }
 .uno-card-tools {
   display: flex;
@@ -3136,5 +3261,4 @@ button {
   .plank-2p .plank-pit-cell { width: auto; flex: 1; }
   .plank-2p .plank-store-cell { width: 11%; height: auto; aspect-ratio: 1; }
   .plank-board-outer { width: min(70vw, 620px); }
-  .uno-table-arena { min-height: 620px; }
 }
