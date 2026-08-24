@@ -27,6 +27,7 @@ import { UnoRulesPanel } from './UnoRulesPanel';
 import { createInitialUnoState } from './createInitialUnoState';
 import { UnoCinematicOverlay } from './UnoCinematicOverlay';
 import { useUnoCinematics } from './useUnoCinematics';
+import { UNO_ROULETTE_STEP_MS } from './unoCinematics';
 import {
   canApplyUnoOnlineAction,
   countUnoJoined,
@@ -73,7 +74,11 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToSetup, onBackT
   rowRef.current = roomRow;
   versionRef.current = roomVersion;
   writingRef.current = isWriting;
-  const { activeEvent: cinematicEvent, isBlocking: isCinematicBlocking } = useUnoCinematics(gameState);
+  const {
+    activeEvent: cinematicEvent,
+    isBlocking: isCinematicBlocking,
+    roulettePresentation,
+  } = useUnoCinematics(gameState);
 
   const fetchLatest = useCallback(async (nextMessage?: string) => {
     const { data, error } = await supabase
@@ -354,7 +359,7 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToSetup, onBackT
       const id = setTimeout(() => {
         void updateRemoteState((state) => applyColorRouletteStep(state), 'カラー ルーレット中...');
         setIsCpuThinking(false);
-      }, 520);
+      }, UNO_ROULETTE_STEP_MS);
       return () => clearTimeout(id);
     }
 
@@ -567,6 +572,7 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToSetup, onBackT
           isCpuThinking={isCpuThinking}
           message={message}
           viewPlayerId={myPlayerId}
+          roulettePresentation={roulettePresentation}
           pendingOverlay={gameState.status === 'deciding-starter' || gameState.status === 'starter-ready' ? (
             <StarterDecisionPanel
               state={gameState}
@@ -575,7 +581,7 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToSetup, onBackT
               hostOnly
               canDecide={isHostClient && !isWriting}
             />
-          ) : gameState.pendingAction ? (
+          ) : gameState.pendingAction && gameState.pendingAction.kind !== 'color-roulette' ? (
             <PendingPanel
               state={gameState}
               onColorChoice={handleColorChoice}

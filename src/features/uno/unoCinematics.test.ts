@@ -2,10 +2,13 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import type { UnoCard, UnoGameState, UnoPlayerId } from './unoTypes';
 import { UnoCinematicOverlay } from './UnoCinematicOverlay';
+import { UnoRouletteStatus } from './UnoRouletteStatus';
 import {
   detectUnoCinematicEvents,
   getUnoCinematicDuration,
   isBlockingUnoCinematic,
+  UNO_ROULETTE_SAFE_MS,
+  UNO_ROULETTE_STEP_MS,
 } from './unoCinematics';
 
 function numberCard(id: string, color: 'red' | 'yellow' | 'green' | 'blue', value: 1 | 2 | 3): UnoCard {
@@ -214,6 +217,7 @@ describe('UNO cinematic event detection', () => {
     const roulette = {
       kind: 'roulette-step' as const,
       key: 'roulette',
+      sequenceKey: 'roulette-sequence',
       playerId: 'player-2',
       playerName: 'キング',
       targetColor: 'red' as const,
@@ -223,7 +227,9 @@ describe('UNO cinematic event detection', () => {
     expect(isBlockingUnoCinematic(counter)).toBe(true);
     expect(getUnoCinematicDuration(counter)).toBe(2400);
     expect(isBlockingUnoCinematic(roulette)).toBe(false);
-    expect(getUnoCinematicDuration(roulette)).toBe(350);
+    expect(getUnoCinematicDuration(roulette)).toBe(UNO_ROULETTE_STEP_MS);
+    expect(UNO_ROULETTE_STEP_MS).toBe(520);
+    expect(UNO_ROULETTE_SAFE_MS).toBe(1200);
   });
 
   it('passes the same 2.4 second duration to the full-screen CSS animation', () => {
@@ -241,6 +247,62 @@ describe('UNO cinematic event detection', () => {
     const html = renderToStaticMarkup(UnoCinematicOverlay({ event: counter }));
 
     expect(html).toContain('--uno-cinematic-duration:2400ms');
+  });
+
+  it('keeps long roulette names and counts in separate readable elements', () => {
+    const html = renderToStaticMarkup(UnoRouletteStatus({
+      presentation: {
+        sequenceKey: 'long-name-sequence',
+        stepKey: 'long-name-sequence:24',
+        phase: 'drawing',
+        playerId: 'player-2',
+        playerName: 'スーパードラゴンキング',
+        targetColor: 'yellow',
+        drawnCount: 24,
+      },
+    }));
+
+    expect(html).toContain('黄色が出るまで');
+    expect(html).toContain('data-roulette-sequence="long-name-sequence"');
+    expect(html).toContain('data-roulette-step="long-name-sequence:24"');
+    expect(html).toContain('uno-roulette-status-player">スーパードラゴンキング');
+    expect(html).toContain('uno-roulette-status-count">24まい目');
+    expect(html).not.toContain('uno-roulette-cinematic');
+  });
+
+  it('shows a separate safe summary after roulette ends', () => {
+    const html = renderToStaticMarkup(UnoRouletteStatus({
+      presentation: {
+        sequenceKey: 'safe-sequence',
+        stepKey: 'safe-sequence:safe:12',
+        phase: 'safe',
+        playerId: 'player-2',
+        playerName: 'キング',
+        targetColor: 'blue',
+        drawnCount: 12,
+      },
+    }));
+
+    expect(html).toContain('青色が出た！ セーフ！');
+    expect(html).toContain('合計12まい');
+    expect(html).toContain('is-safe');
+  });
+
+  it('uses a natural label before the first roulette card is drawn', () => {
+    const html = renderToStaticMarkup(UnoRouletteStatus({
+      presentation: {
+        sequenceKey: 'start-sequence',
+        stepKey: 'start-sequence:0',
+        phase: 'drawing',
+        playerId: 'player-2',
+        playerName: 'キング',
+        targetColor: 'red',
+        drawnCount: 0,
+      },
+    }));
+
+    expect(html).toContain('uno-roulette-status-count">スタート');
+    expect(html).not.toContain('0まい目');
   });
 
 });

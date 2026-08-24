@@ -28,6 +28,7 @@ export type UnoKnockoutEvent = UnoCinematicBase & {
 };
 
 type UnoRouletteBase = UnoCinematicBase & {
+  sequenceKey: string;
   targetColor: UnoColor;
   drawnCount: number;
 };
@@ -42,8 +43,25 @@ export type UnoCinematicEvent =
   | UnoKnockoutEvent
   | UnoRouletteEvent;
 
+export type UnoFullScreenCinematicEvent = Exclude<
+  UnoCinematicEvent,
+  UnoRouletteEvent
+>;
+
+export type UnoRoulettePresentation = {
+  sequenceKey: string;
+  stepKey: string;
+  phase: 'drawing' | 'safe';
+  playerId: UnoPlayerId;
+  playerName: string;
+  targetColor: UnoColor;
+  drawnCount: number;
+};
+
 /** 全面カットインの総時間。導入・退出を除いて約1.7秒の可読時間を確保する。 */
 export const UNO_CINEMATIC_DURATION_MS = 2400;
+export const UNO_ROULETTE_STEP_MS = 520;
+export const UNO_ROULETTE_SAFE_MS = 1200;
 
 function getPlayer(state: UnoGameState, playerId: UnoPlayerId): UnoPlayer | undefined {
   return state.players.find((player) => player.id === playerId);
@@ -64,6 +82,21 @@ function eventKey(
   detail: string,
 ): string {
   return [state.gameId, state.turnCount, kind, playerId, state.discardPile[0]?.id ?? 'none', detail].join(':');
+}
+
+function rouletteSequenceKey(
+  state: UnoGameState,
+  playerId: UnoPlayerId,
+  targetColor: UnoColor,
+): string {
+  return [
+    state.gameId,
+    state.turnCount,
+    'color-roulette',
+    playerId,
+    targetColor,
+    state.discardPile[0]?.id ?? 'none',
+  ].join(':');
 }
 
 /** 連続する2状態から、このクライアントで再生すべき演出を判定する。 */
@@ -141,6 +174,7 @@ export function detectUnoCinematicEvents(
       return [{
         kind: 'roulette-step',
         key: eventKey(next, 'roulette-step', targetPlayerId, `${targetColor}-${nextCount}`),
+        sequenceKey: rouletteSequenceKey(previous, targetPlayerId, targetColor),
         playerId: targetPlayerId,
         playerName: getPlayerName(previous, targetPlayerId),
         targetColor,
@@ -156,6 +190,7 @@ export function detectUnoCinematicEvents(
       return [{
         kind: 'roulette-safe',
         key: eventKey(next, 'roulette-safe', targetPlayerId, `${targetColor}-${drawnCount}`),
+        sequenceKey: rouletteSequenceKey(previous, targetPlayerId, targetColor),
         playerId: targetPlayerId,
         playerName: getPlayerName(previous, targetPlayerId),
         targetColor,
@@ -201,8 +236,8 @@ export function detectUnoCinematicEvents(
 }
 
 export function getUnoCinematicDuration(event: UnoCinematicEvent): number {
-  if (event.kind === 'roulette-step') return 350;
-  if (event.kind === 'roulette-safe') return 800;
+  if (event.kind === 'roulette-step') return UNO_ROULETTE_STEP_MS;
+  if (event.kind === 'roulette-safe') return UNO_ROULETTE_SAFE_MS;
   return UNO_CINEMATIC_DURATION_MS;
 }
 

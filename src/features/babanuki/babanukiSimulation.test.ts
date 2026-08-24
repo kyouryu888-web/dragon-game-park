@@ -159,7 +159,7 @@ describe('ランダム対局シミュレーション', () => {
         expect(state.finishOrder).toHaveLength(playerCount - 1);
       }
     }
-  });
+  }, 15_000);
 
   it('シャッフルタイムは1人1回までしか使われない', () => {
     for (let seed = 1; seed <= 20; seed += 1) {

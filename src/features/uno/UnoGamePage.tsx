@@ -28,6 +28,7 @@ import { getUnoRankings, type UnoRankingEntry } from './unoScoring';
 import { UnoCardView } from './UnoCardView';
 import { UnoCinematicOverlay } from './UnoCinematicOverlay';
 import { useUnoCinematics } from './useUnoCinematics';
+import { UNO_ROULETTE_STEP_MS } from './unoCinematics';
 
 const COLOR_BUTTONS: Array<{ color: UnoColor; bg: string }> = [
   { color: 'red', bg: '#df352c' },
@@ -49,7 +50,11 @@ export function UnoGamePage({ config, onBackToSetup, onBackToHome }: UnoGamePage
   const [message, setMessage] = useState('カードを出すか、引いてください。');
   const stateRef = useRef(gameState);
   stateRef.current = gameState;
-  const { activeEvent: cinematicEvent, isBlocking: isCinematicBlocking } = useUnoCinematics(gameState);
+  const {
+    activeEvent: cinematicEvent,
+    isBlocking: isCinematicBlocking,
+    roulettePresentation,
+  } = useUnoCinematics(gameState);
 
   const isHard = gameState.variant === 'hard';
   const currentPlayer = gameState.players.find((p) => p.id === gameState.currentPlayerId)!;
@@ -177,7 +182,7 @@ export function UnoGamePage({ config, onBackToSetup, onBackToHome }: UnoGamePage
         setGameState((prev) => applyColorRouletteStep(prev));
         setMessage('カラー ルーレット中...');
         setIsCpuThinking(false);
-      }, 420);
+      }, UNO_ROULETTE_STEP_MS);
       return () => clearTimeout(id);
     }
 
@@ -284,9 +289,10 @@ export function UnoGamePage({ config, onBackToSetup, onBackToHome }: UnoGamePage
               canAct={canHumanAct}
               isCpuThinking={isCpuThinking}
               message={message}
+              roulettePresentation={roulettePresentation}
               pendingOverlay={gameState.status === 'deciding-starter' || gameState.status === 'starter-ready' ? (
                 <StarterDecisionPanel state={gameState} onDecideStarter={handleDecideStarter} onStartGame={handleStartGame} />
-              ) : pending ? (
+              ) : pending && pending.kind !== 'color-roulette' ? (
                 <PendingPanel
                   state={gameState}
                   onColorChoice={handleColorChoice}
