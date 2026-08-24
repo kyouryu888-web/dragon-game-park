@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { MancalaConfig } from './features/mancala/mancalaTypes';
 import { HomePage } from './pages/HomePage';
 import { MancalaSetupPage, type MancalaOnlineEntry } from './features/mancala/MancalaSetupPage';
@@ -49,6 +49,10 @@ export default function App() {
   const [mancalaOnlineEntry, setMancalaOnlineEntry] = useState<MancalaOnlineEntry>({ mode: DEFAULT_ONLINE_ENTRY_MODE, name: '', code: '' });
   const [unoOnlineRoomInfo, setUnoOnlineRoomInfo] = useState<UnoOnlineRoomInfo | null>(null);
   const [unoOnlineEntry, setUnoOnlineEntry] = useState<UnoOnlineEntry>({ mode: DEFAULT_ONLINE_ENTRY_MODE, name: '', code: '' });
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [screen]);
 
   if (screen === 'home') {
     return (

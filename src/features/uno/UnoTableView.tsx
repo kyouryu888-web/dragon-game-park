@@ -148,13 +148,15 @@ export function UnoTableView({
         />
       )}
 
-      {roulettePresentation && (
-        <div ref={rouletteStatusRef} className="uno-roulette-status-anchor">
-          <UnoRouletteStatus presentation={roulettePresentation} />
-        </div>
-      )}
+      <div className={`uno-play-layout ${roulettePresentation ? 'has-roulette' : ''}`}>
+        {roulettePresentation && (
+          <div ref={rouletteStatusRef} className="uno-roulette-status-anchor">
+            <UnoRouletteStatus presentation={roulettePresentation} />
+          </div>
+        )}
 
-      <div className="uno-table-arena">
+        <div className="uno-board-column">
+          <div className={`uno-table-arena ${opponentSeats.length >= 5 ? 'is-crowded' : ''}`}>
         <div className="uno-table-glow" />
 
         {opponentSeats.map(({ player, placement, isUno }) => {
@@ -169,6 +171,7 @@ export function UnoTableView({
               isNext={player.id === nextPlayerId}
               variant={state.variant}
               isUno={isUno}
+              crowded={opponentSeats.length >= 5}
               rouletteStepKey={roulettePresentation?.playerId === player.id ? roulettePresentation.stepKey : null}
             />
           );
@@ -211,30 +214,32 @@ export function UnoTableView({
 
         {pendingOverlay && <div className="uno-table-overlay">{pendingOverlay}</div>}
 
-        <UnoSelfSeat
-          player={myPlayer}
-          cardCount={state.hands[myPlayer.id]?.length ?? 0}
-          isCurrent={myPlayer.id === state.currentPlayerId}
-          isNext={myPlayer.id === nextPlayerId}
-          isUno={myIsUno}
-          rouletteStepKey={roulettePresentation?.playerId === myPlayer.id ? roulettePresentation.stepKey : null}
+            <UnoSelfSeat
+              player={myPlayer}
+              cardCount={state.hands[myPlayer.id]?.length ?? 0}
+              isCurrent={myPlayer.id === state.currentPlayerId}
+              isNext={myPlayer.id === nextPlayerId}
+              isUno={myIsUno}
+              rouletteStepKey={roulettePresentation?.playerId === myPlayer.id ? roulettePresentation.stepKey : null}
+            />
+          </div>
+
+          <div className="uno-table-message">{message}</div>
+        </div>
+
+        <UnoHandFan
+          player={handPlayer ?? currentPlayer}
+          hand={currentHand}
+          playableIds={playableIds}
+          variant={state.variant}
+          canAct={canAct}
+          canUseDeck={canUseDeck}
+          pendingDrawCount={state.pendingDrawCount}
+          onPlay={onPlay}
+          onDrawRequest={state.pendingDrawCount > 0 ? onAcceptDraw : onDraw}
+          onCardInfo={setHelpCard}
         />
       </div>
-
-      <div className="uno-table-message">{message}</div>
-
-      <UnoHandFan
-        player={handPlayer ?? currentPlayer}
-        hand={currentHand}
-        playableIds={playableIds}
-        variant={state.variant}
-        canAct={canAct}
-        canUseDeck={canUseDeck}
-        pendingDrawCount={state.pendingDrawCount}
-        onPlay={onPlay}
-        onDrawRequest={state.pendingDrawCount > 0 ? onAcceptDraw : onDraw}
-        onCardInfo={setHelpCard}
-      />
     </section>
   );
 }
@@ -277,19 +282,21 @@ function getOpponentPlacement(index: number, total: number): SeatPlacement {
     4: ['left', 'top-left', 'top-right', 'right'],
     5: ['far-left', 'upper-left', 'top', 'upper-right', 'far-right'],
   };
-  if (total <= 5) {
+  if (total <= 4) {
     const layout = layouts[total] ?? layouts[5];
     const slot = layout[Math.min(index, layout.length - 1)]!;
     return { slot, target: SEAT_TARGETS[slot] };
   }
 
-  const progress = total <= 1 ? 0.5 : index / (total - 1);
-  const angle = 162 - progress * 144;
-  const radians = angle * (Math.PI / 180);
-  const xRadius = total >= 8 ? 43 : 40;
-  const yRadius = total >= 8 ? 37 : 35;
-  const left = 50 + Math.cos(radians) * xRadius;
-  const top = 51 - Math.sin(radians) * yRadius;
+  const firstRowCount = Math.ceil(total / 2);
+  const isFirstRow = index < firstRowCount;
+  const rowIndex = isFirstRow ? index : index - firstRowCount;
+  const rowCount = isFirstRow ? firstRowCount : total - firstRowCount;
+  const edge = rowCount >= 5 ? 9 : rowCount === 4 ? 16 : isFirstRow ? 22 : 27;
+  const left = rowCount <= 1
+    ? 50
+    : edge + rowIndex * ((100 - edge * 2) / (rowCount - 1));
+  const top = isFirstRow ? 13 : 34;
 
   return {
     style: {
@@ -340,6 +347,7 @@ function UnoOpponentSeat({
   isNext,
   variant,
   isUno,
+  crowded,
   rouletteStepKey,
 }: {
   player: UnoPlayer;
@@ -350,11 +358,12 @@ function UnoOpponentSeat({
   isNext: boolean;
   variant: UnoVariant;
   isUno: boolean;
+  crowded: boolean;
   rouletteStepKey: string | null;
 }) {
   return (
     <div
-      className={`uno-seat ${slot ? `uno-seat-${slot}` : 'uno-seat-arc'} ${isCurrent ? 'is-current' : ''} ${isNext ? 'is-next' : ''}`}
+      className={`uno-seat ${slot ? `uno-seat-${slot}` : 'uno-seat-arc'} ${crowded ? 'is-crowded' : ''} ${isCurrent ? 'is-current' : ''} ${isNext ? 'is-next' : ''}`}
       style={style}
       data-player-id={player.id}
     >
@@ -557,7 +566,10 @@ function UnoHandFan({
       </div>
 
       <div className="uno-hand-scroll">
-        <div className={`uno-hand-fan ${isDense ? 'is-dense' : ''}`} style={{ width: fanWidth }}>
+        <div
+          className={`uno-hand-fan ${isDense ? 'is-dense' : ''}`}
+          style={{ '--uno-hand-fan-width': `${fanWidth}px` } as CSSProperties}
+        >
           {sortedHand.map((card, index) => {
             const offset = index - center;
             const playable = canAct && playableIds.has(card.id);
@@ -568,10 +580,10 @@ function UnoHandFan({
                 key={card.id}
                 className={`uno-hand-card ${playable ? 'is-playable' : ''}`}
                 style={{
-                  left: 8 + index * maxSpread,
-                  transform: `translateY(${playable ? -34 : isDense ? 0 : Math.abs(offset) * 1.4}px) rotate(${rotation}deg) scale(${playable ? 1.04 : 1})`,
+                  '--uno-hand-card-left': `${8 + index * maxSpread}px`,
+                  '--uno-hand-card-transform': `translateY(${playable ? -34 : isDense ? 0 : Math.abs(offset) * 1.4}px) rotate(${rotation}deg) scale(${playable ? 1.04 : 1})`,
                   zIndex: playable ? 100 + index : index,
-                }}
+                } as CSSProperties}
               >
                 <UnoCardView
                   card={card}
