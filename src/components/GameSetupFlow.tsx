@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-type GameTheme = 'mancala' | 'uno' | 'backgammon' | 'babanuki';
+type GameTheme = 'mancala' | 'uno' | 'backgammon' | 'babanuki' | 'reversi';
 
 export function GameSetupShell({
   theme,

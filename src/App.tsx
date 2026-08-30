@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import type { MancalaConfig } from './features/mancala/mancalaTypes';
 import { HomePage } from './pages/HomePage';
 import { MancalaSetupPage, type MancalaOnlineEntry } from './features/mancala/MancalaSetupPage';
@@ -16,6 +16,10 @@ import { BackgammonPage } from './features/backgammon/BackgammonPage';
 import { BabanukiPage } from './features/babanuki/BabanukiPage';
 import { DEFAULT_ONLINE_ENTRY_MODE } from './components/gameSetupDefaults';
 
+const ReversiPage = lazy(() => import('./features/reversi/ReversiPage').then((module) => ({
+  default: module.ReversiPage,
+})));
+
 type AppScreen =
   | 'home'
   | 'mancala-setup'
@@ -27,7 +31,8 @@ type AppScreen =
   | 'uno-room'
   | 'uno-online-game'
   | 'backgammon'
-  | 'babanuki';
+  | 'babanuki'
+  | 'reversi';
 
 export default function App() {
   const [screen, setScreen] = useState<AppScreen>('home');
@@ -62,6 +67,7 @@ export default function App() {
           if (gameId === 'uno') setScreen('uno-setup');
           if (gameId === 'backgammon') setScreen('backgammon');
           if (gameId === 'babanuki') setScreen('babanuki');
+          if (gameId === 'reversi') setScreen('reversi');
         }}
       />
     );
@@ -125,6 +131,14 @@ export default function App() {
 
   if (screen === 'babanuki') {
     return <BabanukiPage onBackToHome={() => setScreen('home')} />;
+  }
+
+  if (screen === 'reversi') {
+    return (
+      <Suspense fallback={<div className="feature-loading">竜陣を開いています…</div>}>
+        <ReversiPage onBackToHome={() => setScreen('home')} />
+      </Suspense>
+    );
   }
 
   if (screen === 'uno-setup') {

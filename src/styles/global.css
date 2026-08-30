@@ -234,6 +234,7 @@ button {
 .game-setup-theme-babanuki { --setup-accent: #a86ad0; --setup-accent-bright: #ddb8f3; }
 .game-setup-theme-mancala { --setup-accent: #c9a24b; --setup-accent-bright: #e6c877; }
 .game-setup-theme-backgammon { --setup-accent: #d19d47; --setup-accent-bright: #f0d38b; }
+.game-setup-theme-reversi { --setup-accent: #cf9d3f; --setup-accent-bright: #f3d58a; }
 
 .game-setup-topbar {
   width: min(1180px, 100%);
@@ -3265,4 +3266,560 @@ button {
   .plank-2p .plank-pit-cell { width: auto; flex: 1; }
   .plank-2p .plank-store-cell { width: 11%; height: auto; aspect-ratio: 1; }
   .plank-board-outer { width: min(70vw, 620px); }
+}
+
+/* =============================================
+   リバーシ: 黒炎と白銀の竜陣
+============================================= */
+.reversi-side-choice {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+.feature-loading {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  color: #e6c877;
+  font-size: 14px;
+  letter-spacing: .12em;
+}
+.reversi-side-choice button {
+  min-height: 44px;
+  padding: 8px;
+  border: 1px solid rgba(207,157,63,.28);
+  border-radius: 7px;
+  background: rgba(10,8,13,.58);
+  color: var(--text-mid);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.reversi-side-choice button.is-selected {
+  border-color: #cf9d3f;
+  background: rgba(207,157,63,.14);
+  color: #f3d58a;
+  box-shadow: inset 0 0 14px rgba(207,157,63,.08);
+}
+
+.reversi-game-shell {
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  padding: 0 16px 28px;
+  color: #eee1c8;
+  background:
+    radial-gradient(ellipse 42% 40% at 50% 48%, rgba(29,84,61,.19), transparent 78%),
+    radial-gradient(ellipse 100% 35% at 50% 112%, rgba(142,43,20,.32), transparent 70%),
+    repeating-radial-gradient(circle at 50% 45%, rgba(255,255,255,.012) 0 1px, transparent 1px 9px),
+    linear-gradient(180deg, #09090b 0%, #100c10 58%, #1b0c0d 100%);
+}
+.reversi-game-topbar {
+  width: min(1160px, 100%);
+  min-height: 66px;
+  margin: 0 auto 12px;
+  display: grid;
+  grid-template-columns: minmax(130px, 1fr) auto minmax(130px, 1fr);
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid rgba(201,151,59,.28);
+}
+.reversi-game-topbar button {
+  min-height: 44px;
+  border: 1px solid rgba(201,151,59,.45);
+  border-radius: 50px;
+  background: linear-gradient(180deg, rgba(45,34,22,.86), rgba(12,10,12,.96));
+  color: #eacb7a;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: inset 0 0 12px rgba(0,0,0,.65), 0 3px 14px rgba(0,0,0,.35);
+}
+.reversi-game-topbar > button:first-child {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 16px;
+}
+.reversi-game-title { text-align: center; line-height: 1.2; }
+.reversi-game-title span {
+  display: block;
+  color: #9f7b3f;
+  font: 700 10px/1.2 Cinzel, serif;
+  letter-spacing: .34em;
+}
+.reversi-game-title strong {
+  display: block;
+  margin-top: 4px;
+  color: #f0d38a;
+  font-size: 17px;
+  letter-spacing: .1em;
+  text-shadow: 0 0 18px rgba(207,157,63,.26);
+}
+.reversi-game-tools { justify-self: end; display: flex; gap: 8px; }
+.reversi-game-tools button { width: 46px; padding: 0; font-size: 19px; }
+.reversi-game-topbar button:hover { border-color: #e3b95f; filter: brightness(1.12); }
+
+.reversi-arena {
+  width: min(1160px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(145px, 190px) minmax(360px, 650px) minmax(145px, 190px);
+  align-items: center;
+  justify-content: center;
+  gap: clamp(10px, 1.5vw, 20px);
+}
+.reversi-player-panel {
+  position: relative;
+  min-width: 0;
+  min-height: 520px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid rgba(176,127,48,.48);
+  border-radius: 48% 48% 14px 14px / 22% 22% 14px 14px;
+  background: linear-gradient(180deg, rgba(10,10,12,.96), rgba(18,13,15,.98));
+  box-shadow: inset 0 0 32px rgba(0,0,0,.85), 0 12px 34px rgba(0,0,0,.42);
+}
+.reversi-player-panel.is-white {
+  background: linear-gradient(180deg, rgba(36,33,30,.94), rgba(22,19,18,.98));
+}
+.reversi-player-panel::before {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  z-index: 0;
+  pointer-events: none;
+  border: 1px solid rgba(230,186,98,.25);
+  border-radius: inherit;
+}
+.reversi-player-panel.is-active {
+  border-color: #f0b845;
+  box-shadow: inset 0 0 34px rgba(0,0,0,.78), 0 0 26px rgba(237,142,39,.34);
+}
+.reversi-player-panel.is-white.is-active {
+  box-shadow: inset 0 0 34px rgba(0,0,0,.68), 0 0 26px rgba(245,230,190,.3);
+}
+.reversi-player-art {
+  position: relative;
+  z-index: 1;
+  width: calc(100% - 18px);
+  aspect-ratio: 1;
+  margin: 9px 9px 12px;
+  border-radius: 50%;
+  background-position: 22% center;
+  background-size: cover;
+  filter: saturate(.82) contrast(1.04);
+  box-shadow: inset 0 0 20px #000, 0 0 0 1px rgba(225,177,81,.4);
+}
+.reversi-player-panel.is-white .reversi-player-art { background-position: 74% center; }
+.reversi-score-disc {
+  position: relative;
+  z-index: 2;
+  width: clamp(64px, 7vw, 88px);
+  aspect-ratio: 1;
+  margin-top: -23px;
+  border-radius: 50%;
+  border: 4px solid #b78938;
+  box-shadow: 0 0 0 6px rgba(16,13,14,.92), 0 0 24px rgba(223,143,37,.4), inset 8px 10px 18px rgba(255,255,255,.09), inset -8px -10px 18px rgba(0,0,0,.85);
+}
+.reversi-score-disc.is-black { background: radial-gradient(circle at 34% 27%, #43444a, #111216 42%, #020304 80%); }
+.reversi-score-disc.is-white { background: radial-gradient(circle at 34% 27%, #fff, #e7e3dc 45%, #aaa8a2 88%); }
+.reversi-player-name {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-width: 0;
+  margin-top: 13px;
+  padding: 0 10px;
+  text-align: center;
+}
+.reversi-player-name span {
+  display: block;
+  color: #a37b3a;
+  font: 700 9px/1.3 Cinzel, serif;
+  letter-spacing: .22em;
+}
+.reversi-player-name strong {
+  display: block;
+  overflow: hidden;
+  margin-top: 3px;
+  color: #eddbbb;
+  font-size: 14px;
+  letter-spacing: .04em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.reversi-score-number {
+  position: relative;
+  z-index: 1;
+  margin-top: 8px;
+  color: #f2ca6b;
+  font: 700 clamp(28px, 3vw, 40px)/1 Cinzel, serif;
+  text-shadow: 0 0 14px rgba(235,148,39,.38);
+}
+.reversi-player-panel.is-white .reversi-score-number { color: #f3eee3; text-shadow: 0 0 14px rgba(255,242,204,.35); }
+.reversi-score-meter {
+  position: relative;
+  z-index: 1;
+  width: calc(100% - 28px);
+  height: 12px;
+  margin-top: 10px;
+  padding: 2px;
+  overflow: hidden;
+  border: 1px solid rgba(202,154,60,.42);
+  border-radius: 4px;
+  background: #050506;
+}
+.reversi-score-meter span {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #b13c18, #f3a62a);
+  box-shadow: 0 0 10px rgba(246,116,22,.7);
+  transition: width .35s ease;
+}
+.reversi-player-panel.is-white .reversi-score-meter span {
+  margin-left: auto;
+  background: linear-gradient(90deg, #a89d82, #fff5d8);
+  box-shadow: 0 0 10px rgba(255,243,211,.56);
+}
+.reversi-player-role {
+  position: relative;
+  z-index: 1;
+  margin-top: 12px;
+  color: #7f6842;
+  font: 700 8px/1.3 Cinzel, serif;
+  letter-spacing: .22em;
+}
+
+.reversi-board-column {
+  width: min(100%, calc(100dvh - 195px));
+  max-width: 650px;
+  min-width: 0;
+  justify-self: center;
+}
+.reversi-board-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  padding: clamp(8px, 1.2vw, 14px);
+  border: 2px solid #c08b35;
+  background:
+    linear-gradient(135deg, transparent 9px, #c8963d 10px 12px, transparent 13px) 0 0 / 34px 34px,
+    linear-gradient(225deg, transparent 9px, #7c5525 10px 12px, transparent 13px) 100% 100% / 34px 34px,
+    linear-gradient(180deg, #392817, #090909);
+  box-shadow: 0 0 0 5px #090a09, 0 0 0 7px rgba(175,123,42,.65), 0 18px 45px rgba(0,0,0,.55), inset 0 0 18px #000;
+}
+.reversi-board {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  border: 1px solid #c18b38;
+  background: #123b2e;
+}
+.reversi-cell {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-right: 1px solid rgba(198,150,66,.64);
+  border-bottom: 1px solid rgba(198,150,66,.64);
+  background:
+    radial-gradient(circle at 45% 38%, rgba(255,255,255,.025), transparent 58%),
+    repeating-linear-gradient(35deg, rgba(255,255,255,.014) 0 1px, transparent 1px 7px),
+    linear-gradient(135deg, #174638, #10372c);
+  color: inherit;
+  padding: 0;
+}
+.reversi-cell:nth-child(8n) { border-right: 0; }
+.reversi-cell:nth-last-child(-n + 8) { border-bottom: 0; }
+.reversi-cell.is-valid:not(:disabled) { cursor: pointer; }
+.reversi-cell.is-valid:not(:disabled):hover,
+.reversi-cell.is-valid:not(:disabled):focus-visible {
+  z-index: 2;
+  outline: none;
+  background: radial-gradient(circle, rgba(239,194,98,.18), rgba(14,57,43,.98) 67%);
+  box-shadow: inset 0 0 0 2px #e6bd60, 0 0 14px rgba(238,174,52,.4);
+}
+.reversi-disc,
+.reversi-mini-disc,
+.reversi-turn-disc {
+  display: block;
+  aspect-ratio: 1;
+  border-radius: 50%;
+}
+.reversi-disc {
+  width: 76%;
+  border: 1px solid rgba(210,171,94,.7);
+  transform-style: preserve-3d;
+  box-shadow: 0 5px 8px rgba(0,0,0,.52), inset 6px 7px 12px rgba(255,255,255,.11), inset -6px -8px 12px rgba(0,0,0,.48);
+}
+.reversi-disc.is-black,
+.reversi-mini-disc.is-black,
+.reversi-turn-disc.is-black { background: radial-gradient(circle at 34% 27%, #42444b, #101116 45%, #010203 82%); }
+.reversi-disc.is-white,
+.reversi-mini-disc.is-white,
+.reversi-turn-disc.is-white { background: radial-gradient(circle at 34% 27%, #fff, #eae6df 48%, #aaa79f 88%); }
+.reversi-disc.is-flipped { animation: reversi-disc-flip .52s cubic-bezier(.25,.72,.28,1) both; }
+.reversi-cell.is-last .reversi-disc { box-shadow: 0 0 0 2px #f4c65f, 0 0 16px rgba(244,176,50,.7), inset 6px 7px 12px rgba(255,255,255,.11), inset -6px -8px 12px rgba(0,0,0,.48); }
+.reversi-legal-marker {
+  width: 43%;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border: 2px solid #d7a94a;
+  border-radius: 50%;
+  color: #edca7a;
+  background: rgba(5,12,9,.45);
+  box-shadow: 0 0 10px rgba(231,165,47,.38), inset 0 0 8px rgba(225,173,59,.13);
+  animation: reversi-legal-pulse 1.8s ease-in-out infinite;
+}
+.reversi-legal-marker span { font: 800 clamp(8px, 1.1vw, 12px)/1 Cinzel, serif; }
+.reversi-last-marker {
+  position: absolute;
+  width: 8px;
+  aspect-ratio: 1;
+  right: 7px;
+  top: 7px;
+  border-radius: 50%;
+  background: #ffb52f;
+  box-shadow: 0 0 9px #ff8b18;
+}
+
+.reversi-status-tray {
+  min-height: 74px;
+  margin: 13px auto 0;
+  padding: 10px 12px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 11px;
+  border: 1px solid rgba(190,137,49,.58);
+  border-radius: 38px;
+  background: linear-gradient(180deg, rgba(40,24,18,.96), rgba(10,9,10,.98));
+  box-shadow: inset 0 0 17px rgba(0,0,0,.72), 0 7px 20px rgba(0,0,0,.34);
+}
+.reversi-turn-disc { width: 46px; border: 2px solid #bb8738; box-shadow: 0 0 0 4px #111, 0 0 13px rgba(220,160,54,.3); }
+.reversi-status-tray > div { min-width: 0; text-align: left; }
+.reversi-status-tray strong { display: block; overflow: hidden; color: #f2d58c; font-size: 13px; letter-spacing: .04em; text-overflow: ellipsis; white-space: nowrap; }
+.reversi-status-tray span { display: block; margin-top: 3px; color: #998a72; font-size: 10px; line-height: 1.35; }
+.reversi-status-tray button {
+  min-height: 38px;
+  padding: 0 11px;
+  border: 1px solid rgba(193,142,52,.4);
+  border-radius: 18px;
+  background: rgba(6,6,7,.72);
+  color: #8f7b5b;
+  font-size: 10px;
+  font-weight: 900;
+  cursor: pointer;
+}
+.reversi-status-tray button.is-active { color: #f0ca70; border-color: #cf9d3f; background: rgba(207,157,63,.11); }
+.reversi-mobile-score-row { display: none; }
+
+.reversi-rules-backdrop,
+.reversi-result-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(2,2,3,.82);
+  backdrop-filter: blur(7px);
+}
+.reversi-rules-panel,
+.reversi-result-panel {
+  position: relative;
+  width: min(560px, 100%);
+  max-height: calc(100dvh - 36px);
+  overflow-y: auto;
+  padding: 30px;
+  border: 1px solid #c18c39;
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at 50% 0, rgba(183,126,39,.18), transparent 38%),
+    linear-gradient(180deg, #1a1516, #0b0a0c);
+  color: #ded0b5;
+  box-shadow: 0 24px 70px rgba(0,0,0,.74), inset 0 0 30px rgba(0,0,0,.45);
+  text-align: center;
+}
+.reversi-rules-panel > span,
+.reversi-result-kicker { color: #a87e3d; font: 700 10px/1.3 Cinzel, serif; letter-spacing: .32em; }
+.reversi-rules-panel h2,
+.reversi-result-panel h2 { margin: 7px 0 18px; color: #f0d188; font-size: 28px; letter-spacing: .1em; }
+.reversi-rules-panel ol { padding-left: 23px; color: #c0b297; font-size: 13px; line-height: 1.85; text-align: left; }
+.reversi-rules-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(201,151,59,.35);
+  border-radius: 50%;
+  background: rgba(7,7,8,.74);
+  color: #d7b76e;
+  font-size: 20px;
+  cursor: pointer;
+}
+.reversi-rules-confirm {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 20px;
+  border: 1px solid #c79038;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #a46122, #6c3519);
+  color: #fff0c0;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+}
+.reversi-result-panel { width: min(620px, 100%); animation: result-appear .4s ease both; }
+.reversi-result-score { display: flex; align-items: center; justify-content: center; gap: 16px; color: #bdad90; }
+.reversi-result-score span { display: inline-flex; align-items: center; gap: 7px; }
+.reversi-result-score strong { color: #f2d386; font: 700 28px/1 Cinzel, serif; }
+.reversi-result-score b { color: #785d34; }
+.reversi-mini-disc { width: 22px; flex: 0 0 auto; border: 1px solid #a77c34; box-shadow: 0 2px 5px rgba(0,0,0,.5); }
+
+.reversi-cinematic {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: #020203;
+  animation: reversi-cinematic-shell 1.9s ease both;
+  pointer-events: all;
+}
+.reversi-cinematic img {
+  width: min(100vw, 1500px);
+  max-height: 100dvh;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  animation: reversi-cinematic-image 1.9s cubic-bezier(.18,.8,.28,1) both;
+}
+.reversi-cinematic-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(0,0,0,.48), transparent 32%, transparent 58%, rgba(0,0,0,.82));
+}
+.reversi-cinematic-copy {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  bottom: clamp(28px, 8vh, 80px);
+  width: min(720px, calc(100% - 32px));
+  transform: translateX(-50%);
+  padding: 15px 24px;
+  border-block: 1px solid rgba(238,187,81,.72);
+  background: linear-gradient(90deg, transparent, rgba(5,5,6,.86) 16%, rgba(5,5,6,.86) 84%, transparent);
+  text-align: center;
+  text-shadow: 0 2px 8px #000;
+  animation: reversi-cinematic-copy 1.9s ease both;
+}
+.reversi-cinematic-copy strong { display: block; color: #ffcf5e; font-size: clamp(27px, 4vw, 48px); letter-spacing: .18em; }
+.reversi-cinematic-copy span { display: block; margin-top: 4px; color: #f0e1bf; font-size: clamp(11px, 1.5vw, 15px); letter-spacing: .08em; }
+.reversi-cinematic.is-grand-flip .reversi-cinematic-copy strong { color: #fff2c7; }
+
+@keyframes reversi-disc-flip {
+  0% { transform: rotateY(90deg) scale(.72); filter: brightness(1.8); }
+  55% { transform: rotateY(-12deg) scale(1.08); }
+  100% { transform: rotateY(0) scale(1); filter: brightness(1); }
+}
+@keyframes reversi-legal-pulse {
+  0%, 100% { transform: scale(.92); opacity: .72; }
+  50% { transform: scale(1.06); opacity: 1; }
+}
+@keyframes reversi-cinematic-shell {
+  0%, 100% { opacity: 0; }
+  9%, 88% { opacity: 1; }
+}
+@keyframes reversi-cinematic-image {
+  0% { transform: scale(1.08); filter: brightness(.55); }
+  18%, 82% { transform: scale(1); filter: brightness(1); }
+  100% { transform: scale(1.025); filter: brightness(.55); }
+}
+@keyframes reversi-cinematic-copy {
+  0%, 10%, 88%, 100% { opacity: 0; transform: translateX(-50%) translateY(18px); }
+  20%, 80% { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+@media (max-width: 899px) {
+  .reversi-game-shell { padding-inline: 10px; }
+  .reversi-game-topbar { margin-bottom: 9px; grid-template-columns: auto 1fr auto; }
+  .reversi-game-title strong { font-size: 14px; }
+  .reversi-game-title span { font-size: 8px; }
+  .reversi-game-topbar > button:first-child span:last-child { display: none; }
+  .reversi-game-topbar > button:first-child { width: 44px; padding: 0; justify-content: center; font-size: 20px; }
+  .reversi-game-tools button { width: 42px; }
+  .reversi-arena { display: block; width: min(620px, 100%); }
+  .reversi-board-column { width: 100%; max-width: none; }
+  .reversi-player-panel { display: none; }
+  .reversi-mobile-score-row {
+    width: min(620px, 100%);
+    margin: 0 auto 10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .reversi-mobile-score-row > div {
+    min-height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    border: 1px solid rgba(190,139,50,.35);
+    border-radius: 7px;
+    background: rgba(9,8,10,.7);
+    color: #bba987;
+    font-size: 12px;
+  }
+  .reversi-mobile-score-row > div.is-active { border-color: #e0aa45; box-shadow: 0 0 14px rgba(220,145,35,.22); color: #f0d38b; }
+  .reversi-mobile-score-row strong { color: #efd184; font: 700 20px/1 Cinzel, serif; }
+  .reversi-board-frame { box-shadow: 0 0 0 3px #090a09, 0 0 0 5px rgba(175,123,42,.65), 0 12px 30px rgba(0,0,0,.5), inset 0 0 16px #000; }
+}
+
+@media (max-width: 480px) {
+  .reversi-game-shell { padding: 0 8px 18px; min-height: 100dvh; }
+  .reversi-game-topbar { min-height: 56px; gap: 6px; }
+  .reversi-game-title strong { font-size: 12px; letter-spacing: .04em; }
+  .reversi-game-title span { letter-spacing: .22em; }
+  .reversi-game-tools { gap: 5px; }
+  .reversi-game-tools button { width: 38px; min-height: 38px; font-size: 16px; }
+  .reversi-mobile-score-row { margin-bottom: 8px; gap: 6px; }
+  .reversi-mobile-score-row > div { min-height: 40px; font-size: 11px; }
+  .reversi-mobile-score-row strong { font-size: 18px; }
+  .reversi-mini-disc { width: 18px; }
+  .reversi-board-frame { padding: 6px; }
+  .reversi-last-marker { width: 6px; top: 4px; right: 4px; }
+  .reversi-status-tray { min-height: 66px; margin-top: 10px; padding: 8px 10px; gap: 8px; border-radius: 13px; }
+  .reversi-turn-disc { width: 36px; }
+  .reversi-status-tray strong { font-size: 11px; }
+  .reversi-status-tray span { font-size: 9px; }
+  .reversi-status-tray button { min-height: 34px; padding-inline: 8px; font-size: 9px; }
+  .reversi-rules-panel, .reversi-result-panel { padding: 26px 16px 18px; }
+  .reversi-rules-panel h2, .reversi-result-panel h2 { font-size: 23px; }
+  .reversi-result-score { gap: 9px; }
+  .reversi-result-score strong { font-size: 23px; }
+  .reversi-cinematic-copy { bottom: 32px; padding-inline: 10px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reversi-disc.is-flipped,
+  .reversi-legal-marker,
+  .reversi-cinematic,
+  .reversi-cinematic img,
+  .reversi-cinematic-copy { animation: none !important; }
+  .reversi-cinematic { opacity: 1; }
+  .reversi-cinematic-copy { opacity: 1; transform: translateX(-50%); }
 }

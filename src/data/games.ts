@@ -43,12 +43,12 @@ export const games: GameInfo[] = [
     status: 'available',
     themeLabel: 'カードゲーム',
   },
+  {
+    id: 'reversi',
+    title: 'リバーシ',
+    description: '黒炎と白銀の竜陣。角を制し、一手ごとに敵陣を覆して最後の石まで勝敗を奪い合う。',
+    status: 'available',
+    themeLabel: 'ボードゲーム',
+  },
   // 将来追加するゲームの例（コメントアウト中）：
-  // {
-  //   id: 'reversi',
-  //   title: 'リバーシ',
-  //   description: '定番のひっくり返しゲーム。',
-  //   status: 'coming-soon',
-  //   themeLabel: 'ボードゲーム',
-  // },
 ];
