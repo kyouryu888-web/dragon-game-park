@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from '../../components/Button';
 import {
   GameSetupShell,
+  SetupChoiceTabs,
   SetupModeCard,
   SetupStep,
   SetupSummary,
@@ -20,12 +21,28 @@ const RULES = [
 type Props = {
   config: ReversiConfig;
   onChange: (patch: Partial<ReversiConfig>) => void;
+  onlineTab: 'create' | 'join';
+  onOnlineTabChange: (tab: 'create' | 'join') => void;
+  joinCode: string;
+  onJoinCodeChange: (code: string) => void;
   onStart: () => void;
   onBackToHome: () => void;
 };
 
-export function ReversiSettingsScreen({ config, onChange, onStart, onBackToHome }: Props) {
+export function ReversiSettingsScreen({
+  config,
+  onChange,
+  onlineTab,
+  onOnlineTabChange,
+  joinCode,
+  onJoinCodeChange,
+  onStart,
+  onBackToHome,
+}: Props) {
   const [showRules, setShowRules] = useState(false);
+  const ctaLabel = config.mode === 'online'
+    ? onlineTab === 'create' ? 'ルームを作成する' : 'このコードで参加する'
+    : 'この設定で対戦する';
 
   return (
     <GameSetupShell
@@ -47,7 +64,7 @@ export function ReversiSettingsScreen({ config, onChange, onStart, onBackToHome 
       </SetupStep>
 
       <SetupStep numeral="II" title="対戦方法を選ぶ">
-        <div className="game-setup-mode-grid game-setup-mode-grid-card-game">
+        <div className="game-setup-mode-grid">
           <SetupModeCard
             selected={config.mode === 'cpu'}
             icon="🐉"
@@ -64,10 +81,35 @@ export function ReversiSettingsScreen({ config, onChange, onStart, onBackToHome 
             description="1台の端末を交互に使って遊ぶ"
             onClick={() => onChange({ mode: 'local' })}
           />
+          <SetupModeCard
+            selected={config.mode === 'online'}
+            icon="♜"
+            title="遠方の者と対戦"
+            code="ONLINE"
+            description="ルームコードで離れた相手と対戦"
+            onClick={() => onChange({ mode: 'online' })}
+          />
         </div>
+        {config.mode === 'online' ? (
+          <div className="game-setup-online-panel">
+            <SetupChoiceTabs value={onlineTab} onChange={onOnlineTabChange} />
+            {onlineTab === 'join' ? (
+              <input
+                className="game-setup-input game-setup-code-input"
+                value={joinCode}
+                onChange={(event) => onJoinCodeChange(event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
+                placeholder="コードを入力"
+                maxLength={6}
+              />
+            ) : null}
+          </div>
+        ) : null}
       </SetupStep>
 
-      <SetupStep numeral="III" title="対戦相手と石を決める">
+      <SetupStep
+        numeral="III"
+        title={config.mode === 'online' && onlineTab === 'join' ? 'コードで参加する' : '対戦相手と石を決める'}
+      >
         {config.mode === 'cpu' ? (
           <>
             <div className="game-setup-opponent-row reversi-opponent-row">
@@ -100,7 +142,7 @@ export function ReversiSettingsScreen({ config, onChange, onStart, onBackToHome 
             </div>
             <SetupSummary>黒は必ず先手です。白を選ぶとドラゴンが最初の一手を打ちます。</SetupSummary>
           </>
-        ) : (
+        ) : config.mode === 'local' ? (
           <>
             <div className="game-setup-opponent-row reversi-opponent-row">
               <input
@@ -115,11 +157,23 @@ export function ReversiSettingsScreen({ config, onChange, onStart, onBackToHome 
             </div>
             <SetupSummary>最初の名前が黒・先手、対戦相手が白・後手です。</SetupSummary>
           </>
+        ) : (
+          <SetupSummary>
+            {onlineTab === 'create'
+              ? '黒・先手のルームを作り、6桁コードを相手へ伝えます。参加者は白・後手です。'
+              : '入力した6桁コードのルームへ白・後手として参加します。'}
+          </SetupSummary>
         )}
       </SetupStep>
 
       <div className="game-setup-cta">
-        <Button fullWidth onClick={onStart}>この設定で対戦する</Button>
+        <Button
+          fullWidth
+          onClick={onStart}
+          disabled={config.mode === 'online' && onlineTab === 'join' && joinCode.length !== 6}
+        >
+          {ctaLabel}
+        </Button>
         <button type="button" className="game-setup-rules-toggle" onClick={() => setShowRules((value) => !value)}>
           {showRules ? '遊戯の掟を閉じる' : '遊戯の掟を見る'}
         </button>

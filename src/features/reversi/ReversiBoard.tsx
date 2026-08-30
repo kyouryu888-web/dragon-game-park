@@ -1,7 +1,10 @@
-import type { DiscColor, ReversiGameState, ReversiMove, ReversiMoveOption } from './reversiTypes';
+import { getPreviousDiscColor, type ReversiPlaybackVisual } from './reversiAnimation';
+import type { DiscColor, ReversiBoard as ReversiBoardState, ReversiGameState, ReversiMove, ReversiMoveOption } from './reversiTypes';
 
 type Props = {
   state: ReversiGameState;
+  displayBoard?: ReversiBoardState;
+  playback?: ReversiPlaybackVisual | null;
   validMoves: ReversiMoveOption[];
   interactive: boolean;
   showHints: boolean;
@@ -16,15 +19,16 @@ function colorLabel(color: DiscColor): string {
   return color === 'black' ? '黒' : '白';
 }
 
-export function ReversiBoard({ state, validMoves, interactive, showHints, onMove }: Props) {
+export function ReversiBoard({ state, displayBoard = state.board, playback = null, validMoves, interactive, showHints, onMove }: Props) {
   const validMoveMap = new Map(validMoves.map((move) => [moveKey(move), move]));
-  const flippedKeys = new Set(state.lastFlipped.map(moveKey));
-  const lastMoveKey = state.lastMove ? moveKey(state.lastMove) : null;
+  const activeFlipKeys = new Set(playback?.activeFlips.map(moveKey) ?? []);
+  const placedKey = playback ? moveKey(playback.placed) : null;
+  const lastMoveKey = placedKey ?? (state.lastMove ? moveKey(state.lastMove) : null);
 
   return (
     <div className="reversi-board-frame">
       <div className="reversi-board" role="grid" aria-label="8かける8のリバーシ盤">
-        {state.board.flatMap((row, rowIndex) => row.map((disc, colIndex) => {
+        {displayBoard.flatMap((row, rowIndex) => row.map((disc, colIndex) => {
           const key = `${rowIndex}:${colIndex}`;
           const validMove = validMoveMap.get(key);
           const coordinate = `${String.fromCharCode(65 + colIndex)}${rowIndex + 1}`;
@@ -47,10 +51,15 @@ export function ReversiBoard({ state, validMoves, interactive, showHints, onMove
               data-disc={disc ?? 'empty'}
               onClick={() => onMove({ row: rowIndex, col: colIndex })}
             >
-              {disc ? (
+              {disc ? activeFlipKeys.has(key) ? (
+                <span aria-hidden="true" className="reversi-disc reversi-disc-flipper is-flipping">
+                  <span className={`reversi-disc-face is-front is-${getPreviousDiscColor(disc)}`} />
+                  <span className={`reversi-disc-face is-back is-${disc}`} />
+                </span>
+              ) : (
                 <span
                   aria-hidden="true"
-                  className={`reversi-disc is-${disc}${flippedKeys.has(key) ? ' is-flipped' : ''}`}
+                  className={`reversi-disc is-${disc}${placedKey === key && playback?.phase === 'placing' ? ' is-placing' : ''}`}
                 />
               ) : null}
               {validMove && showHints ? (

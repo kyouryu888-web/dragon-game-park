@@ -2,6 +2,15 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { GameEndActions } from '../../components/GameEndActions';
 import cornerCaptureImage from './assets/corner-capture.png';
 import grandFlipImage from './assets/grand-flip.png';
+import {
+  applyFlipWave,
+  createPlacementBoard,
+  groupReversiFlipsByDistance,
+  REVERSI_FLIP_SETTLE_MS,
+  REVERSI_FLIP_WAVE_INTERVAL_MS,
+  REVERSI_PLACE_DURATION_MS,
+  type ReversiPlaybackVisual,
+} from './reversiAnimation';
 import { chooseReversiCpuMove } from './reversiCpu';
 import { ReversiBoard } from './ReversiBoard';
 import {
@@ -15,18 +24,36 @@ import {
   getValidMoves,
   isCornerMove,
 } from './reversiRules';
-import type { DiscColor, ReversiConfig, ReversiGameState, ReversiMove } from './reversiTypes';
+import type {
+  DiscColor,
+  ReversiBoard as ReversiBoardState,
+  ReversiConfig,
+  ReversiGameState,
+  ReversiMove,
+} from './reversiTypes';
 
 type Props = {
   config: ReversiConfig;
   onBackToSetup: () => void;
   onBackToHome: () => void;
+  initialState?: ReversiGameState;
+  synchronizedState?: ReversiGameState | null;
+  viewerColor?: DiscColor;
+  roomCode?: string;
+  canRematch?: boolean;
+  rematchWaitingMessage?: string;
+  onStateCommit?: (next: ReversiGameState) => void;
+  onRematch?: () => void;
 };
 
 const CINEMATIC_DURATION_MS = 1900;
 
 function colorLabel(color: DiscColor): string {
   return color === 'black' ? '黒炎' : '白銀';
+}
+
+function moveCoordinate(move: ReversiMove): string {
+  return `${String.fromCharCode(65 + move.col)}${move.row + 1}`;
 }
 
 function createCinematicEvent(
@@ -37,7 +64,7 @@ function createCinematicEvent(
   const playerName = previous.players[previous.currentColor].name;
   const key = `${previous.gameId}:${next.turnCount}`;
   if (next.status === 'finished') {
-    return { key, kind: 'finale', title: '決着', detail: '黒炎と白銀、最後の石が運命を定める' };
+    return { key, kind: 'finale', title: '決着', detail: '最後の石まで返り終え、勝敗が定まった' };
   }
   if (isCornerMove(move)) {
     return { key, kind: 'corner', title: '角を制した', detail: `${playerName}が不落の角を獲得` };
@@ -52,13 +79,16 @@ function PlayerPanel({
   color,
   state,
   score,
+  viewerColor,
 }: {
   color: DiscColor;
   state: ReversiGameState;
   score: number;
+  viewerColor?: DiscColor;
 }) {
   const player = state.players[color];
   const active = state.status === 'playing' && state.currentColor === color;
+  const role = player.isCpu ? 'DRAGON CPU' : viewerColor === color ? 'YOU / CHALLENGER' : 'CHALLENGER';
   return (
     <section className={`reversi-player-panel is-${color}${active ? ' is-active' : ''}`} aria-label={`${colorLabel(color)}のプレイヤー`}>
       <div
@@ -75,46 +105,168 @@ function PlayerPanel({
       <div className="reversi-score-meter" aria-hidden="true">
         <span style={{ width: `${Math.max(4, score / 64 * 100)}%` }} />
       </div>
-      <div className="reversi-player-role">{player.isCpu ? 'DRAGON CPU' : 'CHALLENGER'}</div>
+      <div className="reversi-player-role">{role}</div>
     </section>
   );
 }
 
-export function ReversiGameScreen({ config, onBackToSetup, onBackToHome }: Props) {
-  const [state, setState] = useState<ReversiGameState>(() => createInitialReversiState(config));
+export function ReversiGameScreen({
+  config,
+  onBackToSetup,
+  onBackToHome,
+  initialState,
+  synchronizedState = null,
+  viewerColor,
+  roomCode,
+  canRematch = true,
+  rematchWaitingMessage,
+  onStateCommit,
+  onRematch,
+}: Props) {
+  const [state, setState] = useState<ReversiGameState>(() => initialState ?? createInitialReversiState(config));
+  const [displayBoard, setDisplayBoard] = useState<ReversiBoardState>(() => state.board);
+  const [playback, setPlayback] = useState<ReversiPlaybackVisual | null>(null);
   const [showHints, setShowHints] = useState(true);
   const [showRules, setShowRules] = useState(false);
   const [cinematic, setCinematic] = useState<ReversiCinematicEvent | null>(null);
   const stateRef = useRef(state);
   const moveGuardRef = useRef(false);
+  const playbackTimersRef = useRef<number[]>([]);
+  const pendingSyncRef = useRef<ReversiGameState | null>(null);
   const grandFlipShownRef = useRef(false);
+  const onStateCommitRef = useRef(onStateCommit);
+  onStateCommitRef.current = onStateCommit;
   stateRef.current = state;
 
-  const score = useMemo(() => countReversiDiscs(state.board), [state.board]);
+  const score = useMemo(() => countReversiDiscs(displayBoard), [displayBoard]);
   const validMoves = useMemo(
     () => state.status === 'playing' ? getValidMoves(state.board, state.currentColor) : [],
     [state.board, state.currentColor, state.status],
   );
   const currentPlayer = state.players[state.currentColor];
   const isCpuTurn = state.status === 'playing' && currentPlayer.isCpu;
+  const isAnimatingMove = playback !== null;
 
-  function performMove(move: ReversiMove) {
-    if (moveGuardRef.current) return;
-    const previous = stateRef.current;
-    const next = applyReversiMove(previous, move);
-    if (next === previous) return;
+  function clearPlaybackTimers() {
+    for (const timer of playbackTimersRef.current) window.clearTimeout(timer);
+    playbackTimersRef.current = [];
+  }
 
-    moveGuardRef.current = true;
+  function resetToState(next: ReversiGameState) {
+    clearPlaybackTimers();
+    moveGuardRef.current = false;
+    pendingSyncRef.current = null;
+    grandFlipShownRef.current = false;
     stateRef.current = next;
     setState(next);
+    setDisplayBoard(next.board);
+    setPlayback(null);
+    setCinematic(null);
+  }
+
+  function showMoveCinematic(previous: ReversiGameState, next: ReversiGameState, move: ReversiMove) {
     let nextCinematic = createCinematicEvent(previous, next, move);
     if (nextCinematic?.kind === 'grand-flip') {
       if (grandFlipShownRef.current) nextCinematic = null;
       else grandFlipShownRef.current = true;
     }
     setCinematic(nextCinematic);
-    window.setTimeout(() => { moveGuardRef.current = false; }, 280);
   }
+
+  function finishPlayback(
+    previous: ReversiGameState,
+    next: ReversiGameState,
+    move: ReversiMove,
+    shouldCommit: boolean,
+  ) {
+    clearPlaybackTimers();
+    stateRef.current = next;
+    setState(next);
+    setDisplayBoard(next.board);
+    setPlayback(null);
+    moveGuardRef.current = false;
+    showMoveCinematic(previous, next, move);
+    if (shouldCommit) onStateCommitRef.current?.(next);
+
+    const pending = pendingSyncRef.current;
+    pendingSyncRef.current = null;
+    if (pending && (pending.gameId !== next.gameId || pending.turnCount > next.turnCount)) {
+      const timer = window.setTimeout(() => syncIncomingState(pending), 0);
+      playbackTimersRef.current.push(timer);
+    }
+  }
+
+  function beginPlayback(previous: ReversiGameState, next: ReversiGameState, shouldCommit: boolean) {
+    const move = next.lastMove;
+    const color = next.lastMoveColor;
+    if (!move || !color || next.turnCount !== previous.turnCount + 1) {
+      resetToState(next);
+      if (shouldCommit) onStateCommitRef.current?.(next);
+      return;
+    }
+
+    clearPlaybackTimers();
+    moveGuardRef.current = true;
+    let nextDisplayBoard = createPlacementBoard(previous.board, color, move);
+    const waves = groupReversiFlipsByDistance(move, next.lastFlipped);
+    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+    const placeDuration = reducedMotion ? 90 : REVERSI_PLACE_DURATION_MS;
+    const waveInterval = reducedMotion ? 55 : REVERSI_FLIP_WAVE_INTERVAL_MS;
+    const settleDuration = reducedMotion ? 100 : REVERSI_FLIP_SETTLE_MS;
+
+    setDisplayBoard(nextDisplayBoard);
+    setPlayback({ phase: 'placing', placed: move, activeFlips: [], color });
+
+    waves.forEach((wave, index) => {
+      const timer = window.setTimeout(() => {
+        nextDisplayBoard = applyFlipWave(nextDisplayBoard, color, wave);
+        setDisplayBoard(nextDisplayBoard);
+        setPlayback({ phase: 'flipping', placed: move, activeFlips: wave, color });
+      }, placeDuration + index * waveInterval);
+      playbackTimersRef.current.push(timer);
+    });
+
+    const finishDelay = placeDuration
+      + Math.max(0, waves.length - 1) * waveInterval
+      + settleDuration;
+    const finishTimer = window.setTimeout(
+      () => finishPlayback(previous, next, move, shouldCommit),
+      finishDelay,
+    );
+    playbackTimersRef.current.push(finishTimer);
+  }
+
+  function syncIncomingState(incoming: ReversiGameState) {
+    const current = stateRef.current;
+    if (incoming.gameId === current.gameId && incoming.turnCount === current.turnCount) return;
+    if (moveGuardRef.current) {
+      pendingSyncRef.current = incoming;
+      return;
+    }
+    if (incoming.gameId !== current.gameId || incoming.turnCount <= current.turnCount) {
+      resetToState(incoming);
+      return;
+    }
+    if (incoming.turnCount === current.turnCount + 1) beginPlayback(current, incoming, false);
+    else resetToState(incoming);
+  }
+
+  function performMove(move: ReversiMove) {
+    if (moveGuardRef.current) return;
+    const previous = stateRef.current;
+    const next = applyReversiMove(previous, move);
+    if (next === previous) return;
+    beginPlayback(previous, next, Boolean(onStateCommitRef.current));
+  }
+
+  useEffect(() => () => clearPlaybackTimers(), []);
+
+  useEffect(() => {
+    if (!synchronizedState) return;
+    syncIncomingState(synchronizedState);
+    // 同期の識別子だけで反応し、同じ局面の親再描画では再生しない。
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [synchronizedState?.gameId, synchronizedState?.turnCount]);
 
   useEffect(() => {
     if (!cinematic) return;
@@ -123,7 +275,7 @@ export function ReversiGameScreen({ config, onBackToSetup, onBackToHome }: Props
   }, [cinematic]);
 
   useEffect(() => {
-    if (!isCpuTurn || cinematic || showRules) return;
+    if (!isCpuTurn || isAnimatingMove || cinematic || showRules) return;
     const expectedGameId = state.gameId;
     const expectedTurn = state.turnCount;
     const timer = window.setTimeout(() => {
@@ -137,30 +289,46 @@ export function ReversiGameScreen({ config, onBackToSetup, onBackToHome }: Props
       const level = current.players[current.currentColor].cpuLevel ?? 'normal';
       const move = chooseReversiCpuMove(current, level);
       if (move) performMove(move);
-    }, 520);
+    }, 650);
     return () => window.clearTimeout(timer);
-  }, [cinematic, isCpuTurn, showRules, state.gameId, state.turnCount]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cinematic, isAnimatingMove, isCpuTurn, showRules, state.gameId, state.turnCount]);
 
   function rematch() {
-    moveGuardRef.current = false;
-    grandFlipShownRef.current = false;
-    setCinematic(null);
-    const next = createInitialReversiState(config);
-    stateRef.current = next;
-    setState(next);
+    if (onRematch) {
+      onRematch();
+      return;
+    }
+    resetToState(createInitialReversiState(config));
   }
 
-  const interactive = state.status === 'playing' && !isCpuTurn && !cinematic && !showRules;
-  const turnMessage = state.status === 'finished'
-    ? '対局終了'
-    : isCpuTurn
-      ? `${currentPlayer.name}が盤面を読んでいます…`
-      : `${currentPlayer.name}の番です`;
-  const passMessage = state.passedColor
-    ? `${state.players[state.passedColor].name}は置ける場所がなく、自動でパスしました`
-    : state.lastMove
-      ? `${state.lastFlipCount}枚を反転しました`
-      : '黒が先手。光る陣へ石を置いてください';
+  const viewerCanMove = viewerColor === undefined || viewerColor === state.currentColor;
+  const interactive = state.status === 'playing'
+    && !isCpuTurn
+    && !isAnimatingMove
+    && !cinematic
+    && !showRules
+    && viewerCanMove;
+  const turnMessage = playback
+    ? playback.phase === 'placing'
+      ? `${state.players[playback.color].name}が${moveCoordinate(playback.placed)}へ着手`
+      : '置いた石のそばから反転しています…'
+    : state.status === 'finished'
+      ? '対局終了'
+      : isCpuTurn
+        ? `${currentPlayer.name}が盤面を読んでいます…`
+        : viewerColor && !viewerCanMove
+          ? `${currentPlayer.name}の着手を待っています…`
+          : `${currentPlayer.name}の番です`;
+  const passMessage = playback
+    ? playback.phase === 'placing'
+      ? 'まず新しい石を置きます'
+      : `近い石から順番に返しています（今回${playback.activeFlips.length}枚）`
+    : state.passedColor
+      ? `${state.players[state.passedColor].name}は置ける場所がなく、自動でパスしました`
+      : state.lastMove
+        ? `${state.lastFlipCount}枚を反転しました`
+        : '黒が先手。光る陣へ石を置いてください';
 
   return (
     <main className="reversi-game-shell">
@@ -169,10 +337,11 @@ export function ReversiGameScreen({ config, onBackToSetup, onBackToHome }: Props
         <div className="reversi-game-title">
           <span>REVERSI</span>
           <strong>黒炎と白銀の竜陣</strong>
+          {roomCode ? <em>ROOM {roomCode}</em> : null}
         </div>
         <div className="reversi-game-tools">
           <button type="button" onClick={() => setShowRules(true)} aria-label="ルールを見る">📖</button>
-          <button type="button" onClick={rematch} aria-label="最初からやり直す">↻</button>
+          <button type="button" onClick={rematch} disabled={!canRematch} aria-label="最初からやり直す">↻</button>
         </div>
       </header>
 
@@ -182,29 +351,31 @@ export function ReversiGameScreen({ config, onBackToSetup, onBackToHome }: Props
       </div>
 
       <div className="reversi-arena">
-        <PlayerPanel color="black" state={state} score={score.black} />
+        <PlayerPanel color="black" state={state} score={score.black} viewerColor={viewerColor} />
 
         <section className="reversi-board-column">
           <ReversiBoard
             state={state}
-            validMoves={validMoves}
+            displayBoard={displayBoard}
+            playback={playback}
+            validMoves={isAnimatingMove ? [] : validMoves}
             interactive={interactive}
             showHints={showHints}
             onMove={performMove}
           />
           <div className="reversi-status-tray" aria-live="polite">
-            <span className={`reversi-turn-disc is-${state.currentColor}`} aria-hidden="true" />
+            <span className={`reversi-turn-disc is-${playback?.color ?? state.currentColor}`} aria-hidden="true" />
             <div>
               <strong>{turnMessage}</strong>
               <span>{passMessage}</span>
             </div>
-            <button type="button" className={showHints ? 'is-active' : ''} onClick={() => setShowHints((value) => !value)}>
+            <button type="button" className={showHints ? 'is-active' : ''} onClick={() => setShowHints((value) => !value)} disabled={isAnimatingMove}>
               候補 {showHints ? 'ON' : 'OFF'}
             </button>
           </div>
         </section>
 
-        <PlayerPanel color="white" state={state} score={score.white} />
+        <PlayerPanel color="white" state={state} score={score.white} viewerColor={viewerColor} />
       </div>
 
       {showRules ? (
@@ -224,7 +395,7 @@ export function ReversiGameScreen({ config, onBackToSetup, onBackToHome }: Props
         </div>
       ) : null}
 
-      {state.status === 'finished' ? (
+      {state.status === 'finished' && !isAnimatingMove ? (
         <div className="reversi-result-backdrop">
           <section className="reversi-result-panel" role="dialog" aria-modal="true" aria-label="対局結果">
             <span className="reversi-result-kicker">FINAL SCORE</span>
@@ -234,8 +405,10 @@ export function ReversiGameScreen({ config, onBackToSetup, onBackToHome }: Props
               <b>—</b>
               <span><i className="reversi-mini-disc is-white" />白銀 <strong>{score.white}</strong></span>
             </div>
+            {rematchWaitingMessage && !canRematch ? <p className="reversi-rematch-waiting">{rematchWaitingMessage}</p> : null}
             <GameEndActions
-              onRematch={rematch}
+              onRematch={canRematch ? rematch : undefined}
+              canRematch={canRematch}
               onChangeSettings={onBackToSetup}
               onBackToSetup={onBackToSetup}
               onBackToHome={onBackToHome}
