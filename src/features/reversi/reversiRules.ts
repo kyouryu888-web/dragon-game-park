@@ -158,6 +158,7 @@ export function createInitialReversiState(
 
   const blackIsCpu = config.mode === 'cpu' && humanColor === 'white';
   const whiteIsCpu = config.mode === 'cpu' && humanColor === 'black';
+  const usesNamedHumanOpponent = config.mode === 'local' || config.mode === 'online';
 
   return {
     gameId: `reversi-${Date.now()}-${Math.floor(random() * 1_000_000)}`,
@@ -167,13 +168,13 @@ export function createInitialReversiState(
     players: {
       black: {
         color: 'black',
-        name: config.mode === 'local' ? challengerName : blackIsCpu ? cpuName : challengerName,
+        name: usesNamedHumanOpponent ? challengerName : blackIsCpu ? cpuName : challengerName,
         isCpu: blackIsCpu,
         cpuLevel: blackIsCpu ? config.cpuLevel : undefined,
       },
       white: {
         color: 'white',
-        name: config.mode === 'local' ? opponentName : whiteIsCpu ? cpuName : challengerName,
+        name: usesNamedHumanOpponent ? opponentName : whiteIsCpu ? cpuName : challengerName,
         isCpu: whiteIsCpu,
         cpuLevel: whiteIsCpu ? config.cpuLevel : undefined,
       },
