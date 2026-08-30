@@ -32,6 +32,7 @@ const GAME_EN: Record<string, string> = {
   uno: 'UNO',
   backgammon: 'BACKGAMMON',
   babanuki: 'BABANUKI',
+  reversi: 'REVERSI',
 };
 
 type HomePageProps = {
