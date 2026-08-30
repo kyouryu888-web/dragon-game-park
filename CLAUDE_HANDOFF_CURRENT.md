@@ -1,6 +1,6 @@
 # Dragon Game Park — Current Handoff
 
-## 2026-08-30 追記: リバーシのオンライン対戦と盤上アニメーション（SQL実行待ち・未公開）
+## 2026-08-30 追記: リバーシのオンライン対戦と盤上アニメーション（実ルーム検証済み・PR #24公開前）
 
 作業ブランチ: `codex/reversi-online-animations`。
 
@@ -23,12 +23,18 @@
 - ローカル対戦を60手で終局まで操作。最終手 `H8` の着手後に `G7` が反転している間は
   結果ダイアログが0件で、反転完了後だけ決着カットイン→結果表示となることを確認した。
 - 390×844相当でオンライン作成 / コード参加UIを確認し、横はみ出し0、console問題0件。
+- ユーザーがSupabase SQL Editorで `supabase/reversi_rooms.sql` を全文実行し、
+  `Success. No rows returned` を画面で確認した。
+- 実Supabaseの2ブラウザタブでルーム `WGZRVQ` を作成し、ホスト黒 / ゲスト白、6桁コード参加、
+  相互の名前と手番制御を確認。黒 `D3` と白 `C3` を双方から着手し、両画面の6石が一致した。
+  受信側でも `C3` の石配置後に `D4` が反転し、完了後にだけ黒側の合法手4件が有効になった。
+- PR #24のコミット `1d580b0` でGitHub Actions `build-and-test` とVercel Previewが成功した。
 
 公開前ゲート:
 
-- Supabase SQL Editorで `supabase/reversi_rooms.sql` を新規クエリとして全文実行し、
-  `Success. No rows returned` のユーザー確認が必要。確認後、実Supabaseの2タブ対戦、
-  PR / CI / Vercel、本番2タブ検証へ進む。SQL成功前はオンライン対戦を動作済みと扱わない。
+- SQL成功と実Supabaseの2タブ対戦は確認済み。上記記録更新をpushし、PR #24の再チェック後に
+  `main` へマージする。マージSHAのGitHub Actions / Vercel成功後、本番URLでルーム作成、
+  コード参加、双方の着手同期とアニメーション、モバイル表示を再確認する。
 
 ## 2026-08-30 追記: リバーシを新規実装（本番公開済み）
 
