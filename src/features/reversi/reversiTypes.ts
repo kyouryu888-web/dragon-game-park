@@ -12,7 +12,7 @@ export type ReversiMoveOption = ReversiMove & {
 };
 
 export type ReversiCpuLevel = 'very-easy' | 'easy' | 'normal' | 'hard' | 'very-hard';
-export type ReversiMode = 'cpu' | 'local' | 'online';
+export type ReversiMode = 'cpu' | 'online';
 export type ReversiSideChoice = DiscColor | 'random';
 
 export type ReversiConfig = {

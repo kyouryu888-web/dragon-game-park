@@ -12,7 +12,7 @@ import {
 import type { Disc, DiscColor, ReversiBoard, ReversiGameState } from './reversiTypes';
 
 const CONFIG = {
-  mode: 'local' as const,
+  mode: 'cpu' as const,
   name: '黒竜',
   name2: '白竜',
   cpuLevel: 'normal' as const,

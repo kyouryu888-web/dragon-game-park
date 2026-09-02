@@ -5,7 +5,7 @@ export type CpuLevel = 'very-easy' | 'easy' | 'normal' | 'hard' | 'very-hard';
 /** プレイヤーID。white=金龍（インデックス23→0へ進む）、black=翠龍（0→23へ進む） */
 export type PlayerId = 'white' | 'black';
 
-export type BackgammonMode = 'cpu' | 'local' | 'online';
+export type BackgammonMode = 'cpu' | 'online';
 
 export type BackgammonConfig = {
   mode: BackgammonMode;

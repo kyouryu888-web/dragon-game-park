@@ -7,7 +7,7 @@ import { createInitialReversiState, getValidMoves } from './reversiRules';
 describe('ReversiBoard', () => {
   it('64マスと初期4合法手をアクセシブルなボタンとして描画する', () => {
     const state = createInitialReversiState({
-      mode: 'local',
+      mode: 'cpu',
       name: '',
       name2: '',
       cpuLevel: 'normal',
@@ -31,7 +31,7 @@ describe('ReversiBoard', () => {
 
   it('着手石と反転中の石を別のアニメーション状態で描画する', () => {
     const state = createInitialReversiState({
-      mode: 'local',
+      mode: 'cpu',
       name: '黒',
       name2: '白',
       cpuLevel: 'normal',

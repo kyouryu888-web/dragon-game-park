@@ -38,9 +38,7 @@ export function BackgammonSettingsScreen({
   onStart,
   onBackToHome,
 }: Props) {
-  const ctaLabel = config.mode === 'online'
-    ? onlineTab === 'create' ? 'ルームを作成する' : 'このコードで参加する'
-    : 'この設定で対戦する';
+  
 
   return (
     <GameSetupShell
@@ -58,7 +56,6 @@ export function BackgammonSettingsScreen({
       <SetupStep numeral="II" title="対戦方法を選ぶ">
         <div className="game-setup-mode-grid">
           <SetupModeCard selected={config.mode === 'cpu'} icon="🐉" title="ドラゴンと対戦" code="VS CPU" description="番人ドラゴンと一騎打ち" onClick={() => onChange({ mode: 'cpu' })} />
-          <SetupModeCard selected={config.mode === 'local'} icon="⚔" title="同じ盤で対戦" code="VS HUMAN" description="1台の端末を交互に使って遊ぶ" onClick={() => onChange({ mode: 'local' })} />
           <SetupModeCard selected={config.mode === 'online'} icon="♜" title="遠方の者と対戦" code="ONLIE" description="ルームコードで離れた相手と対戦" onClick={() => onChange({ mode: 'online' })} />
         </div>
         {config.mode === 'online' ? (
@@ -89,12 +86,6 @@ export function BackgammonSettingsScreen({
               {CPU_LEVELS.map(({ level, label }) => <option key={level} value={level}>{label}</option>)}
             </select>
           </div>
-        ) : config.mode === 'local' ? (
-          <div className="game-setup-opponent-row">
-            <input className="game-setup-input" style={{ minHeight: 38 }} value={config.name2} onChange={(event) => onChange({ name2: event.target.value })} placeholder="対戦相手の名（なくてもよい）" maxLength={12} />
-            <span className="game-setup-role-tabs"><button type="button" className="is-selected">人間</button></span>
-            <span />
-          </div>
         ) : (
           <SetupSummary>{onlineTab === 'create' ? '人間2人のルームを作り、コードを相手へ伝えます。' : '入力したコードの2人用ルームへ参加します。'}</SetupSummary>
         )}
@@ -102,7 +93,7 @@ export function BackgammonSettingsScreen({
 
       <div className="game-setup-cta">
         <Button fullWidth onClick={onStart} disabled={config.mode === 'online' && onlineTab === 'join' && joinCode.length < 4}>
-          {ctaLabel}
+          この設定で対戦する
         </Button>
       </div>
     </GameSetupShell>

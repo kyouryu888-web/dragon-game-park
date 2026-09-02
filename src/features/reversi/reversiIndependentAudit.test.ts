@@ -29,7 +29,7 @@ const LEGACY_POSITION_WEIGHTS = [
   [120, -30, 20, 8, 8, 20, -30, 120],
 ] as const;
 const CONFIG = {
-  mode: 'local' as const,
+  mode: 'cpu' as const,
   name: '黒',
   name2: '白',
   cpuLevel: 'normal' as const,

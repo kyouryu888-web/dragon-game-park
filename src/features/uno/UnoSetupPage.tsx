@@ -125,14 +125,23 @@ export function UnoSetupPage({ onStart, onBack, onOnlinePlay }: UnoSetupPageProp
           <div className="game-setup-online-panel">
             <SetupChoiceTabs value={onlineTab} onChange={setOnlineTab} />
             {onlineTab === 'join' ? (
-              <input
-                className="game-setup-input game-setup-code-input"
-                value={joinCode}
-                onChange={(event) => setJoinCode(event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
-                placeholder="コードを入力"
-                maxLength={6}
-              />
-            ) : null}
+              <>
+                <input
+                  className="game-setup-input game-setup-code-input"
+                  value={joinCode}
+                  onChange={(event) => setJoinCode(event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
+                  placeholder="コードを入力"
+                  maxLength={6}
+                />
+                <div style={{ marginTop: 8 }}>
+                  <Button fullWidth onClick={handleStart} disabled={joinCode.length !== 6}>このコードで参加する</Button>
+                </div>
+              </>
+            ) : (
+              <div style={{ marginTop: 8 }}>
+                <Button fullWidth onClick={handleStart}>ルーム設定へ進む</Button>
+              </div>
+            )}
           </div>
         ) : null}
       </SetupStep>
@@ -168,9 +177,11 @@ export function UnoSetupPage({ onStart, onBack, onOnlinePlay }: UnoSetupPageProp
       )}
 
       <div className="game-setup-cta">
-        <Button fullWidth onClick={handleStart} disabled={mode === 'online' && onlineTab === 'join' && joinCode.length !== 6}>
-          {mode === 'cpu' ? 'この設定で対戦する' : onlineTab === 'create' ? 'ルーム設定へ進む' : 'このコードで参加する'}
-        </Button>
+        {mode === 'cpu' ? (
+          <Button fullWidth onClick={handleStart}>
+            この設定で対戦する
+          </Button>
+        ) : null}
         <button type="button" className="game-setup-rules-toggle" onClick={() => setShowRules((show) => !show)}>
           {showRules ? 'カードとルールを閉じる' : 'カードとルールを見る'}
         </button>

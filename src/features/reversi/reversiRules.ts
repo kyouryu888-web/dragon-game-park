@@ -158,7 +158,7 @@ export function createInitialReversiState(
 
   const blackIsCpu = config.mode === 'cpu' && humanColor === 'white';
   const whiteIsCpu = config.mode === 'cpu' && humanColor === 'black';
-  const usesNamedHumanOpponent = config.mode === 'local' || config.mode === 'online';
+  const usesNamedHumanOpponent = config.mode === 'online';
 
   return {
     gameId: `reversi-${Date.now()}-${Math.floor(random() * 1_000_000)}`,

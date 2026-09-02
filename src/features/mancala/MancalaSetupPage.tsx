@@ -61,7 +61,7 @@ export function MancalaSetupPage({ onStart, onBack, onOnlinePlay }: Props) {
   const saved = useMemo(() => loadSavedConfig(), []);
   const [playerCount, setPlayerCount] = useState<2 | 3 | 4>(saved?.playerCount ?? 2);
   const [players, setPlayers] = useState<PlayerConfig[]>(() => Array.from({ length: 4 }, (_, index) => ({ ...DEFAULT_PLAYERS[index], ...saved?.players[index] })));
-  const [mode, setMode] = useState<'cpu' | 'local' | 'online'>(DEFAULT_SETUP_MODE);
+  const [mode, setMode] = useState<'cpu' | 'online'>(DEFAULT_SETUP_MODE);
   const [onlineTab, setOnlineTab] = useState<'create' | 'join'>(DEFAULT_ONLINE_ENTRY_MODE);
   const [joinCode, setJoinCode] = useState('');
   const [showRules, setShowRules] = useState(false);
@@ -102,20 +102,35 @@ export function MancalaSetupPage({ onStart, onBack, onOnlinePlay }: Props) {
       <SetupStep numeral="II" title="対戦方法を選ぶ">
         <div className="game-setup-mode-grid">
           <SetupModeCard selected={mode === 'cpu'} icon="🐉" title="ドラゴンと対戦" code="VS CPU" description="あなたとCPUで対戦" onClick={() => setMode('cpu')} />
-          <SetupModeCard selected={mode === 'local'} icon="⚔" title="同じ盤で対戦" code="VS HUMAN" description="1台の端末を囲んで遊ぶ" onClick={() => setMode('local')} />
+
           <SetupModeCard selected={mode === 'online'} icon="♜" title="遠方の者と対戦" code="ONLIE" description="ルームコードで離れた相手と対戦" onClick={() => setMode('online')} />
         </div>
         {mode === 'online' ? (
           <div className="game-setup-online-panel">
             <SetupChoiceTabs value={onlineTab} onChange={setOnlineTab} />
             {onlineTab === 'join' ? (
-              <input className="game-setup-input game-setup-code-input" value={joinCode} onChange={(event) => setJoinCode(event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))} placeholder="コードを入力" maxLength={6} />
-            ) : null}
+              <>
+                <input
+                  className="game-setup-input game-setup-code-input"
+                  value={joinCode}
+                  onChange={(event) => setJoinCode(event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
+                  placeholder="コードを入力"
+                  maxLength={6}
+                />
+                <div style={{ marginTop: 8 }}>
+                  <Button fullWidth onClick={handleStart} disabled={joinCode.length !== 6}>このコードで参加する</Button>
+                </div>
+              </>
+            ) : (
+              <div style={{ marginTop: 8 }}>
+                <Button fullWidth onClick={handleStart}>ルーム設定へ進む</Button>
+              </div>
+            )}
           </div>
         ) : null}
       </SetupStep>
 
-      {mode !== 'online' ? (
+      {mode === 'cpu' ? (
         <SetupStep numeral="III" title="対戦相手を決める">
           <div className="game-setup-count-grid">
             {([2, 3, 4] as const).map((count) => <button key={count} type="button" className={playerCount === count ? 'is-selected' : ''} onClick={() => setPlayerCount(count)}>{count}人</button>)}
@@ -123,30 +138,24 @@ export function MancalaSetupPage({ onStart, onBack, onOnlinePlay }: Props) {
           <div className="game-setup-opponent-list">
             {players.slice(1, playerCount).map((player, index) => (
               <div className="game-setup-opponent-row" key={index}>
-                {mode === 'local' ? (
-                  <input className="game-setup-input" style={{ minHeight: 38 }} value={player.name} onChange={(event) => updatePlayer(index + 1, { name: event.target.value, isCpu: false })} placeholder={`対戦相手${index + 1}の名`} maxLength={12} />
-                ) : <strong>{player.name || getCpuDisplayName(player.cpuLevel)}</strong>}
-                <span className="game-setup-role-tabs"><button type="button" className="is-selected">{mode === 'cpu' ? 'CPU' : '人間'}</button></span>
-                {mode === 'cpu' ? (
-                  <select className="game-setup-select" value={player.cpuLevel} onChange={(event) => updatePlayer(index + 1, { isCpu: true, cpuLevel: event.target.value as CpuLevel })}>
-                    {CPU_LEVELS.map(({ level, label }) => <option key={level} value={level}>{label}</option>)}
-                  </select>
-                ) : <span />}
+                <strong>{player.name || getCpuDisplayName(player.cpuLevel)}</strong>
+                <span className="game-setup-role-tabs"><button type="button" className="is-selected">CPU</button></span>
+                <select className="game-setup-select" value={player.cpuLevel} onChange={(event) => updatePlayer(index + 1, { isCpu: true, cpuLevel: event.target.value as CpuLevel })}>
+                  {CPU_LEVELS.map(({ level, label }) => <option key={level} value={level}>{label}</option>)}
+                </select>
               </div>
             ))}
           </div>
-          <SetupSummary>人間 {mode === 'local' ? playerCount : 1}人 / CPU {mode === 'cpu' ? playerCount - 1 : 0}体で対戦します。</SetupSummary>
+          <SetupSummary>人間 1人 / CPU {playerCount - 1}体で対戦します。</SetupSummary>
         </SetupStep>
-      ) : (
-        <SetupStep numeral="III" title={onlineTab === 'create' ? 'ルームを作る' : 'コードで参加する'}>
-          <SetupSummary>{onlineTab === 'create' ? '次の画面で人数と、人間・CPUの席を設定します。' : '入力したコードのルームへ参加します。'}</SetupSummary>
-        </SetupStep>
-      )}
+      ) : null}
 
       <div className="game-setup-cta">
-        <Button fullWidth onClick={handleStart} disabled={mode === 'online' && onlineTab === 'join' && joinCode.length !== 6}>
-          {mode === 'online' ? onlineTab === 'create' ? 'ルーム設定へ進む' : 'このコードで参加する' : 'この設定で対戦する'}
-        </Button>
+        {mode === 'cpu' ? (
+          <Button fullWidth onClick={handleStart}>
+            この設定で対戦する
+          </Button>
+        ) : null}
         <button type="button" className="game-setup-rules-toggle" onClick={() => setShowRules((show) => !show)}>{showRules ? '遊戯の掟を閉じる' : '遊戯の掟を見る'}</button>
         {showRules ? <ul className="game-setup-rules-list">{RULES.map((rule) => <li key={rule}>{rule}</li>)}</ul> : null}
       </div>
