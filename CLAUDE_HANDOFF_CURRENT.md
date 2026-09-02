@@ -1,3 +1,25 @@
+## 2026-09-02 追記 爆裂リバーシー 本番公開とUI統合完了
+
+爆裂リバーシーのエンジン、UI、5段階CPU、オンライン対戦の実装を完了し、本番環境へ公開しました。
+
+- **リバーシの設定UI統合**: 爆裂版と通常版で別々になっていた設定画面とルートを `ReversiUnifiedSettingsScreen` に統合し、 `ReversiPage.tsx` が両方のStateを管理するように全面書き換えました。
+- **全ゲームのローカル対戦廃止**: ババ抜き、UNO、マンカラ、バックギャモン、リバーシの全てのゲームから「同じ盤で対戦する (local)」モードを完全に削除しました。
+- **オンライン参加UIの整理**: 全ゲームの設定画面で「Ⅲコードで参加する」というテキストを削除し、コード入力欄の直下に「このコードで参加する」ボタンをインライン配置するようJSXとCSSを整理しました。
+- **ビルド・テストの修正**: 上記の複雑な仕様変更に伴う型の不整合 (ReversiMode / BackgammonMode / MancalaMode) とテストエラーをすべて修正し、`tsc -b` と `vitest run` がオールグリーンで通過することを確認しました。
+- **本番デプロイ**: 変更を `codex/bakuretsu-reversi-final-fixes` ブランチにプッシュし、PR作成APIを経由して `main` へマージ。VercelとGitHub Actions (CI) の成功を確認しました。
+
+### 検証結果
+- `npx tsc --noEmit` と `tsc -b`: 成功
+- `npm run build`: 成功
+- `npx vitest run`: 全34ファイル・367テスト成功
+- `npm run lint`: 通過
+- PRスータスAPIでの本番デプロイ完了確認: 成功
+
+### 次にすること
+- ユーザーにURL (https://dragon-game-park.vercel.app/) と共に完了を報告します。
+- 新版SQLによる実Supabaseでの2タブ対戦確認は引き続き行う必要があります。
+
+
 # Dragon Game Park — Current Handoff
 
 ## 2026-09-02 追記: 爆裂リバーシー オンラインをサーバー権限へ再設計（SQL反映待ち）
