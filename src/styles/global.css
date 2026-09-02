@@ -3719,7 +3719,7 @@ button {
   display: grid;
   place-items: center;
   background: #020203;
-  animation: reversi-cinematic-shell 1.9s ease both;
+  animation: reversi-cinematic-shell 2.8s ease both;
   pointer-events: all;
 }
 .reversi-cinematic img {
@@ -3727,7 +3727,7 @@ button {
   max-height: 100dvh;
   aspect-ratio: 16 / 9;
   object-fit: cover;
-  animation: reversi-cinematic-image 1.9s cubic-bezier(.18,.8,.28,1) both;
+  animation: reversi-cinematic-image 2.8s cubic-bezier(.18,.8,.28,1) both;
 }
 .reversi-cinematic-vignette {
   position: absolute;
@@ -3747,7 +3747,7 @@ button {
   background: linear-gradient(90deg, transparent, rgba(5,5,6,.86) 16%, rgba(5,5,6,.86) 84%, transparent);
   text-align: center;
   text-shadow: 0 2px 8px #000;
-  animation: reversi-cinematic-copy 1.9s ease both;
+  animation: reversi-cinematic-copy 2.8s ease both;
 }
 .reversi-cinematic-copy strong { display: block; color: #ffcf5e; font-size: clamp(27px, 4vw, 48px); letter-spacing: .18em; }
 .reversi-cinematic-copy span { display: block; margin-top: 4px; color: #f0e1bf; font-size: clamp(11px, 1.5vw, 15px); letter-spacing: .08em; }
