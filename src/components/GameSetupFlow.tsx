@@ -50,7 +50,7 @@ export function SetupStep({
   description,
   children,
 }: {
-  numeral: 'I' | 'II' | 'III';
+  numeral: 'I' | 'II' | 'III' | 'IV';
   title: string;
   description?: string;
   children: ReactNode;
