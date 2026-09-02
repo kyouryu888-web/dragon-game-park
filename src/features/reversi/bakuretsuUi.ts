@@ -14,7 +14,7 @@ export const BAKURETSU_INITIAL_TIME_MS = 20 * 60 * 1000;
 export type BakuretsuReversiConfig = {
   name: string;
   name2: string;
-  mode: 'cpu' | 'local' | 'online';
+  mode: 'cpu' | 'online';
   cpuLevel: Level;
   humanSide: Side | 'RANDOM';
 };
@@ -22,7 +22,7 @@ export type BakuretsuReversiConfig = {
 export const DEFAULT_BAKURETSU_REVERSI_CONFIG: BakuretsuReversiConfig = {
   name: '',
   name2: '',
-  mode: 'local',
+  mode: 'cpu',
   cpuLevel: 3,
   humanSide: 'BLACK',
 };
