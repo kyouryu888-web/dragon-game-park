@@ -336,7 +336,7 @@ export function BakuretsuReversiGameScreen({
           () => runPlaybackStep(steps, index + 1, result, reducedMotion),
           getBakuretsuStepDuration(step, 'slow', reducedMotion),
         );
-      }, 1900);
+      }, 2800);
       return;
     }
 
@@ -660,7 +660,7 @@ export function BakuretsuReversiGameScreen({
           </div>
 
           <BakuretsuReversiBoard
-            viewer={viewerSide ?? state.currentTurn}
+            viewer={viewerSide ?? (cpuSide === 'BLACK' ? 'WHITE' : (cpuSide === 'WHITE' ? 'BLACK' : state.currentTurn))}
             state={state}
             displayBoard={displayBoard}
             playback={playback}
