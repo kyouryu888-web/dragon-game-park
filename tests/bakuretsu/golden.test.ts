@@ -5,7 +5,7 @@ import { applyMove, settleTurnStart } from '../../src/features/reversi/bakuretsu
 import type { ChainEvent, GameState, Move } from '../../src/features/reversi/bakuretsu/types.ts';
 import golden from './golden.json';
 
-const cfg = DEFAULT_CONFIG;
+const cfg = { ...DEFAULT_CONFIG, specialCount: 3 };
 
 /** 盤面を64文字に符号化。移植先で同じ文字列になれば一致 */
 const CH: Record<string, string> = {

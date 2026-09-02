@@ -12,6 +12,10 @@ import {
   makeRng,
 } from './bakuretsu/rules.ts';
 import type { BlastRange, GameState, Move, Side, TurnResult } from './bakuretsu/types.ts';
+import {
+  BakuretsuCinematicOverlay,
+  type BakuretsuCinematicEvent,
+} from './BakuretsuCinematicOverlay';
 import { BakuretsuReversiBoard } from './BakuretsuReversiBoard';
 import {
   createBakuretsuCpuRequest,
@@ -20,14 +24,12 @@ import {
 import {
   createBakuretsuPlaybackSteps,
   getBakuretsuStepDuration,
-  type BakuretsuPlaybackSpeed,
   type BakuretsuPlaybackStep,
 } from './bakuretsuPlayback';
 import {
   BAKURETSU_INITIAL_TIME_MS,
   BAKURETSU_SPECIAL_LABEL,
   BAKURETSU_SPECIAL_NAME,
-  BAKURETSU_SPEED_LABEL,
   chooseBakuretsuAutoMove,
   forceAutoMoveLoss,
   formatTimeBank,
@@ -43,7 +45,6 @@ import {
 import type { BakuretsuReversiSnapshot } from './bakuretsuReversiOnline';
 import { canResolveBakuretsuTimeout, decideBakuretsuSync } from './bakuretsuOnlineSync';
 
-const SPEEDS: BakuretsuPlaybackSpeed[] = ['slow', 'normal', 'fast'];
 const INITIAL_CLOCKS: BakuretsuTimeBanks = {
   BLACK: BAKURETSU_INITIAL_TIME_MS,
   WHITE: BAKURETSU_INITIAL_TIME_MS,
@@ -90,13 +91,19 @@ function BlastRangeGlyph({ range }: { range: BlastRange }) {
   );
 }
 
-function PublicHand({ state, side }: { state: GameState; side: Side }) {
+function PublicHand({ state, side, viewer }: { state: GameState; side: Side; viewer: Side }) {
   const hand = state.hands[side];
+  const isOpponent = side !== viewer;
+  
   return (
-    <div className="bakuretsu-public-hand" aria-label={`${sideName(side)}の公開特殊コマ`}>
-      {hand.initialSpecials.filter(isPublicSpecial).map((special) => {
+    <div className="bakuretsu-public-hand" aria-label={`${sideName(side)}の特殊コマ状況`}>
+      {hand.initialSpecials.filter(isPublicSpecial).map((special, i) => {
         const remains = hand.specialPieces.includes(special);
-        return (
+        return isOpponent ? (
+          <span key={i} className="is-hidden" title="正体不明の特殊コマ">
+            ？
+          </span>
+        ) : (
           <span key={special} className={remains ? '' : 'is-used'} title={`${BAKURETSU_SPECIAL_NAME[special]}${remains ? '・使用可能' : '・使用済み'}`}>
             {BAKURETSU_SPECIAL_LABEL[special]}
           </span>
@@ -111,7 +118,6 @@ function PlayerPanel({
   state,
   score,
   remainingMs,
-  speed,
   name,
   active,
   isCpu,
@@ -122,7 +128,6 @@ function PlayerPanel({
   state: GameState;
   score: number;
   remainingMs: number;
-  speed: BakuretsuPlaybackSpeed;
   name: string;
   active: boolean;
   isCpu: boolean;
@@ -147,9 +152,9 @@ function PlayerPanel({
       <div className="bakuretsu-time-bank" aria-label={`${sideName(side)}の残り時間${formatTimeBank(remainingMs)}`}>
         <span>TIME BANK</span><strong>{formatTimeBank(remainingMs)}</strong>
       </div>
-      <PublicHand state={state} side={side} />
+      <PublicHand state={state} side={side} viewer={viewerSide ?? state.currentTurn} />
       <div className="reversi-player-role">
-        {isCpu ? `CPU Lv${cpuLevel}` : viewerSide ? side === viewerSide ? 'ONLINE / YOU' : 'ONLINE / RIVAL' : 'LOCAL'} / {BAKURETSU_SPEED_LABEL[speed]}
+        {isCpu ? `CPU Lv${cpuLevel}` : viewerSide ? side === viewerSide ? 'ONLINE / YOU' : 'ONLINE / RIVAL' : 'LOCAL'}
       </div>
     </section>
   );
@@ -191,11 +196,10 @@ export function BakuretsuReversiGameScreen({
   const [playback, setPlayback] = useState<BakuretsuPlaybackStep | null>(null);
   const [pendingResult, setPendingResult] = useState<TurnResult | null>(null);
   const [choice, setChoice] = useState<BakuretsuPieceChoice>('NORMAL');
+  const [cinematic, setCinematic] = useState<BakuretsuCinematicEvent | null>(null);
   const [showHints, setShowHints] = useState(true);
   const [showRules, setShowRules] = useState(false);
-  const [showSpeed, setShowSpeed] = useState(false);
   const [resultReady, setResultReady] = useState(false);
-  const [speeds, setSpeeds] = useState<Record<Side, BakuretsuPlaybackSpeed>>(config.playbackSpeed);
   const [clocks, setClocks] = useState<BakuretsuTimeBanks>(() => initialSnapshot?.clocks ?? INITIAL_CLOCKS);
   const [autoNotice, setAutoNotice] = useState('');
   const [serverLegalMoves, setServerLegalMoves] = useState<Move[]>(() => initialSnapshot?.legalMoves ?? []);
@@ -207,7 +211,6 @@ export function BakuretsuReversiGameScreen({
   const paintFramesRef = useRef<number[]>([]);
   const clocksRef = useRef(clocks);
   const autoMoveCountsRef = useRef<BakuretsuAutoMoveCounts>(initialSnapshot?.autoMoveCounts ?? INITIAL_AUTO_MOVE_COUNTS);
-  const speedRef = useRef(speeds);
   const timeoutGuardRef = useRef(false);
   const cpuWorkerRef = useRef<Worker | null>(null);
   const cpuRequestIdRef = useRef(0);
@@ -226,7 +229,6 @@ export function BakuretsuReversiGameScreen({
   const handleTimeExpiredRef = useRef<(side: Side) => void>(() => undefined);
   stateRef.current = state;
   clocksRef.current = clocks;
-  speedRef.current = speeds;
 
   const visualState = pendingResult?.state ?? state;
   const score = useMemo(() => countPieces(displayBoard), [displayBoard]);
@@ -261,6 +263,7 @@ export function BakuretsuReversiGameScreen({
     setState(snapshot.state);
     setDisplayBoard(snapshot.state.board.map((cell) => ({ ...cell })));
     setPlayback(null);
+    setCinematic(null);
     setPendingResult(null);
     setChoice('NORMAL');
     setClocks(snapshot.clocks);
@@ -276,6 +279,7 @@ export function BakuretsuReversiGameScreen({
     setState(result.state);
     setDisplayBoard(result.state.board.map((cell) => ({ ...cell })));
     setPlayback(null);
+    setCinematic(null);
     setPendingResult(null);
     pendingResultRef.current = null;
     setChoice('NORMAL');
@@ -303,7 +307,6 @@ export function BakuretsuReversiGameScreen({
     steps: BakuretsuPlaybackStep[],
     index: number,
     result: TurnResult,
-    speed: BakuretsuPlaybackSpeed,
     reducedMotion: boolean,
   ) {
     if (index >= steps.length) {
@@ -311,11 +314,37 @@ export function BakuretsuReversiGameScreen({
       return;
     }
     const step = steps[index];
+    
+    if (step.cinematic && !reducedMotion) {
+      const cinematicTitles = {
+        corner: { title: '角を制した', detail: '不落の角を獲得' },
+        finale: { title: '決着', detail: '最終盤面まで反転が完了' },
+        bomb: { title: '爆裂魔法 発動！', detail: '周囲のコマを消し飛ばす！' },
+        shield: { title: '防衛魔法 展開！', detail: '反転魔法を一度だけ防ぐ！' },
+        infection: { title: '感染魔法 侵食！', detail: '隣接コマを自軍へと染める！' },
+      };
+      setCinematic({
+        key: `${matchNoRef.current}:${stateRef.current.moveNo}:${index}`,
+        kind: step.cinematic,
+        ...cinematicTitles[step.cinematic],
+      });
+      setDisplayBoard(step.board);
+      setPlayback(step);
+      playbackTimerRef.current = window.setTimeout(() => {
+        setCinematic(null);
+        playbackTimerRef.current = window.setTimeout(
+          () => runPlaybackStep(steps, index + 1, result, reducedMotion),
+          getBakuretsuStepDuration(step, 'slow', reducedMotion),
+        );
+      }, 1900);
+      return;
+    }
+
     setDisplayBoard(step.board);
     setPlayback(step);
     playbackTimerRef.current = window.setTimeout(
-      () => runPlaybackStep(steps, index + 1, result, speed, reducedMotion),
-      getBakuretsuStepDuration(step, speed, reducedMotion),
+      () => runPlaybackStep(steps, index + 1, result, reducedMotion),
+      getBakuretsuStepDuration(step, 'slow', reducedMotion),
     );
   }
 
@@ -326,7 +355,7 @@ export function BakuretsuReversiGameScreen({
     setResultReady(false);
     const steps = createBakuretsuPlaybackSteps(previous, result);
     const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-    runPlaybackStep(steps, 0, result, speedRef.current[previous.currentTurn], reducedMotion);
+    runPlaybackStep(steps, 0, result, reducedMotion);
   }
 
   function syncIncomingSnapshot(incoming: BakuretsuReversiSnapshot) {
@@ -538,6 +567,7 @@ export function BakuretsuReversiGameScreen({
     const result = pendingResultRef.current;
     if (!result) return;
     clearPlaybackHandles();
+    setCinematic(null);
     showFinalBoardThenCommit(result);
   }
 
@@ -556,6 +586,7 @@ export function BakuretsuReversiGameScreen({
     setState(next);
     setDisplayBoard(next.board.map((cell) => ({ ...cell })));
     setPlayback(null);
+    setCinematic(null);
     setPendingResult(null);
     setChoice('NORMAL');
     setClocks(INITIAL_CLOCKS);
@@ -567,15 +598,9 @@ export function BakuretsuReversiGameScreen({
     timeoutGuardRef.current = false;
   }
 
-  function changeSpeed(side: Side, speed: BakuretsuPlaybackSpeed) {
-    const next = { ...speedRef.current, [side]: speed };
-    speedRef.current = next;
-    setSpeeds(next);
-  }
-
   const isCpuTurn = cpuSide === state.currentTurn && state.status === 'PLAYING';
   const viewerCanMove = viewerSide === undefined || viewerSide === state.currentTurn;
-  const interactive = state.status === 'PLAYING' && viewerCanMove && !isCpuTurn && !cpuThinking && !onlineMovePending && !pendingResult && !playback && !showRules && !showSpeed;
+  const interactive = state.status === 'PLAYING' && viewerCanMove && !isCpuTurn && !cpuThinking && !onlineMovePending && !pendingResult && !playback && !showRules;
   const currentName = playerName(config, state.currentTurn, cpuSide);
   const turnMessage = playback?.label
     ?? (state.status === 'FINISHED'
@@ -607,7 +632,6 @@ export function BakuretsuReversiGameScreen({
           {roomCode ? <em>ROOM {roomCode}</em> : null}
         </div>
         <div className="reversi-game-tools">
-          <button type="button" onClick={() => setShowSpeed(true)} aria-label="演出速度を設定">⏱</button>
           <button type="button" onClick={() => setShowRules(true)} aria-label="ルールを見る">📖</button>
           <button type="button" onClick={rematch} disabled={!canRematch} aria-label="最初からやり直す">↻</button>
         </div>
@@ -623,7 +647,7 @@ export function BakuretsuReversiGameScreen({
       </div>
 
       <div className="reversi-arena bakuretsu-arena">
-        <PlayerPanel side="BLACK" state={visualState} score={score.black} remainingMs={clocks.BLACK} speed={speeds.BLACK} name={playerName(config, 'BLACK', cpuSide)} active={state.status === 'PLAYING' && state.currentTurn === 'BLACK'} isCpu={cpuSide === 'BLACK'} cpuLevel={config.cpuLevel} viewerSide={viewerSide} />
+        <PlayerPanel side="BLACK" state={visualState} score={score.black} remainingMs={clocks.BLACK} name={playerName(config, 'BLACK', cpuSide)} active={state.status === 'PLAYING' && state.currentTurn === 'BLACK'} isCpu={cpuSide === 'BLACK'} cpuLevel={config.cpuLevel} viewerSide={viewerSide} />
 
         <section className="reversi-board-column bakuretsu-board-column">
           <div className="bakuretsu-board-meta" aria-label="爆裂ルールの現在情報">
@@ -632,10 +656,11 @@ export function BakuretsuReversiGameScreen({
               <span><strong>爆破射程 {blastRange === 'CROSS' ? '十字' : '8方向'}</strong><small>{blastRange === 'CROSS' ? `切替まであと${24 - occupied}枚` : '8方向爆破が有効'}</small></span>
             </div>
             <div><strong>{playback?.depth ? `連鎖 深度${playback.depth}` : '連鎖 待機'}</strong><small>発火元を1つずつ表示</small></div>
-            <div><strong>{sideName(state.currentTurn)} {BAKURETSU_SPEED_LABEL[speeds[state.currentTurn]]}</strong><small>相手の時計は演出後に開始</small></div>
+            <div><strong>{sideName(state.currentTurn)}</strong><small>相手の時計は演出後に開始</small></div>
           </div>
 
           <BakuretsuReversiBoard
+            viewer={viewerSide ?? state.currentTurn}
             state={state}
             displayBoard={displayBoard}
             playback={playback}
@@ -678,8 +703,8 @@ export function BakuretsuReversiGameScreen({
               })}
             </div>
             <div className="bakuretsu-public-hands-mobile">
-              <span>黒</span><PublicHand state={visualState} side="BLACK" />
-              <span>白</span><PublicHand state={visualState} side="WHITE" />
+              <span>黒</span><PublicHand state={visualState} side="BLACK" viewer={viewerSide ?? state.currentTurn} />
+              <span>白</span><PublicHand state={visualState} side="WHITE" viewer={viewerSide ?? state.currentTurn} />
             </div>
           </section>
 
@@ -691,7 +716,7 @@ export function BakuretsuReversiGameScreen({
           </div>
         </section>
 
-        <PlayerPanel side="WHITE" state={visualState} score={score.white} remainingMs={clocks.WHITE} speed={speeds.WHITE} name={playerName(config, 'WHITE', cpuSide)} active={state.status === 'PLAYING' && state.currentTurn === 'WHITE'} isCpu={cpuSide === 'WHITE'} cpuLevel={config.cpuLevel} viewerSide={viewerSide} />
+        <PlayerPanel side="WHITE" state={visualState} score={score.white} remainingMs={clocks.WHITE} name={playerName(config, 'WHITE', cpuSide)} active={state.status === 'PLAYING' && state.currentTurn === 'WHITE'} isCpu={cpuSide === 'WHITE'} cpuLevel={config.cpuLevel} viewerSide={viewerSide} />
       </div>
 
       {showRules ? (
@@ -715,20 +740,7 @@ export function BakuretsuReversiGameScreen({
         </div>
       ) : null}
 
-      {showSpeed ? (
-        <div className="reversi-rules-backdrop" role="presentation" onMouseDown={() => setShowSpeed(false)}>
-          <section className="reversi-rules-panel bakuretsu-speed-panel" role="dialog" aria-modal="true" aria-labelledby="bakuretsu-speed-title" onMouseDown={(event) => event.stopPropagation()}>
-            <button type="button" className="reversi-rules-close" onClick={() => setShowSpeed(false)} aria-label="閉じる">×</button>
-            <span>SPEED</span><h2 id="bakuretsu-speed-title">演出速度</h2>
-            {(['BLACK', 'WHITE'] as const).map((side) => (
-              <label key={side}><span>{sideName(side)}</span><select className="game-setup-select" value={speeds[side]} onChange={(event) => changeSpeed(side, event.target.value as BakuretsuPlaybackSpeed)}>
-                {SPEEDS.map((speed) => <option key={speed} value={speed}>{BAKURETSU_SPEED_LABEL[speed]}</option>)}
-              </select></label>
-            ))}
-            <button type="button" className="reversi-rules-confirm" onClick={() => setShowSpeed(false)}>盤へ戻る</button>
-          </section>
-        </div>
-      ) : null}
+      {cinematic ? <BakuretsuCinematicOverlay event={cinematic} /> : null}
 
       {state.status === 'FINISHED' && resultReady && !playback ? (
         <div className="reversi-result-backdrop">

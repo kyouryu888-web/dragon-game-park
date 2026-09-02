@@ -37,6 +37,7 @@ export type BakuretsuPlaybackStep = {
   flipTo?: Side;
   depth?: number;
   blast?: BlastRange;
+  cinematic?: 'corner' | 'finale' | 'bomb' | 'shield' | 'infection';
 };
 
 const SPEED_FACTOR: Record<BakuretsuPlaybackSpeed, number> = {
@@ -114,9 +115,15 @@ export function createBakuretsuPlaybackSteps(
   const place = result.events.find((event): event is Extract<ChainEvent, { t: 'PLACE' }> => event.t === 'PLACE');
   if (!place) return [makeStep(result.state.board, -1, { phase: 'final', durationMs: 16, label: '盤面を確定しました' })];
 
+  const shownCinematics = new Set<string>();
+  if (place.idx === 0 || place.idx === 7 || place.idx === 56 || place.idx === 63) {
+    shownCinematics.add('CORNER');
+  }
+
   const steps: BakuretsuPlaybackStep[] = [];
   const board = cloneBoard(previous.board);
   applyPlacement(board, place, cfg);
+  const isCorner = shownCinematics.has('CORNER');
   steps.push(makeStep(board, place.idx, {
     phase: 'placing',
     durationMs: 250,
@@ -124,6 +131,7 @@ export function createBakuretsuPlaybackSteps(
     activeIndices: [place.idx],
     special: place.special,
     blast: place.blast,
+    cinematic: isCorner ? 'corner' : undefined,
   }));
 
   const flipShields = result.events.filter(
@@ -131,6 +139,9 @@ export function createBakuretsuPlaybackSteps(
   ).sort((left, right) => compareRipplePosition(left.idx, right.idx, place.idx));
   let shieldCursor = 0;
   const pushShield = (event: Extract<ChainEvent, { t: 'SHIELD_ABSORB' }>) => {
+    const isFirstShield = !shownCinematics.has('SHIELD');
+    if (isFirstShield) shownCinematics.add('SHIELD');
+    
     const cell = board[event.idx];
     cell.durability = Math.max(0, cell.durability - 1);
     cell.specialType = 'NONE';
@@ -141,6 +152,7 @@ export function createBakuretsuPlaybackSteps(
       activeIndices: [event.idx],
       shieldIndices: [event.idx],
       special: 'SHIELD',
+      cinematic: isFirstShield ? 'shield' : undefined,
     }));
     steps.push(makeStep(board, place.idx, {
       phase: 'shield',
@@ -193,6 +205,9 @@ export function createBakuretsuPlaybackSteps(
   for (const [depth, events] of specialEventsByDepth(result.events)) {
     const activationDuration = Math.max(240, Math.floor(700 / events.length));
     for (const event of events) {
+      const isFirstOfKind = !shownCinematics.has(event.t);
+      if (isFirstOfKind) shownCinematics.add(event.t);
+      
       steps.push(makeStep(board, place.idx, {
         phase: 'special-highlight',
         durationMs: Math.floor(activationDuration * 0.42),
@@ -201,6 +216,7 @@ export function createBakuretsuPlaybackSteps(
         special: event.t,
         depth,
         blast: event.t === 'BOMB' ? event.range : undefined,
+        cinematic: isFirstOfKind ? (event.t === 'BOMB' ? 'bomb' : 'infection') : undefined,
       }));
 
       if (event.t === 'BOMB') {
@@ -278,10 +294,12 @@ export function createBakuretsuPlaybackSteps(
     }));
   }
 
+  const isFinale = result.state.status === 'FINISHED';
   steps.push(makeStep(result.state.board, place.idx, {
     phase: 'final',
     durationMs: 16,
-    label: result.state.status === 'FINISHED' ? '最終盤面を確定しました' : '手番を交代します',
+    label: isFinale ? '最終盤面を確定しました' : '手番を交代します',
+    cinematic: isFinale ? 'finale' : undefined,
   }));
   return steps;
 }

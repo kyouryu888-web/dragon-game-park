@@ -11,14 +11,8 @@ import {
   BAKURETSU_CPU_LEVELS,
   BAKURETSU_CPU_NAME,
 } from './bakuretsuCpu';
-import {
-  BAKURETSU_SPEED_LABEL,
-  type BakuretsuReversiConfig,
-} from './bakuretsuUi';
+import type { BakuretsuReversiConfig } from './bakuretsuUi';
 import type { Side } from './bakuretsu/types.ts';
-import type { BakuretsuPlaybackSpeed } from './bakuretsuPlayback';
-
-const SPEEDS: BakuretsuPlaybackSpeed[] = ['slow', 'normal', 'fast'];
 const RULES = [
   '着手してすべて裏返してから、爆弾・感染・盾を深度順に解決します',
   '爆弾は配置者自身のコマを破壊しません',
@@ -51,10 +45,6 @@ export function BakuretsuReversiSettingsScreen({
   const ctaLabel = config.mode === 'online'
     ? onlineTab === 'create' ? '爆裂ルームを作成する' : 'このコードで爆裂対戦へ参加する'
     : 'この設定で爆裂対戦する';
-
-  function changeSpeed(side: 'BLACK' | 'WHITE', speed: BakuretsuPlaybackSpeed) {
-    onChange({ playbackSpeed: { ...config.playbackSpeed, [side]: speed } });
-  }
 
   return (
     <GameSetupShell
@@ -177,24 +167,6 @@ export function BakuretsuReversiSettingsScreen({
               : '入力した6桁コードの爆裂ルームへ白・後手として参加します。'}
           </SetupSummary>
         )}
-      </SetupStep>
-
-      <SetupStep numeral="IV" title="演出速度" description="黒と白で別々に設定できます。">
-        <div className="bakuretsu-speed-setup">
-          {(['BLACK', 'WHITE'] as const).map((side) => (
-            <label key={side}>
-              <span>{side === 'BLACK' ? '黒炎' : '白銀'}</span>
-              <select
-                className="game-setup-select"
-                aria-label={`${side === 'BLACK' ? '黒炎' : '白銀'}の演出速度`}
-                value={config.playbackSpeed[side]}
-                onChange={(event) => changeSpeed(side, event.target.value as BakuretsuPlaybackSpeed)}
-              >
-                {SPEEDS.map((speed) => <option key={speed} value={speed}>{BAKURETSU_SPEED_LABEL[speed]}</option>)}
-              </select>
-            </label>
-          ))}
-        </div>
       </SetupStep>
 
       <div className="game-setup-cta">

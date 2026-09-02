@@ -45,8 +45,15 @@ export const games: GameInfo[] = [
   },
   {
     id: 'reversi',
-    title: 'リバーシ',
-    description: '黒炎と白銀の竜陣。角を制し、一手ごとに敵陣を覆して最後の石まで勝敗を奪い合う。',
+    title: 'リバーシ（通常）',
+    description: '黒炎と白銀の竜陣。角を制し、一手ごとに敵陣を奪い合って最後の石まで勝敗を奪い合う。',
+    status: 'available',
+    themeLabel: 'ボードゲーム',
+  },
+  {
+    id: 'bakuretsu-reversi',
+    title: '爆裂リバーシー',
+    description: '爆弾・感染・盾の魔法が飛び交う過激なリバーシ。相手の特殊コマは見えないため心理戦が試される。',
     status: 'available',
     themeLabel: 'ボードゲーム',
   },

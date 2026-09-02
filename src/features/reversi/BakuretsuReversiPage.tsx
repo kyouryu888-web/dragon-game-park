@@ -27,10 +27,6 @@ function loadConfig(): BakuretsuReversiConfig {
     return {
       ...DEFAULT_BAKURETSU_REVERSI_CONFIG,
       ...parsed,
-      playbackSpeed: {
-        ...DEFAULT_BAKURETSU_REVERSI_CONFIG.playbackSpeed,
-        ...parsed.playbackSpeed,
-      },
     };
   } catch {
     return DEFAULT_BAKURETSU_REVERSI_CONFIG;
@@ -164,7 +160,6 @@ export function BakuretsuReversiPage({
       <BakuretsuReversiOnlineGame
         room={room}
         initialRow={roomRow}
-        playbackSpeed={config.playbackSpeed}
         onBackToSetup={backToSettings}
         onBackToHome={onBackToHome}
       />

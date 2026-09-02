@@ -11,6 +11,7 @@ const GAME_ICONS: Record<string, string> = {
   backgammon: '🎲',
   babanuki: '💀',
   reversi: '⚫',
+  'bakuretsu-reversi': '💥',
   gomoku: '🔵',
   checkers: '♟️',
 };
@@ -22,6 +23,7 @@ const GAME_ACCENT: Record<string, string> = {
   backgammon: '#e0733a',
   babanuki: '#6f4a8e',
   reversi:  '#8a6f3a',
+  'bakuretsu-reversi': '#e64a19',
   gomoku:   '#5c7a8a',
   checkers: '#8a6f3a',
 };
@@ -33,6 +35,7 @@ const GAME_EN: Record<string, string> = {
   backgammon: 'BACKGAMMON',
   babanuki: 'BABANUKI',
   reversi: 'REVERSI',
+  'bakuretsu-reversi': 'BAKURETSU REVERSI',
 };
 
 type HomePageProps = {

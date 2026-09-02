@@ -1,6 +1,6 @@
 import { useState, type CSSProperties } from 'react';
 import { idx } from './bakuretsu/rules.ts';
-import type { BoardCell, GameState, Move, PlayerId, SpecialType } from './bakuretsu/types.ts';
+import type { BoardCell, GameState, Move, PlayerId, Side, SpecialType } from './bakuretsu/types.ts';
 import type { BakuretsuPlaybackStep } from './bakuretsuPlayback';
 import {
   BAKURETSU_SPECIAL_LABEL,
@@ -63,6 +63,7 @@ function Disc({
 }
 
 export function BakuretsuReversiBoard({
+  viewer,
   state,
   displayBoard,
   playback,
@@ -72,6 +73,7 @@ export function BakuretsuReversiBoard({
   showHints,
   onMove,
 }: {
+  viewer: Side;
   state: GameState;
   displayBoard: BoardCell[];
   playback: BakuretsuPlaybackStep | null;
@@ -94,7 +96,9 @@ export function BakuretsuReversiBoard({
   return (
     <div className="reversi-board-frame bakuretsu-board-frame">
       <div className="reversi-board" role="grid" aria-label="8かける8の爆裂リバーシ盤">
-        {displayBoard.map((cell, index) => {
+        {displayBoard.map((rawCell, index) => {
+          const isHiddenSpecial = rawCell.owner !== viewer && rawCell.owner !== 'NONE' && rawCell.specialType !== 'NONE';
+          const cell = isHiddenSpecial ? { ...rawCell, specialType: 'NONE' as SpecialType } : rawCell;
           const x = index % 8;
           const y = Math.floor(index / 8);
           const coordinate = `${String.fromCharCode(65 + x)}${y + 1}`;
