@@ -31,7 +31,7 @@ describe('Bakuretsu Reversi UI contract', () => {
     expect(html).toContain('連鎖 待機');
     expect(html).toContain('TIME BANK');
     expect(html).toContain('20:00');
-    expect(html).toContain('公開特殊コマ');
+    expect(html).toContain('特殊コマ状況');
     expect(html).toContain('中立配置は反転0枚');
     expect(html).toContain('自軍は爆風でも無傷');
     expect(html).toContain('中立は挟む端になれない');
@@ -56,7 +56,7 @@ describe('Bakuretsu Reversi UI contract', () => {
     expect(html).toContain('CPUの強さ');
     expect(html).toContain('Lv1・ベビードラゴン');
     expect(html).toContain('Lv5・ゴッドドラゴン');
-    expect(html.match(/<option/g)).toHaveLength(11);
+    expect(html.match(/<option/g)).toHaveLength(5);
     expect(html).toContain('黒・先手');
     expect(html).toContain('白・後手');
     expect(html).toContain('おまかせ');
@@ -89,6 +89,7 @@ describe('Bakuretsu Reversi UI contract', () => {
     state.board[1] = { state: 'FACEUP', owner: 'NONE', specialType: 'NEUTRAL', durability: 0, isQueued: false, activated: false };
     const html = renderToStaticMarkup(
       <BakuretsuReversiBoard
+        viewer="BLACK"
         state={state}
         displayBoard={state.board}
         playback={null}

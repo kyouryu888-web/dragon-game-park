@@ -16,13 +16,11 @@ import type { BakuretsuReversiConfig } from './bakuretsuUi';
 export function BakuretsuReversiOnlineGame({
   room,
   initialRow,
-  playbackSpeed,
   onBackToSetup,
   onBackToHome,
 }: {
   room: BakuretsuReversiRoomInfo;
   initialRow: BakuretsuReversiRoomRow;
-  playbackSpeed: BakuretsuReversiConfig['playbackSpeed'];
   onBackToSetup: () => void;
   onBackToHome: () => void;
 }) {
@@ -172,7 +170,6 @@ export function BakuretsuReversiOnlineGame({
     name2: row.guest_name ?? '挑戦者',
     cpuLevel: 3,
     humanSide: room.mySide,
-    playbackSpeed,
   };
 
   return (

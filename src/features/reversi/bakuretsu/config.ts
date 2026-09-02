@@ -47,7 +47,7 @@ export const DEFAULT_CONFIG: RuleConfig = {
   infectRange: 'CROSS',
   shieldDurability: 1,
   dummyCount: 0,               // ダミー権廃止
-  specialCount: 3,
+  specialCount: 4,
   dealPool: ['BOMB', 'INFECT', 'SHIELD', 'NEUTRAL'],
   maxQuestionMarks: 2,
   neutralCanBeEndpoint: false,

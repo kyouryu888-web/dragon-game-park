@@ -16,8 +16,11 @@ import { BackgammonPage } from './features/backgammon/BackgammonPage';
 import { BabanukiPage } from './features/babanuki/BabanukiPage';
 import { DEFAULT_ONLINE_ENTRY_MODE } from './components/gameSetupDefaults';
 
-const ReversiPage = lazy(() => import('./features/reversi/ReversiPage').then((module) => ({
-  default: module.ReversiPage,
+const NormalReversiPage = lazy(() => import('./features/reversi/ReversiPage').then((module) => ({
+  default: module.NormalReversiPage,
+})));
+const BakuretsuReversiPage = lazy(() => import('./features/reversi/BakuretsuReversiPage').then((module) => ({
+  default: module.BakuretsuReversiPage,
 })));
 
 type AppScreen =
@@ -32,7 +35,8 @@ type AppScreen =
   | 'uno-online-game'
   | 'backgammon'
   | 'babanuki'
-  | 'reversi';
+  | 'reversi'
+  | 'bakuretsu-reversi';
 
 export default function App() {
   const [screen, setScreen] = useState<AppScreen>('home');
@@ -68,6 +72,7 @@ export default function App() {
           if (gameId === 'backgammon') setScreen('backgammon');
           if (gameId === 'babanuki') setScreen('babanuki');
           if (gameId === 'reversi') setScreen('reversi');
+          if (gameId === 'bakuretsu-reversi') setScreen('bakuretsu-reversi');
         }}
       />
     );
@@ -136,7 +141,15 @@ export default function App() {
   if (screen === 'reversi') {
     return (
       <Suspense fallback={<div className="feature-loading">竜陣を開いています…</div>}>
-        <ReversiPage onBackToHome={() => setScreen('home')} />
+        <NormalReversiPage onBackToHome={() => setScreen('home')} />
+      </Suspense>
+    );
+  }
+
+  if (screen === 'bakuretsu-reversi') {
+    return (
+      <Suspense fallback={<div className="feature-loading">爆裂竜陣を開いています…</div>}>
+        <BakuretsuReversiPage onBackToVariant={() => setScreen('home')} onBackToHome={() => setScreen('home')} />
       </Suspense>
     );
   }

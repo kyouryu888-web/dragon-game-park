@@ -17,7 +17,6 @@ export type BakuretsuReversiConfig = {
   mode: 'cpu' | 'local' | 'online';
   cpuLevel: Level;
   humanSide: Side | 'RANDOM';
-  playbackSpeed: Record<Side, BakuretsuPlaybackSpeed>;
 };
 
 export const DEFAULT_BAKURETSU_REVERSI_CONFIG: BakuretsuReversiConfig = {
@@ -26,7 +25,6 @@ export const DEFAULT_BAKURETSU_REVERSI_CONFIG: BakuretsuReversiConfig = {
   mode: 'local',
   cpuLevel: 3,
   humanSide: 'BLACK',
-  playbackSpeed: { BLACK: 'normal', WHITE: 'normal' },
 };
 
 export const BAKURETSU_SPEED_LABEL: Record<BakuretsuPlaybackSpeed, string> = {

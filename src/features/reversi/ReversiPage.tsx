@@ -39,7 +39,7 @@ function loadConfig(): ReversiConfig {
   }
 }
 
-function NormalReversiPage({ onBackToHome }: { onBackToHome: () => void }) {
+export function NormalReversiPage({ onBackToHome }: { onBackToHome: () => void }) {
   const [screen, setScreen] = useState<Screen>('settings');
   const [config, setConfig] = useState<ReversiConfig>(loadConfig);
   const [onlineTab, setOnlineTab] = useState<'create' | 'join'>(DEFAULT_ONLINE_ENTRY_MODE);

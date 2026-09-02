@@ -55,7 +55,8 @@ describe('Bakuretsu online synchronization decisions', () => {
     expect(decideBakuretsuSync(initial.state, 0, null, { ...initial, state: first.state, result: first })).toBe('playback');
     expect(decideBakuretsuSync(initial.state, 0, null, { ...initial, state: second.state, result: second })).toBe('reset');
 
-    const conflict = snapshot(2);
+    const conflict = snapshot(1);
+    conflict.state.hands.BLACK.specialPieces = [];
     conflict.state.moveNo = initial.state.moveNo;
     expect(decideBakuretsuSync(initial.state, 0, null, conflict)).toBe('reset');
   });
