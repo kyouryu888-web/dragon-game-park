@@ -51,6 +51,15 @@ describe('joinReversiRoomAuto', () => {
     expect(joinBakuretsuReversiRoomMock).toHaveBeenCalledWith('BAKU01', '挑戦者');
   });
 
+  it('throws friendly error when bakuretsu room is already full or started', async () => {
+    fetchReversiRoomMock.mockResolvedValueOnce(null);
+    joinBakuretsuReversiRoomMock.mockRejectedValueOnce(new Error('爆裂ルームに入れません。コードか参加状況を確認してください'));
+
+    await expect(joinReversiRoomAuto('FULL01', '挑戦者')).rejects.toThrow(
+      'そのルームは満員か、既に対戦が始まっています',
+    );
+  });
+
   it('throws friendly error when room does not exist anywhere', async () => {
     fetchReversiRoomMock.mockResolvedValueOnce(null);
     joinBakuretsuReversiRoomMock.mockRejectedValueOnce(new Error('爆裂ルームに入れません'));

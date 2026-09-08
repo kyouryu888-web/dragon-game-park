@@ -333,13 +333,10 @@ export function MancalaOnlineGamePage({
     const finalState = applyMove(state, pitId);
     if (finalState === state) return;
 
-    supabase
+    void supabase
       .from('mancala_rooms')
       .update({ game_state: finalState })
-      .eq('room_code', roomCode)
-      .then(({ error }) => {
-        if (error) console.error('[online] write failed:', error);
-      });
+      .eq('room_code', roomCode);
 
     const { steps, activeIds, captureInfo: ci, isExtraTurn } =
       computeStoneSteps(state, pitId);
@@ -478,13 +475,10 @@ export function MancalaOnlineGamePage({
       ),
     };
     setGameState(updatedGs);
-    supabase
+    void supabase
       .from('mancala_rooms')
       .update({ game_state: updatedGs })
-      .eq('room_code', roomCode)
-      .then(({ error }) => {
-        if (error) console.error('[online] name update failed:', error);
-      });
+      .eq('room_code', roomCode);
   }, [gameState, myPlayerId, nameInput, roomCode]);
 
   const handleRematch = useCallback(() => {
@@ -514,13 +508,10 @@ export function MancalaOnlineGamePage({
     setDisplayActiveIds(nextState.activePlayerIds);
     setGameState(nextState);
 
-    supabase
+    void supabase
       .from('mancala_rooms')
       .update({ game_state: nextState })
-      .eq('room_code', roomCode)
-      .then(({ error }) => {
-        if (error) console.error('[online] rematch failed:', error);
-      });
+      .eq('room_code', roomCode);
   }, [gameState, myPlayerId, roomCode]);
 
   // ============================================================
@@ -611,7 +602,6 @@ export function MancalaOnlineGamePage({
             )}
             <GameEndActions
               onRematch={isHostClient ? handleRematch : undefined}
-              onChangeSettings={onBackToSetup}
               onBackToSetup={onBackToSetup}
               onBackToHome={onBackToHome}
               canRematch={isHostClient}

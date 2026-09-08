@@ -1,4 +1,4 @@
-﻿import { renderToStaticMarkup } from "react-dom/server";
+import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { UnoSetupPage } from "./uno/UnoSetupPage";
 import { MancalaSetupPage } from "./mancala/MancalaSetupPage";
@@ -97,7 +97,7 @@ describe("All games setup screen flow contracts", () => {
         />
       );
 
-      expect(html).toContain("ルーム作成の準備");
+      expect(html).toContain("ルームコードを発行する");
       expect(html).toContain("ルームを作成する");
       expect(html).not.toContain("CPUの強さ");
       expect(html).not.toContain("ルーム設定へ進む");
@@ -117,7 +117,7 @@ describe("All games setup screen flow contracts", () => {
         />
       );
 
-      expect(html).toContain("対戦相手を決める");
+      expect(html).toContain("ドラゴンの強さを決める");
       expect(html).toContain("番人ドラゴン");
       expect(html).toContain("この設定で対戦する");
     });

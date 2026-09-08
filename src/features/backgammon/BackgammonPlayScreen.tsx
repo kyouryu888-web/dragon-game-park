@@ -411,35 +411,39 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
       {props.over && (
         <div style={{
           position: 'absolute', inset: 0, zIndex: 30, background: 'rgba(10,7,12,.9)',
-          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-          gap: 10, textAlign: 'center', padding: 24,
+          display: 'flex', flexDirection: 'column', alignItems: 'center',
+          textAlign: 'center', padding: '24px 16px', overflowY: 'auto',
         }}>
           <div style={{
-            width: 96, height: 96, borderRadius: '50%', border: '1.5px solid rgba(201,162,75,.5)',
-            background: 'radial-gradient(circle at 50% 38%, #2a1e2b, #191320 75%)',
-            boxShadow: '0 0 30px rgba(224,115,58,.25)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            animation: 'dragonBob 3.4s ease-in-out infinite',
+            margin: 'auto 0', width: '100%', maxWidth: 360,
+            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10,
           }}>
-            <DragonIcon size={64} />
+            <div style={{
+              width: 96, height: 96, borderRadius: '50%', border: '1.5px solid rgba(201,162,75,.5)',
+              background: 'radial-gradient(circle at 50% 38%, #2a1e2b, #191320 75%)',
+              boxShadow: '0 0 30px rgba(224,115,58,.25)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              animation: 'dragonBob 3.4s ease-in-out infinite',
+            }}>
+              <DragonIcon size={64} />
+            </div>
+            <div style={{ fontFamily: BG.serifEn, fontSize: 13, letterSpacing: '.3em', color: BG.goldDim, marginTop: 8 }}>
+              {props.over.en}
+            </div>
+            <div style={{
+              fontSize: 26, fontWeight: 700, letterSpacing: '.14em', color: BG.goldBright,
+              textShadow: '0 0 20px rgba(224,115,58,.4)',
+            }}>
+              {props.over.title}
+            </div>
+            <div style={{ fontSize: 13.5, color: BG.textMid, lineHeight: 1.8 }}>{props.over.sub}</div>
+            <GameEndActions
+              onRematch={props.over.showRematch ? props.onRematch : undefined}
+              canRematch={props.over.showRematch}
+              onBackToSetup={props.onBackToSettings}
+              onBackToHome={props.onBackToHome}
+            />
           </div>
-          <div style={{ fontFamily: BG.serifEn, fontSize: 13, letterSpacing: '.3em', color: BG.goldDim, marginTop: 8 }}>
-            {props.over.en}
-          </div>
-          <div style={{
-            fontSize: 26, fontWeight: 700, letterSpacing: '.14em', color: BG.goldBright,
-            textShadow: '0 0 20px rgba(224,115,58,.4)',
-          }}>
-            {props.over.title}
-          </div>
-          <div style={{ fontSize: 13.5, color: BG.textMid, lineHeight: 1.8 }}>{props.over.sub}</div>
-          <GameEndActions
-            onRematch={props.over.showRematch ? props.onRematch : undefined}
-            canRematch={props.over.showRematch}
-            onChangeSettings={props.onBackToSettings}
-            onBackToSetup={props.onBackToSettings}
-            onBackToHome={props.onBackToHome}
-          />
         </div>
       )}
     </div>

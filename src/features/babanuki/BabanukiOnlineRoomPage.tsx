@@ -15,7 +15,7 @@ import {
   subscribeRoom,
 } from './babanukiOnline';
 
-type PageState = 'menu' | 'create' | 'joining' | 'waiting';
+type PageState = 'menu' | 'create' | 'creating' | 'joining' | 'waiting';
 
 type Props = {
   initialMode?: 'create' | 'join';
@@ -46,7 +46,7 @@ export function BabanukiOnlineRoomPage({
   const autoJoinStartedRef = useRef(false);
   const autoCreateStartedRef = useRef(false);
   const [page, setPage] = useState<PageState>(
-    initialMode === 'create' ? 'create' : shouldAutoJoin ? 'joining' : 'menu'
+    initialMode === 'create' ? 'creating' : shouldAutoJoin ? 'joining' : 'menu'
   );
   const [entryMode, setEntryMode] = useState<'create' | 'join'>(initialMode);
   const [myName, setMyName] = useState(() => initialName || getSavedOnlineName());
@@ -81,6 +81,7 @@ export function BabanukiOnlineRoomPage({
       setPage('waiting');
     } catch (e) {
       setError(e instanceof Error ? e.message : 'ルームを開けなかった');
+      setPage('menu');
     } finally {
       setBusy(false);
     }
@@ -147,6 +148,19 @@ export function BabanukiOnlineRoomPage({
 
   const cpuCount = slots.slice(0, playerCount - 1).filter((s) => s.isCpu).length;
 
+  if (page === 'creating') {
+    return (
+      <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', padding: 24, color: '#e0d3b8' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div className="cpu-thinking-pulse" style={{ fontSize: 18, fontWeight: 900, color: '#e6c877', marginBottom: 10 }}>
+            ババ抜きルームを作成しています...
+          </div>
+          <p style={{ fontSize: 13, color: '#b5a68c' }}>ルームコードを発行しています。少しだけお待ちください。</p>
+        </div>
+      </div>
+    );
+  }
+
   if (page === 'joining') {
     return (
       <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', padding: 24, color: '#e0d3b8' }}>
@@ -166,7 +180,7 @@ export function BabanukiOnlineRoomPage({
         <button
           type="button"
           className="btn"
-          onClick={page === 'menu' ? onBack : () => setPage('menu')}
+          onClick={handleLeaveWaiting}
           style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid rgba(140,120,90,.4)', background: 'rgba(30,26,22,.8)', color: '#c9b48f', fontSize: 12, cursor: 'pointer' }}
         >
           ← ゲーム設定に戻る
