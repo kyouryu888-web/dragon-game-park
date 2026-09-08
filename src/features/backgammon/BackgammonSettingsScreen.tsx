@@ -40,6 +40,9 @@ export function BackgammonSettingsScreen({
 }: Props) {
   
 
+  const isOnlineJoin = config.mode === 'online' && onlineTab === 'join';
+  const isOnlineCreate = config.mode === 'online' && onlineTab === 'create';
+
   return (
     <GameSetupShell
       theme="backgammon"
@@ -50,52 +53,99 @@ export function BackgammonSettingsScreen({
       onBack={onBackToHome}
     >
       <SetupStep numeral="I" title="名を刻む">
-        <input className="game-setup-input" value={config.name} onChange={(event) => onChange({ name: event.target.value })} placeholder="挑戦者の名（なくてもよい）" maxLength={12} />
+        <input
+          className="game-setup-input"
+          value={config.name}
+          onChange={(event) => onChange({ name: event.target.value })}
+          placeholder="挑戦者の名（なくてもよい）"
+          maxLength={12}
+        />
       </SetupStep>
 
       <SetupStep numeral="II" title="対戦方法を選ぶ">
         <div className="game-setup-mode-grid">
-          <SetupModeCard selected={config.mode === 'cpu'} icon="🐉" title="ドラゴンと対戦" code="VS CPU" description="番人ドラゴンと一騎打ち" onClick={() => onChange({ mode: 'cpu' })} />
-          <SetupModeCard selected={config.mode === 'online'} icon="♜" title="遠方の者と対戦" code="ONLIE" description="ルームコードで離れた相手と対戦" onClick={() => onChange({ mode: 'online' })} />
+          <SetupModeCard
+            selected={config.mode === 'cpu'}
+            icon="🐉"
+            title="ドラゴンと対戦"
+            code="VS CPU"
+            description="番人ドラゴンと一騎打ち"
+            onClick={() => onChange({ mode: 'cpu' })}
+          />
+          <SetupModeCard
+            selected={config.mode === 'online'}
+            icon="♜"
+            title="遠方の者と対戦"
+            code="ONLINE"
+            description="ルームコードで離れた相手と対戦"
+            onClick={() => onChange({ mode: 'online' })}
+          />
         </div>
         {config.mode === 'online' ? (
-          <div className="game-setup-online-panel">
+          <div className="game-setup-online-panel" style={{ marginTop: 12 }}>
             <SetupChoiceTabs value={onlineTab} onChange={onOnlineTabChange} />
-            {onlineTab === 'join' ? (
-              <input
-                className="game-setup-input game-setup-code-input"
-                value={joinCode}
-                onChange={(event) => onJoinCodeChange(event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
-                placeholder="コードを入力"
-                maxLength={6}
-              />
-            ) : null}
           </div>
         ) : null}
       </SetupStep>
 
-      <SetupStep numeral="III" title={config.mode === 'online' && onlineTab === 'join' ? 'コードで参加する' : '対戦相手を決める'}>
-        <div className="game-setup-count-grid" style={{ marginBottom: 12 }}>
-          <button type="button" className="is-selected">2人</button>
-        </div>
-        {config.mode === 'cpu' ? (
+      {isOnlineJoin ? (
+        <SetupStep numeral="III" title="参加コードを入力">
+          <input
+            className="game-setup-input game-setup-code-input"
+            value={joinCode}
+            onChange={(event) => onJoinCodeChange(event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
+            placeholder="コードを入力"
+            maxLength={6}
+          />
+          <SetupSummary>入力したコードの2人用ルームへ参加します。</SetupSummary>
+          <div style={{ marginTop: 14 }}>
+            <Button
+              fullWidth
+              onClick={onStart}
+              disabled={joinCode.length < 4}
+            >
+              このコードで参加する
+            </Button>
+          </div>
+        </SetupStep>
+      ) : isOnlineCreate ? (
+        <SetupStep numeral="III" title="ルーム作成の準備">
+          <div className="game-setup-count-grid" style={{ marginBottom: 12 }}>
+            <button type="button" className="is-selected">2人</button>
+          </div>
+          <SetupSummary>人間2人のルームを作り、相手へ伝えるコードを発行します。</SetupSummary>
+          <div style={{ marginTop: 14 }}>
+            <Button fullWidth onClick={onStart}>
+              ルームを作成する
+            </Button>
+          </div>
+        </SetupStep>
+      ) : (
+        <SetupStep numeral="III" title="対戦相手を決める">
+          <div className="game-setup-count-grid" style={{ marginBottom: 12 }}>
+            <button type="button" className="is-selected">2人</button>
+          </div>
           <div className="game-setup-opponent-row">
             <strong>番人ドラゴン</strong>
             <span className="game-setup-role-tabs"><button type="button" className="is-selected">CPU</button></span>
-            <select className="game-setup-select" value={config.cpuLevel} onChange={(event) => onChange({ cpuLevel: event.target.value as CpuLevel })}>
-              {CPU_LEVELS.map(({ level, label }) => <option key={level} value={level}>{label}</option>)}
+            <select
+              className="game-setup-select"
+              value={config.cpuLevel}
+              onChange={(event) => onChange({ cpuLevel: event.target.value as CpuLevel })}
+            >
+              {CPU_LEVELS.map(({ level, label }) => (
+                <option key={level} value={level}>{label}</option>
+              ))}
             </select>
           </div>
-        ) : (
-          <SetupSummary>{onlineTab === 'create' ? '人間2人のルームを作り、コードを相手へ伝えます。' : '入力したコードの2人用ルームへ参加します。'}</SetupSummary>
-        )}
-      </SetupStep>
-
-      <div className="game-setup-cta">
-        <Button fullWidth onClick={onStart} disabled={config.mode === 'online' && onlineTab === 'join' && joinCode.length < 4}>
-          この設定で対戦する
-        </Button>
-      </div>
+          <SetupSummary>番人ドラゴンと1対1で対戦します。</SetupSummary>
+          <div style={{ marginTop: 14 }}>
+            <Button fullWidth onClick={onStart}>
+              この設定で対戦する
+            </Button>
+          </div>
+        </SetupStep>
+      )}
     </GameSetupShell>
   );
 }

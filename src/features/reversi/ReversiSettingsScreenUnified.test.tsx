@@ -13,7 +13,7 @@ const DUMMY_NORMAL_CONFIG: ReversiConfig = {
 };
 
 describe('ReversiUnifiedSettingsScreen user experience contract', () => {
-  it('hides CPU strength and variant selection when joining via code, showing only clean join UI', () => {
+  it('renders Step I variant selection, Step II name, Step III online mode, and Step IV clean join UI without redundant headings', () => {
     const html = renderToStaticMarkup(
       <ReversiUnifiedSettingsScreen
         variant="normal"
@@ -31,19 +31,28 @@ describe('ReversiUnifiedSettingsScreen user experience contract', () => {
       />,
     );
 
-    // 参加画面では、通常版/爆裂版の事前選択を強制せず、自動判別を案内
-    expect(html).toContain('リバーシ オンライン');
+    // Step I: モード選択が最上部
+    expect(html).toContain('遊戯の掟を選ぶ');
+    expect(html).toContain('通常リバーシ');
+    expect(html).toContain('爆裂リバーシー');
+
+    // Step II: 名を刻む
+    expect(html).toContain('名を刻む');
+
+    // Step III: 対戦方法を選ぶ
+    expect(html).toContain('対戦方法を選ぶ');
     expect(html).toContain('コードで参加する');
+
+    // Step IV: 参加コードを入力（余分な「コードで参加する」重複タイトルがないこと）
+    expect(html).toContain('参加コードを入力');
     expect(html).toContain('通常版・爆裂版のどちらのコードでも自動判別して即座に参加します。');
     expect(html).toContain('このコードで参加する');
 
-    // 迷わせる無駄な項目が一切表示されないこと
-    expect(html).not.toContain('対戦相手を決める');
+    // 迷わせる無駄なCPU設定が表示されないこと
     expect(html).not.toContain('CPUの強さ');
-    expect(html).not.toContain('ルールの選択');
   });
 
-  it('shows rule selection and side selection when creating an online room, but no CPU options', () => {
+  it('shows side selection and single bottom CTA button when creating an online room, with no CPU options', () => {
     const html = renderToStaticMarkup(
       <ReversiUnifiedSettingsScreen
         variant="normal"
@@ -61,10 +70,8 @@ describe('ReversiUnifiedSettingsScreen user experience contract', () => {
       />,
     );
 
-    expect(html).toContain('ルールと手番を決める');
-    expect(html).toContain('通常版');
-    expect(html).toContain('爆裂版');
-    expect(html).toContain('あなたの手番');
+    expect(html).toContain('遊戯の掟を選ぶ');
+    expect(html).toContain('手番を決める');
     expect(html).toContain('黒・先手');
     expect(html).toContain('ルームを作成する');
 
@@ -72,7 +79,7 @@ describe('ReversiUnifiedSettingsScreen user experience contract', () => {
     expect(html).not.toContain('CPUの強さ');
   });
 
-  it('shows CPU level options and rule selection in CPU mode', () => {
+  it('shows CPU level options and side selection in CPU mode', () => {
     const html = renderToStaticMarkup(
       <ReversiUnifiedSettingsScreen
         variant="bakuretsu"
@@ -90,9 +97,10 @@ describe('ReversiUnifiedSettingsScreen user experience contract', () => {
       />,
     );
 
-    expect(html).toContain('ルールと対戦相手を決める');
+    expect(html).toContain('対戦相手と手番を決める');
     expect(html).toContain('CPUの強さ');
     expect(html).toContain('Lv1・ベビードラゴン');
     expect(html).toContain('この設定で対戦する');
   });
 });
+
