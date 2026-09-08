@@ -8,19 +8,23 @@ export function GameEndActions({
   canRematch = true,
 }: {
   onRematch?: () => void;
-  onChangeSettings: () => void;
+  onChangeSettings?: () => void;
   onBackToSetup: () => void;
   onBackToHome: () => void;
   canRematch?: boolean;
 }) {
+  const showChangeSettings = Boolean(onChangeSettings && onChangeSettings !== onBackToSetup);
+
   return (
     <div className="game-end-actions" aria-label="ゲーム終了後の操作">
       <Button fullWidth onClick={onRematch} disabled={!canRematch || !onRematch}>
         再戦する
       </Button>
-      <Button fullWidth variant="secondary" onClick={onChangeSettings}>
-        設定を変更して再戦する
-      </Button>
+      {showChangeSettings ? (
+        <Button fullWidth variant="secondary" onClick={onChangeSettings}>
+          設定を変更して再戦する
+        </Button>
+      ) : null}
       <Button fullWidth variant="secondary" onClick={onBackToSetup}>
         ゲーム設定に戻る
       </Button>

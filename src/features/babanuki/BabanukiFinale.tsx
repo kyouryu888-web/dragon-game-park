@@ -80,8 +80,8 @@ export function BabanukiFinale({
       style={{
         position: 'fixed', inset: 0, zIndex: 9990,
         background: 'radial-gradient(ellipse at 50% 38%, rgba(60,30,80,.55), rgba(6,4,10,.97) 62%)',
-        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        padding: 20, overflowY: 'auto',
+        display: 'flex', flexDirection: 'column', alignItems: 'center',
+        padding: '20px 16px', overflowY: 'auto',
       }}
     >
       {/* スポットライト */}
@@ -98,7 +98,7 @@ export function BabanukiFinale({
         />
       )}
 
-      <div style={{ position: 'relative', textAlign: 'center', zIndex: 2, width: '100%', maxWidth: 380 }}>
+      <div style={{ position: 'relative', textAlign: 'center', zIndex: 2, width: '100%', maxWidth: 380, margin: 'auto 0' }}>
         {/* ジョーカーがめくれ上がる */}
         {stage >= 1 && (
           <div className="babanuki-joker-reveal" style={{ position: 'relative', display: 'inline-block', marginBottom: 6 }}>

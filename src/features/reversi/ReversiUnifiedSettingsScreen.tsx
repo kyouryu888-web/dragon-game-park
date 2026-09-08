@@ -123,29 +123,37 @@ export function ReversiUnifiedSettingsScreen({
       description={shellDescription}
       onBack={onBackToHome}
     >
-      {/* Step I: モード選択（通常版／爆裂版） - 一番最初に選択 */}
+      {/* Step I: モード選択（通常版／爆裂版） - 参加時は自動判別の案内を表示 */}
       <SetupStep numeral="I" title="遊戯の掟を選ぶ">
-        <div className="game-setup-tabs">
-          <button
-            type="button"
-            className={variant === 'normal' ? 'is-selected' : ''}
-            onClick={() => handleVariantChange('normal')}
-          >
-            ⚫ 通常リバーシ
-          </button>
-          <button
-            type="button"
-            className={variant === 'bakuretsu' ? 'is-selected' : ''}
-            onClick={() => handleVariantChange('bakuretsu')}
-          >
-            💥 爆裂リバーシー
-          </button>
-        </div>
-        <SetupSummary>
-          {variant === 'normal'
-            ? '挟んで裏返す伝統の2人対戦ルールです。'
-            : '特殊コマ（爆弾・感染・盾・中立）が戦況を一変させる過激ルールです。'}
-        </SetupSummary>
+        {isOnlineJoin ? (
+          <SetupSummary>
+            ✨ 通常版・爆裂版のどちらのコードでも自動判別して即座に参加します（ルールの事前選択は不要です）。
+          </SetupSummary>
+        ) : (
+          <>
+            <div className="game-setup-tabs">
+              <button
+                type="button"
+                className={variant === 'normal' ? 'is-selected' : ''}
+                onClick={() => handleVariantChange('normal')}
+              >
+                ⚫ 通常リバーシ
+              </button>
+              <button
+                type="button"
+                className={variant === 'bakuretsu' ? 'is-selected' : ''}
+                onClick={() => handleVariantChange('bakuretsu')}
+              >
+                💥 爆裂リバーシー
+              </button>
+            </div>
+            <SetupSummary>
+              {variant === 'normal'
+                ? '挟んで裏返す伝統の2人対戦ルールです。'
+                : '特殊コマ（爆弾・感染・盾・中立）が戦況を一変させる過激ルールです。'}
+            </SetupSummary>
+          </>
+        )}
       </SetupStep>
 
       {/* Step II: 名を刻む */}

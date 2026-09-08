@@ -441,10 +441,12 @@ export function MancalaRoomPage({
           {/* ルームコード */}
           <div style={{
             display: 'inline-block',
-            fontSize: 34, fontWeight: 'bold', letterSpacing: 10,
+            fontSize: 'clamp(24px, 7vw, 34px)', fontWeight: 'bold',
+            letterSpacing: 'clamp(4px, 2vw, 10px)',
             fontFamily: 'monospace', color: 'var(--brown)',
             background: 'rgba(201,162,75,.12)', border: '2px solid #e8c870',
-            borderRadius: 18, padding: '18px 32px', marginBottom: 20,
+            borderRadius: 18, padding: '16px clamp(16px, 5vw, 32px)', marginBottom: 20,
+            maxWidth: '100%', boxSizing: 'border-box',
           }}>
             {roomCode}
           </div>

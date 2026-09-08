@@ -31,17 +31,16 @@ describe('ReversiUnifiedSettingsScreen user experience contract', () => {
       />,
     );
 
-    // Step I: モード選択が最上部
+    // Step I: 参加時はルールの事前選択不要・自動判別の案内
     expect(html).toContain('遊戯の掟を選ぶ');
-    expect(html).toContain('通常リバーシ');
-    expect(html).toContain('爆裂リバーシー');
+    expect(html).toContain('ルールの事前選択は不要です');
 
     // Step II: 名を刻む
     expect(html).toContain('名を刻む');
 
     // Step III: 対戦方法を選ぶ
     expect(html).toContain('対戦方法を選ぶ');
-    expect(html).toContain('コードで参加する');
+    expect(html).toContain('コードで参加');
 
     // Step IV: 参加コードを入力（余分な「コードで参加する」重複タイトルがないこと）
     expect(html).toContain('参加コードを入力');
@@ -71,6 +70,8 @@ describe('ReversiUnifiedSettingsScreen user experience contract', () => {
     );
 
     expect(html).toContain('遊戯の掟を選ぶ');
+    expect(html).toContain('通常リバーシ');
+    expect(html).toContain('爆裂リバーシー');
     expect(html).toContain('手番を決める');
     expect(html).toContain('黒・先手');
     expect(html).toContain('ルームを作成する');

@@ -45,9 +45,10 @@ export async function joinReversiRoomAuto(
     if (
       message.includes('既に対戦が始まっている') ||
       message.includes('満員') ||
-      message.includes('定員')
+      message.includes('定員') ||
+      message.includes('参加状況')
     ) {
-      throw new Error(message);
+      throw new Error('そのルームは満員か、既に対戦が始まっています');
     }
     throw new Error('入力されたコードのルームが見つかりませんでした（コードを確認してください）');
   }

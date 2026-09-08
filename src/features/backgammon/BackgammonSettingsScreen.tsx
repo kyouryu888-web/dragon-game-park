@@ -109,11 +109,8 @@ export function BackgammonSettingsScreen({
           </div>
         </SetupStep>
       ) : isOnlineCreate ? (
-        <SetupStep numeral="III" title="ルーム作成の準備">
-          <div className="game-setup-count-grid" style={{ marginBottom: 12 }}>
-            <button type="button" className="is-selected">2人</button>
-          </div>
-          <SetupSummary>人間2人のルームを作り、相手へ伝えるコードを発行します。</SetupSummary>
+        <SetupStep numeral="III" title="ルームコードを発行する">
+          <SetupSummary>対戦用のルームを作成し、相手へ伝える6桁コードを発行します。</SetupSummary>
           <div style={{ marginTop: 14 }}>
             <Button fullWidth onClick={onStart}>
               ルームを作成する
@@ -121,10 +118,7 @@ export function BackgammonSettingsScreen({
           </div>
         </SetupStep>
       ) : (
-        <SetupStep numeral="III" title="対戦相手を決める">
-          <div className="game-setup-count-grid" style={{ marginBottom: 12 }}>
-            <button type="button" className="is-selected">2人</button>
-          </div>
+        <SetupStep numeral="III" title="ドラゴンの強さを決める">
           <div className="game-setup-opponent-row">
             <strong>番人ドラゴン</strong>
             <span className="game-setup-role-tabs"><button type="button" className="is-selected">CPU</button></span>
