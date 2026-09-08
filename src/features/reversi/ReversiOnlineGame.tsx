@@ -8,7 +8,7 @@ import {
   type ReversiRoomInfo,
   type ReversiRoomRow,
 } from './reversiOnline';
-import type { ReversiConfig, ReversiGameState } from './reversiTypes';
+import type { DiscColor, ReversiConfig, ReversiGameState } from './reversiTypes';
 
 type Props = {
   room: ReversiRoomInfo;
@@ -68,10 +68,23 @@ export function ReversiOnlineGame({ room, initialRow, onBackToSetup, onBackToHom
       .catch(() => setSyncMessage('盤面を送信できませんでした。通信を確認してください'));
   }, [room.roomCode]);
 
+  const hostIsBlack = row.game_state.players.black.name === row.host_name;
+  const myColor: DiscColor = room.isHost
+    ? (hostIsBlack ? 'black' : 'white')
+    : (hostIsBlack ? 'white' : 'black');
+
   const rematch = useCallback(() => {
     if (!room.isHost) return;
     const current = rowRef.current;
-    commitState(createOnlineReversiState(current.host_name, current.guest_name ?? '挑戦者'));
+    const currentHostIsBlack = current.game_state.players.black.name === current.host_name;
+    commitState(createOnlineReversiState(current.host_name, current.guest_name ?? '挑戦者', currentHostIsBlack));
+  }, [commitState, room.isHost]);
+
+  const rematchSwapSides = useCallback(() => {
+    if (!room.isHost) return;
+    const current = rowRef.current;
+    const currentHostIsBlack = current.game_state.players.black.name === current.host_name;
+    commitState(createOnlineReversiState(current.host_name, current.guest_name ?? '挑戦者', !currentHostIsBlack));
   }, [commitState, room.isHost]);
 
   const config: ReversiConfig = {
@@ -79,7 +92,7 @@ export function ReversiOnlineGame({ room, initialRow, onBackToSetup, onBackToHom
     name: row.host_name,
     name2: row.guest_name ?? '挑戦者',
     cpuLevel: 'normal',
-    humanSide: room.myColor,
+    humanSide: myColor,
   };
 
   return (
@@ -89,12 +102,13 @@ export function ReversiOnlineGame({ room, initialRow, onBackToSetup, onBackToHom
         config={config}
         initialState={initialRow.game_state}
         synchronizedState={row.game_state}
-        viewerColor={room.myColor}
+        viewerColor={myColor}
         roomCode={room.roomCode}
         canRematch={room.isHost}
         rematchWaitingMessage="ルームの主が再戦を選ぶと、このまま次の対局が始まります。"
         onStateCommit={commitState}
         onRematch={rematch}
+        onChangeSettings={room.isHost ? rematchSwapSides : undefined}
         onBackToSetup={onBackToSetup}
         onBackToHome={onBackToHome}
       />

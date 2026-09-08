@@ -57,6 +57,13 @@ describe('Reversi online helpers', () => {
     expect(state.currentColor).toBe('black');
   });
 
+  it('creates a swapped side state when hostIsBlack is false', () => {
+    const state = createOnlineReversiState('主', '客', false);
+    expect(state.players.black).toMatchObject({ name: '客', isCpu: false });
+    expect(state.players.white).toMatchObject({ name: '主', isCpu: false });
+    expect(state.currentColor).toBe('black');
+  });
+
   it('joins an open room as white with an optimistic version guard', async () => {
     vi.stubGlobal('sessionStorage', storageFor());
     vi.stubGlobal('crypto', { randomUUID: vi.fn(() => 'guest-tab') });

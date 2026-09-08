@@ -175,6 +175,7 @@ export function BakuretsuReversiGameScreen({
   onMoveRequest,
   onTurnReadyRequest,
   onRematch,
+  onChangeSettings,
 }: {
   config: BakuretsuReversiConfig;
   onBackToSetup: () => void;
@@ -190,6 +191,7 @@ export function BakuretsuReversiGameScreen({
   onMoveRequest?: (move: Move | null, timeout: boolean) => void;
   onTurnReadyRequest?: (matchNo: number, moveNo: number) => void;
   onRematch?: () => void;
+  onChangeSettings?: () => void;
 }) {
   const [state, setState] = useState<GameState>(() => initialSnapshot?.state ?? createGame());
   const [displayBoard, setDisplayBoard] = useState(() => state.board.map((cell) => ({ ...cell })));
@@ -753,7 +755,7 @@ export function BakuretsuReversiGameScreen({
             </div>
             {rematchWaitingMessage && !canRematch ? <p className="reversi-rematch-waiting">{rematchWaitingMessage}</p> : null}
             {state.endReason === 'ABANDON' ? <p className="bakuretsu-result-note">時間切れの自動着手が5回続いたため敗北です。</p> : null}
-            <GameEndActions onRematch={canRematch ? rematch : undefined} canRematch={canRematch} onChangeSettings={onBackToSetup} onBackToSetup={onBackToSetup} onBackToHome={onBackToHome} />
+            <GameEndActions onRematch={canRematch ? rematch : undefined} canRematch={canRematch} onChangeSettings={onChangeSettings ?? onBackToSetup} onBackToSetup={onBackToSetup} onBackToHome={onBackToHome} />
           </section>
         </div>
       ) : null}
