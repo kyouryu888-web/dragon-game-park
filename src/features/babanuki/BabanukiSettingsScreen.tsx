@@ -12,10 +12,14 @@ import type { BabanukiConfig, CpuLevel } from './babanukiTypes';
 import { MAX_PLAYERS, MIN_PLAYERS } from './babanukiTypes';
 import { CPU_LEVELS, getCpuLevelLabel } from './babanukiCpu';
 
+import type { OnlineSlot } from './babanukiOnline';
+
 export type BabanukiOnlineEntry = {
   mode: 'create' | 'join';
   name: string;
   code: string;
+  playerCount?: number;
+  slots?: OnlineSlot[];
 };
 
 type Props = {
@@ -28,9 +32,15 @@ type Props = {
 
 const PLAYER_COUNTS = Array.from({ length: MAX_PLAYERS - MIN_PLAYERS + 1 }, (_, i) => MIN_PLAYERS + i);
 
+function defaultOnlineSlots(): OnlineSlot[] {
+  return Array.from({ length: MAX_PLAYERS - 1 }, () => ({ isCpu: false, cpuLevel: 'normal' as CpuLevel }));
+}
+
 export function BabanukiSettingsScreen({ config, onChange, onStart, onOnlinePlay, onBack }: Props) {
   const [mode, setMode] = useState<'cpu' | 'online'>(DEFAULT_SETUP_MODE);
   const [onlineTab, setOnlineTab] = useState<'create' | 'join'>(DEFAULT_ONLINE_ENTRY_MODE);
+  const [onlinePlayerCount, setOnlinePlayerCount] = useState(4);
+  const [onlineSlots, setOnlineSlots] = useState<OnlineSlot[]>(defaultOnlineSlots);
   const [joinCode, setJoinCode] = useState('');
 
   const setPlayerCount = (count: number) => {
@@ -51,6 +61,10 @@ export function BabanukiSettingsScreen({ config, onChange, onStart, onOnlinePlay
     onChange({ ...config, players });
   };
 
+  const updateOnlineSlot = (index: number, patch: Partial<OnlineSlot>) => {
+    setOnlineSlots((prev) => prev.map((slot, i) => (i === index ? { ...slot, ...patch } : slot)));
+  };
+
   const handleStart = () => {
     if (mode === 'cpu') {
       onStart();
@@ -60,6 +74,8 @@ export function BabanukiSettingsScreen({ config, onChange, onStart, onOnlinePlay
       mode: onlineTab,
       name: config.players[0]?.name ?? '',
       code: joinCode.trim().toUpperCase(),
+      playerCount: onlinePlayerCount,
+      slots: onlineSlots,
     });
   };
 
@@ -132,11 +148,62 @@ export function BabanukiSettingsScreen({ config, onChange, onStart, onOnlinePlay
           </div>
         </SetupStep>
       ) : isOnlineCreate ? (
-        <SetupStep numeral="III" title="ルーム作成の準備">
-          <SetupSummary>次の画面で対戦人数と、人間・CPUの席を選び、ルームコードを発行します。</SetupSummary>
+        <SetupStep numeral="III" title="対戦人数と席を決める">
+          <div className="game-setup-count-grid" style={{ marginBottom: 12 }}>
+            {PLAYER_COUNTS.map((count) => (
+              <button
+                key={count}
+                type="button"
+                className={onlinePlayerCount === count ? 'is-selected' : ''}
+                onClick={() => setOnlinePlayerCount(count)}
+              >
+                {count}人
+              </button>
+            ))}
+          </div>
+          <div className="game-setup-opponent-list">
+            {Array.from({ length: onlinePlayerCount - 1 }, (_, index) => {
+              const slot = onlineSlots[index];
+              return (
+                <div className="game-setup-opponent-row" key={index}>
+                  <strong>ドラゴン{index + 1}の席</strong>
+                  <span className="game-setup-role-tabs">
+                    <button
+                      type="button"
+                      className={!slot.isCpu ? 'is-selected' : ''}
+                      onClick={() => updateOnlineSlot(index, { isCpu: false })}
+                    >
+                      👤 人間
+                    </button>
+                    <button
+                      type="button"
+                      className={slot.isCpu ? 'is-selected' : ''}
+                      onClick={() => updateOnlineSlot(index, { isCpu: true })}
+                    >
+                      🐉 CPU
+                    </button>
+                  </span>
+                  {slot.isCpu ? (
+                    <select
+                      className="game-setup-select"
+                      value={slot.cpuLevel}
+                      onChange={(event) => updateOnlineSlot(index, { cpuLevel: event.target.value as CpuLevel })}
+                    >
+                      {CPU_LEVELS.map((level) => (
+                        <option key={level} value={level}>{getCpuLevelLabel(level)}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>参加待ち</span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <SetupSummary>ルームコードを発行し、参加者を待機します。</SetupSummary>
           <div style={{ marginTop: 14 }}>
             <Button fullWidth onClick={handleStart}>
-              ルーム設定へ進む
+              ルームを作成する
             </Button>
           </div>
         </SetupStep>

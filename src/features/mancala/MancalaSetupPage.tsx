@@ -36,6 +36,9 @@ export type MancalaOnlineEntry = {
   mode: 'create' | 'join';
   name: string;
   code: string;
+  playerCount?: 2 | 3 | 4;
+  cpuSlots?: [boolean, boolean, boolean];
+  cpuLevels?: [CpuLevel, CpuLevel, CpuLevel];
 };
 
 function loadSavedConfig(): MancalaConfig | null {
@@ -63,6 +66,9 @@ export function MancalaSetupPage({ onStart, onBack, onOnlinePlay }: Props) {
   const [players, setPlayers] = useState<PlayerConfig[]>(() => Array.from({ length: 4 }, (_, index) => ({ ...DEFAULT_PLAYERS[index], ...saved?.players[index] })));
   const [mode, setMode] = useState<'cpu' | 'online'>(DEFAULT_SETUP_MODE);
   const [onlineTab, setOnlineTab] = useState<'create' | 'join'>(DEFAULT_ONLINE_ENTRY_MODE);
+  const [onlinePlayerCount, setOnlinePlayerCount] = useState<2 | 3 | 4>(2);
+  const [onlineCpuSlots, setOnlineCpuSlots] = useState<[boolean, boolean, boolean]>([false, false, false]);
+  const [onlineCpuLevels, setOnlineCpuLevels] = useState<[CpuLevel, CpuLevel, CpuLevel]>(['normal', 'normal', 'normal']);
   const [joinCode, setJoinCode] = useState('');
   const [showRules, setShowRules] = useState(false);
 
@@ -70,9 +76,32 @@ export function MancalaSetupPage({ onStart, onBack, onOnlinePlay }: Props) {
     setPlayers((previous) => previous.map((player, playerIndex) => playerIndex === index ? { ...player, ...patch } : player));
   }
 
+  function toggleOnlineCpuSlot(idx: number, isCpu: boolean) {
+    setOnlineCpuSlots((prev) => {
+      const next: [boolean, boolean, boolean] = [...prev];
+      next[idx] = isCpu;
+      return next;
+    });
+  }
+
+  function updateOnlineCpuLevel(idx: number, level: CpuLevel) {
+    setOnlineCpuLevels((prev) => {
+      const next: [CpuLevel, CpuLevel, CpuLevel] = [...prev];
+      next[idx] = level;
+      return next;
+    });
+  }
+
   function handleStart() {
     if (mode === 'online') {
-      onOnlinePlay?.({ mode: onlineTab, name: players[0]?.name ?? '', code: joinCode.trim().toUpperCase() });
+      onOnlinePlay?.({
+        mode: onlineTab,
+        name: players[0]?.name ?? '',
+        code: joinCode.trim().toUpperCase(),
+        playerCount: onlinePlayerCount,
+        cpuSlots: onlineCpuSlots,
+        cpuLevels: onlineCpuLevels,
+      });
       return;
     }
     const config: MancalaConfig = {
@@ -155,11 +184,63 @@ export function MancalaSetupPage({ onStart, onBack, onOnlinePlay }: Props) {
           </div>
         </SetupStep>
       ) : isOnlineCreate ? (
-        <SetupStep numeral="III" title="ルーム作成の準備">
-          <SetupSummary>次の画面で対戦人数とCPU席を設定し、ルームコードを発行します。</SetupSummary>
+        <SetupStep numeral="III" title="対戦人数と席を決める">
+          <div className="game-setup-count-grid" style={{ marginBottom: 12 }}>
+            {([2, 3, 4] as const).map((count) => (
+              <button
+                key={count}
+                type="button"
+                className={onlinePlayerCount === count ? 'is-selected' : ''}
+                onClick={() => setOnlinePlayerCount(count)}
+              >
+                {count}人
+              </button>
+            ))}
+          </div>
+          <div className="game-setup-opponent-list">
+            {Array.from({ length: onlinePlayerCount - 1 }, (_, i) => {
+              const isCpu = onlineCpuSlots[i];
+              const level = onlineCpuLevels[i];
+              return (
+                <div className="game-setup-opponent-row" key={i}>
+                  <strong>{i + 2}人目の席</strong>
+                  <span className="game-setup-role-tabs">
+                    <button
+                      type="button"
+                      className={!isCpu ? 'is-selected' : ''}
+                      onClick={() => toggleOnlineCpuSlot(i, false)}
+                    >
+                      👤 人間
+                    </button>
+                    <button
+                      type="button"
+                      className={isCpu ? 'is-selected' : ''}
+                      onClick={() => toggleOnlineCpuSlot(i, true)}
+                    >
+                      🐉 CPU
+                    </button>
+                  </span>
+                  {isCpu ? (
+                    <select
+                      className="game-setup-select"
+                      value={level}
+                      onChange={(e) => updateOnlineCpuLevel(i, e.target.value as CpuLevel)}
+                    >
+                      {CPU_LEVELS.map(({ level: l, label }) => (
+                        <option key={l} value={l}>{label}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>参加待ち</span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <SetupSummary>ルームコードを発行し、参加者を待機します。</SetupSummary>
           <div style={{ marginTop: 14 }}>
             <Button fullWidth onClick={handleStart}>
-              ルーム設定へ進む
+              ルームを作成する
             </Button>
           </div>
         </SetupStep>
