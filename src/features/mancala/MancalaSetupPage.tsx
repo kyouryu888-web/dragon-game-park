@@ -86,6 +86,9 @@ export function MancalaSetupPage({ onStart, onBack, onOnlinePlay }: Props) {
     onStart(config);
   }
 
+  const isOnlineJoin = mode === 'online' && onlineTab === 'join';
+  const isOnlineCreate = mode === 'online' && onlineTab === 'create';
+
   return (
     <GameSetupShell
       theme="mancala"
@@ -96,68 +99,125 @@ export function MancalaSetupPage({ onStart, onBack, onOnlinePlay }: Props) {
       onBack={onBack}
     >
       <SetupStep numeral="I" title="名を刻む">
-        <input className="game-setup-input" value={players[0]?.name ?? ''} onChange={(event) => updatePlayer(0, { name: event.target.value, isCpu: false })} placeholder="挑戦者の名（なくてもよい）" maxLength={12} />
+        <input
+          className="game-setup-input"
+          value={players[0]?.name ?? ''}
+          onChange={(event) => updatePlayer(0, { name: event.target.value, isCpu: false })}
+          placeholder="挑戦者の名（なくてもよい）"
+          maxLength={12}
+        />
       </SetupStep>
 
       <SetupStep numeral="II" title="対戦方法を選ぶ">
         <div className="game-setup-mode-grid">
-          <SetupModeCard selected={mode === 'cpu'} icon="🐉" title="ドラゴンと対戦" code="VS CPU" description="あなたとCPUで対戦" onClick={() => setMode('cpu')} />
-
-          <SetupModeCard selected={mode === 'online'} icon="♜" title="遠方の者と対戦" code="ONLIE" description="ルームコードで離れた相手と対戦" onClick={() => setMode('online')} />
+          <SetupModeCard
+            selected={mode === 'cpu'}
+            icon="🐉"
+            title="ドラゴンと対戦"
+            code="VS CPU"
+            description="あなたとCPUで対戦"
+            onClick={() => setMode('cpu')}
+          />
+          <SetupModeCard
+            selected={mode === 'online'}
+            icon="♜"
+            title="遠方の者と対戦"
+            code="ONLINE"
+            description="ルームコードで離れた相手と対戦"
+            onClick={() => setMode('online')}
+          />
         </div>
         {mode === 'online' ? (
-          <div className="game-setup-online-panel">
+          <div className="game-setup-online-panel" style={{ marginTop: 12 }}>
             <SetupChoiceTabs value={onlineTab} onChange={setOnlineTab} />
-            {onlineTab === 'join' ? (
-              <>
-                <input
-                  className="game-setup-input game-setup-code-input"
-                  value={joinCode}
-                  onChange={(event) => setJoinCode(event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
-                  placeholder="コードを入力"
-                  maxLength={6}
-                />
-                <div style={{ marginTop: 8 }}>
-                  <Button fullWidth onClick={handleStart} disabled={joinCode.length !== 6}>このコードで参加する</Button>
-                </div>
-              </>
-            ) : (
-              <div style={{ marginTop: 8 }}>
-                <Button fullWidth onClick={handleStart}>ルーム設定へ進む</Button>
-              </div>
-            )}
           </div>
         ) : null}
       </SetupStep>
 
-      {mode === 'cpu' ? (
+      {isOnlineJoin ? (
+        <SetupStep numeral="III" title="参加コードを入力">
+          <input
+            className="game-setup-input game-setup-code-input"
+            value={joinCode}
+            onChange={(event) => setJoinCode(event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
+            placeholder="6桁のコードを入力"
+            maxLength={6}
+          />
+          <SetupSummary>入力したコードのルームへ参加します。</SetupSummary>
+          <div style={{ marginTop: 14 }}>
+            <Button
+              fullWidth
+              onClick={handleStart}
+              disabled={joinCode.length !== 6}
+            >
+              このコードで参加する
+            </Button>
+          </div>
+        </SetupStep>
+      ) : isOnlineCreate ? (
+        <SetupStep numeral="III" title="ルーム作成の準備">
+          <SetupSummary>次の画面で対戦人数とCPU席を設定し、ルームコードを発行します。</SetupSummary>
+          <div style={{ marginTop: 14 }}>
+            <Button fullWidth onClick={handleStart}>
+              ルーム設定へ進む
+            </Button>
+          </div>
+        </SetupStep>
+      ) : (
         <SetupStep numeral="III" title="対戦相手を決める">
           <div className="game-setup-count-grid">
-            {([2, 3, 4] as const).map((count) => <button key={count} type="button" className={playerCount === count ? 'is-selected' : ''} onClick={() => setPlayerCount(count)}>{count}人</button>)}
+            {([2, 3, 4] as const).map((count) => (
+              <button
+                key={count}
+                type="button"
+                className={playerCount === count ? 'is-selected' : ''}
+                onClick={() => setPlayerCount(count)}
+              >
+                {count}人
+              </button>
+            ))}
           </div>
           <div className="game-setup-opponent-list">
             {players.slice(1, playerCount).map((player, index) => (
               <div className="game-setup-opponent-row" key={index}>
                 <strong>{player.name || getCpuDisplayName(player.cpuLevel)}</strong>
                 <span className="game-setup-role-tabs"><button type="button" className="is-selected">CPU</button></span>
-                <select className="game-setup-select" value={player.cpuLevel} onChange={(event) => updatePlayer(index + 1, { isCpu: true, cpuLevel: event.target.value as CpuLevel })}>
-                  {CPU_LEVELS.map(({ level, label }) => <option key={level} value={level}>{label}</option>)}
+                <select
+                  className="game-setup-select"
+                  value={player.cpuLevel}
+                  onChange={(event) => updatePlayer(index + 1, { isCpu: true, cpuLevel: event.target.value as CpuLevel })}
+                >
+                  {CPU_LEVELS.map(({ level, label }) => (
+                    <option key={level} value={level}>{label}</option>
+                  ))}
                 </select>
               </div>
             ))}
           </div>
           <SetupSummary>人間 1人 / CPU {playerCount - 1}体で対戦します。</SetupSummary>
+          <div style={{ marginTop: 14 }}>
+            <Button fullWidth onClick={handleStart}>
+              この設定で対戦する
+            </Button>
+          </div>
         </SetupStep>
-      ) : null}
+      )}
 
-      <div className="game-setup-cta">
-        {mode === 'cpu' ? (
-          <Button fullWidth onClick={handleStart}>
-            この設定で対戦する
-          </Button>
+      <div className="game-setup-cta" style={{ marginTop: 8 }}>
+        <button
+          type="button"
+          className="game-setup-rules-toggle"
+          onClick={() => setShowRules((show) => !show)}
+        >
+          {showRules ? '遊戯の掟を閉じる' : '遊戯の掟を見る'}
+        </button>
+        {showRules ? (
+          <ul className="game-setup-rules-list">
+            {RULES.map((rule) => (
+              <li key={rule}>{rule}</li>
+            ))}
+          </ul>
         ) : null}
-        <button type="button" className="game-setup-rules-toggle" onClick={() => setShowRules((show) => !show)}>{showRules ? '遊戯の掟を閉じる' : '遊戯の掟を見る'}</button>
-        {showRules ? <ul className="game-setup-rules-list">{RULES.map((rule) => <li key={rule}>{rule}</li>)}</ul> : null}
       </div>
     </GameSetupShell>
   );

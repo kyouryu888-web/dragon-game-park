@@ -63,6 +63,9 @@ export function BabanukiSettingsScreen({ config, onChange, onStart, onOnlinePlay
     });
   };
 
+  const isOnlineJoin = mode === 'online' && onlineTab === 'join';
+  const isOnlineCreate = mode === 'online' && onlineTab === 'create';
+
   return (
     <GameSetupShell
       theme="babanuki"
@@ -96,41 +99,57 @@ export function BabanukiSettingsScreen({ config, onChange, onStart, onOnlinePlay
             selected={mode === 'online'}
             icon="♜"
             title="遠方の者と対戦"
-            code="ONLIE"
+            code="ONLINE"
             description="離れた端末からルームコードで参加"
             onClick={() => setMode('online')}
           />
         </div>
         {mode === 'online' ? (
-          <div className="game-setup-online-panel">
+          <div className="game-setup-online-panel" style={{ marginTop: 12 }}>
             <SetupChoiceTabs value={onlineTab} onChange={setOnlineTab} />
-            {onlineTab === 'join' ? (
-              <>
-                <input
-                  className="game-setup-input game-setup-code-input"
-                  value={joinCode}
-                  onChange={(event) => setJoinCode(event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
-                  placeholder="コードを入力"
-                  maxLength={6}
-                />
-                <div style={{ marginTop: 8 }}>
-                  <Button fullWidth onClick={handleStart} disabled={joinCode.length !== 6}>このコードで参加する</Button>
-                </div>
-              </>
-            ) : (
-              <div style={{ marginTop: 8 }}>
-                <Button fullWidth onClick={handleStart}>ルーム設定へ進む</Button>
-              </div>
-            )}
           </div>
         ) : null}
       </SetupStep>
 
-      {mode === 'cpu' ? (
+      {isOnlineJoin ? (
+        <SetupStep numeral="III" title="参加コードを入力">
+          <input
+            className="game-setup-input game-setup-code-input"
+            value={joinCode}
+            onChange={(event) => setJoinCode(event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
+            placeholder="6桁のコードを入力"
+            maxLength={6}
+          />
+          <SetupSummary>入力したコードのルームへ参加します。</SetupSummary>
+          <div style={{ marginTop: 14 }}>
+            <Button
+              fullWidth
+              onClick={handleStart}
+              disabled={joinCode.length !== 6}
+            >
+              このコードで参加する
+            </Button>
+          </div>
+        </SetupStep>
+      ) : isOnlineCreate ? (
+        <SetupStep numeral="III" title="ルーム作成の準備">
+          <SetupSummary>次の画面で対戦人数と、人間・CPUの席を選び、ルームコードを発行します。</SetupSummary>
+          <div style={{ marginTop: 14 }}>
+            <Button fullWidth onClick={handleStart}>
+              ルーム設定へ進む
+            </Button>
+          </div>
+        </SetupStep>
+      ) : (
         <SetupStep numeral="III" title="対戦相手を決める" description="カードゲームのため、同じ端末で人どうしの対戦は行いません。">
           <div className="game-setup-count-grid">
             {PLAYER_COUNTS.map((count) => (
-              <button key={count} type="button" className={config.playerCount === count ? 'is-selected' : ''} onClick={() => setPlayerCount(count)}>
+              <button
+                key={count}
+                type="button"
+                className={config.playerCount === count ? 'is-selected' : ''}
+                onClick={() => setPlayerCount(count)}
+              >
                 {count}人
               </button>
             ))}
@@ -140,31 +159,26 @@ export function BabanukiSettingsScreen({ config, onChange, onStart, onOnlinePlay
               <div className="game-setup-opponent-row" key={index}>
                 <strong>ドラゴン{index + 1}</strong>
                 <span className="game-setup-role-tabs"><button type="button" className="is-selected">CPU</button></span>
-                <select className="game-setup-select" value={player.cpuLevel} onChange={(event) => setCpuLevel(index + 1, event.target.value as CpuLevel)}>
-                  {CPU_LEVELS.map((level) => <option key={level} value={level}>{getCpuLevelLabel(level)}</option>)}
+                <select
+                  className="game-setup-select"
+                  value={player.cpuLevel}
+                  onChange={(event) => setCpuLevel(index + 1, event.target.value as CpuLevel)}
+                >
+                  {CPU_LEVELS.map((level) => (
+                    <option key={level} value={level}>{getCpuLevelLabel(level)}</option>
+                  ))}
                 </select>
               </div>
             ))}
           </div>
           <SetupSummary>人間1人 / CPU {config.playerCount - 1}体で対戦します。</SetupSummary>
-        </SetupStep>
-      ) : (
-        <SetupStep numeral="III" title={onlineTab === 'create' ? 'ルームを作る' : 'コードで参加する'}>
-          <SetupSummary>
-            {onlineTab === 'create'
-              ? '次の画面で対戦人数と、人間・CPUの席を選びます。'
-              : '入力したコードのルームへ参加します。'}
-          </SetupSummary>
+          <div style={{ marginTop: 14 }}>
+            <Button fullWidth onClick={handleStart}>
+              この設定で対戦する
+            </Button>
+          </div>
         </SetupStep>
       )}
-
-      <div className="game-setup-cta">
-        {mode === 'cpu' ? (
-          <Button fullWidth onClick={handleStart}>
-            この設定で対戦する
-          </Button>
-        ) : null}
-      </div>
     </GameSetupShell>
   );
 }
