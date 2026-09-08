@@ -15,6 +15,9 @@ type MancalaRoomPageProps = {
   initialMode?: 'create' | 'join';
   initialName?: string;
   initialCode?: string;
+  initialPlayerCount?: 2 | 3 | 4;
+  initialCpuSlots?: [boolean, boolean, boolean];
+  initialCpuLevels?: [CpuLevel, CpuLevel, CpuLevel];
   onGameStart: (info: OnlineRoomInfo) => void;
   onBack: () => void;
 };
@@ -81,15 +84,27 @@ const CPU_LEVELS: { level: CpuLevel; label: string }[] = [
   { level: 'very-hard', label: 'ゴッドドラゴン' },
 ];
 
-export function MancalaRoomPage({ initialMode = DEFAULT_ONLINE_ENTRY_MODE, initialName = '', initialCode = '', onGameStart, onBack }: MancalaRoomPageProps) {
+export function MancalaRoomPage({
+  initialMode = DEFAULT_ONLINE_ENTRY_MODE,
+  initialName = '',
+  initialCode = '',
+  initialPlayerCount = 2,
+  initialCpuSlots = [false, false, false],
+  initialCpuLevels = ['normal', 'normal', 'normal'],
+  onGameStart,
+  onBack,
+}: MancalaRoomPageProps) {
   const shouldAutoJoin = shouldAutoJoinOnlineRoom(initialMode, initialCode);
   const autoJoinStartedRef = useRef(false);
-  const [pageState,          setPageState]          = useState<PageState>(shouldAutoJoin ? 'joining' : 'menu');
+  const autoCreateStartedRef = useRef(false);
+  const [pageState,          setPageState]          = useState<PageState>(
+    initialMode === 'create' ? 'creating' : shouldAutoJoin ? 'joining' : 'menu'
+  );
   const [entryMode,          setEntryMode]          = useState<'create' | 'join'>(initialMode);
-  const [playerCount,        setPlayerCount]        = useState<2 | 3 | 4>(2);
+  const [playerCount,        setPlayerCount]        = useState<2 | 3 | 4>(initialPlayerCount);
   // cpuSlots[0]=player-2, cpuSlots[1]=player-3, cpuSlots[2]=player-4
-  const [cpuSlots,           setCpuSlots]           = useState<[boolean, boolean, boolean]>([false, false, false]);
-  const [cpuLevels,          setCpuLevels]          = useState<[CpuLevel, CpuLevel, CpuLevel]>(['normal', 'normal', 'normal']);
+  const [cpuSlots,           setCpuSlots]           = useState<[boolean, boolean, boolean]>(initialCpuSlots);
+  const [cpuLevels,          setCpuLevels]          = useState<[CpuLevel, CpuLevel, CpuLevel]>(initialCpuLevels);
   const [myName,             setMyName]             = useState<string>(() => initialName || getOnlinePlayerName());
   const [roomCode,           setRoomCode]           = useState('');
   const [inputCode,          setInputCode]          = useState(initialCode);
@@ -122,33 +137,43 @@ export function MancalaRoomPage({ initialMode = DEFAULT_ONLINE_ENTRY_MODE, initi
   }
 
   // ───── ルームを作る ─────
-  async function handleCreate() {
+  async function handleCreate(customConfig?: {
+    playerCount?: 2 | 3 | 4;
+    cpuSlots?: [boolean, boolean, boolean];
+    cpuLevels?: [CpuLevel, CpuLevel, CpuLevel];
+    name?: string;
+  }) {
     setError('');
     setPageState('creating');
+    const targetPlayerCount = customConfig?.playerCount ?? playerCount;
+    const targetCpuSlots = customConfig?.cpuSlots ?? cpuSlots;
+    const targetCpuLevels = customConfig?.cpuLevels ?? cpuLevels;
+    const targetName = customConfig?.name ?? myName;
+
     const code   = generateRoomCode();
     const hostId = getOnlinePlayerId();
-    const hostName = myName.trim() || PLAYER_NAMES[0];
+    const hostName = targetName.trim() || PLAYER_NAMES[0];
 
     const config = {
-      playerCount,
-      players: Array.from({ length: playerCount }, (_, i) => ({
+      playerCount: targetPlayerCount,
+      players: Array.from({ length: targetPlayerCount }, (_, i) => ({
         name:     i === 0 ? hostName : PLAYER_NAMES[i],
-        isCpu:    i === 0 ? false : (cpuSlots[i - 1] ?? false),
-        cpuLevel: i === 0 ? 'normal' as const : (cpuLevels[i - 1] ?? 'normal'),
+        isCpu:    i === 0 ? false : (targetCpuSlots[i - 1] ?? false),
+        cpuLevel: i === 0 ? 'normal' as const : (targetCpuLevels[i - 1] ?? 'normal'),
       })),
     };
     const gs = createInitialMancalaState(config);
 
     // CPUスロットは事前に埋めておく（参加待ち不要）
     const cpuPreFill: Record<string, string> = {};
-    if (playerCount >= 2 && cpuSlots[0]) cpuPreFill['guest_id']  = 'cpu-player-2';
-    if (playerCount >= 3 && cpuSlots[1]) cpuPreFill['guest2_id'] = 'cpu-player-3';
-    if (playerCount >= 4 && cpuSlots[2]) cpuPreFill['guest3_id'] = 'cpu-player-4';
+    if (targetPlayerCount >= 2 && targetCpuSlots[0]) cpuPreFill['guest_id']  = 'cpu-player-2';
+    if (targetPlayerCount >= 3 && targetCpuSlots[1]) cpuPreFill['guest2_id'] = 'cpu-player-3';
+    if (targetPlayerCount >= 4 && targetCpuSlots[2]) cpuPreFill['guest3_id'] = 'cpu-player-4';
 
     const { error: err } = await supabase.from('mancala_rooms').insert({
       room_code:    code,
       game_state:   gs,
-      player_count: playerCount,
+      player_count: targetPlayerCount,
       host_id:      hostId,
       ...cpuPreFill,
     });
@@ -162,7 +187,7 @@ export function MancalaRoomPage({ initialMode = DEFAULT_ONLINE_ENTRY_MODE, initi
     setRoomCode(code);
     setMyWaitingPlayerId('player-1');
     setJoinedCount(1 + Object.keys(cpuPreFill).length);
-    setWaitingPlayerCount(playerCount);
+    setWaitingPlayerCount(targetPlayerCount);
     setPageState('waiting');
   }
 
@@ -324,6 +349,31 @@ export function MancalaRoomPage({ initialMode = DEFAULT_ONLINE_ENTRY_MODE, initi
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (initialMode !== 'create' || autoCreateStartedRef.current) return;
+    autoCreateStartedRef.current = true;
+    void handleCreate({
+      playerCount: initialPlayerCount,
+      cpuSlots: initialCpuSlots,
+      cpuLevels: initialCpuLevels,
+      name: initialName,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (pageState === 'creating') {
+    return (
+      <Layout>
+        <div style={{ textAlign: 'center', padding: '72px 20px' }}>
+          <div className="cpu-thinking-pulse" style={{ fontSize: 18, fontWeight: 900, color: 'var(--brown)', marginBottom: 10 }}>
+            マンカラルームを作成しています...
+          </div>
+          <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>ルームコードを発行しています。少しだけお待ちください。</p>
+        </div>
+      </Layout>
+    );
+  }
+
   if (pageState === 'joining') {
     return (
       <Layout>
@@ -424,12 +474,10 @@ export function MancalaRoomPage({ initialMode = DEFAULT_ONLINE_ENTRY_MODE, initi
           </div>
 
           <Button variant="ghost" onClick={async () => {
-            if (isHost) {
+            if (isHost && roomCode) {
               await supabase.from('mancala_rooms').delete().eq('room_code', roomCode);
             }
-            setPageState('menu');
-            setRoomCode('');
-            setJoinedCount(1);
+            onBack();
           }}>
             {isHost ? 'キャンセル（ルーム削除）' : 'キャンセル'}
           </Button>
@@ -580,8 +628,8 @@ export function MancalaRoomPage({ initialMode = DEFAULT_ONLINE_ENTRY_MODE, initi
             </div>
           )}
 
-          <Button fullWidth onClick={handleCreate} disabled={pageState === 'creating'}>
-            {pageState === 'creating' ? '作成中...' : 'ルームを作る'}
+          <Button fullWidth onClick={() => handleCreate()}>
+            ルームを作る
           </Button>
         </div> : null}
 

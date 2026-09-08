@@ -7,7 +7,7 @@ import { BabanukiSettingsScreen } from "./babanuki/BabanukiSettingsScreen";
 
 describe("All games setup screen flow contracts", () => {
   describe("UNO Setup Flow", () => {
-    it("renders Step I variant, Step II name, Step III match mode, and Step IV clean join UI without duplicate join headers", () => {
+    it("renders Step I variant, Step II name, Step III match mode, and Step IV clean join UI in join mode", () => {
       const html = renderToStaticMarkup(
         <UnoSetupPage
           onStart={() => undefined}
@@ -33,6 +33,7 @@ describe("All games setup screen flow contracts", () => {
       expect(html).toContain("参加コードを入力");
       expect(html).toContain("このコードで参加する");
       expect(html).not.toContain("対戦相手を決める");
+      expect(html).not.toContain("ルーム設定へ進む");
     });
   });
 
@@ -56,6 +57,7 @@ describe("All games setup screen flow contracts", () => {
       expect(html).toContain("参加コードを入力");
       expect(html).toContain("このコードで参加する");
       expect(html).not.toContain("対戦相手を決める");
+      expect(html).not.toContain("ルーム設定へ進む");
     });
   });
 
@@ -78,6 +80,7 @@ describe("All games setup screen flow contracts", () => {
       expect(html).toContain("このコードで参加する");
       expect(html).not.toContain("対戦相手を決める");
       expect(html).not.toContain("CPUの強さ");
+      expect(html).not.toContain("ルーム設定へ進む");
     });
 
     it("renders room creation setup cleanly with single create button", () => {
@@ -97,6 +100,7 @@ describe("All games setup screen flow contracts", () => {
       expect(html).toContain("ルーム作成の準備");
       expect(html).toContain("ルームを作成する");
       expect(html).not.toContain("CPUの強さ");
+      expect(html).not.toContain("ルーム設定へ進む");
     });
 
     it("renders CPU options in CPU mode", () => {
@@ -136,6 +140,7 @@ describe("All games setup screen flow contracts", () => {
       expect(html).toContain("参加コードを入力");
       expect(html).toContain("このコードで参加する");
       expect(html).not.toContain("対戦相手を決める");
+      expect(html).not.toContain("ルーム設定へ進む");
     });
   });
 });

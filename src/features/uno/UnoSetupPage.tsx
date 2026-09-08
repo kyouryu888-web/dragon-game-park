@@ -11,6 +11,7 @@ import { DEFAULT_ONLINE_ENTRY_MODE, DEFAULT_SETUP_MODE } from '../../components/
 import type { UnoConfig, UnoCpuLevel, UnoPlayerConfig, UnoVariant } from './unoTypes';
 import { getUnoCpuDisplayName, getUnoCpuLevelLabel } from './unoCpu';
 import { UnoRulesPanel } from './UnoRulesPanel';
+import type { UnoOnlinePlayerSlot } from './unoOnline';
 
 const STORAGE_KEY = 'dragon-game-park:uno-config-v1';
 const CPU_LEVELS: UnoCpuLevel[] = ['very-easy', 'easy', 'normal', 'hard', 'very-hard'];
@@ -19,6 +20,9 @@ export type UnoOnlineEntry = {
   mode: 'create' | 'join';
   name: string;
   code: string;
+  variant?: UnoVariant;
+  playerCount?: number;
+  slots?: UnoOnlinePlayerSlot[];
 };
 
 function defaultPlayers(): UnoPlayerConfig[] {
@@ -26,6 +30,14 @@ function defaultPlayers(): UnoPlayerConfig[] {
     name: '',
     isCpu: index > 0,
     cpuLevel: 'normal' as UnoCpuLevel,
+  }));
+}
+
+function defaultOnlineSlots(): UnoOnlinePlayerSlot[] {
+  return Array.from({ length: 9 }, (_, index) => ({
+    name: '',
+    isCpu: false,
+    cpuLevel: (index % 2 === 0 ? 'normal' : 'easy') as UnoCpuLevel,
   }));
 }
 
@@ -66,6 +78,8 @@ export function UnoSetupPage({ onStart, onBack, onOnlinePlay }: UnoSetupPageProp
   });
   const [mode, setMode] = useState<'cpu' | 'online'>(DEFAULT_SETUP_MODE);
   const [onlineTab, setOnlineTab] = useState<'create' | 'join'>(DEFAULT_ONLINE_ENTRY_MODE);
+  const [onlinePlayerCount, setOnlinePlayerCount] = useState(2);
+  const [onlineSlots, setOnlineSlots] = useState<UnoOnlinePlayerSlot[]>(defaultOnlineSlots);
   const [joinCode, setJoinCode] = useState('');
   const [showRules, setShowRules] = useState(false);
 
@@ -74,15 +88,27 @@ export function UnoSetupPage({ onStart, onBack, onOnlinePlay }: UnoSetupPageProp
   function updateVariant(nextVariant: UnoVariant) {
     setVariant(nextVariant);
     setPlayerCount((count) => Math.min(count, nextVariant === 'hard' ? 6 : 10));
+    setOnlinePlayerCount((count) => Math.min(count, nextVariant === 'hard' ? 6 : 10));
   }
 
   function updatePlayer(index: number, patch: Partial<UnoPlayerConfig>) {
     setPlayers((previous) => previous.map((player, playerIndex) => playerIndex === index ? { ...player, ...patch } : player));
   }
 
+  function updateOnlineSlot(index: number, patch: Partial<UnoOnlinePlayerSlot>) {
+    setOnlineSlots((previous) => previous.map((slot, slotIndex) => slotIndex === index ? { ...slot, ...patch } : slot));
+  }
+
   function handleStart() {
     if (mode === 'online') {
-      onOnlinePlay({ mode: onlineTab, name: players[0]?.name ?? '', code: joinCode.trim().toUpperCase() });
+      onOnlinePlay({
+        mode: onlineTab,
+        name: players[0]?.name ?? '',
+        code: joinCode.trim().toUpperCase(),
+        variant,
+        playerCount: onlinePlayerCount,
+        slots: onlineSlots,
+      });
       return;
     }
     const config: UnoConfig = {
@@ -194,13 +220,66 @@ export function UnoSetupPage({ onStart, onBack, onOnlinePlay }: UnoSetupPageProp
           </div>
         </SetupStep>
       ) : isOnlineCreate ? (
-        <SetupStep numeral="IV" title="ルーム作成の準備">
+        <SetupStep numeral="IV" title="対戦人数と席を決める">
+          <div className="game-setup-count-grid" style={{ marginBottom: 12 }}>
+            {Array.from({ length: maxPlayers - 1 }, (_, index) => index + 2).map((count) => (
+              <button
+                key={count}
+                type="button"
+                className={onlinePlayerCount === count ? 'is-selected' : ''}
+                onClick={() => setOnlinePlayerCount(count)}
+              >
+                {count}人
+              </button>
+            ))}
+          </div>
+          <div className="game-setup-opponent-list">
+            {Array.from({ length: onlinePlayerCount - 1 }, (_, index) => {
+              const slot = onlineSlots[index];
+              return (
+                <div className="game-setup-opponent-row" key={index}>
+                  <strong>{index + 2}人目の席</strong>
+                  <span className="game-setup-role-tabs">
+                    <button
+                      type="button"
+                      className={!slot.isCpu ? 'is-selected' : ''}
+                      onClick={() => updateOnlineSlot(index, { isCpu: false })}
+                    >
+                      👤 人間
+                    </button>
+                    <button
+                      type="button"
+                      className={slot.isCpu ? 'is-selected' : ''}
+                      onClick={() => updateOnlineSlot(index, { isCpu: true })}
+                    >
+                      🐉 CPU
+                    </button>
+                  </span>
+                  {slot.isCpu ? (
+                    <select
+                      className="game-setup-select"
+                      value={slot.cpuLevel}
+                      onChange={(event) => updateOnlineSlot(index, { cpuLevel: event.target.value as UnoCpuLevel })}
+                    >
+                      {CPU_LEVELS.map((level) => (
+                        <option key={level} value={level}>
+                          {getUnoCpuLevelLabel(level)}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>参加待ち</span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
           <SetupSummary>
-            次の画面で対戦人数、人間・CPUの席を設定し、ルームコードを発行します。
+            ルームコードを発行し、参加者を待機します。
           </SetupSummary>
           <div style={{ marginTop: 14 }}>
             <Button fullWidth onClick={handleStart}>
-              ルーム設定へ進む
+              ルームを作成する
             </Button>
           </div>
         </SetupStep>

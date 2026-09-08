@@ -30,6 +30,9 @@ type UnoOnlineRoomPageProps = {
   initialMode?: 'create' | 'join';
   initialName?: string;
   initialCode?: string;
+  initialVariant?: UnoVariant;
+  initialPlayerCount?: number;
+  initialSlots?: UnoOnlinePlayerSlot[];
   onGameStart: (info: UnoOnlineRoomInfo) => void;
   onBack: () => void;
 };
@@ -42,20 +45,32 @@ function defaultSlots(): UnoOnlinePlayerSlot[] {
   }));
 }
 
-export function UnoOnlineRoomPage({ initialMode = DEFAULT_ONLINE_ENTRY_MODE, initialName = '', initialCode = '', onGameStart, onBack }: UnoOnlineRoomPageProps) {
+export function UnoOnlineRoomPage({
+  initialMode = DEFAULT_ONLINE_ENTRY_MODE,
+  initialName = '',
+  initialCode = '',
+  initialVariant = 'standard',
+  initialPlayerCount = 2,
+  initialSlots = defaultSlots(),
+  onGameStart,
+  onBack,
+}: UnoOnlineRoomPageProps) {
   const shouldAutoJoin = shouldAutoJoinOnlineRoom(initialMode, initialCode);
   const autoJoinStartedRef = useRef(false);
-  const [pageState, setPageState] = useState<PageState>(shouldAutoJoin ? 'joining' : 'menu');
+  const autoCreateStartedRef = useRef(false);
+  const [pageState, setPageState] = useState<PageState>(
+    initialMode === 'create' ? 'creating' : shouldAutoJoin ? 'joining' : 'menu'
+  );
   const [entryMode, setEntryMode] = useState<'create' | 'join'>(initialMode);
-  const [variant, setVariant] = useState<UnoVariant>('standard');
-  const [playerCount, setPlayerCount] = useState(2);
-  const [slots, setSlots] = useState<UnoOnlinePlayerSlot[]>(defaultSlots);
+  const [variant, setVariant] = useState<UnoVariant>(initialVariant);
+  const [playerCount, setPlayerCount] = useState(initialPlayerCount);
+  const [slots, setSlots] = useState<UnoOnlinePlayerSlot[]>(initialSlots);
   const [myName, setMyName] = useState(() => initialName || getSavedUnoOnlineName());
   const [roomCode, setRoomCode] = useState('');
   const [inputCode, setInputCode] = useState(initialCode);
   const [error, setError] = useState('');
   const [joinedCount, setJoinedCount] = useState(1);
-  const [waitingPlayerCount, setWaitingPlayerCount] = useState(2);
+  const [waitingPlayerCount, setWaitingPlayerCount] = useState(initialPlayerCount);
   const [myWaitingPlayerId, setMyWaitingPlayerId] = useState('player-1');
   const [copyMessage, setCopyMessage] = useState('');
 
@@ -260,6 +275,13 @@ export function UnoOnlineRoomPage({ initialMode = DEFAULT_ONLINE_ENTRY_MODE, ini
   }, []);
 
   useEffect(() => {
+    if (initialMode !== 'create' || autoCreateStartedRef.current) return;
+    autoCreateStartedRef.current = true;
+    void handleCreate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     if (pageState !== 'waiting' || !roomCode) return;
     let cancelled = false;
 
@@ -296,6 +318,19 @@ export function UnoOnlineRoomPage({ initialMode = DEFAULT_ONLINE_ENTRY_MODE, ini
   }, [pageState, roomCode, myWaitingPlayerId, onGameStart]);
 
   const cpuCount = useMemo(() => activeSlots.filter((slot) => slot.isCpu).length, [activeSlots]);
+
+  if (pageState === 'creating') {
+    return (
+      <Layout>
+        <div style={{ textAlign: 'center', padding: '72px 20px' }}>
+          <div className="cpu-thinking-pulse" style={{ fontSize: 18, fontWeight: 900, color: 'var(--brown)', marginBottom: 10 }}>
+            UNOルームを作成しています...
+          </div>
+          <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>ルームコードを発行しています。少しだけお待ちください。</p>
+        </div>
+      </Layout>
+    );
+  }
 
   if (pageState === 'joining') {
     return (
@@ -367,9 +402,8 @@ export function UnoOnlineRoomPage({ initialMode = DEFAULT_ONLINE_ENTRY_MODE, ini
           <Button
             variant="ghost"
             onClick={async () => {
-              if (isHost) await supabase.from('uno_rooms').delete().eq('room_code', roomCode);
-              setRoomCode('');
-              setPageState('menu');
+              if (isHost && roomCode) await supabase.from('uno_rooms').delete().eq('room_code', roomCode);
+              onBack();
             }}
           >
             キャンセル
@@ -439,8 +473,8 @@ export function UnoOnlineRoomPage({ initialMode = DEFAULT_ONLINE_ENTRY_MODE, ini
             ))}
           </div>
 
-          <Button fullWidth onClick={handleCreate} disabled={pageState === 'creating'}>
-            {pageState === 'creating' ? '作成中...' : 'ルームを作る'}
+          <Button fullWidth onClick={handleCreate}>
+            ルームを作る
           </Button>
         </section> : null}
 

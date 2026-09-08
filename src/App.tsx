@@ -105,6 +105,9 @@ export default function App() {
         initialMode={mancalaOnlineEntry.mode}
         initialName={mancalaOnlineEntry.name}
         initialCode={mancalaOnlineEntry.code}
+        initialPlayerCount={mancalaOnlineEntry.playerCount}
+        initialCpuSlots={mancalaOnlineEntry.cpuSlots}
+        initialCpuLevels={mancalaOnlineEntry.cpuLevels}
         onGameStart={(info) => {
           setOnlineRoomInfo(info);
           setScreen('mancala-online-game');
@@ -173,6 +176,9 @@ export default function App() {
         initialMode={unoOnlineEntry.mode}
         initialName={unoOnlineEntry.name}
         initialCode={unoOnlineEntry.code}
+        initialVariant={unoOnlineEntry.variant}
+        initialPlayerCount={unoOnlineEntry.playerCount}
+        initialSlots={unoOnlineEntry.slots}
         onGameStart={(info) => {
           setUnoOnlineRoomInfo(info);
           setScreen('uno-online-game');

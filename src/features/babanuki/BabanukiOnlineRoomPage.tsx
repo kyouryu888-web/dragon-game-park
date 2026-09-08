@@ -21,6 +21,8 @@ type Props = {
   initialMode?: 'create' | 'join';
   initialName?: string;
   initialCode?: string;
+  initialPlayerCount?: number;
+  initialSlots?: OnlineSlot[];
   onGameStart: (info: BabanukiRoomInfo) => void;
   onBack: () => void;
 };
@@ -31,14 +33,25 @@ function defaultSlots(): OnlineSlot[] {
   return Array.from({ length: MAX_PLAYERS - 1 }, () => ({ isCpu: false, cpuLevel: 'normal' as CpuLevel }));
 }
 
-export function BabanukiOnlineRoomPage({ initialMode = DEFAULT_ONLINE_ENTRY_MODE, initialName = '', initialCode = '', onGameStart, onBack }: Props) {
+export function BabanukiOnlineRoomPage({
+  initialMode = DEFAULT_ONLINE_ENTRY_MODE,
+  initialName = '',
+  initialCode = '',
+  initialPlayerCount = 4,
+  initialSlots = defaultSlots(),
+  onGameStart,
+  onBack,
+}: Props) {
   const shouldAutoJoin = shouldAutoJoinOnlineRoom(initialMode, initialCode);
   const autoJoinStartedRef = useRef(false);
-  const [page, setPage] = useState<PageState>(shouldAutoJoin ? 'joining' : 'menu');
+  const autoCreateStartedRef = useRef(false);
+  const [page, setPage] = useState<PageState>(
+    initialMode === 'create' ? 'create' : shouldAutoJoin ? 'joining' : 'menu'
+  );
   const [entryMode, setEntryMode] = useState<'create' | 'join'>(initialMode);
   const [myName, setMyName] = useState(() => initialName || getSavedOnlineName());
-  const [playerCount, setPlayerCount] = useState(4);
-  const [slots, setSlots] = useState<OnlineSlot[]>(defaultSlots);
+  const [playerCount, setPlayerCount] = useState(initialPlayerCount);
+  const [slots, setSlots] = useState<OnlineSlot[]>(initialSlots);
   const [inputCode, setInputCode] = useState(initialCode);
   const [roomCode, setRoomCode] = useState('');
   const [myPlayerId, setMyPlayerId] = useState('player-1');
@@ -72,6 +85,13 @@ export function BabanukiOnlineRoomPage({ initialMode = DEFAULT_ONLINE_ENTRY_MODE
       setBusy(false);
     }
   };
+
+  useEffect(() => {
+    if (initialMode !== 'create' || autoCreateStartedRef.current) return;
+    autoCreateStartedRef.current = true;
+    void handleCreate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleJoin = async () => {
     const code = inputCode.trim().toUpperCase();
@@ -117,8 +137,7 @@ export function BabanukiOnlineRoomPage({ initialMode = DEFAULT_ONLINE_ENTRY_MODE
 
   const handleLeaveWaiting = () => {
     if (myPlayerId === 'player-1' && roomCode) void deleteRoom(roomCode);
-    setPage('menu');
-    setRoomCode('');
+    onBack();
   };
 
   const inputStyle = {

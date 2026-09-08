@@ -75,6 +75,8 @@ export function BabanukiPage({ onBackToHome }: Props) {
         initialMode={onlineEntry.mode}
         initialName={onlineEntry.name}
         initialCode={onlineEntry.code}
+        initialPlayerCount={onlineEntry.playerCount}
+        initialSlots={onlineEntry.slots}
         onGameStart={handleGameStart}
         onBack={() => setScreen('settings')}
       />
