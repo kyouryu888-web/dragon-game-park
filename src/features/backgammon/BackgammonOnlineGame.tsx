@@ -233,11 +233,12 @@ export function BackgammonOnlineGame({
     if (state.phase !== 'finished' || !state.winner) return null;
     const iWin = state.winner === myColor;
     const kindTxt = state.winKind === 'gammon' ? 'ギャモン勝ち! ' : state.winKind === 'backgammon' ? 'バックギャモン勝ち!! ' : '';
+    const guestNotice = !iAmHost ? ' ルームの主が「再戦する」を選ぶと、この盤のまま自動で次の対局が始まります。' : '';
     return {
       en: iWin ? 'VICTORY' : 'DEFEAT',
       title: iWin ? '勝利!' : '敗北…',
-      sub: iWin ? `${kindTxt}見事なり。遠方の相手を下した。` : `${kindTxt}${oppName}が勝利した。「また挑むがよい」`,
-      showRematch: true,
+      sub: (iWin ? `${kindTxt}見事なり。遠方の相手を下した。` : `${kindTxt}${oppName}が勝利した。「また挑むがよい」`) + guestNotice,
+      showRematch: iAmHost,
     };
   })();
 

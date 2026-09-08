@@ -22,7 +22,7 @@ type MancalaRoomPageProps = {
   onBack: () => void;
 };
 
-type PageState = 'menu' | 'creating' | 'joining' | 'waiting' | 'select-role';
+type PageState = 'menu' | 'creating' | 'joining' | 'waiting' | 'select-role' | 'error';
 
 type RoomRow = {
   room_code: string;
@@ -180,7 +180,7 @@ export function MancalaRoomPage({
 
     if (err) {
       setError('ルームを開けなかった。時をおいて再び試されよ');
-      setPageState('menu');
+      setPageState('error');
       return;
     }
 
@@ -237,7 +237,7 @@ export function MancalaRoomPage({
 
     if (code.length !== 6) {
       setError('6文字のルームコードを入力してください');
-      setPageState('menu');
+      setPageState('error');
       return;
     }
 
@@ -249,7 +249,7 @@ export function MancalaRoomPage({
 
     if (fetchErr || !data) {
       setError('ルームが見つかりません。コードを確認してください');
-      setPageState('menu');
+      setPageState('error');
       return;
     }
 
@@ -298,7 +298,7 @@ export function MancalaRoomPage({
         setPageState('select-role');
       } else {
         setError('このルームはすでに満員です。新しいルームを作成してください。');
-        setPageState('menu');
+        setPageState('error');
       }
       return;
     }
@@ -324,7 +324,7 @@ export function MancalaRoomPage({
 
     if (updateErr) {
       setError('その紋章のルームには入れなかった。コードを確かめられよ');
-      setPageState('menu');
+      setPageState('error');
       return;
     }
 
@@ -415,7 +415,29 @@ export function MancalaRoomPage({
               </Button>
             ))}
           </div>
-          <Button variant="ghost" fullWidth onClick={() => setPageState('menu')}>← キャンセル</Button>
+          <Button variant="ghost" fullWidth onClick={onBack}>← キャンセル</Button>
+        </div>
+      </Layout>
+    );
+  }
+
+  // ───── エラー画面 ─────
+  if (pageState === 'error') {
+    return (
+      <Layout>
+        <div style={{ textAlign: 'center', padding: '56px 20px' }}>
+          <div style={{ fontSize: 44, marginBottom: 12 }}>⚠️</div>
+          <h2 style={{ fontSize: 18, fontWeight: 'bold', color: 'var(--brown)', marginBottom: 12 }}>
+            ルームに入室できませんでした
+          </h2>
+          <p style={{
+            fontSize: 14, color: '#f0c8c8',
+            background: 'rgba(90,30,30,.5)', border: '1px solid rgba(200,90,90,.4)',
+            borderRadius: 10, padding: '12px 16px', marginBottom: 24, lineHeight: 1.6,
+          }}>
+            {error || 'ルームが見つからないか、通信に失敗しました。'}
+          </p>
+          <Button fullWidth onClick={onBack}>ゲーム設定に戻る</Button>
         </div>
       </Layout>
     );

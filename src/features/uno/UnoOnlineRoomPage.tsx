@@ -24,7 +24,7 @@ import {
   type UnoRoomRow,
 } from './unoOnline';
 
-type PageState = 'menu' | 'creating' | 'joining' | 'waiting';
+type PageState = 'menu' | 'creating' | 'joining' | 'waiting' | 'error';
 
 type UnoOnlineRoomPageProps = {
   initialMode?: 'create' | 'join';
@@ -140,7 +140,7 @@ export function UnoOnlineRoomPage({
 
     if (insertError || !data) {
       setError('ルームを開けなかった。時をおいて再び試されよ');
-      setPageState('menu');
+      setPageState('error');
       return;
     }
 
@@ -165,7 +165,7 @@ export function UnoOnlineRoomPage({
 
     if (code.length !== 6) {
       setError('6文字のルームコードを入力してください。');
-      setPageState('menu');
+      setPageState('error');
       return;
     }
 
@@ -177,7 +177,7 @@ export function UnoOnlineRoomPage({
 
     if (fetchError || !data) {
       setError('UNOルームが見つかりません。コードを確認してください。');
-      setPageState('menu');
+      setPageState('error');
       return;
     }
 
@@ -206,7 +206,7 @@ export function UnoOnlineRoomPage({
 
       if (updateError || !updated) {
         setError('再入室の途中で部屋の状態が変わりました。もう一度「参加する」を押してください。');
-        setPageState('menu');
+        setPageState('error');
         return;
       }
 
@@ -223,7 +223,7 @@ export function UnoOnlineRoomPage({
     const openSlot = findOpenUnoSlot(row);
     if (!openSlot) {
       setError('このUNOルームは満員です。');
-      setPageState('menu');
+      setPageState('error');
       return;
     }
 
@@ -248,7 +248,7 @@ export function UnoOnlineRoomPage({
 
     if (updateError || !updated) {
       setError('扉は既に閉ざされていた。別のルームを探されよ');
-      setPageState('menu');
+      setPageState('error');
       return;
     }
 
@@ -340,6 +340,27 @@ export function UnoOnlineRoomPage({
             UNOルームへ参加しています...
           </div>
           <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>コードを確認しています。少しだけお待ちください。</p>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (pageState === 'error') {
+    return (
+      <Layout>
+        <div style={{ textAlign: 'center', padding: '56px 20px' }}>
+          <div style={{ fontSize: 44, marginBottom: 12 }}>⚠️</div>
+          <h2 style={{ fontSize: 18, fontWeight: 'bold', color: 'var(--brown)', marginBottom: 12 }}>
+            ルームに入室できませんでした
+          </h2>
+          <p style={{
+            fontSize: 14, color: '#f0c8c8',
+            background: 'rgba(90,30,30,.5)', border: '1px solid rgba(200,90,90,.4)',
+            borderRadius: 10, padding: '12px 16px', marginBottom: 24, lineHeight: 1.6,
+          }}>
+            {error || 'ルームが見つからないか、通信に失敗しました。'}
+          </p>
+          <Button fullWidth onClick={onBack}>ゲーム設定に戻る</Button>
         </div>
       </Layout>
     );

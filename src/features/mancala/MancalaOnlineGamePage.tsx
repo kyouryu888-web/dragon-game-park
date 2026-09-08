@@ -164,6 +164,78 @@ export function MancalaOnlineGamePage({
   isAnimatingRef.current = isAnimating;
 
   const pendingFinalStateRef = useRef<GameState | null>(null);
+  const justMovedTurnRef = useRef<number | null>(null);
+
+  // ============================================================
+  // 状態同期ハンドラ（相手の手番アニメーションも同期再現）
+  // ============================================================
+  const handleIncomingState = useCallback((gs: GameState) => {
+    const current = gameStateRef.current;
+    if (!current) {
+      setGameState(gs);
+      return;
+    }
+
+    // 別ゲームID（再戦など）
+    if (gs.gameId !== current.gameId) {
+      pendingFinalStateRef.current = null;
+      isTransitioningRef.current = false;
+      prevDisplayIdsRef.current = [];
+      setAnimSteps([]);
+      setAnimActiveIds([]);
+      setAnimIdx(0);
+      setCaptureAnimInfo(null);
+      setCapturePhase(null);
+      setBoardFading('none');
+      setEliminatingId(null);
+      setSlidingPlanks(null);
+      setSlideAtTarget(false);
+      setDisplayActiveIds(gs.activePlayerIds);
+      setGameState(gs);
+      return;
+    }
+
+    // 既に反映済みまたは過去の状態
+    if (gs.turnCount <= current.turnCount) {
+      return;
+    }
+
+    // 自分が直前に打った手番（startMove で既にアニメーション中または適用済み）
+    if (justMovedTurnRef.current === gs.turnCount) {
+      return;
+    }
+
+    // アニメーション中または脱落アニメーション中の場合は最新状態を予約保持
+    if (isAnimatingRef.current || isTransitioningRef.current) {
+      pendingFinalStateRef.current = gs;
+      return;
+    }
+
+    // 相手プレイヤーの着手（1手進み、かつ着手したピットIDが存在する場合）:
+    // 手番側と全く同様に石配り・捕獲アニメーションを同期再生する
+    if (gs.turnCount === current.turnCount + 1 && gs.lastMovePitId) {
+      const { steps, activeIds, captureInfo: ci, isExtraTurn } =
+        computeStoneSteps(current, gs.lastMovePitId);
+
+      if (steps.length > 0) {
+        if (isExtraTurn) {
+          setExtraTurnKey(k => k + 1);
+          setShowExtraTurn(true);
+          setTimeout(() => setShowExtraTurn(false), 1700);
+        }
+        pendingFinalStateRef.current = gs;
+        setCaptureAnimInfo(ci ?? null);
+        setCapturePhase(null);
+        setAnimSteps(steps);
+        setAnimActiveIds(activeIds);
+        setAnimIdx(0);
+        return;
+      }
+    }
+
+    // それ以外（複数手飛んだ場合や初期化など）は即座に反映
+    setGameState(gs);
+  }, []);
 
   // ============================================================
   // Supabase: 初回ロード & Realtime 購読
@@ -178,11 +250,7 @@ export function MancalaOnlineGamePage({
         .eq('room_code', roomCode)
         .single();
       if (cancelled || !data?.game_state) return;
-      if (isAnimatingRef.current || isTransitioningRef.current) return;
-      const gs = data.game_state as GameState;
-      setGameState(prev =>
-        !prev || gs.gameId !== prev.gameId || gs.turnCount > prev.turnCount ? gs : prev
-      );
+      handleIncomingState(data.game_state as GameState);
     };
 
     supabase
@@ -205,11 +273,8 @@ export function MancalaOnlineGamePage({
         { event: 'UPDATE', schema: 'public', table: 'mancala_rooms', filter: `room_code=eq.${roomCode}` },
         (payload) => {
           if (cancelled) return;
-          if (isAnimatingRef.current || isTransitioningRef.current) return;
           const gs = (payload.new as { game_state: GameState }).game_state;
-          setGameState(prev =>
-            !prev || gs.gameId !== prev.gameId || gs.turnCount >= prev.turnCount ? gs : prev
-          );
+          if (gs) handleIncomingState(gs);
         }
       )
       .subscribe(async (status) => {
@@ -225,8 +290,7 @@ export function MancalaOnlineGamePage({
       clearInterval(poll);
       void supabase.removeChannel(channel);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [roomCode]);
+  }, [roomCode, handleIncomingState]);
 
   // ============================================================
   // 脱落検出 & スライドアニメーション
@@ -330,8 +394,15 @@ export function MancalaOnlineGamePage({
   // 移動開始ヘルパー
   // ============================================================
   const startMove = useCallback((state: GameState, pitId: string) => {
-    const finalState = applyMove(state, pitId);
-    if (finalState === state) return;
+    const moved = applyMove(state, pitId);
+    if (moved === state) return;
+
+    const finalState: GameState = {
+      ...moved,
+      lastMovePitId: pitId,
+    };
+
+    justMovedTurnRef.current = finalState.turnCount;
 
     void supabase
       .from('mancala_rooms')
