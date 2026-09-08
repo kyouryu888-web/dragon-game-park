@@ -5,6 +5,7 @@ import { createInitialMancalaState } from './createInitialMancalaState';
 import { Layout } from '../../components/Layout';
 import { Button } from '../../components/Button';
 import { DEFAULT_ONLINE_ENTRY_MODE, shouldAutoJoinOnlineRoom } from '../../components/gameSetupDefaults';
+import { copyToClipboard, getGameSiteUrl } from '../../utils/shareUtils';
 
 export type OnlineRoomInfo = {
   roomCode: string;
@@ -114,6 +115,25 @@ export function MancalaRoomPage({
   const [selectRoleCode,     setSelectRoleCode]     = useState('');
   const [selectRoleCount,    setSelectRoleCount]    = useState(2);
   const [waitingPlayerCount, setWaitingPlayerCount] = useState(2);
+  const [copiedCode,         setCopiedCode]         = useState(false);
+  const [copiedUrl,          setCopiedUrl]          = useState(false);
+
+  async function handleCopyCode() {
+    if (!roomCode) return;
+    const ok = await copyToClipboard(roomCode);
+    if (ok) {
+      setCopiedCode(true);
+      setTimeout(() => setCopiedCode(false), 2000);
+    }
+  }
+
+  async function handleCopyUrl() {
+    const ok = await copyToClipboard(getGameSiteUrl());
+    if (ok) {
+      setCopiedUrl(true);
+      setTimeout(() => setCopiedUrl(false), 2000);
+    }
+  }
 
   function toggleCpuSlot(idx: number) {
     setCpuSlots(prev => {
@@ -467,10 +487,20 @@ export function MancalaRoomPage({
             letterSpacing: 'clamp(4px, 2vw, 10px)',
             fontFamily: 'monospace', color: 'var(--brown)',
             background: 'rgba(201,162,75,.12)', border: '2px solid #e8c870',
-            borderRadius: 18, padding: '16px clamp(16px, 5vw, 32px)', marginBottom: 20,
+            borderRadius: 18, padding: '16px clamp(16px, 5vw, 32px)', marginBottom: 14,
             maxWidth: '100%', boxSizing: 'border-box',
           }}>
             {roomCode}
+          </div>
+
+          {/* コピー操作ボタン */}
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 24 }}>
+            <Button onClick={handleCopyCode} style={{ minWidth: 150 }}>
+              {copiedCode ? 'コピーしました ✓' : 'コードをコピー'}
+            </Button>
+            <Button variant="secondary" onClick={handleCopyUrl} style={{ minWidth: 150 }}>
+              {copiedUrl ? 'URLをコピーしました ✓' : 'サイトURLをコピー'}
+            </Button>
           </div>
 
           {/* 参加人数バッジ */}

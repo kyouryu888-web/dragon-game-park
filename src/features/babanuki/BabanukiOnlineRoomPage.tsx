@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { DEFAULT_ONLINE_ENTRY_MODE, shouldAutoJoinOnlineRoom } from '../../components/gameSetupDefaults';
+import { copyToClipboard, getGameSiteUrl } from '../../utils/shareUtils';
 import type { CpuLevel } from './babanukiTypes';
 import { MAX_PLAYERS, MIN_PLAYERS } from './babanukiTypes';
 import { CPU_LEVELS, getCpuLevelLabel } from './babanukiCpu';
@@ -59,6 +60,7 @@ export function BabanukiOnlineRoomPage({
   const [busy, setBusy] = useState(false);
   const [waitingInfo, setWaitingInfo] = useState<{ joined: number; total: number }>({ joined: 1, total: 1 });
   const [copyMessage, setCopyMessage] = useState('');
+  const [copyUrlMessage, setCopyUrlMessage] = useState('');
 
   // 待機中はルームを購読し、人間の席が全部埋まったら対局へ進む
   useEffect(() => {
@@ -127,12 +129,23 @@ export function BabanukiOnlineRoomPage({
   }, []);
 
   const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(roomCode);
-      setCopyMessage('コピーした');
-      setTimeout(() => setCopyMessage(''), 1600);
-    } catch {
+    if (!roomCode) return;
+    const ok = await copyToClipboard(roomCode);
+    if (ok) {
+      setCopyMessage('コピーした ✓');
+      setTimeout(() => setCopyMessage(''), 2000);
+    } else {
       setCopyMessage('コピーできなかった');
+    }
+  };
+
+  const handleCopyUrl = async () => {
+    const ok = await copyToClipboard(getGameSiteUrl());
+    if (ok) {
+      setCopyUrlMessage('URLをコピーした ✓');
+      setTimeout(() => setCopyUrlMessage(''), 2000);
+    } else {
+      setCopyUrlMessage('コピーできなかった');
     }
   };
 
@@ -360,14 +373,24 @@ export function BabanukiOnlineRoomPage({
           <div style={{ fontSize: 34, letterSpacing: '.35em', color: '#f0dcff', fontFamily: 'Cinzel,serif', marginBottom: 10 }}>
             {roomCode}
           </div>
-          <button
-            type="button"
-            className="btn"
-            onClick={handleCopy}
-            style={{ padding: '8px 16px', borderRadius: 8, marginBottom: 18, cursor: 'pointer', border: '1px solid rgba(201,162,75,.5)', background: 'rgba(60,44,30,.8)', color: '#e6c877', fontSize: 12 }}
-          >
-            {copyMessage || 'コードをコピー'}
-          </button>
+          <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 18 }}>
+            <button
+              type="button"
+              className="btn"
+              onClick={handleCopy}
+              style={{ padding: '8px 16px', borderRadius: 8, cursor: 'pointer', border: '1px solid rgba(201,162,75,.5)', background: 'rgba(60,44,30,.8)', color: '#e6c877', fontSize: 12 }}
+            >
+              {copyMessage || 'コードをコピー'}
+            </button>
+            <button
+              type="button"
+              className="btn"
+              onClick={handleCopyUrl}
+              style={{ padding: '8px 16px', borderRadius: 8, cursor: 'pointer', border: '1px solid rgba(140,120,90,.4)', background: 'rgba(30,26,22,.8)', color: '#c9b48f', fontSize: 12 }}
+            >
+              {copyUrlMessage || 'サイトURLをコピー'}
+            </button>
+          </div>
 
           <div style={{ fontSize: 14, color: '#e0d3b8', marginBottom: 6 }}>
             仲間を待っています… {waitingInfo.joined} / {waitingInfo.total} 人

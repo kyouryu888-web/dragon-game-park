@@ -1,3 +1,24 @@
+## 2026-09-09 追記 全ゲーム待機画面のコードコピーボタン完全配備＆サイトURLコピー機能新設
+
+作業ブランチ: `feat/online-room-copy-buttons`。
+
+実装内容:
+- **共通共有ユーティリティの整備 (`src/utils/shareUtils.ts`)**:
+  - `copyToClipboard`: モダンブラウザの `navigator.clipboard` とレガシー/セキュリティ制限環境向けの `document.execCommand` フォールバックを備えた堅牢なクリップボードコピー関数。
+  - `getGameSiteUrl`: 現在の環境（ローカル/本番）に応じたクリーンなサイトベースURLを取得する関数。
+  - 単体テスト `shareUtils.test.ts` を追加し、4テストすべて合格。
+- **全ゲーム待機画面における「コードをコピー」＆「サイトURLをコピー」ボタンの完全整備**:
+  - **マンカラ (`MancalaRoomPage.tsx`)**: 欠落していたコードコピーボタンを新設し、さらに「サイトURLをコピー」ボタンを追加。
+  - **リバーシ通常版 (`ReversiWaitingScreen.tsx`) & 爆裂版 (`BakuretsuReversiWaitingScreen.tsx`)**: 既存の「コードをコピー」に加え、「サイトURLをコピー」ボタンを新設。
+  - **UNO (`UnoOnlineRoomPage.tsx`)**: 待機枠内に「コードをコピー」と「サイトURLをコピー」の2ボタンを配置。
+  - **バックギャモン (`BackgammonPage.tsx`)**: 世界観に合わせた「コードを写す」「サイトURLを写す」ボタンを配置。
+  - **最弱王ババ抜き (`BabanukiOnlineRoomPage.tsx`)**: 「コードをコピー」と「サイトURLをコピー」の2ボタンを並べて配置。
+- **UI共通コンポーネント `Button.tsx` の拡張**:
+  - `style?: React.CSSProperties` および `className?: string` のプロパティを受け取れるよう拡張。
+- **品質・テスト検証**:
+  - 全38テストファイル・386テスト 100% 合格。
+  - `tsc -b` および `npm run build` エラー0件で完了。
+
 ## 2026-09-09 追記 マンカラのオンラインゲスト側アニメーション完全同期・対戦終了後遷移先バグ修正・全ゲーム旧メニュー完全根絶
 
 作業ブランチ: `fix/online-animation-guest-transitions`。

@@ -7,6 +7,8 @@ type ButtonProps = {
   variant?: ButtonVariant;
   disabled?: boolean;
   fullWidth?: boolean;
+  className?: string;
+  style?: React.CSSProperties;
 };
 
 const VARIANT_STYLES: Record<ButtonVariant, React.CSSProperties> = {
@@ -36,6 +38,8 @@ export function Button({
   variant = 'primary',
   disabled = false,
   fullWidth = false,
+  className,
+  style,
 }: ButtonProps) {
   const base: React.CSSProperties = {
     display: 'inline-flex',
@@ -55,8 +59,8 @@ export function Button({
 
   return (
     <button
-      className={`btn btn-${variant}`}
-      style={{ ...base, ...VARIANT_STYLES[variant] }}
+      className={`btn btn-${variant}${className ? ` ${className}` : ''}`}
+      style={{ ...base, ...VARIANT_STYLES[variant], ...style }}
       onClick={onClick}
       disabled={disabled}
     >
