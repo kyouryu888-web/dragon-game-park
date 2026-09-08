@@ -46,11 +46,17 @@ export function generateReversiRoomCode(random: () => number = Math.random): str
   return code;
 }
 
-export function createOnlineReversiState(hostName: string, guestName: string): ReversiGameState {
+export function createOnlineReversiState(
+  hostName: string,
+  guestName: string,
+  hostIsBlack = true,
+): ReversiGameState {
+  const blackName = hostIsBlack ? (hostName || 'ルームの主') : (guestName || '挑戦者');
+  const whiteName = hostIsBlack ? (guestName || '挑戦者') : (hostName || 'ルームの主');
   const config: ReversiConfig = {
     mode: 'online',
-    name: hostName || 'ルームの主',
-    name2: guestName || '挑戦者',
+    name: blackName,
+    name2: whiteName,
     cpuLevel: 'normal',
     humanSide: 'black',
   };

@@ -188,6 +188,7 @@ export function BakuretsuReversiOnlineGame({
         onMoveRequest={submitMove}
         onTurnReadyRequest={acknowledgeTurnReady}
         onRematch={rematch}
+        onChangeSettings={room.isHost && !serverPending ? rematch : undefined}
         onBackToSetup={onBackToSetup}
         onBackToHome={onBackToHome}
       />

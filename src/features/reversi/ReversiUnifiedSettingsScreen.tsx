@@ -87,48 +87,52 @@ export function ReversiUnifiedSettingsScreen({
     else onBakuretsuChange({ humanSide: newSide === 'random' ? 'RANDOM' : (newSide.toUpperCase() as Side) });
   }
 
+  // オンライン参加時はモード未定（自動判別）のため中立のアイコンと説明
+  const isOnlineJoin = mode === 'online' && onlineTab === 'join';
+  const icon = isOnlineJoin ? '◐' : variant === 'normal' ? '⚫' : '💥';
+  const title = isOnlineJoin
+    ? 'リバーシ オンライン'
+    : variant === 'normal'
+      ? '通常リバーシ'
+      : '爆裂リバーシー';
+  const englishTitle = isOnlineJoin
+    ? 'REVERSI ONLINE'
+    : variant === 'normal'
+      ? 'REVERSI'
+      : 'BAKURETSU REVERSI';
+  const description = isOnlineJoin
+    ? 'コードを入力して離れた相手と対戦。通常版・爆裂版を自動判別して対局を開始します。'
+    : variant === 'normal'
+      ? '黒炎と白銀の竜陣。角を制し、一手ごとに敵陣を奪い合って最後の石まで勝敗を奪い合う盤上遊戯。'
+      : '爆弾・感染・盾の魔法が飛び交う過激なリバーシ。相手の特殊コマは見えないため心理戦が試される。';
+
   return (
     <GameSetupShell
       theme="reversi"
-      icon={variant === 'normal' ? '⚫' : '💥'}
-      title={variant === 'normal' ? '通常リバーシ' : '爆裂リバーシー'}
-      englishTitle={variant === 'normal' ? 'REVERSI' : 'BAKURETSU REVERSI'}
-      description={
-        variant === 'normal'
-          ? '黒炎と白銀の竜陣。角を制し、一手ごとに敵陣を奪い合って最後の石まで勝敗を奪い合う。'
-          : '爆弾・感染・盾の魔法が飛び交う過激なリバーシ。相手の特殊コマは見えないため心理戦が試される。'
-      }
+      icon={icon}
+      title={title}
+      englishTitle={englishTitle}
+      description={description}
       onBack={onBackToHome}
     >
       <SetupStep numeral="I" title="名を刻む">
         <input
           className="game-setup-input"
-          placeholder="プレイヤー名（任意）"
+          placeholder="挑戦者の名（なくてもよい）"
           maxLength={10}
           value={name}
           onChange={(e) => updateName(e.target.value)}
         />
       </SetupStep>
 
-      <SetupStep numeral="II" title="モード選択">
-        <div className="game-setup-tabs" style={{ marginBottom: 12 }}>
-          <button type="button" className={variant === 'normal' ? 'is-selected' : ''} onClick={() => onVariantChange('normal')}>
-            通常版
-          </button>
-          <button type="button" className={variant === 'bakuretsu' ? 'is-selected' : ''} onClick={() => onVariantChange('bakuretsu')}>
-            爆裂版
-          </button>
-        </div>
-      </SetupStep>
-
-      <SetupStep numeral="III" title="対戦方法を選ぶ">
+      <SetupStep numeral="II" title="対戦方法を選ぶ">
         <div className="game-setup-mode-grid">
           <SetupModeCard
             selected={mode === 'cpu'}
             icon="🐉"
             title="ドラゴンと対戦"
             code="VS CPU"
-            description="あなたとCPUで対戦"
+            description="あなたと番人竜で対戦"
             onClick={() => updateMode('cpu')}
           />
           <SetupModeCard
@@ -141,39 +145,124 @@ export function ReversiUnifiedSettingsScreen({
           />
         </div>
         {mode === 'online' ? (
-          <div className="game-setup-online-panel">
+          <div className="game-setup-online-panel" style={{ marginTop: 12 }}>
             <SetupChoiceTabs value={onlineTab} onChange={onOnlineTabChange} />
-            {onlineTab === 'join' ? (
-              <>
-                <input
-                  className="game-setup-input game-setup-code-input"
-                  placeholder="6桁のコード"
-                  maxLength={6}
-                  value={joinCode}
-                  onChange={(e) => onJoinCodeChange(e.target.value.toUpperCase())}
-                />
-                <div style={{ marginTop: 8 }}>
-                  <Button
-                    fullWidth
-                    onClick={onStart}
-                    disabled={joinCode.length !== 6}
-                  >
-                    このコードで参加する
-                  </Button>
-                </div>
-              </>
-            ) : null}
           </div>
         ) : null}
       </SetupStep>
 
-      <SetupStep numeral="IV" title="対戦相手を決める">
-        {mode === 'cpu' ? (
+      {/* Step III: 選択した対戦方法に応じた設定（無駄な項目は出さない） */}
+      {isOnlineJoin ? (
+        <SetupStep numeral="III" title="コードで参加する">
+          <input
+            className="game-setup-input game-setup-code-input"
+            placeholder="6桁のコードを入力"
+            maxLength={6}
+            value={joinCode}
+            onChange={(e) => onJoinCodeChange(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
+          />
+          <SetupSummary>
+            通常版・爆裂版のどちらのコードでも自動判別して即座に参加します。
+          </SetupSummary>
+          <div style={{ marginTop: 14 }}>
+            <Button
+              fullWidth
+              onClick={onStart}
+              disabled={joinCode.length !== 6}
+            >
+              このコードで参加する
+            </Button>
+          </div>
+        </SetupStep>
+      ) : mode === 'online' ? (
+        <SetupStep numeral="III" title="ルールと手番を決める">
+          <div style={{ marginBottom: 12 }}>
+            <span style={{ display: 'block', fontSize: '13px', color: '#c5b597', marginBottom: 6 }}>
+              ルールの選択
+            </span>
+            <div className="game-setup-tabs">
+              <button
+                type="button"
+                className={variant === 'normal' ? 'is-selected' : ''}
+                onClick={() => onVariantChange('normal')}
+              >
+                通常版
+              </button>
+              <button
+                type="button"
+                className={variant === 'bakuretsu' ? 'is-selected' : ''}
+                onClick={() => onVariantChange('bakuretsu')}
+              >
+                爆裂版
+              </button>
+            </div>
+          </div>
+
+          <div style={{ marginBottom: 12 }}>
+            <span style={{ display: 'block', fontSize: '13px', color: '#c5b597', marginBottom: 6 }}>
+              あなたの手番
+            </span>
+            <div className="reversi-side-choice" role="group" aria-label="自分の石の色">
+              {([
+                ['black', '黒・先手'],
+                ['white', '白・後手'],
+                ['random', 'おまかせ'],
+              ] as const).map(([side, label]) => (
+                <button
+                  type="button"
+                  key={side}
+                  className={getHumanSide() === side ? 'is-selected' : ''}
+                  onClick={() => updateHumanSide(side as any)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <SetupSummary>
+            6桁コードを発行し、対戦相手の参加を待機します。
+          </SetupSummary>
+
+          <div style={{ marginTop: 14 }}>
+            <Button fullWidth onClick={onStart}>
+              ルームを作成する
+            </Button>
+          </div>
+        </SetupStep>
+      ) : (
+        <SetupStep numeral="III" title="ルールと対戦相手を決める">
+          <div style={{ marginBottom: 12 }}>
+            <span style={{ display: 'block', fontSize: '13px', color: '#c5b597', marginBottom: 6 }}>
+              ルールの選択
+            </span>
+            <div className="game-setup-tabs">
+              <button
+                type="button"
+                className={variant === 'normal' ? 'is-selected' : ''}
+                onClick={() => onVariantChange('normal')}
+              >
+                通常版
+              </button>
+              <button
+                type="button"
+                className={variant === 'bakuretsu' ? 'is-selected' : ''}
+                onClick={() => onVariantChange('bakuretsu')}
+              >
+                爆裂版
+              </button>
+            </div>
+          </div>
+
           <div className="bakuretsu-setup-names">
             <label>
               <span>CPUの強さ</span>
               {variant === 'normal' ? (
-                <select className="game-setup-select" value={normalConfig.cpuLevel} onChange={(e) => onNormalChange({ cpuLevel: e.target.value as ReversiCpuLevel })}>
+                <select
+                  className="game-setup-select"
+                  value={normalConfig.cpuLevel}
+                  onChange={(e) => onNormalChange({ cpuLevel: e.target.value as ReversiCpuLevel })}
+                >
                   {NORMAL_CPU_LEVELS.map((level) => (
                     <option key={level} value={level}>
                       {getReversiCpuName(level)}
@@ -181,7 +270,11 @@ export function ReversiUnifiedSettingsScreen({
                   ))}
                 </select>
               ) : (
-                <select className="game-setup-select" value={bakuretsuConfig.cpuLevel} onChange={(e) => onBakuretsuChange({ cpuLevel: parseInt(e.target.value, 10) as any })}>
+                <select
+                  className="game-setup-select"
+                  value={bakuretsuConfig.cpuLevel}
+                  onChange={(e) => onBakuretsuChange({ cpuLevel: parseInt(e.target.value, 10) as any })}
+                >
                   {BAKURETSU_CPU_LEVELS.map((level) => (
                     <option key={level} value={level}>
                       Lv{level}・{BAKURETSU_CPU_NAME[level]}
@@ -192,36 +285,64 @@ export function ReversiUnifiedSettingsScreen({
             </label>
             <label>
               <span>あなたの手番</span>
-              <select className="game-setup-select" value={getHumanSide()} onChange={(e) => updateHumanSide(e.target.value as any)}>
+              <select
+                className="game-setup-select"
+                value={getHumanSide()}
+                onChange={(e) => updateHumanSide(e.target.value as any)}
+              >
                 <option value="black">黒・先手</option>
                 <option value="white">白・後手</option>
                 <option value="random">おまかせ</option>
               </select>
             </label>
           </div>
-        ) : (
+
           <SetupSummary>
-            オンライン対戦では対戦相手や手番（先手/後手）はルームの設定またはランダムで決定されます。
+            黒は先手です。白を選ぶとドラゴンが最初の一手を打ちます。
           </SetupSummary>
-        )}
-      </SetupStep>
 
-      <div className="game-setup-cta">
-        {mode === 'cpu' || onlineTab === 'create' ? (
-          <Button fullWidth onClick={onStart}>
-            {mode === 'cpu' ? 'この設定で対戦する' : 'ルーム設定へ進む'}
-          </Button>
-        ) : null}
+          <div style={{ marginTop: 14 }}>
+            <Button fullWidth onClick={onStart}>
+              この設定で対戦する
+            </Button>
+          </div>
+        </SetupStep>
+      )}
 
-        <button type="button" className="game-setup-rules-toggle" onClick={() => setShowRules((show) => !show)}>
-          {showRules ? '掟を閉じる' : '掟を見る'}
+      {/* 下部: 遊戯の掟 */}
+      <div className="game-setup-cta" style={{ marginTop: 8 }}>
+        <button
+          type="button"
+          className="game-setup-rules-toggle"
+          onClick={() => setShowRules((show) => !show)}
+        >
+          {showRules ? '掟を閉じる' : '遊戯の掟を見る'}
         </button>
         {showRules ? (
-          <ul className="game-setup-rules-list" style={{ marginTop: 12 }}>
-            {(variant === 'normal' ? NORMAL_RULES : BAKURETSU_RULES).map((rule) => (
-              <li key={rule}>{rule}</li>
-            ))}
-          </ul>
+          <div style={{ marginTop: 12 }}>
+            {isOnlineJoin ? (
+              <>
+                <strong style={{ display: 'block', color: '#f3d58a', marginBottom: 4, fontSize: '13px' }}>
+                  【通常リバーシの掟】
+                </strong>
+                <ul className="game-setup-rules-list" style={{ marginBottom: 12 }}>
+                  {NORMAL_RULES.map((rule) => <li key={rule}>{rule}</li>)}
+                </ul>
+                <strong style={{ display: 'block', color: '#f3d58a', marginBottom: 4, fontSize: '13px' }}>
+                  【爆裂リバーシーの掟】
+                </strong>
+                <ul className="game-setup-rules-list">
+                  {BAKURETSU_RULES.map((rule) => <li key={rule}>{rule}</li>)}
+                </ul>
+              </>
+            ) : (
+              <ul className="game-setup-rules-list">
+                {(variant === 'normal' ? NORMAL_RULES : BAKURETSU_RULES).map((rule) => (
+                  <li key={rule}>{rule}</li>
+                ))}
+              </ul>
+            )}
+          </div>
         ) : null}
       </div>
     </GameSetupShell>

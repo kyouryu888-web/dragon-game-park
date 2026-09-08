@@ -44,6 +44,7 @@ type Props = {
   rematchWaitingMessage?: string;
   onStateCommit?: (next: ReversiGameState) => void;
   onRematch?: () => void;
+  onChangeSettings?: () => void;
 };
 
 const CINEMATIC_DURATION_MS = 1900;
@@ -122,6 +123,7 @@ export function ReversiGameScreen({
   rematchWaitingMessage,
   onStateCommit,
   onRematch,
+  onChangeSettings,
 }: Props) {
   const [state, setState] = useState<ReversiGameState>(() => initialState ?? createInitialReversiState(config));
   const [displayBoard, setDisplayBoard] = useState<ReversiBoardState>(() => state.board);
@@ -409,7 +411,7 @@ export function ReversiGameScreen({
             <GameEndActions
               onRematch={canRematch ? rematch : undefined}
               canRematch={canRematch}
-              onChangeSettings={onBackToSetup}
+              onChangeSettings={onChangeSettings ?? onBackToSetup}
               onBackToSetup={onBackToSetup}
               onBackToHome={onBackToHome}
             />

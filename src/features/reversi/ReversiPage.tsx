@@ -7,10 +7,9 @@ import {
   createBakuretsuReversiRoom,
   deleteBakuretsuReversiRoom,
   isBakuretsuReversiRoomReady,
-  joinBakuretsuReversiRoom,
   subscribeBakuretsuReversiRoom,
   getBakuretsuReversiOnlinePlayerId,
-  } from "./bakuretsuReversiOnline";
+} from "./bakuretsuReversiOnline";
 import { DEFAULT_BAKURETSU_REVERSI_CONFIG, type BakuretsuReversiConfig } from "./bakuretsuUi";
 
 import { ReversiGameScreen } from "./ReversiGameScreen";
@@ -19,13 +18,13 @@ import {
   createReversiRoom,
   deleteReversiRoom,
   isReversiRoomReady,
-  joinReversiRoom,
   subscribeReversiRoom,
-  } from "./reversiOnline";
+} from "./reversiOnline";
 import { ReversiWaitingScreen } from "./ReversiWaitingScreen";
 import type { ReversiConfig } from "./reversiTypes";
 
 import { ReversiUnifiedSettingsScreen } from "./ReversiUnifiedSettingsScreen";
+import { joinReversiRoomAuto } from "./reversiOnlineAuto";
 
 const STORAGE_KEY_NORMAL = "dragon-game-park:reversi-config-v2";
 const DEFAULT_CONFIG_NORMAL: ReversiConfig = {
@@ -134,45 +133,35 @@ export function ReversiPage({ onBackToHome }: { onBackToHome: () => void }) {
     setBusy(true);
     setMessage("");
     try {
-      if (variant === "normal") {
-        if (onlineTab === "create") {
+      if (onlineTab === "join") {
+        if (joinCode.length !== 6) throw new Error("コードは6文字で入力してください");
+        const autoJoin = await joinReversiRoomAuto(joinCode, config.name);
+        setVariant(autoJoin.variant);
+        setRoom(autoJoin.session.room);
+        setRoomRow(autoJoin.session.row);
+        const isReady = autoJoin.variant === 'normal'
+          ? isReversiRoomReady(autoJoin.session.row as any)
+          : isBakuretsuReversiRoomReady(autoJoin.session.row as any);
+        if (autoJoin.session.room.isHost && !isReady) {
+          setScreen("waiting");
+          setMessage("作成したルームへ戻りました");
+        } else {
+          setScreen("online-play");
+          setMessage("ルームへ参加しました");
+        }
+      } else {
+        if (variant === "normal") {
           const session = await createReversiRoom(config.name);
           setRoom(session.room);
           setRoomRow(session.row);
           setCopied(false);
           setScreen("waiting");
         } else {
-          if (joinCode.length !== 6) throw new Error("コードは6文字で入力してください");
-          const session = await joinReversiRoom(joinCode, config.name);
-          setRoom(session.room);
-          setRoomRow(session.row);
-          if (session.room.isHost && !isReversiRoomReady(session.row)) {
-            setScreen("waiting");
-            setMessage("作成したルームへ戻りました");
-          } else {
-            setScreen("online-play");
-            setMessage("ルームへ参加しました");
-          }
-        }
-      } else {
-        if (onlineTab === "create") {
           const session = await createBakuretsuReversiRoom(config.name);
           setRoom(session.room);
           setRoomRow(session.row);
           setCopied(false);
           setScreen("waiting");
-        } else {
-          if (joinCode.length !== 6) throw new Error("コードは6文字で入力してください");
-          const session = await joinBakuretsuReversiRoom(joinCode, config.name);
-          setRoom(session.room);
-          setRoomRow(session.row);
-          if (session.room.isHost && !isBakuretsuReversiRoomReady(session.row)) {
-            setScreen("waiting");
-            setMessage("作成したルームへ戻りました");
-          } else {
-            setScreen("online-play");
-            setMessage("ルームへ参加しました");
-          }
         }
       }
     } catch (error) {
