@@ -1,6 +1,6 @@
 ## 2026-09-09 追記 全ゲーム待機画面のコードコピーボタン完全配備＆サイトURLコピー機能新設
 
-作業ブランチ: `feat/online-room-copy-buttons`。
+作業ブランチ: `feat/online-room-copy-buttons`（PR #35 にて `main` へマージ完了、Vercel 本番デプロイ完了）。
 
 実装内容:
 - **共通共有ユーティリティの整備 (`src/utils/shareUtils.ts`)**:
