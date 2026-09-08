@@ -1,3 +1,25 @@
+## 2026-09-09 追記 マンカラのオンラインゲスト側アニメーション完全同期・対戦終了後遷移先バグ修正・全ゲーム旧メニュー完全根絶
+
+作業ブランチ: `fix/online-animation-guest-transitions`。
+
+実装内容:
+- **マンカラのオンライン対戦相手側（ゲスト側）アニメーション完全同期**:
+  - `mancalaTypes.ts` の `GameState` に `lastMovePitId?: string` を追加。
+  - `startMove` で着手ピットIDを Supabase に保存。相手側（Realtime UPDATE / `syncLatest`）で1手進行（`turnCount === current.turnCount + 1` かつ `lastMovePitId` あり）を受信した際、`computeStoneSteps` による1石ずつの配布アニメーション、捕獲アニメーション、エクストラターンバナーを手番側と100%同一に同期再生するロジックを実装。
+  - アニメーション完了後に最終状態盤面へ反映する設計により、ゲスト側でも敵の石が滑らかに移動する様子がリアルタイムに確認可能。
+- **最弱王ババ抜きの試合後「設定変更」「ゲーム設定に戻る」の遷移先バグ修正**:
+  - `BabanukiPage.tsx` で `onBackToRoom={() => setScreen('room')}` となっていたため、試合後に旧メニュー画面（`BabanukiOnlineRoomPage`）へ遷移していた不具合を修正。
+  - `BabanukiOnlineGame` のプロパティを `onBackToSetup` に名称・役割を統一し、`BabanukiSettingsScreen`（真の初期設定画面）へ直帰させる動線を確立。対戦中ヘッダーの「ゲーム設定に戻る」ボタンも `onBackToSetup` に修正。
+- **全ゲーム（マンカラ・UNO・ババ抜き）の `*RoomPage` における旧メニュー（二重UI）の完全根絶**:
+  - ルーム作成・参加失敗時やキャンセル時に古いメニュー画面（`pageState === 'menu'`）へフォールバックしていた不具合を解消。
+  - `PageState` に `'error'` を新設し、エラー発生時は分かりやすいエラー通知カードとともに「ゲーム設定に戻る」ボタン（`onBack`）を表示して初期設定画面へ直帰させるフローに統一。
+- **バックギャモンのゲスト側終局画面の最適化**:
+  - ゲスト側の結果モーダルで `showRematch: iAmHost` とし、「再戦する」をホスト専用のアクションとして整理。
+  - ゲスト側には「ルームの主が『再戦する』を選ぶと、この盤のまま自動で次の対局が始まります」という待機案内を表示。
+- **品質・テスト検証**:
+  - 全37テストファイル・382テスト 100% 合格。
+  - `tsc -b` および `npm run build` エラー0件で完了。
+
 ## 2026-09-09 追記 バックギャモン人数整理・ババ抜きちらつき＆戻り遷移修正・リバーシ自動判別案内・全ゲーム多面デバッグ完了
 
 作業ブランチ: `codex/round2-deep-polish-and-ux-perfection`。

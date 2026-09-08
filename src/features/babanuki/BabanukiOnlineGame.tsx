@@ -26,11 +26,11 @@ const DOUBLE_TAP_MS = 320;
 
 type Props = {
   room: BabanukiRoomInfo;
-  onBackToRoom: () => void;
+  onBackToSetup: () => void;
   onBackToHome: () => void;
 };
 
-export function BabanukiOnlineGame({ room, onBackToRoom, onBackToHome }: Props) {
+export function BabanukiOnlineGame({ room, onBackToSetup, onBackToHome }: Props) {
   const [row, setRow] = useState<BabanukiRoomRow | null>(null);
   const rowRef = useRef<BabanukiRoomRow | null>(null);
   rowRef.current = row;
@@ -96,7 +96,7 @@ export function BabanukiOnlineGame({ room, onBackToRoom, onBackToHome }: Props) 
       viewerId={room.myPlayerId}
       isHost={room.myPlayerId === 'player-1'}
       applyAction={applyAction}
-      onBackToRoom={onBackToRoom}
+      onBackToSetup={onBackToSetup}
       onBackToHome={onBackToHome}
     />
   );
@@ -107,11 +107,11 @@ type BoardProps = {
   viewerId: string;
   isHost: boolean;
   applyAction: (updater: (state: BabanukiState) => BabanukiState) => void;
-  onBackToRoom: () => void;
+  onBackToSetup: () => void;
   onBackToHome: () => void;
 };
 
-function OnlineBoard({ logic, viewerId, isHost, applyAction, onBackToRoom, onBackToHome }: BoardProps) {
+function OnlineBoard({ logic, viewerId, isHost, applyAction, onBackToSetup, onBackToHome }: BoardProps) {
   const playback = useBabanukiPlayback(logic, viewerId);
   const { display, isAnimating } = playback;
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -319,7 +319,7 @@ function OnlineBoard({ logic, viewerId, isHost, applyAction, onBackToRoom, onBac
         <button
           type="button"
           className="btn"
-          onClick={onBackToRoom}
+          onClick={onBackToSetup}
           style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid rgba(140,120,90,.4)', background: 'rgba(30,26,22,.8)', color: '#c9b48f', fontSize: 12, cursor: 'pointer' }}
         >
           ゲーム設定に戻る
@@ -448,8 +448,8 @@ function OnlineBoard({ logic, viewerId, isHost, applyAction, onBackToRoom, onBac
           state={logic}
           viewerId={viewerId}
           onRestart={isHost ? () => applyAction((state) => createBabanukiRematchState(state)) : undefined}
-          onChangeSettings={isHost ? onBackToRoom : undefined}
-          onBackToSetup={onBackToRoom}
+          onChangeSettings={isHost ? onBackToSetup : undefined}
+          onBackToSetup={onBackToSetup}
           waitingMessage={isHost ? undefined : 'ホストが再戦を選ぶと、このまま自動で次の対局が始まります。'}
           onBackToHome={onBackToHome}
         />

@@ -68,4 +68,6 @@ export type GameState = {
   playerCount: 2 | 3 | 4;
   /** 現在ゲームに残っているプレイヤーID（脱落するたびに減る） */
   activePlayerIds: PlayerId[];
+  /** 直前に着手された穴のID（オンライン同期のアニメーション再現用） */
+  lastMovePitId?: string;
 };

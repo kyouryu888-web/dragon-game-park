@@ -15,7 +15,7 @@ import {
   subscribeRoom,
 } from './babanukiOnline';
 
-type PageState = 'menu' | 'create' | 'creating' | 'joining' | 'waiting';
+type PageState = 'menu' | 'create' | 'creating' | 'joining' | 'waiting' | 'error';
 
 type Props = {
   initialMode?: 'create' | 'join';
@@ -81,7 +81,7 @@ export function BabanukiOnlineRoomPage({
       setPage('waiting');
     } catch (e) {
       setError(e instanceof Error ? e.message : 'ルームを開けなかった');
-      setPage('menu');
+      setPage('error');
     } finally {
       setBusy(false);
     }
@@ -98,7 +98,7 @@ export function BabanukiOnlineRoomPage({
     const code = inputCode.trim().toUpperCase();
     if (code.length !== 6) {
       setError('紋章は6文字だ');
-      setPage('menu');
+      setPage('error');
       return;
     }
     setPage('joining');
@@ -112,7 +112,7 @@ export function BabanukiOnlineRoomPage({
       setPage('waiting');
     } catch (e) {
       setError(e instanceof Error ? e.message : 'ルームに入れなかった');
-      setPage('menu');
+      setPage('error');
     } finally {
       setBusy(false);
     }
@@ -169,6 +169,34 @@ export function BabanukiOnlineRoomPage({
             ババ抜きルームへ参加しています...
           </div>
           <p style={{ fontSize: 13, color: '#b5a68c' }}>コードを確認しています。少しだけお待ちください。</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (page === 'error') {
+    return (
+      <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', padding: 24, color: '#e0d3b8' }}>
+        <div style={{ textAlign: 'center', maxWidth: 360, width: '100%' }}>
+          <div style={{ fontSize: 44, marginBottom: 12 }}>⚠️</div>
+          <h2 style={{ fontSize: 18, fontWeight: 'bold', color: '#e6c877', marginBottom: 12 }}>
+            ルームに入室できませんでした
+          </h2>
+          <p style={{
+            fontSize: 14, color: '#f0c8c8',
+            background: 'rgba(90,30,30,.5)', border: '1px solid rgba(200,90,90,.4)',
+            borderRadius: 10, padding: '12px 16px', marginBottom: 24, lineHeight: 1.6,
+          }}>
+            {error || 'ルームが見つからないか、通信に失敗しました。'}
+          </p>
+          <button
+            type="button"
+            className="btn"
+            onClick={onBack}
+            style={{ width: '100%', padding: '12px 0', borderRadius: 10, cursor: 'pointer', border: '1px solid rgba(200,140,240,.6)', background: 'linear-gradient(180deg,#5a3478,#3a2050)', color: '#f0dcff', fontSize: 15, fontWeight: 'bold' }}
+          >
+            ゲーム設定に戻る
+          </button>
         </div>
       </div>
     );

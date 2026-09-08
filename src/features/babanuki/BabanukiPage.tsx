@@ -87,7 +87,7 @@ export function BabanukiPage({ onBackToHome }: Props) {
     return (
       <BabanukiOnlineGame
         room={roomInfo}
-        onBackToRoom={() => setScreen('room')}
+        onBackToSetup={() => setScreen('settings')}
         onBackToHome={onBackToHome}
       />
     );
