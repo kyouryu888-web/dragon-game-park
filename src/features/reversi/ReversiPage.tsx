@@ -25,6 +25,7 @@ import type { ReversiConfig } from "./reversiTypes";
 
 import { ReversiUnifiedSettingsScreen } from "./ReversiUnifiedSettingsScreen";
 import { joinReversiRoomAuto } from "./reversiOnlineAuto";
+import { copyToClipboard, getGameSiteUrl } from "../../utils/shareUtils";
 
 const STORAGE_KEY_NORMAL = "dragon-game-park:reversi-config-v2";
 const DEFAULT_CONFIG_NORMAL: ReversiConfig = {
@@ -74,6 +75,7 @@ export function ReversiPage({ onBackToHome }: { onBackToHome: () => void }) {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [copied, setCopied] = useState(false);
+  const [copiedUrl, setCopiedUrl] = useState(false);
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
@@ -187,14 +189,25 @@ export function ReversiPage({ onBackToHome }: { onBackToHome: () => void }) {
     backToSettings();
   }
 
-  function copyRoomCode() {
+  async function copyRoomCode() {
     if (!room) return;
-    void navigator.clipboard.writeText(room.roomCode)
-      .then(() => {
-        setCopied(true);
-        window.setTimeout(() => setCopied(false), 1600);
-      })
-      .catch(() => setMessage("コードをコピーできませんでした"));
+    const ok = await copyToClipboard(room.roomCode);
+    if (ok) {
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } else {
+      setMessage("コードをコピーできませんでした");
+    }
+  }
+
+  async function copySiteUrl() {
+    const ok = await copyToClipboard(getGameSiteUrl());
+    if (ok) {
+      setCopiedUrl(true);
+      window.setTimeout(() => setCopiedUrl(false), 2000);
+    } else {
+      setMessage("URLをコピーできませんでした");
+    }
   }
 
   if (screen === "play") {
@@ -207,9 +220,27 @@ export function ReversiPage({ onBackToHome }: { onBackToHome: () => void }) {
 
   if (screen === "waiting" && room) {
     if (variant === "normal") {
-      return <ReversiWaitingScreen roomCode={room.roomCode} copied={copied} onCopy={copyRoomCode} onCancel={closeWaitingRoom} />;
+      return (
+        <ReversiWaitingScreen
+          roomCode={room.roomCode}
+          copied={copied}
+          copiedUrl={copiedUrl}
+          onCopy={copyRoomCode}
+          onCopyUrl={copySiteUrl}
+          onCancel={closeWaitingRoom}
+        />
+      );
     } else {
-      return <BakuretsuReversiWaitingScreen roomCode={room.roomCode} copied={copied} onCopy={copyRoomCode} onCancel={closeWaitingRoom} />;
+      return (
+        <BakuretsuReversiWaitingScreen
+          roomCode={room.roomCode}
+          copied={copied}
+          copiedUrl={copiedUrl}
+          onCopy={copyRoomCode}
+          onCopyUrl={copySiteUrl}
+          onCancel={closeWaitingRoom}
+        />
+      );
     }
   }
 

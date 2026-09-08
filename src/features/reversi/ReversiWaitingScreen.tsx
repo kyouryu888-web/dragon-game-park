@@ -3,11 +3,13 @@ import { Button } from '../../components/Button';
 type Props = {
   roomCode: string;
   copied: boolean;
+  copiedUrl?: boolean;
   onCopy: () => void;
+  onCopyUrl?: () => void;
   onCancel: () => void;
 };
 
-export function ReversiWaitingScreen({ roomCode, copied, onCopy, onCancel }: Props) {
+export function ReversiWaitingScreen({ roomCode, copied, copiedUrl, onCopy, onCopyUrl, onCancel }: Props) {
   return (
     <main className="reversi-online-lobby">
       <header className="reversi-online-lobby-topbar">
@@ -17,7 +19,16 @@ export function ReversiWaitingScreen({ roomCode, copied, onCopy, onCancel }: Pro
       <section className="reversi-online-lobby-card" aria-label="オンライン対戦の待機室">
         <span className="reversi-online-lobby-kicker">ROOM CODE</span>
         <h1>{roomCode}</h1>
-        <Button onClick={onCopy}>{copied ? 'コピーしました ✓' : 'コードをコピー'}</Button>
+        <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap', width: '100%', marginBottom: 16 }}>
+          <Button onClick={onCopy} style={{ flex: 1, minWidth: 140 }}>
+            {copied ? 'コピーしました ✓' : 'コードをコピー'}
+          </Button>
+          {onCopyUrl && (
+            <Button variant="secondary" onClick={onCopyUrl} style={{ flex: 1, minWidth: 140 }}>
+              {copiedUrl ? 'URLをコピーしました ✓' : 'サイトURLをコピー'}
+            </Button>
+          )}
+        </div>
         <div className="reversi-online-waiting-orbit" aria-hidden="true">
           <span className="reversi-mini-disc is-black" />
           <i />

@@ -9,6 +9,7 @@ import {
 } from './backgammonOnline';
 import { BG, BackButton, Brand } from './BackgammonUi';
 import { DEFAULT_ONLINE_ENTRY_MODE, DEFAULT_SETUP_MODE } from '../../components/gameSetupDefaults';
+import { copyToClipboard, getGameSiteUrl } from '../../utils/shareUtils';
 
 const CONFIG_STORAGE_KEY = 'dragon-game-park:backgammon-config-v2';
 
@@ -42,6 +43,7 @@ export function BackgammonPage({ onBackToHome }: BackgammonPageProps) {
   const [roomPayload, setRoomPayload] = useState<OnlinePayload | null>(null);
   const [isJoiner, setIsJoiner] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [copiedUrl, setCopiedUrl] = useState(false);
   const [toast, setToast] = useState('');
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -115,11 +117,27 @@ export function BackgammonPage({ onBackToHome }: BackgammonPageProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screen, isJoiner, room]);
 
-  function copyCode() {
+  async function copyCode() {
     if (!room) return;
-    try { void navigator.clipboard.writeText(room.roomCode); } catch { /* ignore */ }
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1800);
+    const ok = await copyToClipboard(room.roomCode);
+    if (ok) {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+      showToast('紋章を写し取った');
+    } else {
+      showToast('写し取れなかった');
+    }
+  }
+
+  async function copySiteUrl() {
+    const ok = await copyToClipboard(getGameSiteUrl());
+    if (ok) {
+      setCopiedUrl(true);
+      setTimeout(() => setCopiedUrl(false), 2000);
+      showToast('サイトのURLを写し取った');
+    } else {
+      showToast('写し取れなかった');
+    }
   }
 
   // ---- 火の粉 ----
@@ -213,16 +231,28 @@ export function BackgammonPage({ onBackToHome }: BackgammonPageProps) {
                       {room.roomCode}
                     </div>
                   </div>
-                  <button
-                    onClick={copyCode}
-                    style={{
-                      marginTop: 10, minHeight: 44, padding: '0 22px', borderRadius: 4, cursor: 'pointer',
-                      border: '1px solid rgba(201,162,75,.4)', background: 'rgba(201,162,75,.08)',
-                      color: '#d8c79a', fontFamily: BG.serifJa, fontSize: 13.5, letterSpacing: '.1em',
-                    }}
-                  >
-                    {copied ? '写し取った ✓' : 'コードを写す'}
-                  </button>
+                  <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap', marginTop: 12 }}>
+                    <button
+                      onClick={copyCode}
+                      style={{
+                        minHeight: 44, padding: '0 20px', borderRadius: 4, cursor: 'pointer',
+                        border: '1px solid rgba(201,162,75,.4)', background: 'rgba(201,162,75,.08)',
+                        color: '#d8c79a', fontFamily: BG.serifJa, fontSize: 13.5, letterSpacing: '.1em',
+                      }}
+                    >
+                      {copied ? '写し取った ✓' : 'コードを写す'}
+                    </button>
+                    <button
+                      onClick={copySiteUrl}
+                      style={{
+                        minHeight: 44, padding: '0 20px', borderRadius: 4, cursor: 'pointer',
+                        border: '1px solid rgba(201,162,75,.25)', background: 'rgba(255,255,255,.04)',
+                        color: '#bfae8a', fontFamily: BG.serifJa, fontSize: 13.5, letterSpacing: '.1em',
+                      }}
+                    >
+                      {copiedUrl ? 'URLを写した ✓' : 'サイトURLを写す'}
+                    </button>
+                  </div>
                 </>
               )}
 

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '../../components/Button';
 import { DEFAULT_ONLINE_ENTRY_MODE, shouldAutoJoinOnlineRoom } from '../../components/gameSetupDefaults';
+import { copyToClipboard, getGameSiteUrl } from '../../utils/shareUtils';
 import { Layout } from '../../components/Layout';
 import { supabase } from '../../lib/supabase';
 import { getUnoCpuDisplayName, getUnoCpuLevelLabel } from './unoCpu';
@@ -93,11 +94,22 @@ export function UnoOnlineRoomPage({
 
   async function copyRoomCode() {
     if (!roomCode) return;
-    try {
-      await navigator.clipboard.writeText(roomCode);
-      setCopyMessage('コピーしました');
-    } catch {
-      setCopyMessage('コピーできませんでした。コードを選んでコピーしてください。');
+    const ok = await copyToClipboard(roomCode);
+    if (ok) {
+      setCopyMessage('コードをコピーしました ✓');
+      setTimeout(() => setCopyMessage(''), 2000);
+    } else {
+      setCopyMessage('コードをコピーできませんでした。');
+    }
+  }
+
+  async function copySiteUrl() {
+    const ok = await copyToClipboard(getGameSiteUrl());
+    if (ok) {
+      setCopyMessage('サイトURLをコピーしました ✓');
+      setTimeout(() => setCopyMessage(''), 2000);
+    } else {
+      setCopyMessage('URLをコピーできませんでした。');
     }
   }
 
@@ -393,24 +405,46 @@ export function UnoOnlineRoomPage({
             marginBottom: 20,
           }}>
             <span>{roomCode}</span>
-            <button
-              type="button"
-              onClick={copyRoomCode}
-              style={{
-                minHeight: 38,
-                borderRadius: 12,
-                border: '1.5px solid #b88932',
-                background: '#fffdf8',
-                color: 'var(--brown)',
-                fontFamily: 'inherit',
-                fontSize: 13,
-                fontWeight: 900,
-                letterSpacing: 0,
-                cursor: 'pointer',
-              }}
-            >
-              コードをコピー
-            </button>
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                onClick={copyRoomCode}
+                style={{
+                  minHeight: 38,
+                  padding: '0 16px',
+                  borderRadius: 12,
+                  border: '1.5px solid #b88932',
+                  background: '#fffdf8',
+                  color: 'var(--brown)',
+                  fontFamily: 'inherit',
+                  fontSize: 13,
+                  fontWeight: 900,
+                  letterSpacing: 0,
+                  cursor: 'pointer',
+                }}
+              >
+                コードをコピー
+              </button>
+              <button
+                type="button"
+                onClick={copySiteUrl}
+                style={{
+                  minHeight: 38,
+                  padding: '0 16px',
+                  borderRadius: 12,
+                  border: '1.5px solid rgba(201,162,75,.4)',
+                  background: 'rgba(255,255,255,.08)',
+                  color: 'var(--text)',
+                  fontFamily: 'inherit',
+                  fontSize: 13,
+                  fontWeight: 900,
+                  letterSpacing: 0,
+                  cursor: 'pointer',
+                }}
+              >
+                サイトURLをコピー
+              </button>
+            </div>
           </div>
           {copyMessage && (
             <div style={{ fontSize: 12, color: 'var(--brown)', fontWeight: 900, marginTop: -10, marginBottom: 14 }}>
