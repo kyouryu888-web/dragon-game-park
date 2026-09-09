@@ -1,6 +1,15 @@
+import { useEffect, useRef } from 'react';
 import type { GameState, PlayerId } from './backgammonTypes';
 import { BG, Brand, ChevronLeft, DragonIcon } from './BackgammonUi';
 import { GameEndActions } from '../../components/GameEndActions';
+
+function usePrevious<T>(value: T): T | undefined {
+  const ref = useRef<T>(undefined);
+  useEffect(() => {
+    ref.current = value;
+  }, [value]);
+  return ref.current;
+}
 
 // 盤の並び（デザインと同一）: white のホームは右下、black のホームは右上
 const TOP_L = [12, 13, 14, 15, 16, 17];
@@ -57,15 +66,22 @@ export type BackgammonPlayScreenProps = {
   onTapOffTop: () => void;
   onTapOffBot: () => void;
   onQuit: () => void;
-  over: { en: string; title: string; sub: string; showRematch: boolean } | null;
+  over: { en: string; title: string; sub: string; showRematch: boolean; rematchLabel?: string; } | null;
   onRematch: () => void;
   onBackToSettings: () => void;
   onBackToHome: () => void;
+  pips: Record<PlayerId, number>;
+  canDouble: boolean;
+  onDouble: () => void;
+  isDoubleWait: boolean;
+  isDoubleOffer: boolean;
+  onAcceptDouble: () => void;
+  onDeclineDouble: () => void;
 };
 
 function Checker({
-  owner, size, label, ring, pulse,
-}: { owner: PlayerId; size: number | string; label?: string; ring?: boolean; pulse?: boolean }) {
+  owner, size, label, ring, pulse, hitFlash
+}: { owner: PlayerId; size: number | string; label?: string; ring?: boolean; pulse?: boolean; hitFlash?: boolean }) {
   return (
     <div style={{
       width: size, height: size, borderRadius: '50%',
@@ -73,9 +89,11 @@ function Checker({
       boxShadow: ring
         ? '0 0 0 2.5px #f0dfae, 0 2px 5px rgba(0,0,0,.55)'
         : '0 2px 4px rgba(0,0,0,.5)',
-      animation: pulse ? 'pickPulse 1.6s ease-in-out infinite' : 'none',
+      animation: hitFlash ? 'bg-checker-hit 0.6s ease-out' : pulse ? 'pickPulse 1.6s ease-in-out infinite' : 'none',
       boxSizing: 'border-box', display: 'flex', alignItems: 'center', justifyContent: 'center',
       fontSize: 'clamp(10px, 1.2vw, 13px)', fontWeight: 700, color: CHECKER_TC[owner], flex: 'none',
+      position: hitFlash ? 'relative' : 'static',
+      zIndex: hitFlash ? 10 : 1,
     }}>
       {label ?? ''}
     </div>
@@ -84,6 +102,11 @@ function Checker({
 
 export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
   const { state } = props;
+  const prevState = usePrevious(state);
+
+  // 相手の駒をヒットした（バーに送られた）かどうかを検知
+  const hitFlashBlack = prevState && state.bar.black > prevState.bar.black;
+  const hitFlashWhite = prevState && state.bar.white > prevState.bar.white;
 
   const renderPoint = (i: number, row: 'top' | 'bottom') => {
     const pt = state.points[i];
@@ -97,6 +120,10 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
     const clip = row === 'top' ? 'polygon(0 0,100% 0,50% 92%)' : 'polygon(0 100%,100% 100%,50% 8%)';
     const triPos = row === 'top' ? { top: 0, bottom: 4 } : { top: 4, bottom: 0 };
 
+    // 直前に置かれた駒かどうか（簡易的に、数が前のターンより増えていたら一番上を光らせる）
+    const prevPtCount = prevState?.points[i]?.count ?? 0;
+    const isRecentPlaced = prevState && prevState.currentPlayer !== state.currentPlayer && count > prevPtCount;
+
     const checkers = [];
     for (let k = 0; k < show; k++) {
       const last = k === show - 1;
@@ -108,6 +135,7 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
           label={last && count > 5 ? String(count) : ''}
           ring={last && isSel}
           pulse={last && pickable}
+          hitFlash={last && isRecentPlaced && !hitFlashBlack && !hitFlashWhite}
         />,
       );
     }
@@ -162,10 +190,14 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
     const n = state.bar[side];
     const show = Math.min(n, 4);
     const barHL = props.selectedFrom === 'bar' && state.currentPlayer === side;
+    
+    const isHit = side === 'black' ? hitFlashBlack : hitFlashWhite;
+
     const checkers = [];
     for (let k = 0; k < show; k++) {
+      const last = k === show - 1;
       checkers.push(
-        <Checker key={k} owner={side} size="var(--backgammon-bar-checker-size)" label={k === show - 1 && n > 4 ? String(n) : ''} />,
+        <Checker key={k} owner={side} size="var(--backgammon-bar-checker-size)" label={last && n > 4 ? String(n) : ''} hitFlash={last && isHit} />,
       );
     }
     return (
@@ -213,7 +245,7 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
             border: `2px solid ${state.currentPlayer === 'white' ? BG.gold : BG.ember}`,
             boxSizing: 'border-box', position: 'relative',
             boxShadow: '0 3px 8px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.4)',
-            opacity: used ? 0.3 : 1, animation: 'diceIn .5s ease-out',
+            opacity: used ? 0.3 : 1, animation: 'bg-dice-roll 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
           }}
         >
           {PIPS[val].map(([x, y], p) => (
@@ -257,11 +289,17 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{
             fontSize: 14, fontWeight: 600, letterSpacing: '.06em', color: BG.text,
-            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', justifyContent: 'space-between'
           }}>
-            {info.name}
+            <span>{info.name}</span>
+            <span style={{ fontSize: 13, color: '#f5deb3' }}>Pip: {props.pips[side]}</span>
           </div>
-          <div style={{ fontSize: 11, color: BG.muted, marginTop: 1 }}>{info.sub}</div>
+          <div style={{ fontSize: 11, color: BG.muted, marginTop: 1, display: 'flex', justifyContent: 'space-between' }}>
+            <span>{info.sub}</span>
+            {state.matchLength > 1 && (
+              <span style={{ color: '#d3c0a5' }}>★ {state.score[side]} / {state.matchLength}</span>
+            )}
+          </div>
         </div>
         <button
           onClick={onTapOff}
@@ -345,6 +383,31 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
               position: 'absolute', left: 6, right: 6, top: '50%', height: 1,
               background: 'linear-gradient(90deg,transparent,rgba(201,162,75,.25),transparent)',
             }} />
+            
+            {/* キューブ表示（左側） */}
+            <div style={{ position: 'absolute', left: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{
+                width: 32, height: 32, borderRadius: 4, background: '#222', border: `1px solid ${BG.goldDim}`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 'bold',
+                boxShadow: state.cube.owner === 'white' ? '0 2px 0 #a8441f' : state.cube.owner === 'black' ? '0 -2px 0 #a8441f' : 'none',
+              }}>
+                {state.cube.value}
+              </div>
+              {props.canDouble && (
+                <button
+                  onClick={props.onDouble}
+                  style={{
+                    padding: '4px 8px', borderRadius: 4, fontSize: 11, background: 'rgba(201,162,75,.2)', border: `1px solid ${BG.goldDim}`, color: BG.goldPale, cursor: 'pointer'
+                  }}
+                >
+                  ダブル提案
+                </button>
+              )}
+              {props.isDoubleWait && (
+                <span style={{ fontSize: 11, color: BG.goldDim }}>返答待ち...</span>
+              )}
+            </div>
+
             {props.showRollBtn ? (
               <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 12 }}>
                 <span style={{ fontSize: 12.5, letterSpacing: '.08em', color: BG.textMid }}>{props.centerMsg}</span>
@@ -437,12 +500,47 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
               {props.over.title}
             </div>
             <div style={{ fontSize: 13.5, color: BG.textMid, lineHeight: 1.8 }}>{props.over.sub}</div>
+
             <GameEndActions
               onRematch={props.over.showRematch ? props.onRematch : undefined}
-              canRematch={props.over.showRematch}
               onBackToSetup={props.onBackToSettings}
               onBackToHome={props.onBackToHome}
+              rematchLabel={props.over.rematchLabel}
             />
+          </div>
+        </div>
+      )}
+
+      {/* ダブル受諾モーダル */}
+      {props.isDoubleOffer && (
+        <div style={{
+          position: 'absolute', inset: 0, zIndex: 25, background: 'rgba(10,7,12,.8)',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          padding: 20,
+        }}>
+          <div style={{
+            background: '#191320', border: `2px solid ${BG.goldDim}`, borderRadius: 8, padding: '24px 32px',
+            textAlign: 'center', boxShadow: '0 0 40px rgba(224,115,58,.4)',
+          }}>
+            <h3 style={{ margin: '0 0 16px', color: BG.goldBright, fontSize: 18 }}>ダブル提案</h3>
+            <p style={{ color: BG.textMid, fontSize: 14, marginBottom: 24 }}>
+              相手が賭け点を <strong>{state.cube.value * 2}</strong> に倍増させようとしています。<br/>
+              受けますか？（降りた場合は1点負けになります）
+            </p>
+            <div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
+              <button
+                onClick={props.onDeclineDouble}
+                style={{ padding: '10px 20px', borderRadius: 6, background: '#3a2c17', border: '1px solid #7d6233', color: '#f5deb3', cursor: 'pointer' }}
+              >
+                降りる (Drop)
+              </button>
+              <button
+                onClick={props.onAcceptDouble}
+                style={{ padding: '10px 20px', borderRadius: 6, background: '#a8441f', border: '1px solid #e0733a', color: '#fff', fontWeight: 'bold', cursor: 'pointer' }}
+              >
+                受ける (Take)
+              </button>
+            </div>
           </div>
         </div>
       )}

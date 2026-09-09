@@ -65,7 +65,7 @@ describe("All games setup screen flow contracts", () => {
     it("does not render duplicate join heading in online join mode", () => {
       const html = renderToStaticMarkup(
         <BackgammonSettingsScreen
-          config={{ mode: "online", name: "旅人", name2: "", cpuLevel: "normal" }}
+          config={{ mode: "online", name: "旅人", name2: "", cpuLevel: "normal", matchLength: 1 }}
           onChange={() => undefined}
           onlineTab="join"
           onOnlineTabChange={() => undefined}
@@ -86,7 +86,7 @@ describe("All games setup screen flow contracts", () => {
     it("renders room creation setup cleanly with single create button", () => {
       const html = renderToStaticMarkup(
         <BackgammonSettingsScreen
-          config={{ mode: "online", name: "旅人", name2: "", cpuLevel: "normal" }}
+          config={{ mode: "online", name: "旅人", name2: "", cpuLevel: "normal", matchLength: 1 }}
           onChange={() => undefined}
           onlineTab="create"
           onOnlineTabChange={() => undefined}
@@ -106,7 +106,7 @@ describe("All games setup screen flow contracts", () => {
     it("renders CPU options in CPU mode", () => {
       const html = renderToStaticMarkup(
         <BackgammonSettingsScreen
-          config={{ mode: "cpu", name: "旅人", name2: "", cpuLevel: "normal" }}
+          config={{ mode: "cpu", name: "旅人", name2: "", cpuLevel: "normal", matchLength: 1 }}
           onChange={() => undefined}
           onlineTab="create"
           onOnlineTabChange={() => undefined}
@@ -117,7 +117,7 @@ describe("All games setup screen flow contracts", () => {
         />
       );
 
-      expect(html).toContain("ドラゴンの強さを決める");
+      expect(html).toContain("対戦設定を決める");
       expect(html).toContain("番人ドラゴン");
       expect(html).toContain("この設定で対戦する");
     });

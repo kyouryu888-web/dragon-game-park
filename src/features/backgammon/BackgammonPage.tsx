@@ -25,7 +25,7 @@ function loadSavedConfig(): BackgammonConfig | null {
   } catch { return null; }
 }
 
-const DEFAULT_CONFIG: BackgammonConfig = { mode: DEFAULT_SETUP_MODE, name: '', name2: '', cpuLevel: 'normal' };
+const DEFAULT_CONFIG: BackgammonConfig = { mode: DEFAULT_SETUP_MODE, name: '', name2: '', cpuLevel: 'normal', matchLength: 1 };
 
 type BackgammonPageProps = {
   onBackToHome: () => void;
@@ -92,7 +92,7 @@ export function BackgammonPage({ onBackToHome }: BackgammonPageProps) {
       }
     } else {
       try {
-        const info = await createRoom(myName);
+        const info = await createRoom(myName, config.matchLength);
         setRoom(info);
         setIsJoiner(false);
         setCopied(false);

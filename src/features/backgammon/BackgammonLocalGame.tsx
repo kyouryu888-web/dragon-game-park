@@ -4,6 +4,7 @@ import { createInitialBackgammonState } from './createInitialBackgammonState';
 import {
   applyMove, getChainedMoves, getLegalMoves, getOpponent,
   isPureBearOffRace, passTurn, rollDice, rollOpening,
+  getPipCount, canOfferDouble, offerDouble, acceptDouble, declineDouble,
   type ChainedMove,
 } from './backgammonRules';
 import { chooseCpuMoveSequence, getCpuDisplayName } from './backgammonCpu';
@@ -20,7 +21,7 @@ type BackgammonLocalGameProps = {
 };
 
 export function BackgammonLocalGame({ config, showToast, onExitToSettings, onBackToHome }: BackgammonLocalGameProps) {
-  const [state, setState] = useState<GameState>(() => createInitialBackgammonState());
+  const [state, setState] = useState<GameState>(() => createInitialBackgammonState(config.matchLength));
   const [selected, setSelected] = useState<'bar' | number | null>(null);
   const [autoRunFor, setAutoRunFor] = useState<PlayerId | null>(null);
   const quitArm = useRef(false);
@@ -62,7 +63,7 @@ export function BackgammonLocalGame({ config, showToast, onExitToSettings, onBac
     return new Set(legalMoves.map((m) => String(m.from)));
   }, [isHumanTurn, state.phase, effectiveSelected, legalMoves]);
 
-  // サイコロ2個分を一度に動かす候補
+  // 複数出目分を一度に動かす候補
   const chainMoves = useMemo<ChainedMove[]>(
     () => (isHumanTurn && effectiveSelected !== null ? getChainedMoves(state, effectiveSelected) : []),
     [isHumanTurn, effectiveSelected, state],
@@ -91,7 +92,7 @@ export function BackgammonLocalGame({ config, showToast, onExitToSettings, onBac
     setState(next);
   }
 
-  /** 2手分をまとめて適用（途中のヒットも通知） */
+  /** まとめて適用（途中のヒットも通知） */
   function doApplyChain(chain: ChainedMove) {
     const mover = state.currentPlayer;
     let hit = false;
@@ -149,10 +150,19 @@ export function BackgammonLocalGame({ config, showToast, onExitToSettings, onBac
   // ---- サイコロ ----
   function handleRoll() {
     if (state.phase === 'opening-roll') {
-      const next = rollOpening(state);
-      setState(next);
-      if (next.phase === 'opening-roll') showToast('同じ目！もう一度振るのだ');
-      else showToast(`${nameFor(next.currentPlayer)}が先手!`);
+      // 一旦「振った目」だけを保存してタメを作る
+      const nextRaw = rollOpening(state);
+      // 同じ目ならそのまま振り直し。違う目なら「moving」に移行しているが、いったん 'opening-roll' のまま出目を見せる
+      setState({ ...nextRaw, phase: 'opening-roll' });
+
+      if (nextRaw.phase === 'opening-roll') {
+        showToast('同じ目！もう一度振るのだ');
+      } else {
+        showToast(`${nameFor(nextRaw.currentPlayer)}が先手!`);
+        setTimeout(() => {
+          setState((s) => ({ ...s, phase: 'moving' }));
+        }, 1500); // 1.5秒タメる
+      }
       return;
     }
     if (state.phase !== 'rolling' || !isHumanTurn) return;
@@ -169,7 +179,7 @@ export function BackgammonLocalGame({ config, showToast, onExitToSettings, onBac
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mustPass, state]);
 
-  // ---- ベアオフ自動化 ----
+  // ---- ベアオフ自動化（超高速スキップ対応） ----
   const currentIsHumanSide = !isCpuMode || state.currentPlayer === 'white';
   const autoEligible =
     currentIsHumanSide &&
@@ -188,14 +198,14 @@ export function BackgammonLocalGame({ config, showToast, onExitToSettings, onBac
     if (state.phase === 'rolling') {
       const timer = setTimeout(() => {
         setState((s) => (s.phase === 'rolling' && s.currentPlayer === autoRunFor ? rollDice(s) : s));
-      }, 420);
+      }, 50); // スキップ中は極端に速く
       return () => clearTimeout(timer);
     }
     if (state.phase === 'moving' && legalMoves.length > 0) {
       const timer = setTimeout(() => {
         const seq = chooseCpuMoveSequence(state, 'very-hard');
         if (seq && seq.moves.length > 0) doApplyMove(seq.moves[0]);
-      }, 340);
+      }, 50); // スキップ中は極端に速く
       return () => clearTimeout(timer);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -204,9 +214,35 @@ export function BackgammonLocalGame({ config, showToast, onExitToSettings, onBac
   // ---- CPUの手番 ----
   useEffect(() => {
     if (!isCpuMode || state.currentPlayer !== 'black' || state.phase === 'finished') return;
+
+    // ダブルの受諾/拒否判断
+    if (state.phase === 'double-offered') {
+      const timer = setTimeout(() => {
+        import('./backgammonCpu').then(({ shouldCpuAcceptDouble }) => {
+          if (shouldCpuAcceptDouble(state, 'black', config.cpuLevel)) {
+            showToast('龍はダブルを受けた！');
+            import('./backgammonRules').then(({ acceptDouble }) => setState(acceptDouble(state)));
+          } else {
+            showToast('龍はダブルを降りた…');
+            import('./backgammonRules').then(({ declineDouble }) => setState(declineDouble(state)));
+          }
+        });
+      }, 1200);
+      return () => clearTimeout(timer);
+    }
+
     if (state.phase === 'rolling') {
       const timer = setTimeout(() => {
-        setState((s) => (s.phase === 'rolling' && s.currentPlayer === 'black' ? rollDice(s) : s));
+        import('./backgammonCpu').then(({ shouldCpuOfferDouble }) => {
+          import('./backgammonRules').then(({ canOfferDouble, offerDouble }) => {
+            if (canOfferDouble(state, 'black') && shouldCpuOfferDouble(state, config.cpuLevel)) {
+              showToast('龍がダブルを提案してきた！');
+              setState(offerDouble(state));
+            } else {
+              setState((s) => (s.phase === 'rolling' && s.currentPlayer === 'black' ? rollDice(s) : s));
+            }
+          });
+        });
       }, CPU_ROLL_DELAY);
       return () => clearTimeout(timer);
     }
@@ -222,11 +258,14 @@ export function BackgammonLocalGame({ config, showToast, onExitToSettings, onBac
 
   // ---- 表示テキスト ----
   const centerMsg = (() => {
-    if (state.phase === 'opening-roll') return '骰子を振り、先手を占うのだ';
+    if (state.phase === 'opening-roll') return state.openingRoll ? '運命のサイコロ…' : '骰子を振り、先手を占うのだ';
     if (state.phase === 'rolling') {
       return isHumanTurn
         ? (isCpuMode ? 'そなたの番' : `${nameFor(state.currentPlayer)}の番`)
         : '龍が骰子を取った…';
+    }
+    if (state.phase === 'double-offered') {
+      return `${nameFor(state.doubleOfferedBy!)}からのダブル提案！`;
     }
     if (mustPass) return '手詰まり…';
     if (state.phase === 'moving') {
@@ -239,19 +278,37 @@ export function BackgammonLocalGame({ config, showToast, onExitToSettings, onBac
   })();
 
   const showRollBtn =
-    state.phase === 'opening-roll' || (state.phase === 'rolling' && isHumanTurn);
+    (state.phase === 'opening-roll' && !state.openingRoll) || (state.phase === 'rolling' && isHumanTurn);
 
   // ---- 勝敗 ----
   const over = (() => {
     if (state.phase !== 'finished' || !state.winner) return null;
     const pWin = state.winner === 'white';
-    const kindTxt = state.winKind === 'gammon' ? 'ギャモン勝ち! ' : state.winKind === 'backgammon' ? 'バックギャモン勝ち!! ' : '';
+    
+    let kindTxt = state.winKind === 'gammon' ? 'ギャモン勝ち! ' : state.winKind === 'backgammon' ? 'バックギャモン勝ち!! ' : '';
+    if (state.winKind === 'drop') kindTxt = '降り（ドロップ） ';
+
+    const scoreW = state.score['white'];
+    const scoreB = state.score['black'];
+    const isMatchOver = config.matchLength > 1 && (scoreW >= config.matchLength || scoreB >= config.matchLength);
+
+    if (config.matchLength > 1 && !isMatchOver) {
+      return {
+        en: 'GAME OVER',
+        title: `${nameFor(state.winner)} が ${state.resultPoints}点 獲得!`,
+        sub: `${kindTxt}（現在: ${scoreW} - ${scoreB} / ${config.matchLength}点先取）`,
+        showRematch: true,
+        rematchLabel: '次のゲームへ',
+      };
+    }
+
     if (!isCpuMode) {
       return {
         en: 'VICTORY',
         title: `${nameFor(state.winner)} の勝利!`,
         sub: `${kindTxt}見事な采配であった。`,
         showRematch: true,
+        rematchLabel: '再戦する',
       };
     }
     return {
@@ -261,8 +318,34 @@ export function BackgammonLocalGame({ config, showToast, onExitToSettings, onBac
         ? `${kindTxt}見事なり。龍は翼を畳み、深く一礼した。`
         : `${kindTxt}龍はほくそ笑んだ。「また挑むがよい」`,
       showRematch: true,
+      rematchLabel: '再戦する',
     };
   })();
+
+  const pips = useMemo(() => ({
+    white: getPipCount(state, 'white'),
+    black: getPipCount(state, 'black'),
+  }), [state]);
+
+  const canOffer = canOfferDouble(state, 'white') && isHumanTurn && (!isCpuMode || state.currentPlayer === 'white');
+  const isDoubleWait = state.phase === 'double-offered' && state.doubleOfferedBy === 'white';
+  const isDoubleOffer = state.phase === 'double-offered' && state.doubleOfferedBy === 'black' && isHumanTurn;
+
+  function handleDouble() {
+    if (!canOffer) return;
+    setState(offerDouble(state));
+    showToast('ダブルを提案した！');
+  }
+
+  function handleAcceptDouble() {
+    setState(acceptDouble(state));
+    showToast('ダブルを受けた！');
+  }
+
+  function handleDeclineDouble() {
+    setState(declineDouble(state));
+    showToast('ダブルを降りた…');
+  }
 
   function handleQuit() {
     if (state.phase === 'finished') { onExitToSettings(); return; }
@@ -275,7 +358,13 @@ export function BackgammonLocalGame({ config, showToast, onExitToSettings, onBac
   function handleRematch() {
     setSelected(null);
     setAutoRunFor(null);
-    setState(createInitialBackgammonState());
+    if (config.matchLength > 1 && state.winner) {
+      // マッチプレイの場合、スコアを引き継いで次局へ
+      setState(createInitialBackgammonState(config.matchLength, state.score, state.crawfordFlag));
+    } else {
+      // 1局完結か、マッチ終了時
+      setState(createInitialBackgammonState(config.matchLength));
+    }
     showToast(isCpuMode ? 'そなたから振るがよい' : `${pName}から振るがよい`);
   }
 
@@ -314,6 +403,13 @@ export function BackgammonLocalGame({ config, showToast, onExitToSettings, onBac
         initial: (pName[0] || 'P').toUpperCase(),
         active: state.currentPlayer === 'white' && state.phase !== 'finished',
       }}
+      pips={pips}
+      canDouble={canOffer}
+      isDoubleWait={isDoubleWait}
+      isDoubleOffer={isDoubleOffer}
+      onDouble={handleDouble}
+      onAcceptDouble={handleAcceptDouble}
+      onDeclineDouble={handleDeclineDouble}
       onRoll={handleRoll}
       onTapPoint={handleTapPoint}
       onTapBar={handleTapBar}

@@ -14,6 +14,8 @@ export type BackgammonConfig = {
   /** 2人対戦時の相手（緋のコマ・black） */
   name2: string;
   cpuLevel: CpuLevel;
+  /** マッチの勝利点（1の場合は単発ゲーム） */
+  matchLength: number;
 };
 
 /** ポイント1つの状態。駒がなければ null */
@@ -26,7 +28,7 @@ export type Phase =
   | 'double-offered'  // ダブル提案中（相手が受諾/拒否を選ぶ）
   | 'finished';
 
-export type WinKind = 'single' | 'gammon' | 'backgammon';
+export type WinKind = 'single' | 'gammon' | 'backgammon' | 'drop';
 
 /** 1手（駒1個をサイコロ1個分動かす） */
 export type Move = {
@@ -57,4 +59,12 @@ export type GameState = {
   /** 勝者の獲得点（キューブ値 × 勝ち方の倍率） */
   resultPoints: number | null;
   turnCount: number;
+
+  // --- マッチプレイ用 ---
+  /** 何点先取か（1の場合は単発ゲーム） */
+  matchLength: number;
+  /** 現在のスコア */
+  score: Record<PlayerId, number>;
+  /** クロフォードルールの状態（none: 通常, crawford: 今局はキューブ不可, post-crawford: 解禁後） */
+  crawfordFlag: 'none' | 'crawford' | 'post-crawford';
 };

@@ -4,7 +4,11 @@ import type { GameState, Point } from './backgammonTypes';
  * 標準初期配置の盤面を作る。
  * white は index 23→0 へ進む（ホーム: 0-5）。black は 0→23 へ進む（ホーム: 18-23）。
  */
-export function createInitialBackgammonState(): GameState {
+export function createInitialBackgammonState(
+  matchLength: number = 1,
+  score: Record<'white' | 'black', number> = { white: 0, black: 0 },
+  crawfordFlag: 'none' | 'crawford' | 'post-crawford' = 'none'
+): GameState {
   const points: Point[] = Array.from({ length: 24 }, () => null);
 
   // white: 24ポイント(23)に2、13ポイント(12)に5、8ポイント(7)に3、6ポイント(5)に5
@@ -34,5 +38,8 @@ export function createInitialBackgammonState(): GameState {
     winKind: null,
     resultPoints: null,
     turnCount: 0,
+    matchLength,
+    score,
+    crawfordFlag,
   };
 }
