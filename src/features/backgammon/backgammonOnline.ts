@@ -44,12 +44,12 @@ export function generateRoomCode(): string {
 }
 
 /** ホストとしてルームを作る */
-export async function createRoom(hostName: string): Promise<BackgammonRoomInfo> {
+export async function createRoom(hostName: string, matchLength: number = 1): Promise<BackgammonRoomInfo> {
   const roomCode = generateRoomCode();
   const myPlayerId = getOnlinePlayerId();
   const payload: OnlinePayload = {
     seq: 0,
-    state: createInitialBackgammonState(),
+    state: createInitialBackgammonState(matchLength),
     hostName,
     guestName: null,
   };

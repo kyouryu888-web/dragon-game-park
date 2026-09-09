@@ -97,7 +97,7 @@ export function BackgammonSettingsScreen({
             placeholder="コードを入力"
             maxLength={6}
           />
-          <SetupSummary>入力したコードの2人用ルームへ参加します。</SetupSummary>
+          <SetupSummary>入力したコードの2人用ルームへ参加します。勝敗条件はルーム作成者に従います。</SetupSummary>
           <div style={{ marginTop: 14 }}>
             <Button
               fullWidth
@@ -109,36 +109,70 @@ export function BackgammonSettingsScreen({
           </div>
         </SetupStep>
       ) : isOnlineCreate ? (
-        <SetupStep numeral="III" title="ルームコードを発行する">
-          <SetupSummary>対戦用のルームを作成し、相手へ伝える6桁コードを発行します。</SetupSummary>
-          <div style={{ marginTop: 14 }}>
-            <Button fullWidth onClick={onStart}>
-              ルームを作成する
-            </Button>
-          </div>
-        </SetupStep>
+        <>
+          <SetupStep numeral="III" title="勝利条件を決める">
+            <div className="game-setup-opponent-row">
+              <strong>マッチプレイ</strong>
+              <select
+                className="game-setup-select"
+                value={config.matchLength}
+                onChange={(event) => onChange({ matchLength: Number(event.target.value) })}
+              >
+                <option value={1}>1局完結 (マネーゲーム)</option>
+                <option value={3}>3点先取</option>
+                <option value={5}>5点先取</option>
+              </select>
+            </div>
+          </SetupStep>
+          <SetupStep numeral="IV" title="ルームコードを発行する">
+            <SetupSummary>対戦用のルームを作成し、相手へ伝える6桁コードを発行します。</SetupSummary>
+            <div style={{ marginTop: 14 }}>
+              <Button fullWidth onClick={onStart}>
+                ルームを作成する
+              </Button>
+            </div>
+          </SetupStep>
+        </>
       ) : (
-        <SetupStep numeral="III" title="ドラゴンの強さを決める">
-          <div className="game-setup-opponent-row">
-            <strong>番人ドラゴン</strong>
-            <span className="game-setup-role-tabs"><button type="button" className="is-selected">CPU</button></span>
-            <select
-              className="game-setup-select"
-              value={config.cpuLevel}
-              onChange={(event) => onChange({ cpuLevel: event.target.value as CpuLevel })}
-            >
-              {CPU_LEVELS.map(({ level, label }) => (
-                <option key={level} value={level}>{label}</option>
-              ))}
-            </select>
-          </div>
-          <SetupSummary>番人ドラゴンと1対1で対戦します。</SetupSummary>
-          <div style={{ marginTop: 14 }}>
-            <Button fullWidth onClick={onStart}>
-              この設定で対戦する
-            </Button>
-          </div>
-        </SetupStep>
+        <>
+          <SetupStep numeral="III" title="対戦設定を決める">
+            <div className="game-setup-opponent-row" style={{ marginBottom: 12 }}>
+              <strong>番人ドラゴン</strong>
+              <span className="game-setup-role-tabs"><button type="button" className="is-selected">CPU</button></span>
+              <select
+                className="game-setup-select"
+                value={config.cpuLevel}
+                onChange={(event) => onChange({ cpuLevel: event.target.value as CpuLevel })}
+              >
+                {CPU_LEVELS.map(({ level, label }) => (
+                  <option key={level} value={level}>{label}</option>
+                ))}
+              </select>
+            </div>
+            <div className="game-setup-opponent-row">
+              <strong>勝利条件</strong>
+              <select
+                className="game-setup-select"
+                value={config.matchLength}
+                onChange={(event) => onChange({ matchLength: Number(event.target.value) })}
+              >
+                <option value={1}>1局完結 (マネーゲーム)</option>
+                <option value={3}>3点先取</option>
+                <option value={5}>5点先取</option>
+              </select>
+            </div>
+          </SetupStep>
+          <SetupStep numeral="IV" title="対戦開始">
+            <SetupSummary>
+              {config.matchLength > 1 ? `番人ドラゴンと${config.matchLength}点先取で対戦します。` : '番人ドラゴンと1局完結で対戦します。'}
+            </SetupSummary>
+            <div style={{ marginTop: 14 }}>
+              <Button fullWidth onClick={onStart}>
+                この設定で対戦する
+              </Button>
+            </div>
+          </SetupStep>
+        </>
       )}
     </GameSetupShell>
   );

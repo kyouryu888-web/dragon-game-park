@@ -3,6 +3,7 @@ import type { GameState, Move } from './backgammonTypes';
 import {
   applyMove, getChainedMoves, getLegalMoves, getOpponent,
   isPureBearOffRace, passTurn, rollDice, rollOpening,
+  getPipCount, canOfferDouble, offerDouble, acceptDouble, declineDouble,
   type ChainedMove,
 } from './backgammonRules';
 import { chooseCpuMoveSequence } from './backgammonCpu';
@@ -62,9 +63,13 @@ export function BackgammonOnlineGame({
       showToast('ルームの主が「もう一度戦う」を押すと、このルームのまま再戦できます');
       return;
     }
+    const nextState = state.matchLength > 1 && state.winner
+      ? createInitialBackgammonState(state.matchLength, state.score, state.crawfordFlag)
+      : createInitialBackgammonState(state.matchLength);
+
     const next: OnlinePayload = {
       ...payload,
-      state: createInitialBackgammonState(),
+      state: nextState,
       seq: seqRef.current + 1,
     };
     seqRef.current = next.seq;
@@ -200,18 +205,42 @@ export function BackgammonOnlineGame({
     if (state.phase === 'rolling') {
       const timer = setTimeout(() => {
         if (state.phase === 'rolling' && isMyTurn) commit(rollDice(state));
-      }, 420);
+      }, 50);
       return () => clearTimeout(timer);
     }
     if (state.phase === 'moving' && legalMoves.length > 0) {
       const timer = setTimeout(() => {
         const seq = chooseCpuMoveSequence(state, 'very-hard');
         if (seq && seq.moves.length > 0) doApplyMove(seq.moves[0]);
-      }, 340);
+      }, 50);
       return () => clearTimeout(timer);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoRun, state, isMyTurn, legalMoves]);
+
+  // ---- ダブル関連 ----
+  const pips = useMemo(() => ({
+    white: getPipCount(state, 'white'),
+    black: getPipCount(state, 'black'),
+  }), [state]);
+
+  const canOffer = canOfferDouble(state, myColor) && isMyTurn;
+  const isDoubleWait = state.phase === 'double-offered' && state.doubleOfferedBy === myColor;
+  const isDoubleOffer = state.phase === 'double-offered' && state.doubleOfferedBy === getOpponent(myColor);
+
+  function handleDouble() {
+    if (!canOffer) return;
+    commit(offerDouble(state));
+    showToast('ダブルを提案した！');
+  }
+  function handleAcceptDouble() {
+    commit(acceptDouble(state));
+    showToast('ダブルを受けた！');
+  }
+  function handleDeclineDouble() {
+    commit(declineDouble(state));
+    showToast('ダブルを降りた…');
+  }
 
   // ---- 表示 ----
   const waitingForGuest = payload.guestName === null;
@@ -221,6 +250,7 @@ export function BackgammonOnlineGame({
       return iAmHost ? '骰子を振り、先手を占うのだ' : 'ルームの主が先手を占っている…';
     }
     if (state.phase === 'rolling') return isMyTurn ? 'そなたの番' : `${oppName}の番…`;
+    if (state.phase === 'double-offered') return `${state.doubleOfferedBy === myColor ? '返答待ち…' : oppName + 'からの提案！'}`;
     if (mustPass) return '手詰まり…';
     if (state.phase === 'moving') {
       if (!isMyTurn) return `${oppName}が思案中…`;
@@ -232,13 +262,31 @@ export function BackgammonOnlineGame({
   const over = (() => {
     if (state.phase !== 'finished' || !state.winner) return null;
     const iWin = state.winner === myColor;
-    const kindTxt = state.winKind === 'gammon' ? 'ギャモン勝ち! ' : state.winKind === 'backgammon' ? 'バックギャモン勝ち!! ' : '';
-    const guestNotice = !iAmHost ? ' ルームの主が「再戦する」を選ぶと、この盤のまま自動で次の対局が始まります。' : '';
+    let kindTxt = state.winKind === 'gammon' ? 'ギャモン勝ち! ' : state.winKind === 'backgammon' ? 'バックギャモン勝ち!! ' : '';
+    if (state.winKind === 'drop') kindTxt = '降り（ドロップ） ';
+
+    const scoreW = state.score['white'];
+    const scoreB = state.score['black'];
+    const isMatchOver = state.matchLength > 1 && (scoreW >= state.matchLength || scoreB >= state.matchLength);
+
+    const guestNotice = !iAmHost ? ' ルームの主が次へ進むと自動で切り替わります。' : '';
+
+    if (state.matchLength > 1 && !isMatchOver) {
+      return {
+        en: 'GAME OVER',
+        title: `${state.winner === myColor ? 'あなた' : oppName} が ${state.resultPoints}点 獲得!`,
+        sub: `${kindTxt}（現在: 白${scoreW} - 黒${scoreB} / ${state.matchLength}点先取）${guestNotice}`,
+        showRematch: iAmHost,
+        rematchLabel: '次のゲームへ',
+      };
+    }
+
     return {
       en: iWin ? 'VICTORY' : 'DEFEAT',
       title: iWin ? '勝利!' : '敗北…',
       sub: (iWin ? `${kindTxt}見事なり。遠方の相手を下した。` : `${kindTxt}${oppName}が勝利した。「また挑むがよい」`) + guestNotice,
       showRematch: iAmHost,
+      rematchLabel: '再戦する',
     };
   })();
 
@@ -270,25 +318,29 @@ export function BackgammonOnlineGame({
       pickableFroms={pickableFroms}
       centerMsg={centerMsg}
       movesLeftTxt={state.phase === 'moving' ? `あと ${state.dice.length} 手` : ''}
-      showRollBtn={
-        (state.phase === 'opening-roll' && iAmHost && !waitingForGuest) ||
-        (state.phase === 'rolling' && isMyTurn)
-      }
+      showRollBtn={state.phase === 'opening-roll' ? (iAmHost && !state.openingRoll) : (state.phase === 'rolling' && isMyTurn)}
       rollLabel={state.phase === 'opening-roll' ? '先手を決める' : 'サイコロを振る'}
       topPlayer={{
-        name: guestName + (topIsMe ? '（そなた）' : ''),
-        sub: '緋のコマ',
+        name: guestName,
+        sub: '緋のコマ' + (topIsMe ? '（あなた）' : ''),
         avatar: 'initial',
         initial: (guestName[0] || 'G').toUpperCase(),
         active: state.currentPlayer === 'black' && state.phase !== 'finished',
       }}
       botPlayer={{
-        name: hostName + (!topIsMe ? '（そなた）' : ''),
-        sub: '金のコマ / ルームの主',
+        name: hostName,
+        sub: '金のコマ' + (!topIsMe ? '（あなた）' : ''),
         avatar: 'initial',
         initial: (hostName[0] || 'H').toUpperCase(),
         active: state.currentPlayer === 'white' && state.phase !== 'finished',
       }}
+      pips={pips}
+      canDouble={canOffer}
+      isDoubleWait={isDoubleWait}
+      isDoubleOffer={isDoubleOffer}
+      onDouble={handleDouble}
+      onAcceptDouble={handleAcceptDouble}
+      onDeclineDouble={handleDeclineDouble}
       onRoll={handleRoll}
       onTapPoint={handleTapPoint}
       onTapBar={() => {

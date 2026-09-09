@@ -278,7 +278,7 @@ function judgeWinKind(state: GameState, winner: PlayerId): WinKind {
   return 'gammon';
 }
 
-const WIN_MULTIPLIER: Record<WinKind, number> = { single: 1, gammon: 2, backgammon: 3 };
+const WIN_MULTIPLIER: Record<WinKind, number> = { single: 1, gammon: 2, backgammon: 3, drop: 1 };
 
 /** 手番を相手に渡す */
 function endTurn(state: GameState): GameState {
@@ -292,6 +292,35 @@ function endTurn(state: GameState): GameState {
   };
 }
 
+/** 勝敗が確定した時のスコア加算・次局のクロフォード判定を行うヘルパー */
+function finalizeGame(state: GameState, winner: PlayerId, winKind: WinKind, points: number): GameState {
+  const nextScore = { ...state.score };
+  nextScore[winner] += points;
+
+  // クロフォード判定: マッチプレイで「今回までクロフォード未発生」かつ「今回どちらかが残り1点（= matchLength - 1）になった」なら次回クロフォード
+  let nextCrawford = state.crawfordFlag;
+  if (state.matchLength > 1) {
+    if (state.crawfordFlag === 'crawford') {
+      nextCrawford = 'post-crawford';
+    } else if (state.crawfordFlag === 'none') {
+      if (nextScore['white'] === state.matchLength - 1 || nextScore['black'] === state.matchLength - 1) {
+        nextCrawford = 'crawford';
+      }
+    }
+  }
+
+  return {
+    ...state,
+    phase: 'finished',
+    winner,
+    winKind,
+    resultPoints: points,
+    score: nextScore,
+    crawfordFlag: nextCrawford,
+    dice: [],
+  };
+}
+
 /**
  * 合法手を1手適用する。全出目を使い切る／残りが打てない場合は自動で手番交代。
  * 15個ベアオフしたら勝敗確定。
@@ -302,14 +331,8 @@ export function applyMove(state: GameState, move: Move): GameState {
 
   if (next.borneOff[player] >= 15) {
     const winKind = judgeWinKind(next, player);
-    return {
-      ...next,
-      phase: 'finished',
-      winner: player,
-      winKind,
-      resultPoints: state.cube.value * WIN_MULTIPLIER[winKind],
-      dice: [],
-    };
+    const pts = state.cube.value * WIN_MULTIPLIER[winKind];
+    return finalizeGame(next, player, winKind, pts);
   }
 
   if (next.dice.length === 0 || getLegalMoves({ ...next, phase: 'moving' }).length === 0) {
@@ -328,28 +351,38 @@ export function hasAnyMove(state: GameState): boolean {
   return getLegalMoves(state).length > 0;
 }
 
-export type ChainedMove = { dest: number; moves: [Move, Move] };
+export type ChainedMove = { dest: number; moves: Move[] };
 
 /**
- * 同じ駒を2手続けて動かして到達できる盤上の移動先（サイコロ2個分を一度に動かすUI用）。
- * 1手目・2手目とも合法手（最大限使用ルール込み）のみを辿る。
+ * 同じ駒を連続して動かして到達できる盤上の移動先（一気に動かすUI用）。
+ * 合法手（最大限使用ルール込み）のみを辿り、2〜4手先までの到達点とその手順を返す。
  */
 export function getChainedMoves(state: GameState, from: number | 'bar'): ChainedMove[] {
   if (state.phase !== 'moving' || state.dice.length < 2) return [];
   const player = state.currentPlayer;
   const results: ChainedMove[] = [];
-  const seen = new Set<number>();
-  for (const m1 of getLegalMoves(state).filter((m) => m.from === from && m.to !== 'off')) {
-    const next = applyMove(state, m1);
-    if (next.phase !== 'moving' || next.currentPlayer !== player) continue;
-    for (const m2 of getLegalMoves(next)) {
-      if (m2.from !== m1.to || m2.to === 'off') continue;
-      const dest = m2.to as number;
-      if (!seen.has(dest)) {
-        seen.add(dest);
-        results.push({ dest, moves: [m1, m2] });
+  const seen = new Map<number, Move[]>(); // dest -> 最短の手順（手数少ない方が良いとは限らないが、同じdestなら手数が最大のものを優先したい）
+
+  function dfs(s: GameState, currentFrom: number | 'bar', currentMoves: Move[]) {
+    if (currentMoves.length >= 2) {
+      const dest = currentFrom as number;
+      // より手数が多く同じ場所に行けるなら上書き（出目を多く消費できるため）
+      if (!seen.has(dest) || seen.get(dest)!.length < currentMoves.length) {
+        seen.set(dest, [...currentMoves]);
       }
     }
+    for (const m of getLegalMoves(s).filter((move) => move.from === currentFrom && move.to !== 'off')) {
+      const next = applyMoveRaw(s, m);
+      if (next.currentPlayer === player) {
+        dfs(next, m.to as number | 'bar', [...currentMoves, m]);
+      }
+    }
+  }
+
+  dfs(state, from, []);
+
+  for (const [dest, moves] of seen.entries()) {
+    results.push({ dest, moves });
   }
   return results;
 }
@@ -374,8 +407,9 @@ export function isPureBearOffRace(state: GameState, player: PlayerId): boolean {
 // ダブリングキューブ
 // ============================================================
 
-/** いまダブルを提案できるか（自分の手番・振る前・キューブ所有権あり） */
+/** いまダブルを提案できるか（自分の手番・振る前・キューブ所有権あり・クロフォードルール非適用） */
 export function canOfferDouble(state: GameState, player: PlayerId): boolean {
+  if (state.matchLength > 1 && state.crawfordFlag === 'crawford') return false; // クロフォード中はキューブ不可
   return (
     state.phase === 'rolling' &&
     state.currentPlayer === player &&
@@ -399,15 +433,9 @@ export function acceptDouble(state: GameState): GameState {
   };
 }
 
-/** ダブル拒否: 現在のキューブ値で提案者の勝ち */
+/** ダブル拒否: 現在のキューブ値で提案者の勝ち（1点負け扱いなので乗算なし） */
 export function declineDouble(state: GameState): GameState {
   const winner = state.doubleOfferedBy!;
-  return {
-    ...state,
-    phase: 'finished',
-    winner,
-    winKind: 'single',
-    resultPoints: state.cube.value,
-    doubleOfferedBy: null,
-  };
+  const next = { ...state, doubleOfferedBy: null };
+  return finalizeGame(next, winner, 'drop', state.cube.value);
 }

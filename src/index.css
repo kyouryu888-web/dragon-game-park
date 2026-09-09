@@ -109,3 +109,16 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+/* Backgammon Animations */
+@keyframes bg-dice-roll {
+  0% { transform: scale(0.6) rotateX(180deg) rotateY(-180deg); opacity: 0; }
+  50% { transform: scale(1.1) rotateX(45deg) rotateY(45deg); opacity: 1; }
+  100% { transform: scale(1) rotateX(0deg) rotateY(0deg); opacity: 1; }
+}
+
+@keyframes bg-checker-hit {
+  0% { transform: scale(1); filter: brightness(1); }
+  30% { transform: scale(1.4); filter: brightness(2) contrast(1.5) sepia(1) hue-rotate(-50deg); box-shadow: 0 0 15px rgba(224,115,58,1); z-index: 10; }
+  100% { transform: scale(1); filter: brightness(1); z-index: 10; }
+}
