@@ -369,6 +369,7 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '8px 4px 6px', borderBottom: '1px solid rgba(201,162,75,.22)',
+        position: 'relative',
       }}>
         <button
           onClick={props.onQuit}
@@ -376,19 +377,22 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
             display: 'flex', alignItems: 'center', gap: 6, minHeight: 44, padding: '0 10px 0 6px',
             color: BG.gold, border: '1px solid rgba(201,162,75,.35)', borderRadius: 4,
             background: 'rgba(201,162,75,.06)', fontSize: 12.5, letterSpacing: '.05em',
-            cursor: 'pointer', fontFamily: BG.serifJa,
+            cursor: 'pointer', fontFamily: BG.serifJa, zIndex: 10, flexShrink: 0,
           }}
         >
           <ChevronLeft />
           <span>盤を離れる</span>
         </button>
-        <div style={{ fontFamily: BG.serifEn, fontSize: 13, letterSpacing: '.2em', color: BG.goldBright }}>BACKGAMMON</div>
+        <div style={{ 
+            fontFamily: BG.serifEn, fontSize: 'clamp(11px, 3vw, 13px)', letterSpacing: '.2em', color: BG.goldBright,
+            position: 'absolute', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap', zIndex: 5, pointerEvents: 'none'
+          }}>BACKGAMMON</div>
         <button
           onClick={props.onBackToHome}
           style={{
             display: 'flex', alignItems: 'center', minHeight: 44, padding: '0 10px',
             background: 'none', border: 'none', cursor: 'pointer',
-            color: BG.dim, fontFamily: BG.serifEn, fontSize: 11, letterSpacing: '.14em',
+            color: BG.dim, fontFamily: BG.serifEn, fontSize: 11, letterSpacing: '.14em', zIndex: 10, flexShrink: 0,
           }}
         >
           ゲーム選択に戻る
@@ -417,7 +421,7 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
           </div>
 
           {/* middle strip */}
-          <div style={{ height: 'var(--backgammon-middle-height)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', padding: '0 clamp(40px, 15vw, 80px)' }}>
+          <div style={{ height: 'var(--backgammon-middle-height)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', padding: '0 clamp(110px, 20vw, 150px)' }}>
             <div style={{
               position: 'absolute', left: 6, right: 6, top: '50%', height: 1,
               background: 'linear-gradient(90deg,transparent,rgba(201,162,75,.25),transparent)',
@@ -528,9 +532,9 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
       </div>
 
       {/* win overlay */}
-      {props.over && (
+      {props.over && !cutin && (
         <div style={{
-          position: 'absolute', inset: 0, zIndex: 30, background: 'rgba(10,7,12,.9)',
+          position: 'absolute', inset: 0, zIndex: 50, background: 'rgba(10,7,12,.9)',
           display: 'flex', flexDirection: 'column', alignItems: 'center',
           textAlign: 'center', padding: '24px 16px', overflowY: 'auto',
         }}>
@@ -576,24 +580,25 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
           padding: 20,
         }}>
           <div style={{
-            background: '#191320', border: `2px solid ${BG.goldDim}`, borderRadius: 8, padding: '24px 32px',
-            textAlign: 'center', boxShadow: '0 0 40px rgba(224,115,58,.4)',
+            background: '#201826', padding: '24px 32px', borderRadius: 12,
+            border: `2px solid ${BG.gold}`, textAlign: 'center', maxWidth: 360, width: '90%',
           }}>
-            <h3 style={{ margin: '0 0 16px', color: BG.goldBright, fontSize: 18 }}>ダブル提案</h3>
-            <p style={{ color: BG.textMid, fontSize: 14, marginBottom: 24 }}>
-              相手が賭け点を <strong>{state.cube.value * 2}</strong> に倍増させようとしています。<br/>
-              受けますか？（降りた場合は1点負けになります）
+            <h3 style={{ margin: '0 0 16px', color: BG.goldBright, fontSize: 20 }}>ダブル提案！</h3>
+            <p style={{ margin: '0 0 24px', color: BG.textMid, fontSize: 14, lineHeight: 1.6 }}>
+              相手から勝負を倍（{state.cube.value * 2}点）にする提案がありました。
+              <br />
+              受けるか、降りるか選んでください。
             </p>
-            <div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
+            <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
               <button
                 onClick={props.onDeclineDouble}
-                style={{ padding: '10px 20px', borderRadius: 6, background: '#3a2c17', border: '1px solid #7d6233', color: '#f5deb3', cursor: 'pointer' }}
+                style={{ padding: '10px 20px', borderRadius: 6, background: '#3a2c17', border: '1px solid #7d6233', color: '#f5deb3', cursor: 'pointer', flex: '1 1 auto', minWidth: 120 }}
               >
                 降りる (Drop)
               </button>
               <button
                 onClick={props.onAcceptDouble}
-                style={{ padding: '10px 20px', borderRadius: 6, background: '#a8441f', border: '1px solid #e0733a', color: '#fff', fontWeight: 'bold', cursor: 'pointer' }}
+                style={{ padding: '10px 20px', borderRadius: 6, background: '#a8441f', border: '1px solid #e0733a', color: '#fff', fontWeight: 'bold', cursor: 'pointer', flex: '1 1 auto', minWidth: 120 }}
               >
                 受ける (Take)
               </button>
