@@ -174,16 +174,30 @@ export function BackgammonOnlineGame({
   function handleRoll() {
     if (state.phase === 'opening-roll') {
       if (!iAmHost) return;
-      // オンラインでは往復を避けるため、決まるまでこちらで振り直す
-      let s = state;
-      do { s = rollOpening({ ...s, openingRoll: null }); } while (s.phase === 'opening-roll');
-      showToast(s.currentPlayer === myColor ? 'そなたが先手!' : `${oppName}が先手!`);
-      commit(s);
+      const nextRaw = rollOpening(state);
+      commit({ ...nextRaw, phase: 'opening-roll' });
       return;
     }
     if (state.phase !== 'rolling' || !isMyTurn) return;
     commit(rollDice(state));
   }
+
+  // オープニングロールの同期進行管理（ホストが進行させる）
+  useEffect(() => {
+    if (state.phase === 'opening-roll' && state.openingRoll && iAmHost) {
+      if (state.openingRoll[0] === state.openingRoll[1]) {
+        const timer = setTimeout(() => {
+          commit({ ...state, openingRoll: null });
+        }, 1800);
+        return () => clearTimeout(timer);
+      } else {
+        const timer = setTimeout(() => {
+          commit({ ...state, phase: 'moving' });
+        }, 1500);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [state, iAmHost]);
 
   // 自分の手番で打てる手がない → 自動パス（自分のクライアントが書き込む）
   const mustPass = isMyTurn && state.phase === 'moving' && state.dice.length > 0 && legalMoves.length === 0;

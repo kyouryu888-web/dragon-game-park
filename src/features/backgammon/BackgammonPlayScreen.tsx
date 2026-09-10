@@ -1,3 +1,6 @@
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useCheckerIds } from './useCheckerIds';
 import { useEffect, useRef } from 'react';
 import type { GameState, PlayerId } from './backgammonTypes';
 import { BG, Brand, ChevronLeft, DragonIcon } from './BackgammonUi';
@@ -80,29 +83,55 @@ export type BackgammonPlayScreenProps = {
 };
 
 function Checker({
-  owner, size, label, ring, pulse, hitFlash
-}: { owner: PlayerId; size: number | string; label?: string; ring?: boolean; pulse?: boolean; hitFlash?: boolean }) {
+  owner, size, label, ring, pulse, hitFlash, layoutId
+}: { owner: PlayerId; size: number | string; label?: string; ring?: boolean; pulse?: boolean; hitFlash?: boolean; layoutId?: string }) {
   return (
-    <div style={{
-      width: size, height: size, borderRadius: '50%',
-      background: CHECKER_BG[owner], border: `1.5px solid ${CHECKER_BD[owner]}`,
-      boxShadow: ring
-        ? '0 0 0 2.5px #f0dfae, 0 2px 5px rgba(0,0,0,.55)'
-        : '0 2px 4px rgba(0,0,0,.5)',
-      animation: hitFlash ? 'bg-checker-hit 0.6s ease-out' : pulse ? 'pickPulse 1.6s ease-in-out infinite' : 'none',
-      boxSizing: 'border-box', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontSize: 'clamp(10px, 1.2vw, 13px)', fontWeight: 700, color: CHECKER_TC[owner], flex: 'none',
-      position: hitFlash ? 'relative' : 'static',
-      zIndex: hitFlash ? 10 : 1,
-    }}>
+    <motion.div
+      layoutId={layoutId}
+      transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+      style={{
+        width: size, height: size, borderRadius: '50%',
+        background: CHECKER_BG[owner], border: `1.5px solid ${CHECKER_BD[owner]}`,
+        boxShadow: ring
+          ? '0 0 0 2.5px #f0dfae, 0 2px 5px rgba(0,0,0,.55)'
+          : '0 2px 4px rgba(0,0,0,.5)',
+        animation: hitFlash ? 'bg-checker-hit 0.6s ease-out' : pulse ? 'pickPulse 1.6s ease-in-out infinite' : 'none',
+        boxSizing: 'border-box', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: 'clamp(10px, 1.2vw, 13px)', fontWeight: 700, color: CHECKER_TC[owner], flex: 'none',
+        position: hitFlash ? 'relative' : 'static',
+        zIndex: hitFlash ? 10 : 1,
+      }}
+    >
       {label ?? ''}
-    </div>
+    </motion.div>
   );
 }
 
 export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
   const { state } = props;
   const prevState = usePrevious(state);
+  const checkerIds = useCheckerIds(state);
+
+  const [cutin, setCutin] = useState<'offer' | 'accept' | 'drop' | null>(null);
+
+  useEffect(() => {
+    if (!prevState) return;
+    if (prevState.phase !== 'double-offered' && state.phase === 'double-offered') {
+      setCutin('offer');
+      const timer = setTimeout(() => setCutin(null), 2500);
+      return () => clearTimeout(timer);
+    }
+    if (prevState.phase === 'double-offered' && state.phase === 'moving') {
+      setCutin('accept');
+      const timer = setTimeout(() => setCutin(null), 2000);
+      return () => clearTimeout(timer);
+    }
+    if (prevState.phase === 'double-offered' && state.phase === 'finished') {
+      setCutin('drop');
+      const timer = setTimeout(() => setCutin(null), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [state.phase, prevState?.phase]);
 
   // 相手の駒をヒットした（バーに送られた）かどうかを検知
   const hitFlashBlack = prevState && state.bar.black > prevState.bar.black;
@@ -124,6 +153,8 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
     const prevPtCount = prevState?.points[i]?.count ?? 0;
     const isRecentPlaced = prevState && prevState.currentPlayer !== state.currentPlayer && count > prevPtCount;
 
+    const idsAtPoint = checkerIds.get(i) || [];
+
     const checkers = [];
     for (let k = 0; k < show; k++) {
       const last = k === show - 1;
@@ -136,6 +167,7 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
           ring={last && isSel}
           pulse={last && pickable}
           hitFlash={last && isRecentPlaced && !hitFlashBlack && !hitFlashWhite}
+          layoutId={idsAtPoint[k]?.id}
         />,
       );
     }
@@ -193,11 +225,13 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
     
     const isHit = side === 'black' ? hitFlashBlack : hitFlashWhite;
 
+    const idsAtBar = checkerIds.get('bar')?.filter(c => c.owner === side) || [];
+
     const checkers = [];
     for (let k = 0; k < show; k++) {
       const last = k === show - 1;
       checkers.push(
-        <Checker key={k} owner={side} size="var(--backgammon-bar-checker-size)" label={last && n > 4 ? String(n) : ''} hitFlash={last && isHit} />,
+        <Checker key={k} owner={side} size="var(--backgammon-bar-checker-size)" label={last && n > 4 ? String(n) : ''} hitFlash={last && isHit} layoutId={idsAtBar[k]?.id} />,
       );
     }
     return (
@@ -544,6 +578,57 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
           </div>
         </div>
       )}
+      {/* Cinematic Cutins */}
+      <AnimatePresence>
+        {cutin && (
+          <motion.div
+            key="cutin-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{
+              position: 'absolute', inset: 0, zIndex: 40, pointerEvents: 'none',
+              background: 'radial-gradient(circle at center, rgba(10,0,0,0.4) 0%, rgba(0,0,0,0.8) 100%)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden'
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.8, x: -100, rotate: -5, opacity: 0 }}
+              animate={{ scale: 1, x: 0, rotate: 0, opacity: 1 }}
+              exit={{ scale: 1.1, x: 100, rotate: 5, opacity: 0 }}
+              transition={{ type: 'spring', damping: 15, stiffness: 150 }}
+              style={{
+                background: 'linear-gradient(135deg, rgba(200,150,50,0.9), rgba(100,20,10,0.9))',
+                border: '2px solid #f0dfae',
+                borderRadius: 16,
+                padding: '24px 48px',
+                boxShadow: '0 0 40px rgba(224,115,58,0.6)',
+                textAlign: 'center',
+                transformStyle: 'preserve-3d',
+              }}
+            >
+              <h2 style={{ 
+                fontSize: 'clamp(24px, 6vw, 36px)', 
+                margin: 0, 
+                color: '#fff', 
+                textShadow: '0 2px 10px rgba(0,0,0,0.5)',
+                letterSpacing: '0.1em'
+              }}>
+                {cutin === 'offer' ? 'DOUBLE OFFERED!' : cutin === 'accept' ? 'DOUBLE ACCEPTED!!' : 'DOUBLE DROPPED...'}
+              </h2>
+              <p style={{ 
+                fontSize: 'clamp(12px, 3vw, 16px)', 
+                color: '#f0dfae', 
+                marginTop: 8,
+                marginBottom: 0,
+                fontWeight: 'bold' 
+              }}>
+                {cutin === 'offer' ? '倍付の勝負が提案された！' : cutin === 'accept' ? '勝負は倍付へ！' : '勝負から降りた…'}
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
