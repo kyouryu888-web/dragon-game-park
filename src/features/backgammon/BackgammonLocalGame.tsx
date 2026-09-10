@@ -162,10 +162,10 @@ export function BackgammonLocalGame({ config, showToast, onExitToSettings, onBac
           setState((s) => (s.phase === 'opening-roll' ? { ...s, openingRoll: null } : s));
         }, 1800);
       } else {
-        showToast(`${nameFor(nextRaw.currentPlayer)}が先手!`);
+        showToast(`${nameFor(nextRaw.currentPlayer)}が先手`);
         setTimeout(() => {
-          setState((s) => ({ ...s, phase: 'moving' }));
-        }, 1500); // 1.5秒タメる
+          setState((s) => ({ ...s, phase: 'rolling', openingRoll: null }));
+        }, 1500);
       }
       return;
     }

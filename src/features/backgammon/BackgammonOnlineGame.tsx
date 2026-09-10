@@ -192,7 +192,7 @@ export function BackgammonOnlineGame({
         return () => clearTimeout(timer);
       } else {
         const timer = setTimeout(() => {
-          commit({ ...state, phase: 'moving' });
+          commit({ ...state, phase: 'rolling', openingRoll: null });
         }, 1500);
         return () => clearTimeout(timer);
       }
