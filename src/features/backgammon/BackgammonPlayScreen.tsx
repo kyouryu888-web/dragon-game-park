@@ -162,7 +162,7 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
       const last = k === show - 1;
       checkers.push(
         <Checker
-          key={k}
+          key={idsAtPoint[k]?.id || k}
           owner={pt!.owner}
           size="var(--backgammon-checker-size)"
           label={last && count > 5 ? String(count) : ''}
@@ -176,7 +176,7 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
       if (count > 5) {
         for (let k = 5; k < count; k++) {
           checkers.push(
-            <div key={k} style={{ position: 'absolute', top: 0, opacity: 0, pointerEvents: 'none' }}>
+            <div key={idsAtPoint[k]?.id || k} style={{ position: 'absolute', top: 0, opacity: 0, pointerEvents: 'none' }}>
               <Checker owner={pt!.owner} size="var(--backgammon-checker-size)" layoutId={idsAtPoint[k]?.id} />
             </div>
           );
@@ -242,13 +242,13 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
     for (let k = 0; k < show; k++) {
       const last = k === show - 1;
       checkers.push(
-        <Checker key={k} owner={side} size="var(--backgammon-bar-checker-size)" label={last && n > 4 ? String(n) : ''} hitFlash={last && isHit} layoutId={idsAtBar[k]?.id} />,
+        <Checker key={idsAtBar[k]?.id || k} owner={side} size="var(--backgammon-bar-checker-size)" label={last && n > 4 ? String(n) : ''} hitFlash={last && isHit} layoutId={idsAtBar[k]?.id} />,
         );
       }
       if (n > 5) {
         for (let k = 5; k < n; k++) {
           checkers.push(
-            <div key={k} style={{ position: 'absolute', top: 0, opacity: 0, pointerEvents: 'none' }}>
+            <div key={idsAtBar[k]?.id || k} style={{ position: 'absolute', top: 0, opacity: 0, pointerEvents: 'none' }}>
               <Checker owner={side} size="var(--backgammon-bar-checker-size)" layoutId={idsAtBar[k]?.id} />
             </div>
           );
@@ -496,9 +496,9 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
                 </div>
               </div>
             ) : props.showRollBtn ? (
-              <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 'clamp(6px, 2vw, 12px)' }}>
-                <span style={{ fontSize: 'clamp(10px, 3vw, 12.5px)', letterSpacing: '.05em', color: BG.textMid, textAlign: 'center' }}>{props.centerMsg}</span>
-                <button
+                <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+                  <span style={{ fontSize: 'clamp(10px, 3vw, 12.5px)', letterSpacing: '.05em', color: BG.textMid, textAlign: 'center', whiteSpace: 'nowrap' }}>{props.centerMsg}</span>
+                  <button
                   onClick={props.onRoll}
                   style={{
                     minHeight: 48, padding: '0 clamp(12px, 3vw, 22px)', borderRadius: 6, cursor: 'pointer',
