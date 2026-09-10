@@ -217,10 +217,15 @@ export function BackgammonLocalGame({ config, showToast, onExitToSettings, onBac
 
   // ---- CPUの手番 ----
   useEffect(() => {
-    if (!isCpuMode || state.currentPlayer !== 'black' || state.phase === 'finished') return;
+    if (!isCpuMode || state.phase === 'finished') return;
+
+    const cpuIsAnsweringDouble = state.phase === 'double-offered' && state.doubleOfferedBy === 'white';
+    const cpuIsPlaying = state.phase !== 'double-offered' && state.currentPlayer === 'black';
+
+    if (!cpuIsAnsweringDouble && !cpuIsPlaying) return;
 
     // ダブルの受諾/拒否判断
-    if (state.phase === 'double-offered') {
+    if (cpuIsAnsweringDouble) {
       const timer = setTimeout(() => {
         import('./backgammonCpu').then(({ shouldCpuAcceptDouble }) => {
           if (shouldCpuAcceptDouble(state, 'black', config.cpuLevel)) {
@@ -332,8 +337,8 @@ export function BackgammonLocalGame({ config, showToast, onExitToSettings, onBac
   }), [state]);
 
   const canOffer = canOfferDouble(state, 'white') && isHumanTurn && (!isCpuMode || state.currentPlayer === 'white');
-  const isDoubleWait = state.phase === 'double-offered' && state.doubleOfferedBy === 'white';
-  const isDoubleOffer = state.phase === 'double-offered' && state.doubleOfferedBy === 'black' && isHumanTurn;
+  const isDoubleWait = state.phase === 'double-offered' && isCpuMode && state.doubleOfferedBy === 'white';
+  const isDoubleOffer = state.phase === 'double-offered' && (!isCpuMode || state.doubleOfferedBy === 'black');
 
   function handleDouble() {
     if (!canOffer) return;
