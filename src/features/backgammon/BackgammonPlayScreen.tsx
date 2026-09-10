@@ -260,6 +260,27 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
     );
   };
 
+  const DiceBlock = ({ val, used, owner, anim, layoutId }: { val: number; used?: boolean; owner: PlayerId; anim?: string; layoutId?: string }) => (
+    <motion.div
+      layoutId={layoutId}
+      transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+      style={{
+        width: 'clamp(32px, 9vw, 46px)', height: 'clamp(32px, 9vw, 46px)', borderRadius: 9, background: '#efe4c9',
+        border: `2px solid ${owner === 'white' ? BG.gold : BG.ember}`,
+        boxSizing: 'border-box', position: 'relative', flex: 'none',
+        boxShadow: '0 3px 8px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.4)',
+        opacity: used ? 0.3 : 1, animation: anim || 'none',
+      }}
+    >
+      {PIPS[val].map(([x, y], p) => (
+        <span key={p} style={{
+          position: 'absolute', left: `${x}%`, top: `${y}%`, width: '20%', height: '20%',
+          marginLeft: '-10%', marginTop: '-10%', borderRadius: '50%', background: '#241a10',
+        }} />
+      ))}
+    </motion.div>
+  );
+
   // サイコロ表示（振った目、使用済みは減光）
   const diceView = (() => {
     if (!state.rolled) return null;
@@ -271,25 +292,7 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
       const i = rem.indexOf(val);
       const used = i < 0;
       if (i >= 0) rem.splice(i, 1);
-      return (
-        <div
-          key={idx}
-          style={{
-            width: 46, height: 46, borderRadius: 9, background: '#efe4c9',
-            border: `2px solid ${state.currentPlayer === 'white' ? BG.gold : BG.ember}`,
-            boxSizing: 'border-box', position: 'relative',
-            boxShadow: '0 3px 8px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.4)',
-            opacity: used ? 0.3 : 1, animation: 'bg-dice-roll 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
-          }}
-        >
-          {PIPS[val].map(([x, y], p) => (
-            <span key={p} style={{
-              position: 'absolute', left: `${x}%`, top: `${y}%`, width: '20%', height: '20%',
-              marginLeft: '-10%', marginTop: '-10%', borderRadius: '50%', background: '#241a10',
-            }} />
-          ))}
-        </div>
-      );
+      return <DiceBlock key={idx} val={val} used={used} owner={state.currentPlayer} layoutId={idx < 2 ? `dice-${idx}` : undefined} anim="bg-dice-roll 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards" />;
     });
     return dice;
   })();
@@ -412,14 +415,14 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
           </div>
 
           {/* middle strip */}
-          <div style={{ height: 'var(--backgammon-middle-height)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, position: 'relative' }}>
+          <div style={{ height: 'var(--backgammon-middle-height)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', padding: '0 clamp(40px, 15vw, 80px)' }}>
             <div style={{
               position: 'absolute', left: 6, right: 6, top: '50%', height: 1,
               background: 'linear-gradient(90deg,transparent,rgba(201,162,75,.25),transparent)',
             }} />
             
-            {/* キューブ表示（左側） */}
-            <div style={{ position: 'absolute', left: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
+            {/* キューブ表示（左側）*/}
+            <div style={{ position: 'absolute', left: 'clamp(4px, 2vw, 20px)', zIndex: 10, display: 'flex', alignItems: 'center', gap: 'clamp(4px, 1vw, 8px)' }}>
               <div style={{
                 width: 32, height: 32, borderRadius: 4, background: '#222', border: `1px solid ${BG.goldDim}`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 'bold',
@@ -442,17 +445,33 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
               )}
             </div>
 
-            {props.showRollBtn ? (
-              <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 12 }}>
-                <span style={{ fontSize: 12.5, letterSpacing: '.08em', color: BG.textMid }}>{props.centerMsg}</span>
+            {state.phase === 'opening-roll' && state.openingRoll ? (
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: 16 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, transform: 'translateY(-30px)' }}>
+                  <span style={{ fontSize: 11, color: '#aaa' }}>相手</span>
+                  <DiceBlock val={state.openingRoll[1]} owner="black" anim="bg-dice-roll 0.6s ease-out forwards" layoutId="dice-1" />
+                </div>
+                {state.openingRoll[0] === state.openingRoll[1] ? (
+                  <span style={{ color: '#e6c877', fontSize: 'clamp(12px, 3vw, 15px)', fontWeight: 'bold', animation: 'dotPulse 1s infinite', textAlign: 'center' }}>同じ目！<br/>振り直し</span>
+                ) : (
+                  <span style={{ color: '#fff', fontSize: 20, fontWeight: 'bold' }}>VS</span>
+                )}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, transform: 'translateY(30px)' }}>
+                  <DiceBlock val={state.openingRoll[0]} owner="white" anim="bg-dice-roll 0.6s ease-out forwards" layoutId="dice-0" />
+                  <span style={{ fontSize: 11, color: '#aaa' }}>あなた</span>
+                </div>
+              </div>
+            ) : props.showRollBtn ? (
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 'clamp(6px, 2vw, 12px)' }}>
+                <span style={{ fontSize: 'clamp(10px, 3vw, 12.5px)', letterSpacing: '.05em', color: BG.textMid, textAlign: 'center' }}>{props.centerMsg}</span>
                 <button
                   onClick={props.onRoll}
                   style={{
-                    minHeight: 48, padding: '0 22px', borderRadius: 6, cursor: 'pointer',
+                    minHeight: 48, padding: '0 clamp(12px, 3vw, 22px)', borderRadius: 6, cursor: 'pointer',
                     border: `1px solid ${BG.gold}`,
                     background: 'linear-gradient(180deg,#3a2c17 0%,#2a1f12 100%)',
-                    color: BG.goldPale, fontFamily: BG.serifJa, fontSize: 15, fontWeight: 700,
-                    letterSpacing: '.14em', boxShadow: '0 0 18px rgba(224,115,58,.3)',
+                    color: BG.goldPale, fontFamily: BG.serifJa, fontSize: 'clamp(12px, 3vw, 15px)', fontWeight: 700,
+                    letterSpacing: '.14em', boxShadow: '0 0 18px rgba(224,115,58,.3)', flex: 'none',
                   }}
                 >
                   {props.rollLabel}
@@ -460,14 +479,16 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
               </div>
             ) : state.rolled && state.phase === 'moving' ? (
               <div key={`${state.turnCount}-${state.rolled.join('')}`} style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 10 }}>
-                {diceView}
+                <div style={{ display: 'flex', gap: 6 }}>
+                  {diceView}
+                </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 2, maxWidth: 110 }}>
-                  <span style={{ fontSize: 12, letterSpacing: '.06em', color: BG.goldBright, lineHeight: 1.4 }}>{props.centerMsg}</span>
+                  <span style={{ fontSize: 'clamp(10px, 2.5vw, 12px)', letterSpacing: '.06em', color: BG.goldBright, lineHeight: 1.4 }}>{props.centerMsg}</span>
                   <span style={{ fontSize: 11, color: BG.dim }}>{props.movesLeftTxt}</span>
                 </div>
               </div>
             ) : (
-              <span style={{ position: 'relative', fontSize: 12.5, letterSpacing: '.08em', color: BG.textMid }}>{props.centerMsg}</span>
+              <span style={{ position: 'relative', fontSize: 'clamp(10px, 3vw, 12.5px)', letterSpacing: '.08em', color: BG.textMid, textAlign: 'center' }}>{props.centerMsg}</span>
             )}
           </div>
 
