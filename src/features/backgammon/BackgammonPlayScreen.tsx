@@ -121,13 +121,15 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
       const timer = setTimeout(() => setCutin(null), 2500);
       return () => clearTimeout(timer);
     }
-    if (prevState.phase === 'double-offered' && state.phase === 'moving') {
-      setCutin('accept');
-      const timer = setTimeout(() => setCutin(null), 2000);
-      return () => clearTimeout(timer);
-    }
-    if (prevState.phase === 'double-offered' && state.phase === 'finished') {
-      setCutin('drop');
+    if (prevState.phase === 'double-offered' && state.phase !== 'double-offered') {
+      if (state.phase === 'rolling') {
+        setCutin('accept');
+      } else if (state.phase === 'finished') {
+        setCutin('drop');
+      } else {
+        setCutin(null);
+        return;
+      }
       const timer = setTimeout(() => setCutin(null), 2000);
       return () => clearTimeout(timer);
     }

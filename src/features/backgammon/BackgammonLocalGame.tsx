@@ -7,7 +7,7 @@ import {
   getPipCount, canOfferDouble, offerDouble, acceptDouble, declineDouble,
   type ChainedMove,
 } from './backgammonRules';
-import { chooseCpuMoveSequence, getCpuDisplayName } from './backgammonCpu';
+import { chooseCpuMoveSequence, getCpuDisplayName, shouldCpuAcceptDouble, shouldCpuOfferDouble } from './backgammonCpu';
 import { BackgammonPlayScreen } from './BackgammonPlayScreen';
 
 const CPU_ROLL_DELAY = 950;
@@ -227,31 +227,25 @@ export function BackgammonLocalGame({ config, showToast, onExitToSettings, onBac
     // ダブルの受諾/拒否判断
     if (cpuIsAnsweringDouble) {
       const timer = setTimeout(() => {
-        import('./backgammonCpu').then(({ shouldCpuAcceptDouble }) => {
-          if (shouldCpuAcceptDouble(state, 'black', config.cpuLevel)) {
-            showToast('龍はダブルを受けた！');
-            import('./backgammonRules').then(({ acceptDouble }) => setState(acceptDouble(state)));
-          } else {
-            showToast('龍はダブルを降りた…');
-            import('./backgammonRules').then(({ declineDouble }) => setState(declineDouble(state)));
-          }
-        });
+        if (shouldCpuAcceptDouble(state, 'black', config.cpuLevel)) {
+          showToast('龍がダブルを受けた！');
+          setState(acceptDouble(state));
+        } else {
+          showToast('龍がダブルを降りた…');
+          setState(declineDouble(state));
+        }
       }, 1200);
       return () => clearTimeout(timer);
     }
 
     if (state.phase === 'rolling') {
       const timer = setTimeout(() => {
-        import('./backgammonCpu').then(({ shouldCpuOfferDouble }) => {
-          import('./backgammonRules').then(({ canOfferDouble, offerDouble }) => {
-            if (canOfferDouble(state, 'black') && shouldCpuOfferDouble(state, config.cpuLevel)) {
-              showToast('龍がダブルを提案してきた！');
-              setState(offerDouble(state));
-            } else {
-              setState((s) => (s.phase === 'rolling' && s.currentPlayer === 'black' ? rollDice(s) : s));
-            }
-          });
-        });
+        if (canOfferDouble(state, 'black') && shouldCpuOfferDouble(state, config.cpuLevel)) {
+          showToast('龍がダブルを提案してきた！');
+          setState(offerDouble(state));
+        } else {
+          setState((s) => (s.phase === 'rolling' && s.currentPlayer === 'black' ? rollDice(s) : s));
+        }
       }, CPU_ROLL_DELAY);
       return () => clearTimeout(timer);
     }
