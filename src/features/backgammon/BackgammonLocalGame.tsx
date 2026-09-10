@@ -152,11 +152,15 @@ export function BackgammonLocalGame({ config, showToast, onExitToSettings, onBac
     if (state.phase === 'opening-roll') {
       // 一旦「振った目」だけを保存してタメを作る
       const nextRaw = rollOpening(state);
-      // 同じ目ならそのまま振り直し。違う目なら「moving」に移行しているが、いったん 'opening-roll' のまま出目を見せる
+      // 違う目なら「moving」に移行しているが、いったん 'opening-roll' のまま出目を見せる
       setState({ ...nextRaw, phase: 'opening-roll' });
 
       if (nextRaw.phase === 'opening-roll') {
         showToast('同じ目！もう一度振るのだ');
+        setTimeout(() => {
+          // 少し見せた後、出目をクリアして再度「サイコロを振る」ボタンを出させる
+          setState((s) => (s.phase === 'opening-roll' ? { ...s, openingRoll: null } : s));
+        }, 1800);
       } else {
         showToast(`${nameFor(nextRaw.currentPlayer)}が先手!`);
         setTimeout(() => {
