@@ -170,9 +170,18 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
           pulse={last && pickable}
           hitFlash={last && isRecentPlaced && !hitFlashBlack && !hitFlashWhite}
           layoutId={idsAtPoint[k]?.id}
-        />,
-      );
-    }
+          />,
+        );
+      }
+      if (count > 5) {
+        for (let k = 5; k < count; k++) {
+          checkers.push(
+            <div key={k} style={{ position: 'absolute', top: 0, opacity: 0, pointerEvents: 'none' }}>
+              <Checker owner={pt!.owner} size="var(--backgammon-checker-size)" layoutId={idsAtPoint[k]?.id} />
+            </div>
+          );
+        }
+      }
 
     return (
       <div key={i} onClick={() => props.onTapPoint(i)} style={{ flex: 1, position: 'relative', cursor: 'pointer', minWidth: 0 }}>
@@ -234,8 +243,17 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
       const last = k === show - 1;
       checkers.push(
         <Checker key={k} owner={side} size="var(--backgammon-bar-checker-size)" label={last && n > 4 ? String(n) : ''} hitFlash={last && isHit} layoutId={idsAtBar[k]?.id} />,
-      );
-    }
+        );
+      }
+      if (n > 5) {
+        for (let k = 5; k < n; k++) {
+          checkers.push(
+            <div key={k} style={{ position: 'absolute', top: 0, opacity: 0, pointerEvents: 'none' }}>
+              <Checker owner={side} size="var(--backgammon-bar-checker-size)" layoutId={idsAtBar[k]?.id} />
+            </div>
+          );
+        }
+      }
     return (
       <div
         onClick={props.onTapBar}
@@ -341,21 +359,31 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
           </div>
         </div>
         <button
-          onClick={onTapOff}
-          style={{
-            flex: 'none', minHeight: 44, padding: '4px 12px', borderRadius: 5, cursor: 'pointer',
-            textAlign: 'center', fontFamily: BG.serifJa, background: 'rgba(13,11,16,.6)',
-            border: `1.5px solid ${offHot ? CHECKER_BD[side] : 'rgba(201,162,75,.2)'}`,
-            color: '#d8cbb0',
-            animation: offHot ? 'dotPulse 1.1s infinite' : 'none',
-          }}
-        >
-          <div style={{ fontSize: 10, letterSpacing: '.1em', color: BG.dim }}>上がり</div>
-          <div style={{ fontSize: 15, fontWeight: 700, color: offColor }}>
-            {state.borneOff[side]}
-            <span style={{ fontSize: 10, color: BG.dim }}> /15</span>
-          </div>
-        </button>
+            onClick={onTapOff}
+            style={{
+              flex: 'none', minHeight: 44, padding: '4px 12px', borderRadius: 5, cursor: 'pointer',
+              textAlign: 'center', fontFamily: BG.serifJa, background: 'rgba(13,11,16,.6)',
+              border: `1.5px solid ${offHot ? CHECKER_BD[side] : 'rgba(201,162,75,.2)'}`,
+              color: '#d8cbb0',
+              animation: offHot ? 'dotPulse 1.1s infinite' : 'none',
+              position: 'relative', overflow: 'hidden',
+            }}
+          >
+            {/* ベアオフされたコマを透明に描画し、飛んでくるアニメーションの終着点にする */}
+            {(() => {
+              const idsOff = checkerIds.get('off')?.filter((c) => c.owner === side) || [];
+              return idsOff.map((c, idx) => (
+                <div key={idx} style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', opacity: 0, pointerEvents: 'none' }}>
+                  <Checker owner={side} size={10} layoutId={c.id} />
+                </div>
+              ));
+            })()}
+            <div style={{ fontSize: 10, letterSpacing: '.1em', color: BG.dim }}>上がり</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: offColor }}>
+              {state.borneOff[side]}
+              <span style={{ fontSize: 10, color: BG.dim }}> /15</span>
+            </div>
+          </button>
       </div>
     );
   };
