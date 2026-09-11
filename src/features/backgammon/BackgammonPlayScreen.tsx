@@ -114,26 +114,30 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
 
   const [cutin, setCutin] = useState<'offer' | 'accept' | 'drop' | null>(null);
 
+  const prevPhaseRef = useRef(state.phase);
   useEffect(() => {
-    if (!prevState) return;
-    if (prevState.phase !== 'double-offered' && state.phase === 'double-offered') {
+    const prev = prevPhaseRef.current;
+    prevPhaseRef.current = state.phase;
+
+    if (prev !== 'double-offered' && state.phase === 'double-offered') {
       setCutin('offer');
       const timer = setTimeout(() => setCutin(null), 2500);
       return () => clearTimeout(timer);
     }
-    if (prevState.phase === 'double-offered' && state.phase !== 'double-offered') {
+    if (prev === 'double-offered' && state.phase !== 'double-offered') {
       if (state.phase === 'rolling') {
         setCutin('accept');
+        const timer = setTimeout(() => setCutin(null), 2000);
+        return () => clearTimeout(timer);
       } else if (state.phase === 'finished') {
         setCutin('drop');
+        const timer = setTimeout(() => setCutin(null), 2000);
+        return () => clearTimeout(timer);
       } else {
         setCutin(null);
-        return;
       }
-      const timer = setTimeout(() => setCutin(null), 2000);
-      return () => clearTimeout(timer);
     }
-  }, [state.phase, prevState?.phase]);
+  }, [state.phase]);
 
   // 相手の駒をヒットした（バーに送られた）かどうかを検知
   const hitFlashBlack = prevState && state.bar.black > prevState.bar.black;
