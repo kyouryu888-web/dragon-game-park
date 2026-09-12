@@ -234,6 +234,12 @@ export function MancalaOnlineGamePage({
     }
 
     // それ以外（複数手飛んだ場合や初期化など）は即座に反映
+    pendingFinalStateRef.current = null;
+    setAnimSteps([]);
+    setAnimActiveIds([]);
+    setAnimIdx(0);
+    setCaptureAnimInfo(null);
+    setCapturePhase(null);
     setGameState(gs);
   }, []);
 
@@ -266,14 +272,15 @@ export function MancalaOnlineGamePage({
         setLoading(false);
       });
 
+    const channelName = `mancala-game-${roomCode}-${Math.random().toString(36).slice(2, 8)}`;
     const channel = supabase
-      .channel(`online-game-${roomCode}`)
+      .channel(channelName)
       .on(
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'mancala_rooms', filter: `room_code=eq.${roomCode}` },
         (payload) => {
           if (cancelled) return;
-          const gs = (payload.new as { game_state: GameState }).game_state;
+          const gs = (payload.new as { game_state: GameState })?.game_state;
           if (gs) handleIncomingState(gs);
         }
       )
@@ -283,7 +290,7 @@ export function MancalaOnlineGamePage({
         }
       });
 
-    const poll = setInterval(() => { void syncLatest(); }, 5000);
+    const poll = setInterval(() => { void syncLatest(); }, 3000);
 
     return () => {
       cancelled = true;
@@ -404,10 +411,13 @@ export function MancalaOnlineGamePage({
 
     justMovedTurnRef.current = finalState.turnCount;
 
-    void supabase
+    supabase
       .from('mancala_rooms')
       .update({ game_state: finalState })
-      .eq('room_code', roomCode);
+      .eq('room_code', roomCode)
+      .then(({ error }) => {
+        if (error) console.error('[Mancala] Supabase update failed:', error);
+      });
 
     const { steps, activeIds, captureInfo: ci, isExtraTurn } =
       computeStoneSteps(state, pitId);
@@ -483,6 +493,31 @@ export function MancalaOnlineGamePage({
 
     return () => clearTimeout(id);
   }, [capturePhase]);
+
+  // ============================================================
+  // 安全復帰ガード（セーフティタイムアウト）:
+  // アニメーションまたは捕獲演出が何らかの原因でスタックした場合でも、
+  // 最大3秒で操作ロックを強制解除し、最新状態へ復帰させるフェイルセーフ
+  // ============================================================
+  useEffect(() => {
+    if (!isAnimating && capturePhase === null) return;
+
+    const safetyId = setTimeout(() => {
+      if (isAnimatingRef.current || capturePhase !== null) {
+        if (pendingFinalStateRef.current) {
+          setGameState(pendingFinalStateRef.current);
+          pendingFinalStateRef.current = null;
+        }
+        setCaptureAnimInfo(null);
+        setCapturePhase(null);
+        setAnimSteps([]);
+        setAnimActiveIds([]);
+        setAnimIdx(0);
+      }
+    }, 3200);
+
+    return () => clearTimeout(safetyId);
+  }, [isAnimating, capturePhase]);
 
   // ============================================================
   // ピットクリック（自分の手番のみ）

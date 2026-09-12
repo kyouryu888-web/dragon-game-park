@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import type { MancalaConfig, GameState, Player, PlayerId } from './mancalaTypes';
+import type { MancalaConfig, GameState, Player, PlayerId, CpuLevel } from './mancalaTypes';
 import { createInitialMancalaState } from './createInitialMancalaState';
 import { applyMove, getEffectiveOppositePitId } from './mancalaRules';
 import { chooseCpuMove } from './mancalaCpu';
@@ -9,6 +9,8 @@ import { GameEndActions } from '../../components/GameEndActions';
 import { MancalaBoard, PLANK_POSITIONS } from './MancalaBoard';
 import type { PlankSlideEntry } from './MancalaBoard';
 import { PLAYER_ACCENT_COLORS } from './MancalaPit';
+import { CpuWipeReaction } from '../../components/CpuWipeReaction';
+import type { CpuEmotion } from '../../components/CpuWipeReaction';
 
 // ============================================================
 // 定数
@@ -210,6 +212,21 @@ export function MancalaGamePage({ config, onBackToSetup, onBackToHome }: Mancala
   const [showExtraTurn,  setShowExtraTurn]  = useState(false);
   const [captureBannerKey, setCaptureBannerKey] = useState(0);
   const [showCaptureBanner, setShowCaptureBanner] = useState(false);
+
+  // ---- CPUワイプ ----
+  const [cpuWipeInfo, setCpuWipeInfo] = useState<{ key: number; cpuLevel: number; emotion: CpuEmotion } | null>(null);
+  const [cpuWipeKey, setCpuWipeKey] = useState(0);
+
+  const triggerCpuWipe = useCallback((level: CpuLevel | number, emotion: CpuEmotion) => {
+    const numLevel = typeof level === 'number' ? level : (
+      level === 'very-easy' ? 1 :
+      level === 'easy' ? 2 :
+      level === 'normal' ? 3 :
+      level === 'hard' ? 4 : 5
+    );
+    setCpuWipeKey(k => k + 1);
+    setCpuWipeInfo({ key: cpuWipeKey + 1, cpuLevel: numLevel, emotion });
+  }, [cpuWipeKey]);
 
   const isAnimating = animSteps.length > 0;
 
@@ -424,6 +441,10 @@ export function MancalaGamePage({ config, onBackToSetup, onBackToHome }: Mancala
         setExtraTurnKey(k => k + 1);
         setShowExtraTurn(true);
         setTimeout(() => setShowExtraTurn(false), 1700);
+        triggerCpuWipe(cpuPlayer.cpuLevel, 'joy');
+      }
+      if (ci) {
+        triggerCpuWipe(cpuPlayer.cpuLevel, 'smug');
       }
       setCaptureAnimInfo(ci ?? null);
       setCapturePhase(null);
@@ -435,7 +456,7 @@ export function MancalaGamePage({ config, onBackToSetup, onBackToHome }: Mancala
     }, 700);
 
     return () => { cancelled = true; clearTimeout(id); };
-  }, [status, currentPlayerId, turnCount, isAnimating, capturePhase, boardFading]);
+  }, [status, currentPlayerId, turnCount, isAnimating, capturePhase, boardFading, triggerCpuWipe]);
 
   // ============================================================
   // 人間プレイヤーの操作
@@ -451,6 +472,12 @@ export function MancalaGamePage({ config, onBackToSetup, onBackToHome }: Mancala
         setShowExtraTurn(true);
         setTimeout(() => setShowExtraTurn(false), 1700);
       }
+      if (ci) {
+        const cpuPlayer = gameState.players.find(p => p.isCpu);
+        if (cpuPlayer) {
+          triggerCpuWipe(cpuPlayer.cpuLevel, 'crying');
+        }
+      }
       setCaptureAnimInfo(ci ?? null);
       setCapturePhase(null);
       setPendingMove(pitId);
@@ -458,7 +485,7 @@ export function MancalaGamePage({ config, onBackToSetup, onBackToHome }: Mancala
       setAnimActiveIds(activeIds);
       setAnimIdx(0);
     },
-    [gameState, isFinished, isCpuThinking, isAnimating]
+    [gameState, isFinished, isCpuThinking, isAnimating, triggerCpuWipe]
   );
 
   function handleRestart() {
@@ -657,6 +684,17 @@ export function MancalaGamePage({ config, onBackToSetup, onBackToHome }: Mancala
         )}
 
       </div>
+
+      {/* CPUワイプ */}
+      {cpuWipeInfo && (
+        <CpuWipeReaction
+          key={cpuWipeInfo.key}
+          cpuLevel={cpuWipeInfo.cpuLevel}
+          emotion={cpuWipeInfo.emotion}
+          onComplete={() => setCpuWipeInfo(null)}
+          durationMs={2500}
+        />
+      )}
     </Layout>
   );
 }

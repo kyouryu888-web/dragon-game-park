@@ -23,7 +23,7 @@ export function BakuretsuReversiWaitingScreen({
       </header>
       <section className="reversi-online-lobby-card" aria-label="爆裂リバーシオンライン対戦の待機室">
         <span className="reversi-online-lobby-kicker">ROOM CODE</span>
-        <h1>{roomCode}</h1>
+        <h1 data-testid="online-room-code">{roomCode}</h1>
         <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap', width: '100%', marginBottom: 16 }}>
           <Button onClick={onCopy} style={{ flex: 1, minWidth: 140 }}>
             {copied ? 'コピーしました ✓' : 'コードをコピー'}

@@ -370,7 +370,10 @@ export function BabanukiOnlineRoomPage({
       {page === 'waiting' && (
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: 12, color: '#b5a68c', marginBottom: 8 }}>ルームの紋章</div>
-          <div style={{ fontSize: 34, letterSpacing: '.35em', color: '#f0dcff', fontFamily: 'Cinzel,serif', marginBottom: 10 }}>
+          <div
+            data-testid="online-room-code"
+            style={{ fontSize: 34, letterSpacing: '.35em', color: '#f0dcff', fontFamily: 'Cinzel,serif', marginBottom: 10 }}
+          >
             {roomCode}
           </div>
           <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 18 }}>

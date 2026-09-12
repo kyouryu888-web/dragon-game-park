@@ -404,7 +404,7 @@ export function UnoOnlineRoomPage({
             padding: '18px 32px',
             marginBottom: 20,
           }}>
-            <span>{roomCode}</span>
+            <span data-testid="online-room-code">{roomCode}</span>
             <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
               <button
                 type="button"
