@@ -224,7 +224,9 @@ export function BackgammonPage({ onBackToHome }: BackgammonPageProps) {
                     borderRadius: 8, background: 'rgba(13,11,16,.6)',
                     boxShadow: '0 0 30px rgba(224,115,58,.15), inset 0 0 20px rgba(0,0,0,.5)',
                   }}>
-                    <div style={{
+                    <div
+                      data-testid="online-room-code"
+                      style={{
                       fontFamily: BG.serifEn, fontSize: 40, fontWeight: 700, letterSpacing: '.28em',
                       color: BG.goldBright, textShadow: '0 0 18px rgba(224,115,58,.45)', paddingLeft: '.28em',
                     }}>

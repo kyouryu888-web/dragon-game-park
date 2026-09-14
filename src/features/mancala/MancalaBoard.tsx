@@ -120,7 +120,8 @@ function DroppingStone({
 
   useLayoutEffect(() => {
     const el = ref.current;
-    const pitEl = cellRefMap.current.get(pitId);
+    const pitEl = cellRefMap.current.get(pitId) ||
+      (typeof document !== 'undefined' ? (document.querySelector(`[data-pit-id="${pitId}"]`) as HTMLElement | null) : null);
     if (!el || !pitEl) return;
 
     const rect = pitEl.getBoundingClientRect();
@@ -181,7 +182,8 @@ function FloatingCluster({
 
   useLayoutEffect(() => {
     const container = containerRef.current;
-    const el        = cellRefMap.current.get(currentId);
+    const el = cellRefMap.current.get(currentId) ||
+      (typeof document !== 'undefined' ? (document.querySelector(`[data-pit-id="${currentId}"]`) as HTMLElement | null) : null);
     if (!container || !el) return;
 
     const rect    = el.getBoundingClientRect();

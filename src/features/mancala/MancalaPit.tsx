@@ -315,6 +315,7 @@ export function PlayerPlank({
       <div
         key={isActive ? `${pit.id}-${animIdx}` : pit.id}
         ref={setCellRef(pit.id)}
+        data-pit-id={pit.id}
         className="plank-2p-pit-cell"
       >
         <PocketPit
@@ -336,7 +337,7 @@ export function PlayerPlank({
   });
 
   const storeCell = (
-    <div className="plank-2p-store-cell" ref={setCellRef(store.id)}>
+    <div className="plank-2p-store-cell" ref={setCellRef(store.id)} data-pit-id={store.id}>
       <StorePit pit={store} />
     </div>
   );
@@ -380,6 +381,7 @@ export function PlayerPlank({
             <div
               key={isActive ? `${pit.id}-${animIdx}` : pit.id}
               ref={setCellRef(pit.id)}
+              data-pit-id={pit.id}
               className="plank-pit-cell"
             >
               <PocketPit
@@ -395,7 +397,7 @@ export function PlayerPlank({
         })}
       </div>
       {/* ストア */}
-      <div className="plank-store-cell" ref={setCellRef(store.id)}>
+      <div className="plank-store-cell" ref={setCellRef(store.id)} data-pit-id={store.id}>
         <StorePit pit={store} compact />
       </div>
       {/* プレイヤー名ラベル */}

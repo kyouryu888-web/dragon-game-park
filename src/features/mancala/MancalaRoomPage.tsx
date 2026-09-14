@@ -481,7 +481,9 @@ export function MancalaRoomPage({
           </p>
 
           {/* ルームコード */}
-          <div style={{
+          <div
+            data-testid="online-room-code"
+            style={{
             display: 'inline-block',
             fontSize: 'clamp(24px, 7vw, 34px)', fontWeight: 'bold',
             letterSpacing: 'clamp(4px, 2vw, 10px)',

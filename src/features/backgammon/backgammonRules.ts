@@ -88,9 +88,9 @@ export function rollOpening(state: GameState, rng: Rng = Math.random): GameState
     ...state,
     openingRoll: [whiteDie, blackDie],
     currentPlayer: first,
-    phase: 'rolling',
-    rolled: null,
-    dice: [],
+    phase: 'moving',
+    rolled: [whiteDie, blackDie],
+    dice: [whiteDie, blackDie],
     turnCount: 1,
   };
 }
