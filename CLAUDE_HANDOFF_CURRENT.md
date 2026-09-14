@@ -1,3 +1,29 @@
+<!-- dragon-reactions-production-2026-09-12 -->
+## 2026-09-13: ドラゴン30表情画像の制作（検品合格 8/30）
+
+- ユーザー承認済み: 5レベル×6表情、1024角・透過WebP。顔大きめ、胸/翼一部、Lv4王冠、Lv5星付き光輪を維持。
+- 最新指示: Adobe以外で透明化。Adobe接続・追加承認は不要。
+- 制作記録: docs/design/dragons/reactions-production/2026-09-12/README.md / progress.json / review.json / prompts-lvN.json。原本はoriginals、処理済み透過はcutouts。
+- 現在の合格: Lv1/joy, Lv1/smug, Lv1/crying, Lv2/joy, Lv3/joy, Lv3/smug, Lv4/joy, Lv5/joy。保存済み生成原本は16枚（不合格試行を含む）。
+- 手法: image_genで1枚ずつ原本生成。Lv1基準はローカルIMG.LYで切り抜き後alphaを調整。他は純マゼンタ背景をkey-cutout.cjsで除去し、可視範囲880px/1024角中央へ正規化。独立QA後convert-and-check.cjs deliverでWebP化・画素/alpha一致検証。
+- 分担: A=Lv1/2、B=Lv3/4/5、C=独立検品、メイン=透過/納品。全5喜び基準合格後に25表情差分を生成。
+- 次: progress.jsonとreview.jsonから未完了分を再開。重複生成せず、各キャラ設定画＋そのLvの合格基準を参照。
+- ゲームコード変更・WebP組み込み・公開は別工程。現在のPNG参照とvisible/slide-in不一致は未修正。
+- 再開時に既存PNGの欠落を検出: G:\マイドライブ\02_AI・開発・プロンプト\Dragon-game-park\src\assets\dragons\reactions\lv1\joy.png。この制作処理は削除コマンドを実行していない。新規WebPと混同しないこと。
+
+<!-- /dragon-reactions-production-2026-09-12 -->
+
+## 2026-09-12: 作業フォルダの移動完了
+
+現在の開発フォルダ: `G:\マイドライブ\02_AI・開発・プロンプト\Dragon-game-park`。
+元の `C:\Users\ray-0\Dragon-game-park` は削除済み。元データは復元可能なごみ箱へ移動し、G側に全元ファイルのZIPバックアップも残している。
+Git履歴・ブランチ・未追跡ファイル・接続設定を保全。旧パスが存在しない状態での再ビルド、主要284テストの移動前後比較、ブラウザの起動・操作確認は完了。
+Codexのプロジェクト登録とadd-game入口も新しい場所へ更新済み。Antigravityは新しいG側のフォルダを開いて再開する。
+Gドライブ上でnpmを直接実行して依存関係を展開すると書き込みエラーになるため、必要時は `prepare-dependencies.cmd` または `scripts/prepare-dependencies.ps1` を使う。
+全テスト成功ではない。バックギャモンの既存テスト1件の失敗はC側でも再現し、全体実行は両側で長時間完了せず中断した。詳細は `docs/FOLDER_MOVE_2026-09-11.md`。
+9月12日にG側へ追加されたマンカラのコード変更は別作業のため、そのまま保全している。移動に伴う修正は未コミット。
+以下は移動以前からある引き継ぎ本文。古いCドライブの作業場所を再作成・再使用しないこと。
+
 ## 2026-09-10 �ǋL �o�b�N�M������UI/UX�S�ʃu���b�V���A�b�v���I�����C�������Ή��E�{�Ԍ��J
 
 ��ƃu�����`: `claude/backgammon-polish`�iPR #36 �}�[�W�ς݁A�{�ԃR�~�b�g `517bdfc` Vercel�f�v���C�����j�B

@@ -7,6 +7,12 @@
 
 ## 作業を始める前に
 
+- 2026-09-11 に作業フォルダを `G:\マイドライブ\02_AI・開発・プロンプト\Dragon-game-park` へ移動。
+  移動前の C ドライブを前提にした過去タスクの指示は現在の場所へ読み替える。
+  この環境では G ドライブ上の直接の `npm ci` / `npm install` が書き込みエラーになる。
+  依存関係の再準備には `pwsh -NoProfile -File ./scripts/prepare-dependencies.ps1` を使用する。
+  詳細は `docs/FOLDER_MOVE_2026-09-11.md` を参照する。
+
 - **今なにをやっている途中か**は `CLAUDE_HANDOFF_CURRENT.md` を読んでください。前回の作業内容・
   方針・次にやることがまとまっています。
 - **最弱王ババ抜きの作業を引き継ぐ場合**は `handoffs/2026-08-15-babanuki-codex-handoff.md` と
