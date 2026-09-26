@@ -2,9 +2,15 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCheckerIds } from './useCheckerIds';
 import { useEffect, useRef } from 'react';
+import type { CSSProperties } from 'react';
 import type { GameState, PlayerId } from './backgammonTypes';
 import { BG, Brand, ChevronLeft, DragonIcon } from './BackgammonUi';
 import { GameEndActions } from '../../components/GameEndActions';
+import { DragonReactionWipe } from '../../components/dragonReactions';
+import type { DragonCpu, DragonPresentationPreference, DragonReactionEvent } from '../../components/dragonReactions';
+import { DragonPresentationControl } from '../../components/DragonPresentationControl';
+import { selectDragonCutinImage } from '../../assets/dragons/cutins/selectCutinImage';
+import './backgammonDragonReaction.css';
 
 function usePrevious<T>(value: T): T | undefined {
   const ref = useRef<T>(undefined);
@@ -47,6 +53,7 @@ type PlayerPlaqueInfo = {
 
 export type BackgammonPlayScreenProps = {
   state: GameState;
+  cpuReaction?: { cpu: DragonCpu; event: DragonReactionEvent | null; preference: DragonPresentationPreference };
   selectedFrom: 'bar' | number | null;
   destinations: Set<number>;
   /** サイコロ2個分を一度に動かす到達点（緋色マーカーで表示） */
@@ -113,6 +120,17 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
   const checkerIds = useCheckerIds(state);
 
   const [cutin, setCutin] = useState<'offer' | 'accept' | 'drop' | null>(null);
+  const cpuActor = props.cpuReaction && props.cpuReaction.preference !== 'off'
+    ? { isCpu: true, cpuLevel: props.cpuReaction.cpu.level } : undefined;
+  const cutinScene = cutin === 'offer'
+    ? state.doubleOfferedBy === 'black' ? 'attack' : 'pressure'
+    : cutin === 'accept' ? 'attack'
+    : cutin === 'drop' ? state.winner === 'black' ? 'victory' : 'defeat'
+    : undefined;
+  const cutinImage = cutinScene ? selectDragonCutinImage(cpuActor, cutinScene, 'landscape') : undefined;
+  const resultImage = state.winner
+    ? selectDragonCutinImage(cpuActor, state.winner === 'black' ? 'victory' : 'defeat', 'landscape')
+    : undefined;
 
   const prevPhaseRef = useRef(state.phase);
   useEffect(() => {
@@ -337,23 +355,35 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
             pointerEvents: 'none',
           }} />
         )}
-        <div style={{
-          flex: 'none', width: 38, height: 38, borderRadius: '50%',
-          border: `1px solid ${side === 'white' ? 'rgba(201,162,75,.5)' : 'rgba(224,115,58,.5)'}`,
-          background: 'radial-gradient(circle at 50% 38%, #2a1e2b, #191320 75%)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          {info.avatar === 'dragon'
-            ? <DragonIcon size={26} variant="crimson" />
-            : <span style={{ fontFamily: BG.serifEn, fontSize: 16, color: side === 'white' ? BG.goldBright : BG.ember }}>{info.initial}</span>}
-        </div>
+        {side === 'black' && props.cpuReaction && props.cpuReaction.preference !== 'off' ? (
+          <div className="backgammon-dragon-slot">
+            <DragonReactionWipe
+              cpu={props.cpuReaction.cpu}
+              event={props.cpuReaction.event}
+              preference={props.cpuReaction.preference}
+              side="left"
+              style={{ '--dragon-face-size': '38px' } as CSSProperties}
+            />
+          </div>
+        ) : (
+          <div style={{
+            flex: 'none', width: 38, height: 38, borderRadius: '50%',
+            border: `1px solid ${side === 'white' ? 'rgba(201,162,75,.5)' : 'rgba(224,115,58,.5)'}`,
+            background: 'radial-gradient(circle at 50% 38%, #2a1e2b, #191320 75%)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            {info.avatar === 'dragon'
+              ? <DragonIcon size={26} variant="crimson" />
+              : <span style={{ fontFamily: BG.serifEn, fontSize: 16, color: side === 'white' ? BG.goldBright : BG.ember }}>{info.initial}</span>}
+          </div>
+        )}
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{
             fontSize: 14, fontWeight: 600, letterSpacing: '.06em', color: BG.text,
             whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', justifyContent: 'space-between'
           }}>
-            <span>{info.name}</span>
-            <span style={{ fontSize: 13, color: '#f5deb3' }}>Pip: {props.pips[side]}</span>
+            <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>{info.name}</span>
+            <span style={{ flex: 'none', fontSize: 13, color: '#f5deb3' }}>Pip: {props.pips[side]}</span>
           </div>
           <div style={{ fontSize: 11, color: BG.muted, marginTop: 1, display: 'flex', justifyContent: 'space-between' }}>
             <span>{info.sub}</span>
@@ -415,20 +445,23 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
           <ChevronLeft />
           <span>盤を離れる</span>
         </button>
-        <div style={{ 
+        <div className={props.cpuReaction ? 'backgammon-header-title is-with-reactions' : 'backgammon-header-title'} style={{
             fontFamily: BG.serifEn, fontSize: 'clamp(11px, 3vw, 13px)', letterSpacing: '.2em', color: BG.goldBright,
             position: 'absolute', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap', zIndex: 5, pointerEvents: 'none'
           }}>BACKGAMMON</div>
-        <button
-          onClick={props.onBackToHome}
-          style={{
-            display: 'flex', alignItems: 'center', minHeight: 44, padding: '0 10px',
-            background: 'none', border: 'none', cursor: 'pointer',
-            color: BG.dim, fontFamily: BG.serifEn, fontSize: 11, letterSpacing: '.14em', zIndex: 10, flexShrink: 0,
-          }}
-        >
-          ゲーム選択に戻る
-        </button>
+        <div className="backgammon-header-actions">
+          {props.cpuReaction && <div className="backgammon-reaction-control"><DragonPresentationControl /></div>}
+          <button
+            onClick={props.onBackToHome}
+            style={{
+              display: 'flex', alignItems: 'center', minHeight: 44, padding: '0 10px',
+              background: 'none', border: 'none', cursor: 'pointer',
+              color: BG.dim, fontFamily: BG.serifEn, fontSize: 11, letterSpacing: '.14em', zIndex: 10, flexShrink: 0,
+            }}
+          >
+            ゲーム選択に戻る
+          </button>
+        </div>
       </div>
 
       {/* 相手プレート（緋 / black） */}
@@ -581,7 +614,7 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               animation: 'dragonBob 3.4s ease-in-out infinite',
             }}>
-              <DragonIcon size={64} />
+              {resultImage ? <img src={resultImage} alt="" style={{ width: 92, height: 92, objectFit: 'contain' }} /> : <DragonIcon size={64} />}
             </div>
             <div style={{ fontFamily: BG.serifEn, fontSize: 13, letterSpacing: '.3em', color: BG.goldDim, marginTop: 8 }}>
               {props.over.en}
@@ -667,6 +700,7 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
                 transformStyle: 'preserve-3d',
               }}
             >
+              {cutinImage && <img src={cutinImage} alt="" style={{ display: 'block', width: 'min(46vw, 180px)', height: 'min(27vh, 112px)', objectFit: 'contain', margin: '0 auto 8px' }} />}
               <h2 style={{ 
                 fontSize: 'clamp(24px, 6vw, 36px)', 
                 margin: 0, 

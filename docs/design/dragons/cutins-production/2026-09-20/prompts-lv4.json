@@ -1,0 +1,21 @@
+{
+  "level": 4,
+  "phase": "representative-approval",
+  "status": "generated-awaiting-independent-qa-and-user-approval",
+  "generatedImages": [
+    {
+      "variant": "defeat",
+      "attempt": 1,
+      "status": "awaiting-qa",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: stylized-concept.\nAsset type: exactly one individual anime game cut-in, 1536x1024 horizontal canvas, isolated character on TRUE TRANSPARENT ALPHA.\nImage 1 is the authoritative black dragon king identity sheet. Image 2 is the approved crying reaction used for exact face, crown, forehead scales, palette and cel-shaded finish.\nCreate this Lv4 dragon king showing DEFEAT with a larger dynamic waist-up three-quarter pose: shoulders slump and torso bends slightly forward in disappointed frustration, head tilted down a little while still showing the face clearly. One clawed hand clenches near the chest in frustration; the other reaches up to wipe a large tear from below the eye. Big tears stream down both cheeks, inner eyebrows lift sadly and the mouth trembles in an upset pout. The character is disappointed after a friendly game; family friendly and endearing, no injury or violence. Natural small dragon paws, two distinct hands connected correctly to forearms.\nLocked identity: black/charcoal scales with readable graphite highlights, silver-gray eyes, gray muzzle/chest armor plates, upward-curved striped dark horns, pointed cheek fins, the central forehead diamond PLUS two independent faceted dark-silver leaf-shaped scales flanking it above the eyebrows. Keep the small dark silver three-point crown between horns throughout. Never substitute the permanent flanking scales with eyebrow highlights.\nCompose a striking asymmetrical 3/4 waist-up illustration. Show BOTH complete compact partly folded black wings drooping behind shoulders, with every tip visible. Entire horns/crown/arms/paws/wings/tear droplets and the lower edge of the waist ALL fit inside the canvas. End the torso with an intentional clean curved waist cut well above the bottom edge. Place the entire silhouette inside an inset rectangle from 8% to 92% of image width and height. Transparent padding surrounds ALL edges.\nStyle: polished Japanese anime game art, crisp dark outlines, controlled cel shading, glossy scale highlights, same established cartoon identity and rendering as approved reaction; more expressive body language and less avatar-like framing.\nBackground: genuine alpha-zero empty pixels, not a painted backdrop. All surrounding space and gaps between limbs and wings completely transparent. No lighting backdrop, no gray gradient, no vignette, no floor, no shadow outside the character, no checkerboard.\nAvoid text, letters, digits, cards, game boards, scenery, border, extra characters, full body/legs, cropped horns/wings/waist, extra fingers/limbs, missing crown/scales, photorealism. Output only the isolated dragon cutout.",
+      "referencedImagePaths": [
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/lv4_sheet_black.jpg",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/reactions-production/2026-09-12/cutouts/lv4/crying-attempt2-alpha-v2.png"
+      ],
+      "sourceOutput": "C:/Users/ray-0/.codex/generated_images/01a09473-88d0-70b0-8156-b5c323595f21/exec-c5840eff-40df-421d-b679-d09d9753a098.png",
+      "originalPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/originals/lv4/defeat-attempt1.png"
+    }
+  ],
+  "remainingVariantsBlockedBy": "Explicit user approval of all four representatives required."
+}

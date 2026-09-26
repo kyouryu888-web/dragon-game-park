@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
+import type { DragonPresentationPreference, DragonReactionEvent } from '../../components/dragonReactions';
+import { UnoSeatReactions, UnoSharedReaction } from './UnoSeatReactions';
 import type { UnoCard, UnoColor, UnoGameState, UnoPlayer, UnoPlayerId, UnoVariant } from './unoTypes';
 import { UNO_COLOR_LABELS } from './unoCardMeta';
 import { UnoCardView } from './UnoCardView';
@@ -28,6 +30,8 @@ type UnoTableViewProps = {
   viewPlayerId?: UnoPlayerId;
   roulettePresentation?: UnoRoulettePresentation | null;
   pendingOverlay?: ReactNode;
+  dragonReaction?: DragonReactionEvent | null;
+  dragonPreference?: DragonPresentationPreference;
   onPlay: (card: UnoCard) => void;
   onDraw: () => void;
   onAcceptDraw: () => void;
@@ -47,6 +51,8 @@ export function UnoTableView({
   viewPlayerId = 'player-1',
   roulettePresentation = null,
   pendingOverlay,
+  dragonReaction = null,
+  dragonPreference = 'lively',
   onPlay,
   onDraw,
   onAcceptDraw,
@@ -76,6 +82,7 @@ export function UnoTableView({
   const [unoFlash, setUnoFlash] = useState<{ playerId: string; playerName: string } | null>(null);
   const prevUnoIds = useRef<string[]>([]);
   const rouletteStatusRef = useRef<HTMLDivElement | null>(null);
+  const arenaRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const prev = prevUnoIds.current;
@@ -128,6 +135,7 @@ export function UnoTableView({
       </div>
 
       <div className="uno-card-tools">
+        {opponentSeats.length >= 5 && <UnoSharedReaction players={state.players} currentPlayerId={state.currentPlayerId} active={dragonReaction} preference={dragonPreference} />}
         <button type="button" className="uno-card-guide-button" onClick={() => setShowCardGuide((show) => !show)}>
           カード効果
         </button>
@@ -156,7 +164,7 @@ export function UnoTableView({
         )}
 
         <div className="uno-board-column">
-          <div className={`uno-table-arena ${opponentSeats.length >= 5 ? 'is-crowded' : ''}`}>
+          <div ref={arenaRef} className={`uno-table-arena ${opponentSeats.length >= 5 ? 'is-crowded' : ''}`}>
         <div className="uno-table-glow" />
 
         {opponentSeats.map(({ player, placement, isUno }) => {
@@ -222,6 +230,7 @@ export function UnoTableView({
               isUno={myIsUno}
               rouletteStepKey={roulettePresentation?.playerId === myPlayer.id ? roulettePresentation.stepKey : null}
             />
+            {opponentSeats.length < 5 && <UnoSeatReactions arenaRef={arenaRef} players={state.players} active={dragonReaction} preference={dragonPreference} />}
           </div>
 
           <div className="uno-table-message">{message}</div>

@@ -22,6 +22,8 @@ type Effect = {
   leavingPlayerId: string | null;
 };
 
+type QueuedEvent = { event: BabanukiEvent; eventSeq: number; index: number };
+
 const EMPTY_EFFECT: Effect = { flights: [], hidden: [], pairFlashPlayerId: null, leavingPlayerId: null };
 
 function findCard(state: BabanukiState, playerId: string, cardId: string): Card | null {
@@ -133,7 +135,7 @@ function buildEffect(
 
 export function useBabanukiPlayback(logic: BabanukiState, viewerId: string) {
   const [display, setDisplay] = useState(() => syncDisplay(logic));
-  const [queue, setQueue] = useState<BabanukiEvent[]>([]);
+  const [queue, setQueue] = useState<QueuedEvent[]>([]);
   const [effect, setEffect] = useState<Effect>(EMPTY_EFFECT);
 
   const displayRef = useRef(display);
@@ -154,10 +156,12 @@ export function useBabanukiPlayback(logic: BabanukiState, viewerId: string) {
     seenSeq.current = logic.eventSeq;
     if (logic.events.length === 0) {
       consumedSeq.current = logic.eventSeq;
+      setQueue([]);
+      setEffect(EMPTY_EFFECT);
       setDisplay(syncDisplay(logic));
       return;
     }
-    setQueue((q) => [...q, ...logic.events]);
+    setQueue((q) => [...q, ...logic.events.map((event, index) => ({ event, eventSeq: logic.eventSeq, index }))]);
   }, [logic]);
 
   // events を伴わない変化（並べ替え・飛び出し）は即座に反映する
@@ -170,7 +174,7 @@ export function useBabanukiPlayback(logic: BabanukiState, viewerId: string) {
   // キューを1つずつ再生する
   useEffect(() => {
     if (queue.length === 0) return;
-    const event = queue[0];
+    const event = queue[0].event;
     setEffect(buildEffect(event, displayRef.current, viewerId, nextFlightId));
 
     const timer = setTimeout(() => {
@@ -193,7 +197,8 @@ export function useBabanukiPlayback(logic: BabanukiState, viewerId: string) {
   return {
     display,
     isAnimating: queue.length > 0,
-    activeEvent: queue[0] ?? null,
+    activeEvent: queue[0]?.event ?? null,
+    activeEventSequence: queue[0] ? queue[0].eventSeq * 100 + queue[0].index : null,
     flights: effect.flights,
     hidden: effect.hidden,
     pairFlashPlayerId: effect.pairFlashPlayerId,

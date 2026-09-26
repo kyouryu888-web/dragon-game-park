@@ -9,9 +9,15 @@ import {
 } from './backgammonRules';
 import { chooseCpuMoveSequence, getCpuDisplayName, shouldCpuAcceptDouble, shouldCpuOfferDouble } from './backgammonCpu';
 import { BackgammonPlayScreen } from './BackgammonPlayScreen';
+import { useDragonReactionPreference, useDragonReactions } from '../../components/dragonReactions';
+import type { DragonCpu, PublicDragonReactionInput } from '../../components/dragonReactions';
+import { detectBackgammonDragonReactions } from './backgammonDragonReactions';
 
 const CPU_ROLL_DELAY = 950;
 const CPU_MOVE_DELAY = 800;
+const CPU_LEVELS = ['very-easy', 'easy', 'normal', 'hard', 'very-hard'] as const;
+let localReactionMatchSerial = 0;
+const nextReactionMatchId = () => `backgammon-local-${++localReactionMatchSerial}`;
 
 type BackgammonLocalGameProps = {
   config: BackgammonConfig; // mode: 'cpu' | 'local'
@@ -24,6 +30,10 @@ export function BackgammonLocalGame({ config, showToast, onExitToSettings, onBac
   const [state, setState] = useState<GameState>(() => createInitialBackgammonState(config.matchLength));
   const [selected, setSelected] = useState<'bar' | number | null>(null);
   const [autoRunFor, setAutoRunFor] = useState<PlayerId | null>(null);
+  const [reactionMatchId, setReactionMatchId] = useState(nextReactionMatchId);
+  const [reactionEvents, setReactionEvents] = useState<PublicDragonReactionInput[]>([]);
+  const previousReactionState = useRef(state);
+  const reactionSequence = useRef(0);
   const quitArm = useRef(false);
 
   const isCpuMode = config.mode === 'cpu';
@@ -31,6 +41,24 @@ export function BackgammonLocalGame({ config, showToast, onExitToSettings, onBac
   const cName = isCpuMode ? getCpuDisplayName(config.cpuLevel) : (config.name2.trim() || '名もなき挑戦者2');
   const nameFor = (id: PlayerId) => (id === 'white' ? pName : cName);
   const isHumanTurn = !isCpuMode || state.currentPlayer === 'white';
+  const cpu = useMemo<DragonCpu>(() => ({
+    id: 'black', name: cName, level: (CPU_LEVELS.indexOf(config.cpuLevel) + 1) as DragonCpu['level'],
+  }), [cName, config.cpuLevel]);
+  const { preference } = useDragonReactionPreference();
+  const { active: dragonReaction, clear: clearDragonReactions } = useDragonReactions({
+    matchId: reactionMatchId, events: reactionEvents, preference,
+  });
+
+  useEffect(() => {
+    const previous = previousReactionState.current;
+    previousReactionState.current = state;
+    if (!isCpuMode || previous === state) return;
+    const sequence = reactionSequence.current + 1;
+    const found = detectBackgammonDragonReactions(previous, state, { matchId: reactionMatchId, sequence, cpu });
+    if (!found.length) return;
+    reactionSequence.current = sequence;
+    setReactionEvents(events => [...events, ...found].slice(-16));
+  }, [state, isCpuMode, reactionMatchId, cpu]);
 
   const legalMoves = useMemo(
     () => (state.phase === 'moving' ? getLegalMoves(state) : []),
@@ -351,14 +379,18 @@ export function BackgammonLocalGame({ config, showToast, onExitToSettings, onBac
   }
 
   function handleQuit() {
-    if (state.phase === 'finished') { onExitToSettings(); return; }
-    if (quitArm.current) { onExitToSettings(); return; }
+    if (state.phase === 'finished') { clearDragonReactions(); onExitToSettings(); return; }
+    if (quitArm.current) { clearDragonReactions(); onExitToSettings(); return; }
     quitArm.current = true;
     showToast('もう一度押すと盤を離れる');
     setTimeout(() => { quitArm.current = false; }, 2600);
   }
 
   function handleRematch() {
+    clearDragonReactions();
+    setReactionEvents([]);
+    reactionSequence.current = 0;
+    setReactionMatchId(nextReactionMatchId());
     setSelected(null);
     setAutoRunFor(null);
     if (config.matchLength > 1 && state.winner) {
@@ -374,6 +406,7 @@ export function BackgammonLocalGame({ config, showToast, onExitToSettings, onBac
   return (
     <BackgammonPlayScreen
       state={state}
+      cpuReaction={isCpuMode ? { cpu, event: dragonReaction, preference } : undefined}
       selectedFrom={effectiveSelected}
       destinations={isHumanTurn ? destinations : new Set()}
       chainDestinations={isHumanTurn ? chainDestinations : new Set()}
@@ -394,7 +427,7 @@ export function BackgammonLocalGame({ config, showToast, onExitToSettings, onBac
       rollLabel={state.phase === 'opening-roll' ? '先手を決める' : 'サイコロを振る'}
       topPlayer={{
         name: cName,
-        sub: isCpuMode ? '緋のコマ / 番人' : '緋のコマ',
+        sub: isCpuMode ? `Lv${cpu.level}・緋のコマ / 番人` : '緋のコマ',
         avatar: isCpuMode ? 'dragon' : 'initial',
         initial: (cName[0] || 'D').toUpperCase(),
         active: state.currentPlayer === 'black' && state.phase !== 'finished',
@@ -422,7 +455,7 @@ export function BackgammonLocalGame({ config, showToast, onExitToSettings, onBac
       over={over}
       onRematch={handleRematch}
       onBackToSettings={onExitToSettings}
-      onBackToHome={onBackToHome}
+      onBackToHome={() => { clearDragonReactions(); onBackToHome(); }}
     />
   );
 }

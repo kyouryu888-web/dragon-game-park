@@ -1,0 +1,55 @@
+.backgammon-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  z-index: 10;
+}
+
+.backgammon-reaction-control {
+  position: relative;
+  flex: none;
+  width: 79px;
+  height: 27px;
+}
+
+.backgammon-dragon-slot {
+  position: relative;
+  flex: none;
+  width: clamp(110px, 18vw, 140px);
+  height: 38px;
+}
+
+.backgammon-dragon-slot .dragon-reaction-wipe.is-left .dragon-reaction-speech {
+  left: 45px;
+  right: auto;
+  top: 50%;
+  bottom: auto;
+  width: clamp(64px, 11vw, 92px);
+  min-width: 0;
+  max-width: none;
+  transform: translateY(-50%);
+}
+
+.backgammon-dragon-slot .dragon-reaction-wipe.is-left .dragon-reaction-speech::before,
+.backgammon-dragon-slot .dragon-reaction-wipe.is-left .dragon-reaction-speech::after {
+  left: auto;
+  right: 100%;
+  top: 50%;
+  margin-top: -7px;
+  margin-left: 0;
+  border-width: 7px 9px 7px 0;
+  border-color: transparent #161616 transparent transparent;
+}
+
+.backgammon-dragon-slot .dragon-reaction-wipe.is-left .dragon-reaction-speech::after {
+  margin-top: -5px;
+  border-width: 5px 7px 5px 0;
+  border-color: transparent #fff transparent transparent;
+}
+
+@media (max-width: 560px) {
+  .backgammon-header-title.is-with-reactions { display: none; }
+  .backgammon-header-actions { gap: 0; }
+  .backgammon-dragon-slot { width: 109px; }
+  .backgammon-dragon-slot .dragon-reaction-speech { width: 64px; }
+}

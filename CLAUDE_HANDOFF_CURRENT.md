@@ -1,3 +1,12 @@
+## 2026-09-26: ドラゴン演出の全ゲーム組み込み（公開前）
+
+- 作業ブランチ: `codex/dragon-reactions-bluff`。隔離ワークツリーは `C:\Users\ray-0\.codex\worktrees\dragon-reactions-integration\Dragon-game-park`。Gドライブの元チェックアウトにある未コミット変更は混ぜていない。
+- ユーザー承認済みのUI: CPU席近くに小さな丸い透過ワイプと白い吹き出し。UNOのカード・盤面の既存デザインを維持。カットインは既存の再生時間・事実ラベルを維持し画像だけ差し替え。多人数UNOは盤面上の共通欄で1体のみ表示。
+- 5レベル×6表情の原本30枚、軽量表示版30枚、4場面×5レベルのカットイン20枚、UNO縦枠用の派生20枚を用意。`src/assets/dragons` と `docs/design/dragons/cutins-production/2026-09-20/INTEGRATION_REVIEW.md` に記録。
+- 公開イベントからのみ決める性格別ブラフ、同期可能な固定抽選、優先度付きワイプキュー、端末別にぎやか/控えめ/オフ、静的な勝敗画像を共通実装。マンカラ、UNO通常/ハード、バックギャモン、ババ抜き、リバーシ通常/爆裂のローカルと該当オンライン画面へ接続。秘密の札やCPU内部評価は表情選択に使わない。
+- 2026-09-26に `npx tsc --noEmit`、`npm run build`、`npx vitest run`（45ファイル416件）通過。Edge実画面375〜430px/900pxを確認。UNOホスト/ゲストCPU混在と人間のみ、マンカラホスト/ゲストCPU混在、ババ抜きホスト+ゲスト2人+CPUでオンライン対局を進め、同一CPUの発話同期と非公開札の背面表示を確認。詳細は上記INTEGRATION_REVIEW。
+- **未完了:** `PUBLISHING.md` に従い差分最終確認→コミット/push→PR→CIとVercel Preview→マージ→マージSHAの本番デプロイと本番画面確認。新SQLなし。公開が完了するまで本番反映済みと報告しない。
+
 <!-- dragon-reactions-production-2026-09-12 -->
 ## 2026-09-13: ドラゴン30表情画像の制作（検品合格 8/30）
 

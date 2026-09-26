@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { GameEndActions } from '../../components/GameEndActions';
+import { DragonPresentationControl } from '../../components/DragonPresentationControl';
+import { DragonResultArtwork } from '../../components/DragonResultArtwork';
+import { DragonReactionWipe, useDragonReactionPreference, useDragonReactions } from '../../components/dragonReactions';
+import type { DragonPresentationPreference, DragonReactionEvent, PublicDragonReactionInput } from '../../components/dragonReactions';
 import cornerCaptureImage from './assets/corner-capture.png';
 import grandFlipImage from './assets/grand-flip.png';
 import {
@@ -24,6 +28,8 @@ import {
   getValidMoves,
   isCornerMove,
 } from './reversiRules';
+import { detectReversiDragonReactions, reversiCinematicImage, reversiDragonCpu } from './reversiDragonReactions';
+import './reversiDragonReactions.css';
 import type {
   DiscColor,
   ReversiBoard as ReversiBoardState,
@@ -64,14 +70,15 @@ function createCinematicEvent(
 ): ReversiCinematicEvent | null {
   const playerName = previous.players[previous.currentColor].name;
   const key = `${previous.gameId}:${next.turnCount}`;
+  const imageUrl = reversiCinematicImage(previous, next);
   if (next.status === 'finished') {
-    return { key, kind: 'finale', title: '決着', detail: '最後の石まで返り終え、勝敗が定まった' };
+    return { key, kind: 'finale', title: '決着', detail: '最後の石まで返り終え、勝敗が定まった', imageUrl };
   }
   if (isCornerMove(move)) {
-    return { key, kind: 'corner', title: '角を制した', detail: `${playerName}が不落の角を獲得` };
+    return { key, kind: 'corner', title: '角を制した', detail: `${playerName}が不落の角を獲得`, imageUrl };
   }
   if (next.lastFlipCount >= 5) {
-    return { key, kind: 'grand-flip', title: '大反転', detail: `${next.lastFlipCount}枚を一気に覆した` };
+    return { key, kind: 'grand-flip', title: '大反転', detail: `${next.lastFlipCount}枚を一気に覆した`, imageUrl };
   }
   return null;
 }
@@ -81,13 +88,18 @@ function PlayerPanel({
   state,
   score,
   viewerColor,
+  reaction,
+  preference,
 }: {
   color: DiscColor;
   state: ReversiGameState;
   score: number;
   viewerColor?: DiscColor;
+  reaction: DragonReactionEvent | null;
+  preference: DragonPresentationPreference;
 }) {
   const player = state.players[color];
+  const cpu = reversiDragonCpu(player);
   const active = state.status === 'playing' && state.currentColor === color;
   const role = player.isCpu ? 'DRAGON CPU' : viewerColor === color ? 'YOU / CHALLENGER' : 'CHALLENGER';
   return (
@@ -97,6 +109,9 @@ function PlayerPanel({
         style={{ backgroundImage: `url(${color === 'black' ? cornerCaptureImage : grandFlipImage})` }}
         aria-hidden="true"
       />
+      {cpu && <div className={`reversi-dragon-desktop-face is-${color}`}>
+        <DragonReactionWipe cpu={cpu} event={reaction} preference={preference} side={color === 'black' ? 'left' : 'right'} />
+      </div>}
       <div className={`reversi-score-disc is-${color}`} aria-hidden="true" />
       <div className="reversi-player-name">
         <span>{colorLabel(color)}</span>
@@ -131,6 +146,9 @@ export function ReversiGameScreen({
   const [showHints, setShowHints] = useState(true);
   const [showRules, setShowRules] = useState(false);
   const [cinematic, setCinematic] = useState<ReversiCinematicEvent | null>(null);
+  const [dragonInputs, setDragonInputs] = useState<PublicDragonReactionInput[]>([]);
+  const { preference } = useDragonReactionPreference();
+  const { active: dragonReaction } = useDragonReactions({ matchId: state.gameId, events: dragonInputs, preference });
   const stateRef = useRef(state);
   const moveGuardRef = useRef(false);
   const playbackTimersRef = useRef<number[]>([]);
@@ -164,6 +182,7 @@ export function ReversiGameScreen({
     setDisplayBoard(next.board);
     setPlayback(null);
     setCinematic(null);
+    setDragonInputs([]);
   }
 
   function showMoveCinematic(previous: ReversiGameState, next: ReversiGameState, move: ReversiMove) {
@@ -187,6 +206,7 @@ export function ReversiGameScreen({
     setDisplayBoard(next.board);
     setPlayback(null);
     moveGuardRef.current = false;
+    setDragonInputs(detectReversiDragonReactions(previous, next));
     showMoveCinematic(previous, next, move);
     if (shouldCommit) onStateCommitRef.current?.(next);
 
@@ -342,18 +362,25 @@ export function ReversiGameScreen({
           {roomCode ? <em>ROOM {roomCode}</em> : null}
         </div>
         <div className="reversi-game-tools">
+          {(state.players.black.isCpu || state.players.white.isCpu) && <DragonPresentationControl />}
           <button type="button" onClick={() => setShowRules(true)} aria-label="ルールを見る">📖</button>
           <button type="button" onClick={rematch} disabled={!canRematch} aria-label="最初からやり直す">↻</button>
         </div>
       </header>
 
       <div className="reversi-mobile-score-row">
-        <div className={`is-black${state.currentColor === 'black' && state.status === 'playing' ? ' is-active' : ''}`}><span className="reversi-mini-disc is-black" />黒炎 <strong>{score.black}</strong></div>
-        <div className={`is-white${state.currentColor === 'white' && state.status === 'playing' ? ' is-active' : ''}`}><span className="reversi-mini-disc is-white" />白銀 <strong>{score.white}</strong></div>
+        <div className={`is-black${state.currentColor === 'black' && state.status === 'playing' ? ' is-active' : ''}`}>
+          {reversiDragonCpu(state.players.black) && <DragonReactionWipe cpu={reversiDragonCpu(state.players.black)!} event={dragonReaction} preference={preference} side="left" className="reversi-dragon-mobile-face" />}
+          <span className="reversi-mini-disc is-black" />黒炎 <strong>{score.black}</strong>
+        </div>
+        <div className={`is-white${state.currentColor === 'white' && state.status === 'playing' ? ' is-active' : ''}`}>
+          <span className="reversi-mini-disc is-white" />白銀 <strong>{score.white}</strong>
+          {reversiDragonCpu(state.players.white) && <DragonReactionWipe cpu={reversiDragonCpu(state.players.white)!} event={dragonReaction} preference={preference} side="right" className="reversi-dragon-mobile-face" />}
+        </div>
       </div>
 
       <div className="reversi-arena">
-        <PlayerPanel color="black" state={state} score={score.black} viewerColor={viewerColor} />
+        <PlayerPanel color="black" state={state} score={score.black} viewerColor={viewerColor} reaction={dragonReaction} preference={preference} />
 
         <section className="reversi-board-column">
           <ReversiBoard
@@ -377,7 +404,7 @@ export function ReversiGameScreen({
           </div>
         </section>
 
-        <PlayerPanel color="white" state={state} score={score.white} viewerColor={viewerColor} />
+        <PlayerPanel color="white" state={state} score={score.white} viewerColor={viewerColor} reaction={dragonReaction} preference={preference} />
       </div>
 
       {showRules ? (
@@ -407,6 +434,13 @@ export function ReversiGameScreen({
               <b>—</b>
               <span><i className="reversi-mini-disc is-white" />白銀 <strong>{score.white}</strong></span>
             </div>
+            {state.winner !== 'draw' && (state.players.black.isCpu || state.players.white.isCpu) ? (
+              <DragonResultArtwork
+                actor={state.players.black.isCpu ? state.players.black : state.players.white}
+                won={state.players[state.winner!].isCpu}
+                name={state.players.black.isCpu ? state.players.black.name : state.players.white.name}
+              />
+            ) : null}
             {rematchWaitingMessage && !canRematch ? <p className="reversi-rematch-waiting">{rematchWaitingMessage}</p> : null}
             <GameEndActions
               onRematch={canRematch ? rematch : undefined}
@@ -419,7 +453,7 @@ export function ReversiGameScreen({
         </div>
       ) : null}
 
-      {cinematic ? <ReversiCinematicOverlay event={cinematic} /> : null}
+      {cinematic ? <ReversiCinematicOverlay event={preference === 'off' ? { ...cinematic, imageUrl: undefined } : cinematic} /> : null}
     </main>
   );
 }

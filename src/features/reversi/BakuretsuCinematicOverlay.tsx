@@ -9,6 +9,7 @@ export type BakuretsuCinematicEvent = {
   kind: 'corner' | 'finale' | 'bomb' | 'shield' | 'infection';
   title: string;
   detail: string;
+  imageUrl?: string;
 };
 
 const IMAGE_BY_KIND = {
@@ -23,7 +24,7 @@ export function BakuretsuCinematicOverlay({ event }: { event: BakuretsuCinematic
   return (
     <div className={`reversi-cinematic is-${event.kind}`} role="status" aria-live="assertive">
       <div className="reversi-cinematic-vignette" />
-      <img src={IMAGE_BY_KIND[event.kind]} alt="" aria-hidden="true" />
+      <img src={event.imageUrl ?? IMAGE_BY_KIND[event.kind]} alt="" aria-hidden="true" />
       <div className="reversi-cinematic-copy">
         <strong>{event.title}</strong>
         <span>{event.detail}</span>

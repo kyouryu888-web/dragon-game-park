@@ -8,6 +8,12 @@ import { Layout } from '../../components/Layout';
 import { Button } from '../../components/Button';
 import { MancalaBoard, PLANK_POSITIONS } from './MancalaBoard';
 import type { PlankSlideEntry } from './MancalaBoard';
+import { useDragonReactionPreference, useDragonReactions } from '../../components/dragonReactions';
+import type { PublicDragonReactionInput } from '../../components/dragonReactions';
+import { MancalaDragonPortrait } from './MancalaDragonPortrait';
+import { detectMancalaDragonReactions } from './mancalaDragonReactions';
+import { DragonPresentationControl } from '../../components/DragonPresentationControl';
+import { DragonResultArtwork } from '../../components/DragonResultArtwork';
 import { PLAYER_ACCENT_COLORS } from './MancalaPit';
 import { createInitialMancalaState } from './createInitialMancalaState';
 import { GameEndActions } from '../../components/GameEndActions';
@@ -130,6 +136,20 @@ export function MancalaOnlineGamePage({
   const [loading,   setLoading]   = useState(true);
   const gameStateRef = useRef<GameState | null>(null);
   gameStateRef.current = gameState;
+  const { preference } = useDragonReactionPreference();
+  const previousReactionState = useRef<GameState | null>(null);
+  const [dragonInputs, setDragonInputs] = useState<PublicDragonReactionInput[]>([]);
+  useEffect(() => {
+    const previous = previousReactionState.current;
+    previousReactionState.current = gameState;
+    if (!previous || !gameState) return;
+    const events = detectMancalaDragonReactions(previous, gameState);
+    if (events.length) setDragonInputs(events);
+    else if (previous.gameId !== gameState.gameId) setDragonInputs([]);
+  }, [gameState]);
+  const { active: dragonReaction } = useDragonReactions({
+    matchId: gameState?.gameId ?? roomCode, events: dragonInputs, preference,
+  });
 
   // ── 石アニメーション ──
   const [animSteps,     setAnimSteps]     = useState<GameState[]>([]);
@@ -673,11 +693,20 @@ export function MancalaOnlineGamePage({
       return sb - sa;
     });
     const isWinner = sorted[0].id === myPlayerId;
+    const resultCpu = !gameState.isDraw && gameState.winnerPlayerId
+      ? (gameState.players.find(player => player.id === gameState.winnerPlayerId && player.isCpu)
+        ?? sorted.find(player => player.isCpu))
+      : undefined;
     const medals   = ['🥇', '🥈', '🥉', '4位'];
 
     return (
       <Layout>
-        <div style={{ textAlign: 'center', padding: '32px 16px' }}>
+        <div style={{ position: 'relative', textAlign: 'center', padding: '32px 16px' }}>
+          {resultCpu && (
+            <div style={{ position: 'absolute', top: 8, right: 8, width: 'min(22vw, 82px)', pointerEvents: 'none' }}>
+              <DragonResultArtwork actor={resultCpu} won={resultCpu.id === gameState.winnerPlayerId} name={resultCpu.name} />
+            </div>
+          )}
           <div style={{ fontSize: 48, marginBottom: 12 }}>{isWinner ? '🏆' : '🎮'}</div>
           <h2 style={{ fontSize: 22, fontWeight: 'bold', color: 'var(--brown)', marginBottom: 20 }}>
             {isWinner ? '勝利！' : '対戦終了'}
@@ -743,7 +772,8 @@ export function MancalaOnlineGamePage({
   return (
     <Layout>
       {/* ヘッダー */}
-      <div style={{ textAlign: 'center', marginBottom: 8 }}>
+      <div style={{ position: 'relative', textAlign: 'center', marginBottom: 8 }}>
+        <DragonPresentationControl />
         <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4, fontFamily: 'monospace' }}>
           ルーム: <strong>{roomCode}</strong>
           {editingName ? (
@@ -804,9 +834,10 @@ export function MancalaOnlineGamePage({
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           padding: '3px 8px', marginBottom: 2,
         }}>
-          <span style={{ fontSize: 11, fontWeight: 'bold', color: PLAYER_ACCENT_COLORS[topPlayerIdx] }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 'bold', color: PLAYER_ACCENT_COLORS[topPlayerIdx] }}>
+            <MancalaDragonPortrait player={topPlayer} reaction={dragonReaction} preference={preference} side="right" />
             {topPlayer.name}{topId === myPlayerId ? '（あなた）' : '（相手）'}
-          </span>
+          </div>
           <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
             {displayGameState.board.find(p => p.ownerPlayerId === topId && p.isStore)?.stones ?? 0}石
           </span>
@@ -839,9 +870,10 @@ export function MancalaOnlineGamePage({
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           padding: '3px 8px', marginTop: 2,
         }}>
-          <span style={{ fontSize: 11, fontWeight: 'bold', color: PLAYER_ACCENT_COLORS[bottomPlayerIdx] }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 'bold', color: PLAYER_ACCENT_COLORS[bottomPlayerIdx] }}>
+            <MancalaDragonPortrait player={bottomPlayer} reaction={dragonReaction} preference={preference} />
             {bottomPlayer.name}{bottomId === myPlayerId ? '（あなた）' : '（相手）'}
-          </span>
+          </div>
           <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
             {displayGameState.board.find(p => p.ownerPlayerId === bottomId && p.isStore)?.stones ?? 0}石
           </span>
@@ -851,7 +883,12 @@ export function MancalaOnlineGamePage({
       {/* 3P/4P: 対戦相手一覧 */}
       {displayActiveIds.length > 2 && (
         <div style={{ textAlign: 'center', marginTop: 8, fontSize: 12, color: 'var(--text-muted)' }}>
-          🌐 対戦相手：{opponents.map(p => p.name).join('、')}
+          🌐 対戦相手：{opponents.map(p => (
+            <div key={p.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 3, marginRight: 7 }}>
+              <MancalaDragonPortrait player={p} reaction={dragonReaction} preference={preference} speechPlacement="left" />
+              {p.name}
+            </div>
+          ))}
         </div>
       )}
 

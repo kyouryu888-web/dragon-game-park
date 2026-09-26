@@ -1,0 +1,80 @@
+{
+  "checkedAtUtc": "2026-09-20T09:49:07.2747420Z",
+  "auditor": "production-agent-B",
+  "phase": "representative-approval",
+  "itemCount": 3,
+  "allOriginalCopiesMatch": true,
+  "allReferenceFilesExist": true,
+  "scope": "Lv3 pressure, Lv4 defeat, Lv5 victory only. Remaining sixteen variants not generated.",
+  "items": [
+    {
+      "level": 3,
+      "variant": "pressure",
+      "attempt": 1,
+      "recordPath": "docs\\design\\dragons\\cutins-production\\2026-09-20\\prompts-lv3.json",
+      "originalPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/originals/lv3/pressure-attempt1.png",
+      "sourceOutput": "C:/Users/ray-0/.codex/generated_images/01a09473-88d0-70b0-8156-b5c323595f21/exec-b06817ca-9e7d-4e26-93b4-44e2e340d1e8.png",
+      "originalSha256": "1C4C9BEACD0138B1591507337E3D4C3C2D35E92EDB90B1ED38F19631FE88987B",
+      "sourceSha256": "1C4C9BEACD0138B1591507337E3D4C3C2D35E92EDB90B1ED38F19631FE88987B",
+      "originalSourceMatch": true,
+      "fullPromptRecorded": true,
+      "promptCharacters": 2672,
+      "references": [
+        {
+          "path": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/lv3_sheet_silver.jpg",
+          "exists": true
+        },
+        {
+          "path": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/src/assets/dragons/reactions/lv3/scared.webp",
+          "exists": true
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "variant": "defeat",
+      "attempt": 1,
+      "recordPath": "docs\\design\\dragons\\cutins-production\\2026-09-20\\prompts-lv4.json",
+      "originalPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/originals/lv4/defeat-attempt1.png",
+      "sourceOutput": "C:/Users/ray-0/.codex/generated_images/01a09473-88d0-70b0-8156-b5c323595f21/exec-c5840eff-40df-421d-b679-d09d9753a098.png",
+      "originalSha256": "ADCBE07B16EB128B959CB74886EF5843255123E7DA989095D4E95BF6D1213019",
+      "sourceSha256": "ADCBE07B16EB128B959CB74886EF5843255123E7DA989095D4E95BF6D1213019",
+      "originalSourceMatch": true,
+      "fullPromptRecorded": true,
+      "promptCharacters": 2638,
+      "references": [
+        {
+          "path": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/lv4_sheet_black.jpg",
+          "exists": true
+        },
+        {
+          "path": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/reactions-production/2026-09-12/cutouts/lv4/crying-attempt2-alpha-v2.png",
+          "exists": true
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "variant": "victory",
+      "attempt": 1,
+      "recordPath": "docs\\design\\dragons\\cutins-production\\2026-09-20\\prompts-lv5.json",
+      "originalPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/originals/lv5/victory-attempt1.png",
+      "sourceOutput": "C:/Users/ray-0/.codex/generated_images/01a09473-88d0-70b0-8156-b5c323595f21/exec-8f36e516-8153-49b9-9944-d07255fdb209.png",
+      "originalSha256": "8512FC2ADCF5D12FAC32E377B32A8D19F4D8F7CFA5234691B5D73C32E6E78552",
+      "sourceSha256": "8512FC2ADCF5D12FAC32E377B32A8D19F4D8F7CFA5234691B5D73C32E6E78552",
+      "originalSourceMatch": true,
+      "fullPromptRecorded": true,
+      "promptCharacters": 2644,
+      "references": [
+        {
+          "path": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/lv5_sheet_gold.jpg",
+          "exists": true
+        },
+        {
+          "path": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/reactions-production/2026-09-12/cutouts/lv5/joy-key-v3.png",
+          "exists": true
+        }
+      ]
+    }
+  ]
+}

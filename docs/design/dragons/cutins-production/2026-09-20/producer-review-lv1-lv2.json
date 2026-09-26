@@ -1,0 +1,49 @@
+{
+  "status": "producer-pass-awaiting-independent-qa",
+  "previewLight": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/lv1-lv2-review-light.png",
+  "previewDark": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/lv1-lv2-review-dark.png",
+  "assets": [
+    {
+      "level": "lv1",
+      "variant": "pressure",
+      "candidate": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv1/pressure.webp",
+      "sha256": "b8aa5b82df21ffa322fdefeb4fb81bf7ee62e352d1aeb197c3a02c1cce76e934"
+    },
+    {
+      "level": "lv1",
+      "variant": "victory",
+      "candidate": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv1/victory.webp",
+      "sha256": "dadb4d0ff7c0c8f59bd737feb99ee7ce55bd8116b3046d2ef2688f86b0797356"
+    },
+    {
+      "level": "lv1",
+      "variant": "defeat",
+      "candidate": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv1/defeat.webp",
+      "sha256": "fbf6ec7c6592f75fab3d36246183804f825db329553cce6ee28a18774213b483"
+    },
+    {
+      "level": "lv2",
+      "variant": "attack",
+      "candidate": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv2/attack.webp",
+      "sha256": "5f56c560a0c03a9845aa5132958c2711fc9e83ef75ce6b5bf93d60c60c7d4ae7"
+    },
+    {
+      "level": "lv2",
+      "variant": "pressure",
+      "candidate": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv2/pressure.webp",
+      "sha256": "371c4f426a2660d9003cf761fdad0054472e76aa5e526854257a22e4de25518f"
+    },
+    {
+      "level": "lv2",
+      "variant": "victory",
+      "candidate": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv2/victory.webp",
+      "sha256": "1c02f5ab10d67179180a5a6ac00e3bd32550e53a0fd11c4ce7ca8c0dbcf26fed"
+    },
+    {
+      "level": "lv2",
+      "variant": "defeat",
+      "candidate": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv2/defeat.webp",
+      "sha256": "c8768108bb793c7b8004d9c416b2e5e99a37c09ba80bff43b4480d77ea1329fb"
+    }
+  ]
+}

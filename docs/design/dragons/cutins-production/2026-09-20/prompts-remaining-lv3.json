@@ -1,0 +1,77 @@
+{
+  "level": 3,
+  "phase": "remaining-production",
+  "status": "generated-awaiting-independent-qa",
+  "normalization": "non-Adobe normalize-candidate.cjs; lossless WebP with genuine transparency",
+  "generatedImages": [
+    {
+      "variant": "attack",
+      "attempt": 1,
+      "status": "generated-self-reviewed-awaiting-independent-qa",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: stylized-concept.\nAsset type: one premium Japanese anime game cut-in, landscape 1536 × 1024, genuine transparent alpha.\nReferences: Image 1 is the authoritative Lv3 silver dragon identity sheet. Image 2 is the accepted joy facial identity/color/linework. Image 3 is the approved cut-in rendering and dynamic waist-up scale ONLY; create a different ATTACK action and joyful confident expression, not the fearful pose.\nCreate exactly ONE sleek silver-white teen dragon in a lively ATTACK / offensive momentum pose suitable for a friendly card or board game. Three-quarter waist-up body turned slightly toward viewer, one small clawed hand confidently thrust forward with clear foreshortening, other fist held beside chest, shoulders and face energetic. Open blue eyes, cool confident grin showing small teeth, focused brows, no fear or tears. This is celebration of a good move, no weapons or violence.\nIdentity lock: silver-white scales with cool gray dimensional highlights; bright blue eyes; slim muzzle; central forehead diamond plus paired smaller leaf-shaped scales; long elegant upcurved horns bearing pale geometric engravings; pointed cheek fins. Preserve silver collar band and centered shield-shaped sun medallion clearly visible. Keep same age, face, proportions, dark fine ink outlines and cel-shaded polish as references.\nShow both whole compact silver wings connected behind shoulders, whole horns, both hands and arms, upper body ending naturally around the waist. Wide asymmetrical landscape silhouette with every wingtip, horn, fingertip and waist within about 7% empty margin on ALL four sides. Anatomy coherent, distinct arms and natural claws.\nTrue transparent empty pixels including arm and wing gaps, no gray/white matte. No text, letters, digits, card, board, scenery, background gradients, border, aura, extra character, extra appendages, cropped anatomy or photorealism. Output only isolated dragon cutout.",
+      "referencedImagePaths": [
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/lv3_sheet_silver.jpg",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/src/assets/dragons/reactions/lv3/joy.webp",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv3/pressure-v1.png"
+      ],
+      "sourceOutput": "C:\\Users\\ray-0\\.codex\\generated_images\\01a0d933-a277-7a11-a63a-e9ae35604188\\exec-a6ecdff8-c689-4459-924a-59776d158ffe.png",
+      "originalPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/originals/lv3/attack-attempt1.png",
+      "sourceSha256": "d66b69f90c097f7d7452a1e67a473ee99c3880d48d5c0441d014542a27702fcf",
+      "candidatePng": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv3/attack-v1.png",
+      "candidateWebp": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv3/attack.webp",
+      "candidateSha256": "9312bc58d5f2d85e402ae2859eb5cfb112ed44fefc3f6a24717689b9f855f5e2",
+      "validationPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv3/attack-v1-validation.json",
+      "lightComposite": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/edges/lv3-attack-light.png",
+      "darkComposite": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/edges/lv3-attack-dark.png",
+      "technicalPass": true,
+      "visualSelfReview": "light/dark composites inspected; distinct expression, identity ornaments and anatomy appear intact"
+    },
+    {
+      "variant": "victory",
+      "attempt": 1,
+      "status": "generated-self-reviewed-awaiting-independent-qa",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: stylized-concept.\nAsset type: exactly one premium Japanese anime game VICTORY cut-in on a 1536×1024 landscape transparent canvas.\nReferences: 1 authoritative Lv3 silver dragon character sheet for identity and ornaments; 2 accepted joy portrait for recognizable face, color and linework; 3 approved cut-in for gesture scale and cel-shaded rendering only. Do not copy its fearful emotion.\nA sleek silver-white teenage dragon celebrating a friendly game victory. Dynamic three-quarter waist-up pose, torso turned toward the viewer, one small clawed fist raised beside the head and the other laid proudly over the chest near but NOT covering the sun medallion. Cool dignity with real joy: both bright blue eyes open and sparkling, cheerful open-mouthed grin. The shoulders rise with relief and confidence. Distinct anatomy and hands, no extra digits.\nIdentity fixed: silver-white scales with cool blue-gray shading; slim muzzle; central forehead diamond with two smaller flanking leaf scales; elegant long upward-curved horns with pale engraved geometry; pointed silver cheek fins; silver collar band with clearly visible centered shield-shaped sun chest medallion. Preserve same teen proportions and exact rendering style.\nShow full head, both complete horns and compact silver wings, both arms/hands, and torso ending cleanly around waist. Wide expressive asymmetrical landscape silhouette, all extremities safely within 7% clear margin on all four edges. Crisp graphite ink outlines and polished dimensional cel shading, readable on light and dark backgrounds.\nAll surrounding space and gaps truly transparent alpha. No backdrop, splash, floor, border, text, cards, game board, second character, full legs, broken wings, missing medallion or photorealism. Output only isolated dragon.",
+      "referencedImagePaths": [
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/lv3_sheet_silver.jpg",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/src/assets/dragons/reactions/lv3/joy.webp",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv3/pressure-v1.png"
+      ],
+      "sourceOutput": "C:\\Users\\ray-0\\.codex\\generated_images\\01a0d933-a277-7a11-a63a-e9ae35604188\\exec-32eb5902-7da1-4a3f-a397-67d5f378b7fe.png",
+      "originalPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/originals/lv3/victory-attempt1.png",
+      "sourceSha256": "03f5a748fe9c76338e9accf25e3de08700b9e2947f041db1242817310daf4a04",
+      "candidatePng": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv3/victory-v1.png",
+      "candidateWebp": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv3/victory.webp",
+      "candidateSha256": "abbac8c9b0f78a7905b878336d63fad2ad142a24a479d483afe5e25374e5529c",
+      "validationPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv3/victory-v1-validation.json",
+      "lightComposite": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/edges/lv3-victory-light.png",
+      "darkComposite": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/edges/lv3-victory-dark.png",
+      "technicalPass": true,
+      "visualSelfReview": "light/dark composites inspected; distinct expression, identity ornaments and anatomy appear intact"
+    },
+    {
+      "variant": "defeat",
+      "attempt": 1,
+      "status": "generated-self-reviewed-awaiting-independent-qa",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: stylized-concept.\nAsset type: exactly one Japanese anime game DEFEAT cut-in, 1536×1024 landscape, true transparent alpha.\nReferences: 1 authoritative Lv3 silver dragon identity sheet; 2 accepted crying portrait for exact facial identity and emotion; 3 approved cut-in for polished linework, cel shading and waist-up scale only. Do not copy its panicked defensive pose.\nDraw ONE silver-white teen dragon after a friendly game loss. Dynamic three-quarter waist-up pose, shoulders droop; head lowers slightly but face fully visible; one small hand grips the opposite forearm below chest while the other touches the edge of the mouth, as if trying to maintain cool composure. Large clear tears from both blue eyes, frustrated and sad trembling mouth, eyebrows knitted upward. Endearing, no injury or violence, no anger flames.\nIdentity locked: sleek silver-white scales and cool gray shadow, bright blue eyes, slim snout, central forehead diamond plus paired small leaf scales, long upcurved elegant horns with pale geometric engravings, pointed cheek fins. Crucially keep the silver collar band and centered shield-shaped SUN medallion visible between arms. Same recognizable face and teen proportions.\nTwo whole compact silver wings droop behind shoulders. Both anatomically coherent arms and paws, horns, wings and cleanly ended waist all within 7% empty canvas margin. Wide asymmetrical silhouette, clear action at mobile cut-in size. Fine graphite ink outlines and controlled dimensional cel shading matching approved art.\nAll surrounding pixels and gaps genuinely alpha transparent; no painted background/matte, gradient, vignette, text, letters, numbers, cards, boards, scenery, second character, missing ornament, extra limbs or cropped edge. Output only the cutout.",
+      "referencedImagePaths": [
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/lv3_sheet_silver.jpg",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/src/assets/dragons/reactions/lv3/crying.webp",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv3/pressure-v1.png"
+      ],
+      "sourceOutput": "C:\\Users\\ray-0\\.codex\\generated_images\\01a0d933-a277-7a11-a63a-e9ae35604188\\exec-877a207b-a9cb-41f2-8060-3084de2b28a2.png",
+      "originalPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/originals/lv3/defeat-attempt1.png",
+      "sourceSha256": "714ed2e201f1d5b2f8113946155d627eb383dce05927870c1f7a5d0436842915",
+      "candidatePng": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv3/defeat-v1.png",
+      "candidateWebp": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv3/defeat.webp",
+      "candidateSha256": "834a16b3bbc145f15fe40ddbd561040076a13e9806db2c9ccbf07abdbc311c93",
+      "validationPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv3/defeat-v1-validation.json",
+      "lightComposite": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/edges/lv3-defeat-light.png",
+      "darkComposite": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/edges/lv3-defeat-dark.png",
+      "technicalPass": true,
+      "visualSelfReview": "light/dark composites inspected; distinct expression, identity ornaments and anatomy appear intact"
+    }
+  ]
+}

@@ -29,6 +29,10 @@ import { UnoCardView } from './UnoCardView';
 import { UnoCinematicOverlay } from './UnoCinematicOverlay';
 import { useUnoCinematics } from './useUnoCinematics';
 import { UNO_ROULETTE_STEP_MS } from './unoCinematics';
+import { useDragonReactionPreference, useDragonReactions, type PublicDragonReactionInput } from '../../components/dragonReactions';
+import { DragonPresentationControl } from '../../components/DragonPresentationControl';
+import { DragonResultArtwork } from '../../components/DragonResultArtwork';
+import { detectUnoDragonReactions } from './unoDragonReactions';
 
 const COLOR_BUTTONS: Array<{ color: UnoColor; bg: string }> = [
   { color: 'red', bg: '#df352c' },
@@ -50,6 +54,15 @@ export function UnoGamePage({ config, onBackToSetup, onBackToHome }: UnoGamePage
   const [message, setMessage] = useState('カードを出すか、引いてください。');
   const stateRef = useRef(gameState);
   stateRef.current = gameState;
+  const [dragonInputs, setDragonInputs] = useState<PublicDragonReactionInput[]>([]);
+  const previousDragonStateRef = useRef<UnoGameState | null>(null);
+  useEffect(() => {
+    const previous = previousDragonStateRef.current;
+    previousDragonStateRef.current = gameState;
+    setDragonInputs(previous ? detectUnoDragonReactions(previous, gameState) : []);
+  }, [gameState]);
+  const { preference: dragonPreference } = useDragonReactionPreference();
+  const { active: dragonReaction } = useDragonReactions({ matchId: gameState.gameId, events: dragonInputs, preference: dragonPreference });
   const {
     activeEvent: cinematicEvent,
     isBlocking: isCinematicBlocking,
@@ -240,9 +253,10 @@ export function UnoGamePage({ config, onBackToSetup, onBackToHome }: UnoGamePage
 
   return (
     <Layout>
-      <UnoCinematicOverlay event={cinematicEvent} />
+      <UnoCinematicOverlay event={cinematicEvent} players={gameState.players} reactionInputs={dragonInputs} preference={dragonPreference} />
       <div style={{ paddingTop: 'var(--game-page-pt)', paddingBottom: 'var(--game-page-pb)' }}>
-        <div style={{ textAlign: 'center', marginBottom: 12 }}>
+        <div style={{ position: 'relative', textAlign: 'center', marginBottom: 12 }}>
+          <DragonPresentationControl />
           <h1 style={{ fontSize: 18, color: 'var(--brown)', marginBottom: 3 }}>
             {isHard ? 'ハード版 UNO' : '通常版 UNO'}
           </h1>
@@ -289,6 +303,8 @@ export function UnoGamePage({ config, onBackToSetup, onBackToHome }: UnoGamePage
               canAct={canHumanAct}
               isCpuThinking={isCpuThinking}
               message={message}
+              dragonReaction={dragonReaction}
+              dragonPreference={dragonPreference}
               roulettePresentation={roulettePresentation}
               pendingOverlay={gameState.status === 'deciding-starter' || gameState.status === 'starter-ready' ? (
                 <StarterDecisionPanel state={gameState} onDecideStarter={handleDecideStarter} onStartGame={handleStartGame} />
@@ -581,6 +597,7 @@ function ResultPanel({
   onBackToSetup: () => void;
   onBackToHome: () => void;
 }) {
+  const resultCpu = winner?.isCpu ? winner : rankings.find(entry => entry.player.isCpu)?.player;
   return (
     <div className="result-appear" style={{
       background: 'linear-gradient(135deg, rgba(201,162,75,.12), rgba(201,162,75,.22))',
@@ -595,6 +612,7 @@ function ResultPanel({
       <h2 style={{ fontSize: 20, color: 'var(--brown)', marginBottom: 12 }}>
         {winner ? `${winner.name} の勝利!` : '決闘は終わった'}
       </h2>
+      <DragonResultArtwork actor={resultCpu} won={Boolean(resultCpu && winner?.id === resultCpu.id)} name={resultCpu?.name ?? ''} />
       <p style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: 12 }}>
         数字カードは数字の点、スキップ・リバース・ドローなどの記号カードは20点、ワイルドカードは50点です。点が少ないほど上位です。
       </p>
