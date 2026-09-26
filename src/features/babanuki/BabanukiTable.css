@@ -1,0 +1,24 @@
+.dragon-reaction-wipe.babanuki-top-dragon .dragon-reaction-speech {
+  left: calc(100% + 6px);
+  right: auto;
+  top: 50%;
+  bottom: auto;
+  transform: translateY(-50%);
+}
+
+.dragon-reaction-wipe.babanuki-top-dragon .dragon-reaction-speech::before,
+.dragon-reaction-wipe.babanuki-top-dragon .dragon-reaction-speech::after {
+  left: auto;
+  right: 100%;
+  top: 50%;
+  margin: -6px 0 0;
+  border-width: 6px 9px 6px 0;
+  border-color: transparent #161616 transparent transparent;
+}
+
+.dragon-reaction-wipe.babanuki-top-dragon .dragon-reaction-speech::after {
+  right: calc(100% - 2px);
+  margin-top: -5px;
+  border-width: 5px 8px 5px 0;
+  border-right-color: #fff;
+}

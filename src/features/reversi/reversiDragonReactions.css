@@ -1,0 +1,54 @@
+/* Seat portraits sit on the decorative player panels; the board geometry stays unchanged. */
+.reversi-dragon-desktop-face {
+  position: absolute;
+  z-index: 4;
+  top: 78px;
+  --dragon-face-size: 56px;
+}
+
+.reversi-dragon-desktop-face.is-black { left: 12px; }
+.reversi-dragon-desktop-face.is-white { right: 12px; }
+
+.reversi-game-tools select[aria-label="ドラゴン演出"] {
+  position: static !important;
+  width: 78px !important;
+  height: 32px !important;
+  flex: none;
+}
+
+@media (max-width: 899px) {
+  .reversi-mobile-score-row > div { position: relative; }
+  .reversi-mobile-score-row .reversi-dragon-mobile-face {
+    --dragon-face-size: 32px;
+  }
+  /* Keep short reactions inside the CPU nameplate instead of covering the
+     settings/rematch buttons above or any of the playable board below. */
+  .reversi-mobile-score-row .dragon-reaction-speech {
+    top: -13px;
+    bottom: auto;
+    min-width: 58px;
+    max-width: 62px;
+    padding: 3px 4px;
+    font-size: 9px;
+    line-height: 1.2;
+  }
+  .reversi-mobile-score-row .dragon-reaction-wipe.is-left .dragon-reaction-speech {
+    left: 100%;
+  }
+  .reversi-mobile-score-row .dragon-reaction-wipe.is-right .dragon-reaction-speech {
+    right: calc(100% + 50px);
+  }
+  .reversi-mobile-score-row .dragon-reaction-speech::before,
+  .reversi-mobile-score-row .dragon-reaction-speech::after { display: none; }
+}
+
+@media (max-width: 480px) {
+  .reversi-game-tools select[aria-label="ドラゴン演出"] {
+    width: 65px !important;
+    height: 28px !important;
+    font-size: 9px !important;
+  }
+  .reversi-mobile-score-row .reversi-dragon-mobile-face {
+    --dragon-face-size: 29px;
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "level": 5,
+  "phase": "remaining-production",
+  "status": "generated-awaiting-independent-qa",
+  "normalization": "non-Adobe normalize-candidate.cjs; lossless WebP with genuine transparency",
+  "generatedImages": [
+    {
+      "variant": "attack",
+      "attempt": 1,
+      "status": "generated-self-reviewed-awaiting-independent-qa",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE premium Japanese anime game ATTACK cut-in, horizontal 1536×1024, actual transparent alpha.\nReference 1 authoritative Lv5 golden god-dragon identity sheet; reference 2 accepted smug facial reaction, exact recognizable face and palette; reference 3 approved Lv5 cut-in for linework, cel shading, anatomy, complete halo and landscape scale only. Make a DIFFERENT offensive action, not its victory fist pose.\nONE shining golden divine dragon confidently making a strong game move. Dynamic three-quarter waist-up turn, upper torso leaning forward slightly, one small clawed hand extended in an elegant confident open-palm 'your move' gesture toward the viewer, other paw held low near chest. Both golden amber eyes open, one eyebrow subtly arched, teasing smirk with one mouth corner raised. Friendly competitive charm; no physical violence or weapon.\nIdentity fixed: bright gold/yellow faceted scales, pale cream-gold muzzle and chest plates, golden curved horns, flame-shaped cheek/head fins, central forehead diamond AND two small paired leaf scales. Complete FLOATING ELLIPTICAL GOLDEN HALO above head, with EXACTLY THREE stars attached to arc: one larger center and two smaller side stars; ALSO one small wing ornament on each end of arc. Clearly show all three stars and both little wings. The halo must not become a crown, duplicate, lose stars or be cropped. Use only narrow restrained translucent divine glow around halo and character, rest clear.\nShow whole horns/halo/ornaments, both natural arms and paws, two complete partially spread compact golden wings behind shoulders, and upper torso cleanly ending at waist. Broad asymmetrical silhouette with EVERY feature inside about 7% empty canvas margin on all sides. Crisp warm-brown ink outline and dimensional cel shading like approved cut-in, fully readable at mobile size.\nTrue alpha transparent empty pixels and wing/arm/halo gaps. No gradient, vignette, scene, floor, border, letters, cards, board, second dragon, extra arms/fingers, cropped silhouette or photorealism. Isolated cutout only.",
+      "referencedImagePaths": [
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/lv5_sheet_gold.jpg",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/src/assets/dragons/reactions/lv5/smug.webp",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv5/victory-v1.png"
+      ],
+      "sourceOutput": "C:\\Users\\ray-0\\.codex\\generated_images\\01a0d933-a277-7a11-a63a-e9ae35604188\\exec-256f35e7-cf2e-436a-aadf-e94b0b63b3f1.png",
+      "originalPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/originals/lv5/attack-attempt1.png",
+      "sourceSha256": "fe0dc801f774e6e90b5f60b2bfc374f303c7b96a2a6495b05f318b791658ba04",
+      "candidatePng": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv5/attack-v1.png",
+      "candidateWebp": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv5/attack.webp",
+      "candidateSha256": "2a706392104bbf84fb3799b5534bbe564d9d54396bb29a1aadfb8f774f889108",
+      "validationPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv5/attack-v1-validation.json",
+      "lightComposite": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/edges/lv5-attack-light.png",
+      "darkComposite": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/edges/lv5-attack-dark.png",
+      "technicalPass": true,
+      "visualSelfReview": "light/dark composites inspected; distinct expression, identity ornaments and anatomy appear intact"
+    },
+    {
+      "variant": "pressure",
+      "attempt": 1,
+      "status": "generated-self-reviewed-awaiting-independent-qa",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: stylized-concept.\nAsset type: one Japanese anime game PRESSURE cut-in, landscape 1536×1024, real transparent background.\nReference 1 is authoritative Lv5 golden divine dragon sheet. Reference 2 is accepted scared reaction for exact face/emotion identity. Reference 3 is approved Lv5 cut-in for linework, finished cel shading, halo details and scale, not victory gesture.\nONE gold/yellow god dragon reacts to an opponent's unexpected game advantage. Dynamic three-quarter waist-up recoil with one small open clawed hand raised near cheek and the other hand resting lightly across chest; both natural forearms visibly connect to shoulders. Eyes wide with small golden pupils, uplifted worried brows, small trembling open mouth, two sweat drops. Retain lovable divine dignity, family-friendly; no tears, no injury.\nFixed identity: shining gold faceted scales, pale cream-gold muzzle and belly, amber-gold eyes, curved golden horns and flame-shaped cheek/head fins, central forehead diamond plus two paired little leaf scales. Floating COMPLETE elliptical GOLD HALO above head with EXACTLY THREE stars attached: large central star plus two smaller side stars, and one little wing ornament at EACH halo end. No missing, duplicated or covered ornaments. Restrained subtle golden edge glimmer only, no broad aura backdrop.\nShow BOTH complete compact golden wings folded tensely behind shoulders. Wide distinct silhouette, whole halo/horns/wingtips/hands/waist within approx 7% transparent margin around entire canvas. Natural dragon claws, crisp warm-brown contours and polished dimensional cel shading as reference.\nGenuine alpha-zero surroundings and gaps. No painted background, gradient, vignette, board, cards, text, border, other figures, extra anatomy, cropped halo or photorealism. Isolated dragon only.",
+      "referencedImagePaths": [
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/lv5_sheet_gold.jpg",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/src/assets/dragons/reactions/lv5/scared.webp",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv5/victory-v1.png"
+      ],
+      "sourceOutput": "C:\\Users\\ray-0\\.codex\\generated_images\\01a0d933-a277-7a11-a63a-e9ae35604188\\exec-2809f106-a429-4f43-a48b-f230833d5f28.png",
+      "originalPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/originals/lv5/pressure-attempt1.png",
+      "sourceSha256": "d72695346b9b69ebbdf2fecb229091275e44c8d43f34c429dc52f824f605eb48",
+      "candidatePng": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv5/pressure-v1.png",
+      "candidateWebp": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv5/pressure.webp",
+      "candidateSha256": "158022e13be9ed7b8ede7b931b62721558d681508b00e20be9efcbf6a4f150d6",
+      "validationPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv5/pressure-v1-validation.json",
+      "lightComposite": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/edges/lv5-pressure-light.png",
+      "darkComposite": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/edges/lv5-pressure-dark.png",
+      "technicalPass": true,
+      "visualSelfReview": "light/dark composites inspected; distinct expression, identity ornaments and anatomy appear intact"
+    },
+    {
+      "variant": "defeat",
+      "attempt": 1,
+      "status": "generated-self-reviewed-awaiting-independent-qa",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: stylized-concept.\nAsset type: exactly ONE premium Japanese anime game DEFEAT cut-in, 1536×1024 horizontal, genuine transparent alpha.\nReferences: 1 authoritative Lv5 god dragon identity sheet; 2 accepted crying portrait for exact face/tears/color; 3 approved Lv5 victory cut-in for precise linework, anatomy, golden shading and star halo only, NOT joyful emotion.\nCreate the SAME golden divine dragon after a friendly game defeat, emotionally distinct from victory. Dynamic three-quarter waist-up pose with sagging shoulders, face tilted down slightly but still completely visible; one little clawed hand wipes tears from one cheek, other paw held near heart. Both amber eyes glisten with large clear tears running down both cheeks, sad frustrated trembling mouth, inner brows lifted. Lovable disappointed dignity, no injury, no rage or violence. Both forearms connected naturally, individual claws coherent.\nFixed identity: polished bright gold/yellow scales and pale gold muzzle/chest plates, curved majestic horns, flame-shaped head/cheek fins, central forehead diamond and paired smaller leaf-shaped scales. Preserve COMPLETE floating elliptical halo above horns with EXACTLY THREE stars (one large center, two small side) and TWO tiny wing ornaments, one on each side. Stars and wings must remain separate, visible and not become a crown. Narrow restrained edge glimmer only, surrounding empty canvas truly clear.\nTwo complete compact golden wings droop behind shoulders. Whole halo, horns, tear drops, wings, both hands and clean curved waist ending fit inside 7% empty margin on ALL edges. Wide readable landscape silhouette. Crisp warm brown ink and polished dimensional cel shading exactly matching other cut-ins.\nEvery surrounding pixel and arm/wing/halo hole truly alpha-transparent. No painted background/matte, floor, gradient, vignette, text, cards, board, border, second figure, full legs, extra limbs or cropped ornament. Isolated dragon cutout only.",
+      "referencedImagePaths": [
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/lv5_sheet_gold.jpg",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/src/assets/dragons/reactions/lv5/crying.webp",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv5/victory-v1.png"
+      ],
+      "sourceOutput": "C:\\Users\\ray-0\\.codex\\generated_images\\01a0d933-a277-7a11-a63a-e9ae35604188\\exec-92e79add-6f77-4b3e-9990-0d950da2d6e8.png",
+      "originalPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/originals/lv5/defeat-attempt1.png",
+      "sourceSha256": "3755546d0b9aa008891c3bb128ceb01510c609e417917c38e810d3d8f4c3e803",
+      "candidatePng": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv5/defeat-v1.png",
+      "candidateWebp": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv5/defeat.webp",
+      "candidateSha256": "2a3200cbab7c9340662263c76475ca011289cf960544ec5f558f09ef35bf7928",
+      "validationPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv5/defeat-v1-validation.json",
+      "lightComposite": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/edges/lv5-defeat-light.png",
+      "darkComposite": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/edges/lv5-defeat-dark.png",
+      "technicalPass": true,
+      "visualSelfReview": "light/dark composites inspected; distinct expression, identity ornaments and anatomy appear intact"
+    }
+  ]
+}

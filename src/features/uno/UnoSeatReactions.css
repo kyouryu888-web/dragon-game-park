@@ -1,0 +1,42 @@
+.uno-shared-reaction {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  max-width: calc(100% - 104px);
+  margin-right: auto;
+  gap: 5px;
+  color: var(--text-mid);
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.uno-shared-reaction-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dragon-reaction-wipe.uno-shared-dragon .dragon-reaction-speech {
+  left: calc(100% + 6px);
+  right: auto;
+  top: 50%;
+  bottom: auto;
+  transform: translateY(-50%);
+}
+
+.dragon-reaction-wipe.uno-shared-dragon .dragon-reaction-speech::before,
+.dragon-reaction-wipe.uno-shared-dragon .dragon-reaction-speech::after {
+  left: auto;
+  right: 100%;
+  top: 50%;
+  margin: -6px 0 0;
+  border-width: 6px 9px 6px 0;
+  border-color: transparent #161616 transparent transparent;
+}
+
+.dragon-reaction-wipe.uno-shared-dragon .dragon-reaction-speech::after {
+  right: calc(100% - 2px);
+  margin-top: -5px;
+  border-width: 5px 8px 5px 0;
+  border-right-color: #fff;
+}

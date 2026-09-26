@@ -1,0 +1,77 @@
+{
+  "level": 4,
+  "phase": "remaining-production",
+  "status": "generated-awaiting-independent-qa",
+  "normalization": "non-Adobe normalize-candidate.cjs; lossless WebP with genuine transparency",
+  "generatedImages": [
+    {
+      "variant": "attack",
+      "attempt": 1,
+      "status": "generated-self-reviewed-awaiting-independent-qa",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE premium anime game ATTACK cut-in, 1536×1024 landscape, genuinely transparent alpha.\nReferences: 1 authoritative Lv4 black dragon king sheet for identity; 2 accepted smug face for characteristic eyes and expression; 3 approved Lv4 cut-in for anime outlines, graphite shading, scale and anatomy only, NOT its tears/defeat.\nCreate exactly one black dragon king launching a strong game move. Waist-up dynamic three-quarter pose: torso angled forward, one clawed paw thrust toward the viewer in an authoritative command gesture, other clawed fist drawn back close to chest. Confident, slightly intimidating but family-friendly triumphant smirk; both silver-gray eyes open and sharp, eyebrows lowered. Distinct hands with coherent forearms and natural claw digits. No weapon or physical attack.\nIdentity lock: dark charcoal black scales with readable graphite facets; gray muzzle and layered chest armor; striped upcurving sharp horns and pointed cheek fins; central forehead diamond AND two independent faceted dark-silver leaf scales above eyebrows. Keep the small dark silver THREE-POINT CROWN squarely between the horns, complete and clear throughout. Same mature king proportions, facial features and polished clean black ink outline.\nTWO complete compact folded black wings behind shoulders. Whole crown, horns, hands, wingtips, shoulder plates and clean waist endpoint all fit inside 7% clear canvas margin. Wide asymmetric silhouette, lively gesture at small on-screen cut-in size. Controlled dimensional cel shading and gloss like approved art.\nTrue transparent alpha across all empty space and wing/arm gaps. No white/gray matte, glow background, gradient, scenery, floor, cards, board, text, second character, extra limbs, clipped horns, missing crown or photorealism. Output only isolated dragon.",
+      "referencedImagePaths": [
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/lv4_sheet_black.jpg",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/src/assets/dragons/reactions/lv4/smug.webp",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv4/defeat-v1.png"
+      ],
+      "sourceOutput": "C:\\Users\\ray-0\\.codex\\generated_images\\01a0d933-a277-7a11-a63a-e9ae35604188\\exec-7ff5b408-0a69-4c1e-96e4-7f5b967ac9d9.png",
+      "originalPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/originals/lv4/attack-attempt1.png",
+      "sourceSha256": "4f705e916bb6f9cfc271e41679a9e621c33a9ddc60531bf14d63c4d6de44f36a",
+      "candidatePng": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv4/attack-v1.png",
+      "candidateWebp": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv4/attack.webp",
+      "candidateSha256": "aea1670f413246badd1aa2e409f899b849944248caf56cfd00948f01dc433727",
+      "validationPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv4/attack-v1-validation.json",
+      "lightComposite": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/edges/lv4-attack-light.png",
+      "darkComposite": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/edges/lv4-attack-dark.png",
+      "technicalPass": true,
+      "visualSelfReview": "light/dark composites inspected; distinct expression, identity ornaments and anatomy appear intact"
+    },
+    {
+      "variant": "pressure",
+      "attempt": 1,
+      "status": "generated-self-reviewed-awaiting-independent-qa",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: stylized-concept.\nAsset type: one premium anime game PRESSURE cut-in, 1536×1024 landscape, isolated true transparent alpha.\nReferences: 1 authoritative Lv4 black dragon king identity sheet; 2 accepted scared reaction for exact facial identity, eyes and palette; 3 approved Lv4 cut-in for rendering and anatomy only, NOT its defeat/tears pose.\nCreate ONE black dragon king caught off guard by an opponent's surprising game move. Dynamic three-quarter waist-up defensive pose: torso pulled slightly backward; one clawed hand grips opposite upper arm protectively while other open palm hovers near chest, both arms naturally connected; shoulders raised. He tries to stay regal, yet both silver-gray eyes are distinctly WIDE with small pupils, eyebrows lifting in alarm, mouth open in shocked trembling gasp, two tiny sweat droplets. Endearing dignified vulnerability, family-friendly; no crying tears, injury or violence.\nLock identity: charcoal-black scales with graphite highlights, gray muzzle and armored gray chest; striped upcurving horns, pointed cheek fins, central forehead diamond PLUS two independent faceted silver-gray flanking leaf scales above eyebrows. Keep the full little dark-silver THREE-POINT CROWN between horns and not obscured by hands. Same recognizable mature king proportions, dark ink contours and dimensional cel-shaded polish.\nTwo complete black wings partially fold back with tense shape, no clipped tips. Show whole crown/horns, two hands, wings and cleanly ended waist. Distinct wide asymmetrical silhouette fully inside about 7% clear margin on all edges. All transparent outer pixels and gaps, no backdrop/matte, floor, text, cards, board, frame, second figure, broken anatomy or extra appendage. Output only the dragon.",
+      "referencedImagePaths": [
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/lv4_sheet_black.jpg",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/src/assets/dragons/reactions/lv4/scared.webp",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv4/defeat-v1.png"
+      ],
+      "sourceOutput": "C:\\Users\\ray-0\\.codex\\generated_images\\01a0d933-a277-7a11-a63a-e9ae35604188\\exec-1738d37e-23e9-4f30-a32e-342c49db5f66.png",
+      "originalPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/originals/lv4/pressure-attempt1.png",
+      "sourceSha256": "5771a315a093eecbea13dbe8982e61e743060e61a1107cb8b45fd13d3fb4f04d",
+      "candidatePng": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv4/pressure-v1.png",
+      "candidateWebp": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv4/pressure.webp",
+      "candidateSha256": "4381214ba1f19d4b24730ccfb1067366141a93ba50bba25040599236abee07b9",
+      "validationPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv4/pressure-v1-validation.json",
+      "lightComposite": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/edges/lv4-pressure-light.png",
+      "darkComposite": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/edges/lv4-pressure-dark.png",
+      "technicalPass": true,
+      "visualSelfReview": "light/dark composites inspected; distinct expression, identity ornaments and anatomy appear intact"
+    },
+    {
+      "variant": "victory",
+      "attempt": 1,
+      "status": "generated-self-reviewed-awaiting-independent-qa",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: stylized-concept.\nAsset type: exactly ONE anime game VICTORY cut-in, landscape 1536×1024 with true transparent alpha.\nReferences: 1 authoritative Lv4 black dragon king character sheet; 2 accepted joy portrait for exact face/palette; 3 approved Lv4 cut-in for polished anime drawing, waist-up scale and wings only, not its sad expression.\nCreate the Lv4 black dragon king after a friendly game win. Distinct dignified triumph: chest lifted, shoulders broad, waist-up three-quarter turn toward viewer, one clawed fist raised in a royal celebration beside the shoulder while the other hand rests over the lower chest armor. Both silver-gray eyes OPEN and sparkling with joy, bold delighted open-mouthed grin with small teeth. Kingly and playful, never menacing or violent. Clearly separated natural arms, hands and dragon claw digits.\nIdentity is fixed: rich charcoal-black scales with graphite highlights, gray muzzle and chest armor plates, striped upward curved sharp horns, pointed cheek fins, central faceted diamond AND paired separate dark-silver leaf forehead scales. Full little dark-silver three-point CROWN between the horns; cannot be omitted or obscured. Match mature king proportions, clean black ink contour and controlled dimensional cel shading.\nSpread two complete compact black wings behind shoulders. Fit whole crown, horns, all hands/fingers, wingtips and intentionally ended waist inside approximately 7% transparent border on all sides. Wide energetic asymmetrical silhouette, easily readable at mobile size.\nBackground all genuinely alpha-transparent, including wing and arm holes. No scenery, floor, splash/halo, painted matte, white gradient, text, cards, game board, frame, extra character, full legs or clipped silhouette. Output isolated dragon only.",
+      "referencedImagePaths": [
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/lv4_sheet_black.jpg",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/src/assets/dragons/reactions/lv4/joy.webp",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv4/defeat-v1.png"
+      ],
+      "sourceOutput": "C:\\Users\\ray-0\\.codex\\generated_images\\01a0d933-a277-7a11-a63a-e9ae35604188\\exec-7df85df6-333e-486b-ae5a-9b7208d37f66.png",
+      "originalPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/originals/lv4/victory-attempt1.png",
+      "sourceSha256": "14830c20e6d3b62b149a0cb8bbfd1950ed4726a0a9e0dda8e807132bf10975fc",
+      "candidatePng": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv4/victory-v1.png",
+      "candidateWebp": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv4/victory.webp",
+      "candidateSha256": "a4619d91e0dabda1b0344323627f58b206a25713f21e34473cb19becc24c4aa5",
+      "validationPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv4/victory-v1-validation.json",
+      "lightComposite": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/edges/lv4-victory-light.png",
+      "darkComposite": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/edges/lv4-victory-dark.png",
+      "technicalPass": true,
+      "visualSelfReview": "light/dark composites inspected; distinct expression, identity ornaments and anatomy appear intact"
+    }
+  ]
+}

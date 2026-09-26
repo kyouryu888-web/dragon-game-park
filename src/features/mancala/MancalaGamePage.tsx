@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import type { MancalaConfig, GameState, Player, PlayerId, CpuLevel } from './mancalaTypes';
+import type { MancalaConfig, GameState, Player, PlayerId } from './mancalaTypes';
 import { createInitialMancalaState } from './createInitialMancalaState';
 import { applyMove, getEffectiveOppositePitId } from './mancalaRules';
 import { chooseCpuMove } from './mancalaCpu';
@@ -9,8 +9,12 @@ import { GameEndActions } from '../../components/GameEndActions';
 import { MancalaBoard, PLANK_POSITIONS } from './MancalaBoard';
 import type { PlankSlideEntry } from './MancalaBoard';
 import { PLAYER_ACCENT_COLORS } from './MancalaPit';
-import { CpuWipeReaction } from '../../components/CpuWipeReaction';
-import type { CpuEmotion } from '../../components/CpuWipeReaction';
+import { useDragonReactionPreference, useDragonReactions } from '../../components/dragonReactions';
+import type { DragonPresentationPreference, DragonReactionEvent, PublicDragonReactionInput } from '../../components/dragonReactions';
+import { MancalaDragonPortrait } from './MancalaDragonPortrait';
+import { detectMancalaDragonReactions } from './mancalaDragonReactions';
+import { DragonPresentationControl } from '../../components/DragonPresentationControl';
+import { DragonResultArtwork } from '../../components/DragonResultArtwork';
 
 // ============================================================
 // 定数
@@ -213,20 +217,19 @@ export function MancalaGamePage({ config, onBackToSetup, onBackToHome }: Mancala
   const [captureBannerKey, setCaptureBannerKey] = useState(0);
   const [showCaptureBanner, setShowCaptureBanner] = useState(false);
 
-  // ---- CPUワイプ ----
-  const [cpuWipeInfo, setCpuWipeInfo] = useState<{ key: number; cpuLevel: number; emotion: CpuEmotion } | null>(null);
-  const [cpuWipeKey, setCpuWipeKey] = useState(0);
-
-  const triggerCpuWipe = useCallback((level: CpuLevel | number, emotion: CpuEmotion) => {
-    const numLevel = typeof level === 'number' ? level : (
-      level === 'very-easy' ? 1 :
-      level === 'easy' ? 2 :
-      level === 'normal' ? 3 :
-      level === 'hard' ? 4 : 5
-    );
-    setCpuWipeKey(k => k + 1);
-    setCpuWipeInfo({ key: cpuWipeKey + 1, cpuLevel: numLevel, emotion });
-  }, [cpuWipeKey]);
+  const { preference } = useDragonReactionPreference();
+  const previousReactionState = useRef<GameState>(gameState);
+  const [dragonInputs, setDragonInputs] = useState<PublicDragonReactionInput[]>([]);
+  useEffect(() => {
+    const previous = previousReactionState.current;
+    previousReactionState.current = gameState;
+    const events = detectMancalaDragonReactions(previous, gameState);
+    if (events.length) setDragonInputs(events);
+    else if (previous.gameId !== gameState.gameId) setDragonInputs([]);
+  }, [gameState]);
+  const { active: dragonReaction } = useDragonReactions({
+    matchId: gameState.gameId, events: dragonInputs, preference,
+  });
 
   const isAnimating = animSteps.length > 0;
 
@@ -441,10 +444,6 @@ export function MancalaGamePage({ config, onBackToSetup, onBackToHome }: Mancala
         setExtraTurnKey(k => k + 1);
         setShowExtraTurn(true);
         setTimeout(() => setShowExtraTurn(false), 1700);
-        triggerCpuWipe(cpuPlayer.cpuLevel, 'joy');
-      }
-      if (ci) {
-        triggerCpuWipe(cpuPlayer.cpuLevel, 'smug');
       }
       setCaptureAnimInfo(ci ?? null);
       setCapturePhase(null);
@@ -456,7 +455,7 @@ export function MancalaGamePage({ config, onBackToSetup, onBackToHome }: Mancala
     }, 700);
 
     return () => { cancelled = true; clearTimeout(id); };
-  }, [status, currentPlayerId, turnCount, isAnimating, capturePhase, boardFading, triggerCpuWipe]);
+  }, [status, currentPlayerId, turnCount, isAnimating, capturePhase, boardFading]);
 
   // ============================================================
   // 人間プレイヤーの操作
@@ -472,12 +471,6 @@ export function MancalaGamePage({ config, onBackToSetup, onBackToHome }: Mancala
         setShowExtraTurn(true);
         setTimeout(() => setShowExtraTurn(false), 1700);
       }
-      if (ci) {
-        const cpuPlayer = gameState.players.find(p => p.isCpu);
-        if (cpuPlayer) {
-          triggerCpuWipe(cpuPlayer.cpuLevel, 'crying');
-        }
-      }
       setCaptureAnimInfo(ci ?? null);
       setCapturePhase(null);
       setPendingMove(pitId);
@@ -485,7 +478,7 @@ export function MancalaGamePage({ config, onBackToSetup, onBackToHome }: Mancala
       setAnimActiveIds(activeIds);
       setAnimIdx(0);
     },
-    [gameState, isFinished, isCpuThinking, isAnimating, triggerCpuWipe]
+    [gameState, isFinished, isCpuThinking, isAnimating]
   );
 
   function handleRestart() {
@@ -544,7 +537,8 @@ export function MancalaGamePage({ config, onBackToSetup, onBackToHome }: Mancala
       <div style={{ paddingTop: 'var(--game-page-pt)', paddingBottom: 'var(--game-page-pb)' }}>
 
         {/* ヘッダー */}
-        <div style={{ textAlign: 'center', marginBottom: 12 }}>
+        <div style={{ position: 'relative', textAlign: 'center', marginBottom: 12 }}>
+          <DragonPresentationControl />
           <h1 style={{ fontSize: 17, fontWeight: 'bold', color: 'var(--brown)', marginBottom: 2 }}>
             🎯 マンカラ
           </h1>
@@ -570,6 +564,8 @@ export function MancalaGamePage({ config, onBackToSetup, onBackToHome }: Mancala
             isCurrentTurn={!isFinished && currentPlayerId === topPlayerId}
             side="top"
             colorIdx={topPlayerIdx}
+            reaction={dragonReaction}
+            preference={preference}
           />
         )}
 
@@ -612,6 +608,8 @@ export function MancalaGamePage({ config, onBackToSetup, onBackToHome }: Mancala
             isCurrentTurn={!isFinished && currentPlayerId === bottomPlayerId}
             side="bottom"
             colorIdx={bottomPlayerIdx}
+            reaction={dragonReaction}
+            preference={preference}
           />
         )}
 
@@ -637,7 +635,7 @@ export function MancalaGamePage({ config, onBackToSetup, onBackToHome }: Mancala
                   opacity: isActive ? 1 : 0.45,
                 }}>
                   {!isActive && <span style={{ fontSize: 9, color: '#999' }}>✗</span>}
-                  {player.isCpu && isActive && <span style={{ fontSize: 13 }}>🐉</span>}
+                  {player.isCpu && isActive && <MancalaDragonPortrait player={player} reaction={dragonReaction} preference={preference} />}
                   {isCurrentTurn && <span style={{ fontSize: 9, color: colors.text }}>▶</span>}
                   <span style={{
                     fontSize: 11,
@@ -685,16 +683,6 @@ export function MancalaGamePage({ config, onBackToSetup, onBackToHome }: Mancala
 
       </div>
 
-      {/* CPUワイプ */}
-      {cpuWipeInfo && (
-        <CpuWipeReaction
-          key={cpuWipeInfo.key}
-          cpuLevel={cpuWipeInfo.cpuLevel}
-          emotion={cpuWipeInfo.emotion}
-          onComplete={() => setCpuWipeInfo(null)}
-          durationMs={2500}
-        />
-      )}
     </Layout>
   );
 }
@@ -713,6 +701,9 @@ function RankingPanel({
   onBackToHome: () => void;
 }) {
   const winner = rankings[0];
+  const resultCpu = !isDraw
+    ? (winner.player.isCpu ? winner.player : rankings.find(entry => entry.player.isCpu)?.player)
+    : undefined;
 
   return (
     <div
@@ -727,6 +718,11 @@ function RankingPanel({
     >
       {/* 紙吹雪 */}
       {!isDraw && <Confetti />}
+      {resultCpu && (
+        <div style={{ position: 'absolute', top: 10, right: 8, width: 'min(22vw, 82px)', pointerEvents: 'none' }}>
+          <DragonResultArtwork actor={resultCpu} won={resultCpu.id === winner.player.id} name={resultCpu.name} />
+        </div>
+      )}
 
       {/* タイトル */}
       <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 4 }}>ゲーム終了！</div>
@@ -847,9 +843,10 @@ function TurnBanner({
 // ============================================================
 
 function PlayerLabel({
-  player, score, isCurrentTurn, side, colorIdx,
+  player, score, isCurrentTurn, side, colorIdx, reaction, preference,
 }: {
   player: Player; score: number; isCurrentTurn: boolean; side: 'top' | 'bottom'; colorIdx: number;
+  reaction: DragonReactionEvent | null; preference: DragonPresentationPreference;
 }) {
   const align = side === 'top' ? 'flex-end' : 'flex-start';
   const colors = PLAYER_SCORE_COLORS[colorIdx] ?? PLAYER_SCORE_COLORS[0];
@@ -867,7 +864,7 @@ function PlayerLabel({
       {isCurrentTurn && side === 'bottom' && (
         <span style={{ fontSize: 11, color: colors.text }}>▶</span>
       )}
-      {player.isCpu && <span style={{ fontSize: 15 }}>🐉</span>}
+      <MancalaDragonPortrait player={player} reaction={reaction} preference={preference} side={side === 'top' ? 'right' : 'left'} speechPlacement="left" />
       <span style={{
         fontSize: 12, fontWeight: isCurrentTurn ? 'bold' : 'normal',
         color: isCurrentTurn ? colors.text : 'var(--text-muted)',

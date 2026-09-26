@@ -1,0 +1,21 @@
+{
+  "level": 5,
+  "phase": "representative-approval",
+  "status": "generated-awaiting-independent-qa-and-user-approval",
+  "generatedImages": [
+    {
+      "variant": "victory",
+      "attempt": 1,
+      "status": "awaiting-qa",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: stylized-concept.\nAsset type: exactly one premium anime game cut-in, 1536x1024 horizontal, isolated dragon on true transparent alpha.\nReference image 1 is the authoritative gold dragon identity sheet. Reference image 2 is the approved joy reaction portrait and exact face, horn, halo, palette, linework and shading reference. Ignore sheet layout and lettering.\nCreate the same Lv5 shining gold divine dragon in a joyful triumphant VICTORY pose, a dynamic waist-up three-quarter view. Chest proudly lifted and torso twisted slightly, one small clawed fist raised in celebration above shoulder height, other small fist held beside the chest, both arms anatomically clear. Head turned a little toward the viewer with both eyes OPEN and sparkling golden eyes, a broad cheerful open-mouth smile. This is exuberant victory after a family game; lovable majesty, never threatening or violent.\nIdentity fixed: polished gold/yellow scales, pale gold muzzle and belly plates, golden amber eyes, gold curved horns, flame-shaped head/cheek fins, central forehead diamond and BOTH smaller flanking leaf-shaped scales. Keep the complete floating elliptical golden halo with THREE stars (one larger central, two smaller sides) AND two small wing ornaments in the exact recognizable configuration. Halo follows the head tilt naturally; all parts must be complete and separated clearly.\nShow head, horns, entire halo and ornaments, both hands and forearms, upper body to waist, and TWO complete compact partly spread golden wings behind the shoulders. A wide energetic asymmetrical silhouette that uses a landscape canvas. End the torso with an intentional clean curved waist edge fully above the bottom of the image. Fit EVERY wingtip, raised fist, horn, halo ornament and lower waist edge inside 6–8% empty margin all around. Do not crop the figure at the canvas.\nRendering: same polished Japanese anime game art as approved portrait, crisp dark warm-brown outlines, controlled dimensional cel shading, glossy golden scale facets and small highlights. Restrained narrow divine gold glow only immediately along character/halo edges with true translucent alpha; no diffuse background field or big effects.\nBackground: genuine transparent alpha-zero empty pixels across all surrounding area and gaps between limbs/wings/halo. No painted gray/black backdrop, gradient, vignette, floor, shadow field, checkerboard or matte.\nAvoid text, lettering, numbers, cards, boards, scenery, props, extra characters, extra limbs/digits, missing stars/wing ornaments, full body/legs, clipped silhouette or photorealism. Output only the isolated waist-up dragon cutout.",
+      "referencedImagePaths": [
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/lv5_sheet_gold.jpg",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/reactions-production/2026-09-12/cutouts/lv5/joy-key-v3.png"
+      ],
+      "sourceOutput": "C:/Users/ray-0/.codex/generated_images/01a09473-88d0-70b0-8156-b5c323595f21/exec-8f36e516-8153-49b9-9944-d07255fdb209.png",
+      "originalPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/originals/lv5/victory-attempt1.png"
+    }
+  ],
+  "remainingVariantsBlockedBy": "Explicit user approval of all four representatives required."
+}

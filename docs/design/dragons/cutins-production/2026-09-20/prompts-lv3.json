@@ -1,0 +1,21 @@
+{
+  "level": 3,
+  "phase": "representative-approval",
+  "status": "generated-awaiting-independent-qa-and-user-approval",
+  "generatedImages": [
+    {
+      "variant": "pressure",
+      "attempt": 1,
+      "status": "awaiting-qa",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: stylized-concept.\nAsset type: one premium anime game cut-in, landscape 1536 x 1024 pixels, genuine transparent alpha.\nReference image 1: authoritative silver dragon character identity sheet. Reference image 2: approved reaction portrait, exact facial identity and line/shading/color finish, with startled fearful emotion. Do not reproduce the reference sheet layout or its lettering.\nCreate exactly ONE Lv3 silver-white teenage dragon in a dynamic waist-up three-quarter pose showing PRESSURE: the normally cool dragon recoils defensively as a surprising play puts it on the back foot. Torso leans slightly backward with shoulders twisted, one small clawed forearm raised protectively across the upper chest and the other open paw raised nearer the face in startled defense. The two separate hands must be clearly legible, naturally connected to arms, with consistent dragon claw anatomy. No attack gesture. Eyes wide and panicked with normal small blue pupils, raised inner eyebrows, a trembling startled open mouth, two or three clean sweat droplets. Family friendly.\nIdentity locked: sleek silver-white scales, blue eyes, slim muzzle, central forehead diamond plus both small flanking leaf scales, elegant long upward curved horns with engraved pale geometric patterns, pointed silver cheek fins. Preserve the silver collar band and shield-shaped sun medallion centered on the chest; keep medallion visible between forearms. Preserve age and proportions from the sheet and recognizable face from the approved portrait.\nComposition: energetic asymmetrical 3/4 view oriented slightly toward viewer-left. Show head, entire horns, shoulders, both hands, torso down to waist, and TWO complete compact partially folded silver wings visible behind the shoulders. Make a broad landscape cut-in silhouette, not a circular avatar and not a full body. Lower torso ends cleanly around the waist. All horns, fingertips, wing tips, sweat and torso inside 6-8% clear margins; no part cut by the canvas.\nRendering: polished Japanese anime game illustration, crisp dark-gray ink outlines, controlled dimensional cel shading, glossy silver scale highlights and cool gray depth. Same established style as approved portrait, highly readable facial acting and gesture.\nBackground: truly transparent alpha throughout all empty space, including gaps between arms and torso and wing gaps. Clean natural antialiased silhouette, no gray/white matte or colored fringe.\nAvoid: text, letters, digits, captions, borders, cards, board, scenery, floor, large aura, abstract background splash, extra characters, extra limbs/fingers, missing collar/medallion, clipped silhouette, photorealism.",
+      "referencedImagePaths": [
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/lv3_sheet_silver.jpg",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/src/assets/dragons/reactions/lv3/scared.webp"
+      ],
+      "sourceOutput": "C:/Users/ray-0/.codex/generated_images/01a09473-88d0-70b0-8156-b5c323595f21/exec-b06817ca-9e7d-4e26-93b4-44e2e340d1e8.png",
+      "originalPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/originals/lv3/pressure-attempt1.png"
+    }
+  ],
+  "remainingVariantsBlockedBy": "Explicit user approval of all four representatives required."
+}

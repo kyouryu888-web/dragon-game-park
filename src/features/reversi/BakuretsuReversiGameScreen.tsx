@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { GameEndActions } from '../../components/GameEndActions';
+import { DragonPresentationControl } from '../../components/DragonPresentationControl';
+import { DragonResultArtwork } from '../../components/DragonResultArtwork';
+import { decideDragonReaction, DragonReactionWipe, DRAGON_REACTION_DURATION_MS, useDragonReactionPreference } from '../../components/dragonReactions';
+import type { DragonCpu, DragonReactionEvent, DragonPresentationPreference } from '../../components/dragonReactions';
 import cornerCaptureImage from './assets/corner-capture.png';
 import grandFlipImage from './assets/grand-flip.png';
 import { DEFAULT_CONFIG } from './bakuretsu/config.ts';
@@ -44,6 +48,8 @@ import {
 } from './bakuretsuUi';
 import type { BakuretsuReversiSnapshot } from './bakuretsuReversiOnline';
 import { canResolveBakuretsuTimeout, decideBakuretsuSync } from './bakuretsuOnlineSync';
+import { bakuretsuCinematicImage, bakuretsuDragonCpu, detectBakuretsuDragonReactionForStep } from './bakuretsuDragonReactions';
+import './reversiDragonReactions.css';
 
 const INITIAL_CLOCKS: BakuretsuTimeBanks = {
   BLACK: BAKURETSU_INITIAL_TIME_MS,
@@ -123,6 +129,9 @@ function PlayerPanel({
   isCpu,
   cpuLevel,
   viewerSide,
+  dragonCpu,
+  reaction,
+  preference,
 }: {
   side: Side;
   state: GameState;
@@ -133,6 +142,9 @@ function PlayerPanel({
   isCpu: boolean;
   cpuLevel: BakuretsuReversiConfig['cpuLevel'];
   viewerSide?: Side;
+  dragonCpu: DragonCpu | null;
+  reaction: DragonReactionEvent | null;
+  preference: DragonPresentationPreference;
 }) {
   const color = side === 'BLACK' ? 'black' : 'white';
   return (
@@ -142,6 +154,9 @@ function PlayerPanel({
         style={{ backgroundImage: `url(${side === 'BLACK' ? cornerCaptureImage : grandFlipImage})` }}
         aria-hidden="true"
       />
+      {dragonCpu && <div className={`reversi-dragon-desktop-face is-${color}`}>
+        <DragonReactionWipe cpu={dragonCpu} event={reaction} preference={preference} side={side === 'BLACK' ? 'left' : 'right'} />
+      </div>}
       <div className={`reversi-score-disc is-${color}`} aria-hidden="true" />
       <div className="reversi-player-name">
         <span>{sideName(side)}</span>
@@ -199,6 +214,8 @@ export function BakuretsuReversiGameScreen({
   const [pendingResult, setPendingResult] = useState<TurnResult | null>(null);
   const [choice, setChoice] = useState<BakuretsuPieceChoice>('NORMAL');
   const [cinematic, setCinematic] = useState<BakuretsuCinematicEvent | null>(null);
+  const [dragonReaction, setDragonReaction] = useState<DragonReactionEvent | null>(null);
+  const { preference } = useDragonReactionPreference();
   const [showHints, setShowHints] = useState(true);
   const [showRules, setShowRules] = useState(false);
   const [resultReady, setResultReady] = useState(false);
@@ -206,6 +223,7 @@ export function BakuretsuReversiGameScreen({
   const [autoNotice, setAutoNotice] = useState('');
   const [serverLegalMoves, setServerLegalMoves] = useState<Move[]>(() => initialSnapshot?.legalMoves ?? []);
   const [cpuSide, setCpuSide] = useState<Side | null>(() => resolveBakuretsuCpuSide(config));
+  const dragonCpu = bakuretsuDragonCpu(config, cpuSide);
   const [cpuThinking, setCpuThinking] = useState(false);
   const stateRef = useRef(state);
   const pendingResultRef = useRef<TurnResult | null>(null);
@@ -229,8 +247,10 @@ export function BakuretsuReversiGameScreen({
   const turnReadyRequestKeyRef = useRef('');
   const performMoveRef = useRef<(move: Move, automatic?: boolean) => void>(() => undefined);
   const handleTimeExpiredRef = useRef<(side: Side) => void>(() => undefined);
+  const preferenceRef = useRef(preference);
   stateRef.current = state;
   clocksRef.current = clocks;
+  preferenceRef.current = preference;
 
   const visualState = pendingResult?.state ?? state;
   const score = useMemo(() => countPieces(displayBoard), [displayBoard]);
@@ -266,6 +286,7 @@ export function BakuretsuReversiGameScreen({
     setDisplayBoard(snapshot.state.board.map((cell) => ({ ...cell })));
     setPlayback(null);
     setCinematic(null);
+    setDragonReaction(null);
     setPendingResult(null);
     setChoice('NORMAL');
     setClocks(snapshot.clocks);
@@ -316,6 +337,24 @@ export function BakuretsuReversiGameScreen({
       return;
     }
     const step = steps[index];
+    const currentMatchId = roomCode
+      ? `bakuretsu:${roomCode}:${matchNoRef.current}`
+      : `bakuretsu:local:${gameTokenRef.current}`;
+    const revealedEvent = detectBakuretsuDragonReactionForStep({
+      matchId: currentMatchId,
+      moveNo: result.state.moveNo,
+      stepIndex: index,
+      step,
+      beforeBoard: index > 0 ? steps[index - 1].board : stateRef.current.board,
+      cpu: dragonCpu,
+      winner: step.phase === 'final' && result.state.status === 'FINISHED' ? result.state.winner : undefined,
+      passedSide: step.phase === 'final' ? result.events.find(event => event.t === 'PASS')?.player : undefined,
+    });
+    if (revealedEvent && preferenceRef.current !== 'off'
+      && (preferenceRef.current === 'lively' || (revealedEvent.priority ?? 1) >= 3)) {
+      // Consecutive chain effects replace the previous face at the moment each frame is revealed.
+      setDragonReaction(decideDragonReaction(revealedEvent));
+    }
     
     if (step.cinematic && !reducedMotion) {
       const cinematicTitles = {
@@ -329,6 +368,7 @@ export function BakuretsuReversiGameScreen({
         key: `${matchNoRef.current}:${stateRef.current.moveNo}:${index}`,
         kind: step.cinematic,
         ...cinematicTitles[step.cinematic],
+        imageUrl: bakuretsuCinematicImage(step, result.state, dragonCpu),
       });
       setDisplayBoard(step.board);
       setPlayback(step);
@@ -491,6 +531,16 @@ export function BakuretsuReversiGameScreen({
   useEffect(() => () => clearPlaybackHandles(), []);
 
   useEffect(() => {
+    if (!dragonReaction) return;
+    const timer = window.setTimeout(() => setDragonReaction(current => current?.key === dragonReaction.key ? null : current), DRAGON_REACTION_DURATION_MS);
+    return () => window.clearTimeout(timer);
+  }, [dragonReaction]);
+
+  useEffect(() => {
+    if (preference === 'off') setDragonReaction(null);
+  }, [preference]);
+
+  useEffect(() => {
     if (!synchronizedSnapshot) return;
     if (synchronizedResetKey !== synchronizedResetKeyRef.current) {
       synchronizedResetKeyRef.current = synchronizedResetKey;
@@ -570,6 +620,7 @@ export function BakuretsuReversiGameScreen({
     if (!result) return;
     clearPlaybackHandles();
     setCinematic(null);
+    setDragonReaction(null);
     showFinalBoardThenCommit(result);
   }
 
@@ -589,6 +640,7 @@ export function BakuretsuReversiGameScreen({
     setDisplayBoard(next.board.map((cell) => ({ ...cell })));
     setPlayback(null);
     setCinematic(null);
+    setDragonReaction(null);
     setPendingResult(null);
     setChoice('NORMAL');
     setClocks(INITIAL_CLOCKS);
@@ -634,6 +686,7 @@ export function BakuretsuReversiGameScreen({
           {roomCode ? <em>ROOM {roomCode}</em> : null}
         </div>
         <div className="reversi-game-tools">
+          {dragonCpu && <DragonPresentationControl />}
           <button type="button" onClick={() => setShowRules(true)} aria-label="ルールを見る">📖</button>
           <button type="button" onClick={rematch} disabled={!canRematch} aria-label="最初からやり直す">↻</button>
         </div>
@@ -642,14 +695,16 @@ export function BakuretsuReversiGameScreen({
       <div className="reversi-mobile-score-row bakuretsu-mobile-score-row">
         {(['BLACK', 'WHITE'] as const).map((side) => (
           <div key={side} className={`is-${side.toLowerCase()}${state.currentTurn === side && state.status === 'PLAYING' ? ' is-active' : ''}`}>
+            {side === 'BLACK' && dragonCpu?.id === side && <DragonReactionWipe cpu={dragonCpu} event={dragonReaction} preference={preference} side="left" className="reversi-dragon-mobile-face" />}
             <span className={`reversi-mini-disc is-${side.toLowerCase()}`} />
             <span>{sideName(side)} <strong>{side === 'BLACK' ? score.black : score.white}</strong><small>{formatTimeBank(clocks[side])}</small></span>
+            {side === 'WHITE' && dragonCpu?.id === side && <DragonReactionWipe cpu={dragonCpu} event={dragonReaction} preference={preference} side="right" className="reversi-dragon-mobile-face" />}
           </div>
         ))}
       </div>
 
       <div className="reversi-arena bakuretsu-arena">
-        <PlayerPanel side="BLACK" state={visualState} score={score.black} remainingMs={clocks.BLACK} name={playerName(config, 'BLACK', cpuSide)} active={state.status === 'PLAYING' && state.currentTurn === 'BLACK'} isCpu={cpuSide === 'BLACK'} cpuLevel={config.cpuLevel} viewerSide={viewerSide} />
+        <PlayerPanel side="BLACK" state={visualState} score={score.black} remainingMs={clocks.BLACK} name={playerName(config, 'BLACK', cpuSide)} active={state.status === 'PLAYING' && state.currentTurn === 'BLACK'} isCpu={cpuSide === 'BLACK'} cpuLevel={config.cpuLevel} viewerSide={viewerSide} dragonCpu={dragonCpu?.id === 'BLACK' ? dragonCpu : null} reaction={dragonReaction} preference={preference} />
 
         <section className="reversi-board-column bakuretsu-board-column">
           <div className="bakuretsu-board-meta" aria-label="爆裂ルールの現在情報">
@@ -718,7 +773,7 @@ export function BakuretsuReversiGameScreen({
           </div>
         </section>
 
-        <PlayerPanel side="WHITE" state={visualState} score={score.white} remainingMs={clocks.WHITE} name={playerName(config, 'WHITE', cpuSide)} active={state.status === 'PLAYING' && state.currentTurn === 'WHITE'} isCpu={cpuSide === 'WHITE'} cpuLevel={config.cpuLevel} viewerSide={viewerSide} />
+        <PlayerPanel side="WHITE" state={visualState} score={score.white} remainingMs={clocks.WHITE} name={playerName(config, 'WHITE', cpuSide)} active={state.status === 'PLAYING' && state.currentTurn === 'WHITE'} isCpu={cpuSide === 'WHITE'} cpuLevel={config.cpuLevel} viewerSide={viewerSide} dragonCpu={dragonCpu?.id === 'WHITE' ? dragonCpu : null} reaction={dragonReaction} preference={preference} />
       </div>
 
       {showRules ? (
@@ -742,7 +797,7 @@ export function BakuretsuReversiGameScreen({
         </div>
       ) : null}
 
-      {cinematic ? <BakuretsuCinematicOverlay event={cinematic} /> : null}
+      {cinematic ? <BakuretsuCinematicOverlay event={preference === 'off' ? { ...cinematic, imageUrl: undefined } : cinematic} /> : null}
 
       {state.status === 'FINISHED' && resultReady && !playback ? (
         <div className="reversi-result-backdrop">
@@ -753,6 +808,13 @@ export function BakuretsuReversiGameScreen({
               <span><i className="reversi-mini-disc is-black" />黒炎 <strong>{score.black}</strong></span><b>—</b>
               <span><i className="reversi-mini-disc is-white" />白銀 <strong>{score.white}</strong></span>
             </div>
+            {dragonCpu && (state.winner === 'BLACK' || state.winner === 'WHITE') ? (
+              <DragonResultArtwork
+                actor={{ isCpu: true, cpuLevel: dragonCpu.level }}
+                won={state.winner === dragonCpu.id}
+                name={dragonCpu.name}
+              />
+            ) : null}
             {rematchWaitingMessage && !canRematch ? <p className="reversi-rematch-waiting">{rematchWaitingMessage}</p> : null}
             {state.endReason === 'ABANDON' ? <p className="bakuretsu-result-note">時間切れの自動着手が5回続いたため敗北です。</p> : null}
             <GameEndActions onRematch={canRematch ? rematch : undefined} canRematch={canRematch} onChangeSettings={onChangeSettings ?? onBackToSetup} onBackToSetup={onBackToSetup} onBackToHome={onBackToHome} />

@@ -21,6 +21,10 @@ import { useBabanukiPlayback } from './useBabanukiPlayback';
 import { BabanukiTable } from './BabanukiTable';
 import { BabanukiFinale } from './BabanukiFinale';
 import { DiceResultPanel } from './BabanukiShufflePanel';
+import { DragonPresentationControl } from '../../components/DragonPresentationControl';
+import { useDragonReactionPreference, useDragonReactions } from '../../components/dragonReactions';
+import type { PublicDragonReactionInput } from '../../components/dragonReactions';
+import { detectBabanukiDragonReactions, detectBabanukiShuffleAnnouncement } from './babanukiDragonReactions';
 
 const DOUBLE_TAP_MS = 320;
 
@@ -93,6 +97,7 @@ export function BabanukiOnlineGame({ room, onBackToSetup, onBackToHome }: Props)
   return (
     <OnlineBoard
       logic={row.game_state}
+      matchId={`babanuki:${room.roomCode}`}
       viewerId={room.myPlayerId}
       isHost={room.myPlayerId === 'player-1'}
       applyAction={applyAction}
@@ -104,6 +109,7 @@ export function BabanukiOnlineGame({ room, onBackToSetup, onBackToHome }: Props)
 
 type BoardProps = {
   logic: BabanukiState;
+  matchId: string;
   viewerId: string;
   isHost: boolean;
   applyAction: (updater: (state: BabanukiState) => BabanukiState) => void;
@@ -111,9 +117,28 @@ type BoardProps = {
   onBackToHome: () => void;
 };
 
-function OnlineBoard({ logic, viewerId, isHost, applyAction, onBackToSetup, onBackToHome }: BoardProps) {
+function OnlineBoard({ logic, matchId, viewerId, isHost, applyAction, onBackToSetup, onBackToHome }: BoardProps) {
   const playback = useBabanukiPlayback(logic, viewerId);
   const { display, isAnimating } = playback;
+  const [dragonInputs, setDragonInputs] = useState<PublicDragonReactionInput[]>([]);
+  const { preference: dragonPreference } = useDragonReactionPreference();
+  const { active: dragonReaction, clear: clearDragonReactions } = useDragonReactions({
+    matchId, events: dragonInputs, preference: dragonPreference,
+  });
+  const lastAnnouncedSeq = useRef(-1);
+  useEffect(() => {
+    if (playback.activeEventSequence === null || !playback.activeEvent) return;
+    setDragonInputs(detectBabanukiDragonReactions(
+      playback.activeEvent, logic.players, matchId, playback.activeEventSequence,
+    ));
+  }, [playback.activeEventSequence, playback.activeEvent, logic.players, matchId]);
+  useEffect(() => {
+    if (logic.phase !== 'rolling' || !logic.pendingShuffle || lastAnnouncedSeq.current === logic.eventSeq) return;
+    lastAnnouncedSeq.current = logic.eventSeq;
+    setDragonInputs(detectBabanukiShuffleAnnouncement(
+      logic.pendingShuffle.declarerId, logic.players, matchId, logic.eventSeq * 100 + 99,
+    ));
+  }, [logic.phase, logic.pendingShuffle, logic.eventSeq, logic.players, matchId]);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [hesitationIndex, setHesitationIndex] = useState<number | null>(null);
   const [drawCandidate, setDrawCandidate] = useState<number | null>(null);
@@ -134,13 +159,15 @@ function OnlineBoard({ logic, viewerId, isHost, applyAction, onBackToSetup, onBa
     const previous = previousPhaseRef.current;
     previousPhaseRef.current = logic.phase;
     if (previous !== 'finished' || logic.phase === 'finished') return;
+    clearDragonReactions();
+    setDragonInputs([]);
     lastTapRef.current = null;
     drawCandidateRef.current = null;
     spotlightDecisionRef.current = null;
     setSelectedIndex(null);
     setDrawCandidate(null);
     setHesitationIndex(null);
-  }, [logic.phase]);
+  }, [logic.phase, clearDragonReactions]);
 
   /**
    * タイマーを張り直す条件。**`logic` そのものを依存に入れてはいけない。**
@@ -324,7 +351,10 @@ function OnlineBoard({ logic, viewerId, isHost, applyAction, onBackToSetup, onBa
         >
           ゲーム設定に戻る
         </button>
-        <span style={{ fontFamily: 'Cinzel,serif', fontSize: 12, letterSpacing: '.2em', color: '#8a7a58' }}>BABANUKI ONLINE</span>
+        <span style={{ position: 'relative', display: 'block', minHeight: 27, fontFamily: 'Cinzel,serif', fontSize: 12, letterSpacing: '.2em', color: '#8a7a58' }}>
+          BABANUKI ONLINE
+          {logic.players.some(player => player.isCpu) && <DragonPresentationControl />}
+        </span>
         <button
           type="button"
           className="btn babanuki-home-button"
@@ -373,6 +403,8 @@ function OnlineBoard({ logic, viewerId, isHost, applyAction, onBackToSetup, onBa
         canShuffle={!isAnimating && canDeclareShuffle(logic, viewerId)}
         onShuffle={() => applyAction((s) => declareShuffle(s, viewerId))}
         shuffleDice={shufflePresentation?.stage === 'moving' ? shufflePresentation.dice : null}
+        dragonReaction={dragonReaction}
+        dragonPreference={dragonPreference}
       />
 
       {/* 引く札の確認 */}

@@ -20,9 +20,14 @@ import { useBabanukiPlayback } from './useBabanukiPlayback';
 import { BabanukiTable } from './BabanukiTable';
 import { BabanukiFinale } from './BabanukiFinale';
 import { DiceResultPanel } from './BabanukiShufflePanel';
+import { DragonPresentationControl } from '../../components/DragonPresentationControl';
+import { useDragonReactionPreference, useDragonReactions } from '../../components/dragonReactions';
+import type { PublicDragonReactionInput } from '../../components/dragonReactions';
+import { detectBabanukiDragonReactions, detectBabanukiShuffleAnnouncement } from './babanukiDragonReactions';
 
 const VIEWER_ID = 'player-1';
 const DOUBLE_TAP_MS = 320;
+let localReactionSerial = 0;
 
 type Props = {
   config: BabanukiConfig;
@@ -34,6 +39,26 @@ export function BabanukiPlayScreen({ config, onBackToSetup, onBackToHome }: Prop
   const [logic, setLogic] = useState<BabanukiState>(() => createInitialBabanukiState(config));
   const playback = useBabanukiPlayback(logic, VIEWER_ID);
   const { display, isAnimating } = playback;
+  const [reactionMatchId] = useState(() => `babanuki-local-${++localReactionSerial}`);
+  const [dragonInputs, setDragonInputs] = useState<PublicDragonReactionInput[]>([]);
+  const { preference: dragonPreference } = useDragonReactionPreference();
+  const { active: dragonReaction, clear: clearDragonReactions } = useDragonReactions({
+    matchId: reactionMatchId, events: dragonInputs, preference: dragonPreference,
+  });
+  const lastAnnouncedSeq = useRef(-1);
+  useEffect(() => {
+    if (playback.activeEventSequence === null || !playback.activeEvent) return;
+    setDragonInputs(detectBabanukiDragonReactions(
+      playback.activeEvent, logic.players, reactionMatchId, playback.activeEventSequence,
+    ));
+  }, [playback.activeEventSequence, playback.activeEvent, logic.players, reactionMatchId]);
+  useEffect(() => {
+    if (logic.phase !== 'rolling' || !logic.pendingShuffle || lastAnnouncedSeq.current === logic.eventSeq) return;
+    lastAnnouncedSeq.current = logic.eventSeq;
+    setDragonInputs(detectBabanukiShuffleAnnouncement(
+      logic.pendingShuffle.declarerId, logic.players, reactionMatchId, logic.eventSeq * 100 + 99,
+    ));
+  }, [logic.phase, logic.pendingShuffle, logic.eventSeq, logic.players, reactionMatchId]);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [hesitationIndex, setHesitationIndex] = useState<number | null>(null);
   const [drawCandidate, setDrawCandidate] = useState<number | null>(null);
@@ -228,7 +253,10 @@ export function BabanukiPlayScreen({ config, onBackToSetup, onBackToHome }: Prop
         >
           ゲーム設定に戻る
         </button>
-        <span style={{ fontFamily: 'Cinzel,serif', fontSize: 12, letterSpacing: '.2em', color: '#8a7a58' }}>BABANUKI</span>
+        <span style={{ position: 'relative', display: 'block', minHeight: 27, fontFamily: 'Cinzel,serif', fontSize: 12, letterSpacing: '.2em', color: '#8a7a58' }}>
+          BABANUKI
+          {logic.players.some(player => player.isCpu) && <DragonPresentationControl />}
+        </span>
         <button
           type="button"
           className="btn babanuki-home-button"
@@ -278,6 +306,8 @@ export function BabanukiPlayScreen({ config, onBackToSetup, onBackToHome }: Prop
         canShuffle={!isAnimating && canDeclareShuffle(logic, VIEWER_ID)}
         onShuffle={() => setLogic((s) => declareShuffle(s, VIEWER_ID))}
         shuffleDice={shufflePresentation?.stage === 'moving' ? shufflePresentation.dice : null}
+        dragonReaction={dragonReaction}
+        dragonPreference={dragonPreference}
       />
 
       {/* 引く札の確認 */}
@@ -354,6 +384,8 @@ export function BabanukiPlayScreen({ config, onBackToSetup, onBackToHome }: Prop
           state={logic}
           viewerId={VIEWER_ID}
           onRestart={() => {
+            clearDragonReactions();
+            setDragonInputs([]);
             setSelectedIndex(null);
             setLogic((state) => createBabanukiRematchState(state));
           }}

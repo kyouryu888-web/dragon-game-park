@@ -1,0 +1,869 @@
+{
+  "cutinCount": 20,
+  "portraitCount": 30,
+  "invalidCount": 0,
+  "records": [
+    {
+      "level": 1,
+      "scene": "attack",
+      "master": {
+        "width": 1536,
+        "height": 1024,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 1025677,
+        "opaque": 525879,
+        "visible": 547187,
+        "bytes": 650844
+      },
+      "uno": {
+        "width": 900,
+        "height": 1200,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 890132,
+        "opaque": 178668,
+        "visible": 189868,
+        "bytes": 77588
+      },
+      "matchesApprovedCandidate": true
+    },
+    {
+      "level": 1,
+      "scene": "pressure",
+      "master": {
+        "width": 1536,
+        "height": 1024,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 1075569,
+        "opaque": 476800,
+        "visible": 497295,
+        "bytes": 616890
+      },
+      "uno": {
+        "width": 900,
+        "height": 1200,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 907314,
+        "opaque": 161721,
+        "visible": 172686,
+        "bytes": 74756
+      },
+      "matchesApprovedCandidate": true
+    },
+    {
+      "level": 1,
+      "scene": "victory",
+      "master": {
+        "width": 1536,
+        "height": 1024,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 1051811,
+        "opaque": 499680,
+        "visible": 521053,
+        "bytes": 634724
+      },
+      "uno": {
+        "width": 900,
+        "height": 1200,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 899074,
+        "opaque": 169536,
+        "visible": 180926,
+        "bytes": 76548
+      },
+      "matchesApprovedCandidate": true
+    },
+    {
+      "level": 1,
+      "scene": "defeat",
+      "master": {
+        "width": 1536,
+        "height": 1024,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 1034417,
+        "opaque": 519870,
+        "visible": 538447,
+        "bytes": 645222
+      },
+      "uno": {
+        "width": 900,
+        "height": 1200,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 893318,
+        "opaque": 176638,
+        "visible": 186682,
+        "bytes": 74346
+      },
+      "matchesApprovedCandidate": true
+    },
+    {
+      "level": 2,
+      "scene": "attack",
+      "master": {
+        "width": 1536,
+        "height": 1024,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 965946,
+        "opaque": 583003,
+        "visible": 606918,
+        "bytes": 786600
+      },
+      "uno": {
+        "width": 900,
+        "height": 1200,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 869472,
+        "opaque": 198107,
+        "visible": 210528,
+        "bytes": 84850
+      },
+      "matchesApprovedCandidate": true
+    },
+    {
+      "level": 2,
+      "scene": "pressure",
+      "master": {
+        "width": 1536,
+        "height": 1024,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 992902,
+        "opaque": 557339,
+        "visible": 579962,
+        "bytes": 740668
+      },
+      "uno": {
+        "width": 900,
+        "height": 1200,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 878854,
+        "opaque": 189482,
+        "visible": 201146,
+        "bytes": 82044
+      },
+      "matchesApprovedCandidate": true
+    },
+    {
+      "level": 2,
+      "scene": "victory",
+      "master": {
+        "width": 1536,
+        "height": 1024,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 986477,
+        "opaque": 561622,
+        "visible": 586387,
+        "bytes": 750026
+      },
+      "uno": {
+        "width": 900,
+        "height": 1200,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 876401,
+        "opaque": 190578,
+        "visible": 203599,
+        "bytes": 85486
+      },
+      "matchesApprovedCandidate": true
+    },
+    {
+      "level": 2,
+      "scene": "defeat",
+      "master": {
+        "width": 1536,
+        "height": 1024,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 1030789,
+        "opaque": 521935,
+        "visible": 542075,
+        "bytes": 680866
+      },
+      "uno": {
+        "width": 900,
+        "height": 1200,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 891960,
+        "opaque": 177315,
+        "visible": 188040,
+        "bytes": 76246
+      },
+      "matchesApprovedCandidate": true
+    },
+    {
+      "level": 3,
+      "scene": "attack",
+      "master": {
+        "width": 1536,
+        "height": 1024,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 947011,
+        "opaque": 598034,
+        "visible": 625853,
+        "bytes": 774138
+      },
+      "uno": {
+        "width": 900,
+        "height": 1200,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 862512,
+        "opaque": 202833,
+        "visible": 217488,
+        "bytes": 90240
+      },
+      "matchesApprovedCandidate": true
+    },
+    {
+      "level": 3,
+      "scene": "pressure",
+      "master": {
+        "width": 1536,
+        "height": 1024,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 962903,
+        "opaque": 585660,
+        "visible": 609961,
+        "bytes": 736374
+      },
+      "uno": {
+        "width": 900,
+        "height": 1200,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 868346,
+        "opaque": 198793,
+        "visible": 211654,
+        "bytes": 85814
+      },
+      "matchesApprovedCandidate": true
+    },
+    {
+      "level": 3,
+      "scene": "victory",
+      "master": {
+        "width": 1536,
+        "height": 1024,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 1013346,
+        "opaque": 533031,
+        "visible": 559518,
+        "bytes": 702720
+      },
+      "uno": {
+        "width": 900,
+        "height": 1200,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 885516,
+        "opaque": 180714,
+        "visible": 194484,
+        "bytes": 83096
+      },
+      "matchesApprovedCandidate": true
+    },
+    {
+      "level": 3,
+      "scene": "defeat",
+      "master": {
+        "width": 1536,
+        "height": 1024,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 998496,
+        "opaque": 553509,
+        "visible": 574368,
+        "bytes": 709012
+      },
+      "uno": {
+        "width": 900,
+        "height": 1200,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 880801,
+        "opaque": 188029,
+        "visible": 199199,
+        "bytes": 80716
+      },
+      "matchesApprovedCandidate": true
+    },
+    {
+      "level": 4,
+      "scene": "attack",
+      "master": {
+        "width": 1536,
+        "height": 1024,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 869793,
+        "opaque": 678700,
+        "visible": 703071,
+        "bytes": 698362
+      },
+      "uno": {
+        "width": 900,
+        "height": 1200,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 836329,
+        "opaque": 230905,
+        "visible": 243671,
+        "bytes": 65354
+      },
+      "matchesApprovedCandidate": true
+    },
+    {
+      "level": 4,
+      "scene": "pressure",
+      "master": {
+        "width": 1536,
+        "height": 1024,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 959089,
+        "opaque": 589893,
+        "visible": 613775,
+        "bytes": 611542
+      },
+      "uno": {
+        "width": 900,
+        "height": 1200,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 867016,
+        "opaque": 200412,
+        "visible": 212984,
+        "bytes": 58670
+      },
+      "matchesApprovedCandidate": true
+    },
+    {
+      "level": 4,
+      "scene": "victory",
+      "master": {
+        "width": 1536,
+        "height": 1024,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 882952,
+        "opaque": 663277,
+        "visible": 689912,
+        "bytes": 674264
+      },
+      "uno": {
+        "width": 900,
+        "height": 1200,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 840654,
+        "opaque": 225414,
+        "visible": 239346,
+        "bytes": 62766
+      },
+      "matchesApprovedCandidate": true
+    },
+    {
+      "level": 4,
+      "scene": "defeat",
+      "master": {
+        "width": 1536,
+        "height": 1024,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 934191,
+        "opaque": 617266,
+        "visible": 638673,
+        "bytes": 629196
+      },
+      "uno": {
+        "width": 900,
+        "height": 1200,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 858670,
+        "opaque": 210030,
+        "visible": 221330,
+        "bytes": 60942
+      },
+      "matchesApprovedCandidate": true
+    },
+    {
+      "level": 5,
+      "scene": "attack",
+      "master": {
+        "width": 1536,
+        "height": 1024,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 1042668,
+        "opaque": 503035,
+        "visible": 530196,
+        "bytes": 776480
+      },
+      "uno": {
+        "width": 900,
+        "height": 1200,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 895478,
+        "opaque": 170405,
+        "visible": 184522,
+        "bytes": 92846
+      },
+      "matchesApprovedCandidate": true
+    },
+    {
+      "level": 5,
+      "scene": "pressure",
+      "master": {
+        "width": 1536,
+        "height": 1024,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 1036661,
+        "opaque": 508991,
+        "visible": 536203,
+        "bytes": 782072
+      },
+      "uno": {
+        "width": 900,
+        "height": 1200,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 893469,
+        "opaque": 172373,
+        "visible": 186531,
+        "bytes": 94344
+      },
+      "matchesApprovedCandidate": true
+    },
+    {
+      "level": 5,
+      "scene": "victory",
+      "master": {
+        "width": 1536,
+        "height": 1024,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 1016201,
+        "opaque": 526899,
+        "visible": 556663,
+        "bytes": 814858
+      },
+      "uno": {
+        "width": 900,
+        "height": 1200,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 886429,
+        "opaque": 178741,
+        "visible": 193571,
+        "bytes": 99068
+      },
+      "matchesApprovedCandidate": true
+    },
+    {
+      "level": 5,
+      "scene": "defeat",
+      "master": {
+        "width": 1536,
+        "height": 1024,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 1101052,
+        "opaque": 445657,
+        "visible": 471812,
+        "bytes": 712196
+      },
+      "uno": {
+        "width": 900,
+        "height": 1200,
+        "format": "webp",
+        "hasAlpha": true,
+        "transparent": 915695,
+        "opaque": 150759,
+        "visible": 164305,
+        "bytes": 86422
+      },
+      "matchesApprovedCandidate": true
+    }
+  ],
+  "portraits": [
+    {
+      "level": 1,
+      "emotion": "joy",
+      "width": 192,
+      "height": 192,
+      "format": "webp",
+      "hasAlpha": true,
+      "transparent": 20054,
+      "opaque": 13467,
+      "visible": 16810,
+      "bytes": 13528
+    },
+    {
+      "level": 1,
+      "emotion": "smug",
+      "width": 192,
+      "height": 192,
+      "format": "webp",
+      "hasAlpha": true,
+      "transparent": 20291,
+      "opaque": 15212,
+      "visible": 16573,
+      "bytes": 10762
+    },
+    {
+      "level": 1,
+      "emotion": "crying",
+      "width": 192,
+      "height": 192,
+      "format": "webp",
+      "hasAlpha": true,
+      "transparent": 20169,
+      "opaque": 15285,
+      "visible": 16695,
+      "bytes": 11264
+    },
+    {
+      "level": 1,
+      "emotion": "angry",
+      "width": 192,
+      "height": 192,
+      "format": "webp",
+      "hasAlpha": true,
+      "transparent": 20053,
+      "opaque": 15449,
+      "visible": 16811,
+      "bytes": 11320
+    },
+    {
+      "level": 1,
+      "emotion": "laughing",
+      "width": 192,
+      "height": 192,
+      "format": "webp",
+      "hasAlpha": true,
+      "transparent": 20236,
+      "opaque": 15264,
+      "visible": 16628,
+      "bytes": 10886
+    },
+    {
+      "level": 1,
+      "emotion": "scared",
+      "width": 192,
+      "height": 192,
+      "format": "webp",
+      "hasAlpha": true,
+      "transparent": 20115,
+      "opaque": 15242,
+      "visible": 16749,
+      "bytes": 11528
+    },
+    {
+      "level": 2,
+      "emotion": "joy",
+      "width": 192,
+      "height": 192,
+      "format": "webp",
+      "hasAlpha": true,
+      "transparent": 19796,
+      "opaque": 15535,
+      "visible": 17068,
+      "bytes": 11136
+    },
+    {
+      "level": 2,
+      "emotion": "smug",
+      "width": 192,
+      "height": 192,
+      "format": "webp",
+      "hasAlpha": true,
+      "transparent": 19719,
+      "opaque": 15650,
+      "visible": 17145,
+      "bytes": 10822
+    },
+    {
+      "level": 2,
+      "emotion": "crying",
+      "width": 192,
+      "height": 192,
+      "format": "webp",
+      "hasAlpha": true,
+      "transparent": 19541,
+      "opaque": 15773,
+      "visible": 17323,
+      "bytes": 11470
+    },
+    {
+      "level": 2,
+      "emotion": "angry",
+      "width": 192,
+      "height": 192,
+      "format": "webp",
+      "hasAlpha": true,
+      "transparent": 19683,
+      "opaque": 15695,
+      "visible": 17181,
+      "bytes": 11184
+    },
+    {
+      "level": 2,
+      "emotion": "laughing",
+      "width": 192,
+      "height": 192,
+      "format": "webp",
+      "hasAlpha": true,
+      "transparent": 20014,
+      "opaque": 15437,
+      "visible": 16850,
+      "bytes": 11088
+    },
+    {
+      "level": 2,
+      "emotion": "scared",
+      "width": 192,
+      "height": 192,
+      "format": "webp",
+      "hasAlpha": true,
+      "transparent": 19502,
+      "opaque": 15703,
+      "visible": 17362,
+      "bytes": 11638
+    },
+    {
+      "level": 3,
+      "emotion": "joy",
+      "width": 192,
+      "height": 192,
+      "format": "webp",
+      "hasAlpha": true,
+      "transparent": 21215,
+      "opaque": 14221,
+      "visible": 15649,
+      "bytes": 11056
+    },
+    {
+      "level": 3,
+      "emotion": "smug",
+      "width": 192,
+      "height": 192,
+      "format": "webp",
+      "hasAlpha": true,
+      "transparent": 21113,
+      "opaque": 14306,
+      "visible": 15751,
+      "bytes": 10796
+    },
+    {
+      "level": 3,
+      "emotion": "crying",
+      "width": 192,
+      "height": 192,
+      "format": "webp",
+      "hasAlpha": true,
+      "transparent": 21057,
+      "opaque": 14376,
+      "visible": 15807,
+      "bytes": 11170
+    },
+    {
+      "level": 3,
+      "emotion": "angry",
+      "width": 192,
+      "height": 192,
+      "format": "webp",
+      "hasAlpha": true,
+      "transparent": 21197,
+      "opaque": 14235,
+      "visible": 15667,
+      "bytes": 10872
+    },
+    {
+      "level": 3,
+      "emotion": "laughing",
+      "width": 192,
+      "height": 192,
+      "format": "webp",
+      "hasAlpha": true,
+      "transparent": 21195,
+      "opaque": 14211,
+      "visible": 15669,
+      "bytes": 10770
+    },
+    {
+      "level": 3,
+      "emotion": "scared",
+      "width": 192,
+      "height": 192,
+      "format": "webp",
+      "hasAlpha": true,
+      "transparent": 21150,
+      "opaque": 14251,
+      "visible": 15714,
+      "bytes": 10920
+    },
+    {
+      "level": 4,
+      "emotion": "joy",
+      "width": 192,
+      "height": 192,
+      "format": "webp",
+      "hasAlpha": true,
+      "transparent": 20116,
+      "opaque": 15351,
+      "visible": 16748,
+      "bytes": 8064
+    },
+    {
+      "level": 4,
+      "emotion": "smug",
+      "width": 192,
+      "height": 192,
+      "format": "webp",
+      "hasAlpha": true,
+      "transparent": 20026,
+      "opaque": 15409,
+      "visible": 16838,
+      "bytes": 8108
+    },
+    {
+      "level": 4,
+      "emotion": "crying",
+      "width": 192,
+      "height": 192,
+      "format": "webp",
+      "hasAlpha": true,
+      "transparent": 20126,
+      "opaque": 15398,
+      "visible": 16738,
+      "bytes": 8540
+    },
+    {
+      "level": 4,
+      "emotion": "angry",
+      "width": 192,
+      "height": 192,
+      "format": "webp",
+      "hasAlpha": true,
+      "transparent": 19962,
+      "opaque": 15470,
+      "visible": 16902,
+      "bytes": 8358
+    },
+    {
+      "level": 4,
+      "emotion": "laughing",
+      "width": 192,
+      "height": 192,
+      "format": "webp",
+      "hasAlpha": true,
+      "transparent": 20330,
+      "opaque": 15210,
+      "visible": 16534,
+      "bytes": 8382
+    },
+    {
+      "level": 4,
+      "emotion": "scared",
+      "width": 192,
+      "height": 192,
+      "format": "webp",
+      "hasAlpha": true,
+      "transparent": 20745,
+      "opaque": 14787,
+      "visible": 16119,
+      "bytes": 8150
+    },
+    {
+      "level": 5,
+      "emotion": "joy",
+      "width": 192,
+      "height": 192,
+      "format": "webp",
+      "hasAlpha": true,
+      "transparent": 21290,
+      "opaque": 13741,
+      "visible": 15574,
+      "bytes": 11978
+    },
+    {
+      "level": 5,
+      "emotion": "smug",
+      "width": 192,
+      "height": 192,
+      "format": "webp",
+      "hasAlpha": true,
+      "transparent": 21969,
+      "opaque": 13139,
+      "visible": 14895,
+      "bytes": 11754
+    },
+    {
+      "level": 5,
+      "emotion": "crying",
+      "width": 192,
+      "height": 192,
+      "format": "webp",
+      "hasAlpha": true,
+      "transparent": 21483,
+      "opaque": 13613,
+      "visible": 15381,
+      "bytes": 12164
+    },
+    {
+      "level": 5,
+      "emotion": "angry",
+      "width": 192,
+      "height": 192,
+      "format": "webp",
+      "hasAlpha": true,
+      "transparent": 21557,
+      "opaque": 13545,
+      "visible": 15307,
+      "bytes": 11940
+    },
+    {
+      "level": 5,
+      "emotion": "laughing",
+      "width": 192,
+      "height": 192,
+      "format": "webp",
+      "hasAlpha": true,
+      "transparent": 21282,
+      "opaque": 13770,
+      "visible": 15582,
+      "bytes": 12072
+    },
+    {
+      "level": 5,
+      "emotion": "scared",
+      "width": 192,
+      "height": 192,
+      "format": "webp",
+      "hasAlpha": true,
+      "transparent": 21504,
+      "opaque": 13534,
+      "visible": 15360,
+      "bytes": 12150
+    }
+  ]
+}

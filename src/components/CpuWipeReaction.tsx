@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { getDragonReactionImageUrl } from './dragonReactions/assets';
+import type { DragonEmotion, DragonLevel } from './dragonReactions/types';
 import './CpuWipeReaction.css';
 
-export type CpuEmotion = 'joy' | 'angry' | 'smug' | 'crying' | 'scared' | 'laughing';
+export type CpuEmotion = DragonEmotion;
 
 export type CpuWipeReactionProps = {
   cpuLevel: number;
@@ -10,65 +12,51 @@ export type CpuWipeReactionProps = {
   durationMs?: number;
 };
 
-export function CpuWipeReaction({ 
-  cpuLevel, 
-  emotion, 
+export function CpuWipeReaction({
+  cpuLevel,
+  emotion,
   onComplete,
-  durationMs = 2500 
+  durationMs = 2500,
 }: CpuWipeReactionProps) {
   const [isVisible, setIsVisible] = useState(false);
+  const [failedUrl, setFailedUrl] = useState<string | undefined>();
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
 
   useEffect(() => {
-    // Mount時にスライドイン
-    const inTimer = requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        setIsVisible(true);
-      });
+    setIsVisible(false);
+    let secondFrame = 0;
+    let completionTimer = 0;
+    const firstFrame = requestAnimationFrame(() => {
+      secondFrame = requestAnimationFrame(() => setIsVisible(true));
     });
-
-    const outTimer = setTimeout(() => {
+    const outTimer = window.setTimeout(() => {
       setIsVisible(false);
-      // スライドアウトが終わる頃合いで親に通知
-      setTimeout(() => {
-        if (onComplete) onComplete();
-      }, 350);
+      completionTimer = window.setTimeout(() => onCompleteRef.current?.(), 350);
     }, durationMs);
 
     return () => {
-      cancelAnimationFrame(inTimer);
-      clearTimeout(outTimer);
+      cancelAnimationFrame(firstFrame);
+      cancelAnimationFrame(secondFrame);
+      window.clearTimeout(outTimer);
+      window.clearTimeout(completionTimer);
     };
-  }, [durationMs, onComplete]);
+  }, [cpuLevel, emotion, durationMs]);
 
-  const [imageSrc, setImageSrc] = useState(`/src/assets/dragons/reactions/lv${cpuLevel}/${emotion}.webp`);
-  const [hasFallbackPngFailed, setHasFallbackPngFailed] = useState(false);
-
-  useEffect(() => {
-    setImageSrc(`/src/assets/dragons/reactions/lv${cpuLevel}/${emotion}.webp`);
-    setHasFallbackPngFailed(false);
-  }, [cpuLevel, emotion]);
+  const level = (cpuLevel >= 1 && cpuLevel <= 5 ? cpuLevel : 1) as DragonLevel;
+  const imageUrl = getDragonReactionImageUrl(level, emotion);
+  const imageFailed = !imageUrl || failedUrl === imageUrl;
 
   return (
-    <div className={`cpu-wipe-container ${isVisible ? 'visible' : ''}`}>
-      <div className="cpu-wipe-content">
-        <img 
-          src={imageSrc} 
-          alt={`CPU Lv${cpuLevel} - ${emotion}`} 
-          className="cpu-wipe-image" 
-          onError={(e) => {
-            const target = e.currentTarget;
-            if (!hasFallbackPngFailed && imageSrc.endsWith('.webp')) {
-              setHasFallbackPngFailed(true);
-              setImageSrc(`/src/assets/dragons/reactions/lv${cpuLevel}/${emotion}.png`);
-            } else {
-              target.style.display = 'none';
-              target.parentElement?.classList.add('fallback-mode');
-            }
-          }}
-        />
-        <div className="cpu-wipe-fallback-text">
-          Lv{cpuLevel}<br/>{emotion}
-        </div>
+    <div className={`cpu-wipe-container${isVisible ? ' slide-in' : ''}`}>
+      <div className={`cpu-wipe-content${imageFailed ? ' fallback-mode' : ''}`}>
+        {!imageFailed && <img
+          src={imageUrl}
+          alt={`CPU Lv${cpuLevel} - ${emotion}`}
+          className="cpu-wipe-image"
+          onError={() => setFailedUrl(imageUrl)}
+        />}
+        <div className="cpu-wipe-fallback-text">Lv{cpuLevel}<br />{emotion}</div>
       </div>
     </div>
   );

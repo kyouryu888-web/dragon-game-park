@@ -1,0 +1,76 @@
+{
+  "level": 1,
+  "production": "remaining-approved-cutins",
+  "tool": "image_gen.imagegen",
+  "attempts": [
+    {
+      "variant": "pressure",
+      "attempt": 1,
+      "status": "produced-awaiting-independent-qa",
+      "fullPrompt": "Use case: stylized-concept.\nAsset type: ONE premium anime game cinematic character cut-in, true transparent alpha, landscape 1536 x 1024. This is a single new dynamic waist-up illustration, not a character sheet or a repeat of the static joy bust.\nInput images: Image 1 is the authoritative original character model sheet. Image 2 is the approved identity and modern facial rendering reference. Image 3 (Lv1 attack) is the approved cinematic illustration style, finish, composition density and dynamic gesture benchmark; use its rendering quality, not its pose or character colors for another level.\nPrimary request: Lv1 PRESSURE / startled defensive retreat. The baby recoils in a gentle three-quarter view, shoulders raised, head pulled slightly back, huge worried green eyes with clear pupils, arched worried brows, a small trembling open mouth with tiny fangs. One forepaw raised palm outward protectively, the other held close to the chest, wings subtly drawn inward. One or two small clear sweat droplets near the temple attached or very close to the head. Readable surprise and being in trouble, family friendly, not pain or injury. This is not anger, attacking or joyful laughter. Keep the whole baby dragon recognizable and face unobscured.\nIdentity: exact Lv1 cyan/turquoise BABY dragon, mint/light-green round chubby cheeks and segmented belly, big emerald green eyes, two short upward curved ring-banded pale mint horns, upright large mint central head fin, mint central forehead diamond with two smaller separate leaf marks, cyan cheek fins with mint accents, two small bat wings with mint membranes. Keep the baby muzzle, short arms and cute chubby proportions. No crown, halo, necklace or added decoration.\nComposition: centered isolated upper body, waist-up, a large clearly readable expressive face, BOTH correctly attached forearms and compact clawed paws. Show both wings behind the shoulders, fully contained, never cut off a horn, fin, wingtip, hand or effect. Keep every opaque and semitransparent pixel within at least 7% clear margin on all four sides of the 1536x1024 canvas. End the torso with a deliberate clean rounded lower silhouette above the bottom margin. No feet, ground, cropped limbs or excessively wide empty side areas.\nStyle: polished high-quality hand-drawn Japanese anime fantasy board-game illustration matching the approved examples, crisp varying dark outlines, appealing expressive face, structured soft cel shading, glossy restrained highlights, clean coherent scales and anatomy. Not photorealistic and not a 3D toy.\nBackground: genuine transparent alpha, empty space around and between limbs and wings. Do not paint a checkerboard. No matte, colored rectangle, white background, environment, floor, cast shadow, vignette or large aura. No cards, props, clothing, letters, numbers, text, symbols, border, logo, watermark, multiple views, extra characters, extra limbs or disconnected anatomy.",
+      "referencePaths": [
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/lv1_sheet_cyan.jpg",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/reactions-production/2026-09-12/cutouts/lv1/joy-v4.png",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv1/attack.webp"
+      ],
+      "originalPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/originals/lv1/pressure-attempt1.png",
+      "sourceOutput": "C:/Users/ray-0/.codex/generated_images/01a0d933-79fc-7113-9c8d-10a8bd87ccaa/exec-6bd7e5d2-4f4d-4f36-abf1-e28bce62487f.png",
+      "candidatePath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv1/pressure.webp",
+      "validationPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv1/pressure-v1-validation.json",
+      "sourceSha256": "bbe050043161b3e65beffb61d3eabe141f4a392b8b99b9cfc3cfcc2334f76cb1",
+      "candidateSha256": "b8aa5b82df21ffa322fdefeb4fb81bf7ee62e352d1aeb197c3a02c1cce76e934",
+      "producerReview": {
+        "status": "pass",
+        "lightBackground": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/edges/lv1-pressure-light.png",
+        "darkBackground": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/edges/lv1-pressure-dark.png",
+        "notes": "Character identity, expression, visible limbs and wings, safe margins, and light/dark cutout edges inspected by producing agent."
+      }
+    },
+    {
+      "variant": "victory",
+      "attempt": 1,
+      "status": "produced-awaiting-independent-qa",
+      "fullPrompt": "Use case: stylized-concept.\nAsset type: ONE premium anime game cinematic character cut-in, true transparent alpha, landscape 1536 x 1024. This is a single new dynamic waist-up illustration, not a character sheet or a repeat of the static joy bust.\nInput images: Image 1 is the authoritative original character model sheet. Image 2 is the approved identity and modern facial rendering reference. Image 3 (Lv1 attack) is the approved cinematic illustration style, finish, composition density and dynamic gesture benchmark; use its rendering quality, not its pose or character colors for another level.\nPrimary request: Lv1 VICTORY / delighted little champion. Three-quarter waist-up baby dragon proudly lifting BOTH small clenched forepaws high beside the shoulders in a joyful celebratory cheer, chest lifted, head tilted slightly with a bright open toothy smile and sparkling open happy emerald eyes. Small wings opened proudly. The pose is upright and buoyant, not the forward punching attack pose. Tiny baby claws, short correctly attached arms; no trophy, confetti or extra decorations.\nIdentity: exact Lv1 cyan/turquoise BABY dragon, mint/light-green round chubby cheeks and segmented belly, big emerald green eyes, two short upward curved ring-banded pale mint horns, upright large mint central head fin, mint central forehead diamond with two smaller separate leaf marks, cyan cheek fins with mint accents, two small bat wings with mint membranes. Keep the baby muzzle, short arms and cute chubby proportions. No crown, halo, necklace or added decoration.\nComposition: centered isolated upper body, waist-up, a large clearly readable expressive face, BOTH correctly attached forearms and compact clawed paws. Show both wings behind the shoulders, fully contained, never cut off a horn, fin, wingtip, hand or effect. Keep every opaque and semitransparent pixel within at least 7% clear margin on all four sides of the 1536x1024 canvas. End the torso with a deliberate clean rounded lower silhouette above the bottom margin. No feet, ground, cropped limbs or excessively wide empty side areas.\nStyle: polished high-quality hand-drawn Japanese anime fantasy board-game illustration matching the approved examples, crisp varying dark outlines, appealing expressive face, structured soft cel shading, glossy restrained highlights, clean coherent scales and anatomy. Not photorealistic and not a 3D toy.\nBackground: genuine transparent alpha, empty space around and between limbs and wings. Do not paint a checkerboard. No matte, colored rectangle, white background, environment, floor, cast shadow, vignette or large aura. No cards, props, clothing, letters, numbers, text, symbols, border, logo, watermark, multiple views, extra characters, extra limbs or disconnected anatomy.",
+      "referencePaths": [
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/lv1_sheet_cyan.jpg",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/reactions-production/2026-09-12/cutouts/lv1/joy-v4.png",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv1/attack.webp"
+      ],
+      "originalPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/originals/lv1/victory-attempt1.png",
+      "sourceOutput": "C:/Users/ray-0/.codex/generated_images/01a0d933-79fc-7113-9c8d-10a8bd87ccaa/exec-51cdc7c9-ac14-4846-9240-c473da6accbc.png",
+      "candidatePath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv1/victory.webp",
+      "validationPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv1/victory-v1-validation.json",
+      "sourceSha256": "5454a083a9d96373f16501024c328e92108e981d9985563e9359b3886821e285",
+      "candidateSha256": "dadb4d0ff7c0c8f59bd737feb99ee7ce55bd8116b3046d2ef2688f86b0797356",
+      "producerReview": {
+        "status": "pass",
+        "lightBackground": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/edges/lv1-victory-light.png",
+        "darkBackground": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/edges/lv1-victory-dark.png",
+        "notes": "Character identity, expression, visible limbs and wings, safe margins, and light/dark cutout edges inspected by producing agent."
+      }
+    },
+    {
+      "variant": "defeat",
+      "attempt": 1,
+      "status": "produced-awaiting-independent-qa",
+      "fullPrompt": "Use case: stylized-concept.\nAsset type: ONE premium anime game cinematic character cut-in, true transparent alpha, landscape 1536 x 1024. This is a single new dynamic waist-up illustration, not a character sheet or a repeat of the static joy bust.\nInput images: Image 1 is the authoritative original character model sheet. Image 2 is the approved identity and modern facial rendering reference. Image 3 (Lv1 attack) is the approved cinematic illustration style, finish, composition density and dynamic gesture benchmark; use its rendering quality, not its pose or character colors for another level.\nPrimary request: Lv1 DEFEAT / tearful disappointed loss. The baby slumps forward slightly in a three-quarter waist-up pose, shoulders drooping, both compact forepaws curled helplessly near the lower chest, wings drooped but fully visible. Big emerald eyes welling with large clear tears streaming down both mint cheeks, eyebrows raised sadly, trembling downturned open mouth with tiny fangs. Emotion is sad and frustrated after losing a family board game, endearing and nonviolent, no injury or bruises. Keep the eyes and face fully visible; no hands covering the face.\nIdentity: exact Lv1 cyan/turquoise BABY dragon, mint/light-green round chubby cheeks and segmented belly, big emerald green eyes, two short upward curved ring-banded pale mint horns, upright large mint central head fin, mint central forehead diamond with two smaller separate leaf marks, cyan cheek fins with mint accents, two small bat wings with mint membranes. Keep the baby muzzle, short arms and cute chubby proportions. No crown, halo, necklace or added decoration.\nComposition: centered isolated upper body, waist-up, a large clearly readable expressive face, BOTH correctly attached forearms and compact clawed paws. Show both wings behind the shoulders, fully contained, never cut off a horn, fin, wingtip, hand or effect. Keep every opaque and semitransparent pixel within at least 7% clear margin on all four sides of the 1536x1024 canvas. End the torso with a deliberate clean rounded lower silhouette above the bottom margin. No feet, ground, cropped limbs or excessively wide empty side areas.\nStyle: polished high-quality hand-drawn Japanese anime fantasy board-game illustration matching the approved examples, crisp varying dark outlines, appealing expressive face, structured soft cel shading, glossy restrained highlights, clean coherent scales and anatomy. Not photorealistic and not a 3D toy.\nBackground: genuine transparent alpha, empty space around and between limbs and wings. Do not paint a checkerboard. No matte, colored rectangle, white background, environment, floor, cast shadow, vignette or large aura. No cards, props, clothing, letters, numbers, text, symbols, border, logo, watermark, multiple views, extra characters, extra limbs or disconnected anatomy.",
+      "referencePaths": [
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/lv1_sheet_cyan.jpg",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/reactions-production/2026-09-12/cutouts/lv1/joy-v4.png",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv1/attack.webp"
+      ],
+      "originalPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/originals/lv1/defeat-attempt1.png",
+      "sourceOutput": "C:/Users/ray-0/.codex/generated_images/01a0d933-79fc-7113-9c8d-10a8bd87ccaa/exec-2a329016-d50e-40d0-b50e-8aac13076e3c.png",
+      "candidatePath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv1/defeat.webp",
+      "validationPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv1/defeat-v1-validation.json",
+      "sourceSha256": "e55605eca468871d9f14805e6affb502ee9b795685e83e52604c23e435adf353",
+      "candidateSha256": "fbf6ec7c6592f75fab3d36246183804f825db329553cce6ee28a18774213b483",
+      "producerReview": {
+        "status": "pass",
+        "lightBackground": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/edges/lv1-defeat-light.png",
+        "darkBackground": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/edges/lv1-defeat-dark.png",
+        "notes": "Character identity, expression, visible limbs and wings, safe margins, and light/dark cutout edges inspected by producing agent."
+      }
+    }
+  ]
+}

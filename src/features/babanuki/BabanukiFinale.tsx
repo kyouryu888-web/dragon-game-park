@@ -3,6 +3,7 @@ import type { BabanukiState } from './babanukiTypes';
 import { getRankings } from './babanukiRules';
 import { getCpuDisplayName } from './babanukiCpu';
 import { GameEndActions } from '../../components/GameEndActions';
+import { DragonResultArtwork } from '../../components/DragonResultArtwork';
 
 /**
  * 最弱王の戴冠式。
@@ -73,6 +74,10 @@ export function BabanukiFinale({
   const loser = state.players.find((p) => p.id === state.loserId) ?? null;
   const loserName = loser ? loser.name || (loser.isCpu ? getCpuDisplayName(loser.cpuLevel) : 'プレイヤー') : '';
   const isViewerLoser = state.loserId === viewerId;
+  const resultDragon = loser?.isCpu
+    ? loser
+    : rankings.map(entry => state.players.find(player => player.id === entry.playerId))
+      .find(player => player?.isCpu);
 
   return (
     <div
@@ -99,6 +104,15 @@ export function BabanukiFinale({
       )}
 
       <div style={{ position: 'relative', textAlign: 'center', zIndex: 2, width: '100%', maxWidth: 380, margin: 'auto 0' }}>
+        {stage >= 3 && resultDragon && (
+          <div style={{ position: 'absolute', top: 12, right: 0, width: 'min(23vw, 92px)', pointerEvents: 'none' }}>
+            <DragonResultArtwork
+              actor={resultDragon}
+              won={resultDragon.id !== state.loserId}
+              name={resultDragon.name || getCpuDisplayName(resultDragon.cpuLevel)}
+            />
+          </div>
+        )}
         {/* ジョーカーがめくれ上がる */}
         {stage >= 1 && (
           <div className="babanuki-joker-reveal" style={{ position: 'relative', display: 'inline-block', marginBottom: 6 }}>

@@ -1,0 +1,99 @@
+{
+  "level": 2,
+  "production": "remaining-approved-cutins",
+  "tool": "image_gen.imagegen",
+  "attempts": [
+    {
+      "variant": "attack",
+      "attempt": 1,
+      "status": "produced-awaiting-independent-qa",
+      "fullPrompt": "Use case: stylized-concept.\nAsset type: ONE premium anime game cinematic character cut-in, true transparent alpha, landscape 1536 x 1024. This is a single new dynamic waist-up illustration, not a character sheet or a repeat of the static joy bust.\nInput images: Image 1 is the authoritative original character model sheet. Image 2 is the approved identity and modern facial rendering reference. Image 3 (Lv1 attack) is the approved cinematic illustration style, finish, composition density and dynamic gesture benchmark; use its rendering quality, not its pose or character colors for another level.\nPrimary request: Lv2 ATTACK / energetic confident initiative. Three-quarter waist-up young red dragon leaning forward diagonally, head turned toward the viewer with a brave confident grin, focused amber eyes, one compact clenched forepaw projected forward and the other drawn back beside the chest. Small bat wings open in a sharp energetic sweep behind the shoulders. Clearly a spirited game move, no opponent or injury. Preserve the distinct golden flame markings on the red shoulders and arms. Do not recolor the Lv1 character; use Lv2 exact face and horns.\nIdentity: exact Lv2 RED young dragon from Image 1 and Image 2, red/orange scales, cream/light-gold lower muzzle and segmented belly, amber-orange eyes, two moderately long curved golden-brown banded horns, red flame-shaped crown of head spines with orange inner accents, golden forehead diamond and two separate small golden leaf marks, red cheek fins with gold accents. Distinct yellow flame-pattern markings on red upper arms and shoulders, two red-rimmed bat wings with orange-gold membranes. Lively young dragon, older/slightly leaner than Lv1 but still appealing and youthful. No crown, halo, jewelry, clothing or added decoration.\nComposition: centered isolated upper body, waist-up, a large clearly readable expressive face, BOTH correctly attached forearms and compact clawed paws. Show both wings behind the shoulders, fully contained, never cut off a horn, fin, wingtip, hand or effect. Keep every opaque and semitransparent pixel within at least 7% clear margin on all four sides of the 1536x1024 canvas. End the torso with a deliberate clean rounded lower silhouette above the bottom margin. No feet, ground, cropped limbs or excessively wide empty side areas.\nStyle: polished high-quality hand-drawn Japanese anime fantasy board-game illustration matching the approved examples, crisp varying dark outlines, appealing expressive face, structured soft cel shading, glossy restrained highlights, clean coherent scales and anatomy. Not photorealistic and not a 3D toy.\nBackground: genuine transparent alpha, empty space around and between limbs and wings. Do not paint a checkerboard. No matte, colored rectangle, white background, environment, floor, cast shadow, vignette or large aura. No cards, props, clothing, letters, numbers, text, symbols, border, logo, watermark, multiple views, extra characters, extra limbs or disconnected anatomy.",
+      "referencePaths": [
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/lv2_sheet_red.jpg",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/reactions-production/2026-09-12/cutouts/lv2/joy-key-v2.png",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv1/attack.webp"
+      ],
+      "originalPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/originals/lv2/attack-attempt1.png",
+      "sourceOutput": "C:/Users/ray-0/.codex/generated_images/01a0d933-79fc-7113-9c8d-10a8bd87ccaa/exec-ab9b683f-f107-4a33-9636-fcbd81674356.png",
+      "candidatePath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv2/attack.webp",
+      "validationPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv2/attack-v1-validation.json",
+      "sourceSha256": "2e9de14df09e7aa1941d4b74c02ce867334e8a306f72b50204952a752682d46d",
+      "candidateSha256": "5f56c560a0c03a9845aa5132958c2711fc9e83ef75ce6b5bf93d60c60c7d4ae7",
+      "producerReview": {
+        "status": "pass",
+        "lightBackground": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/edges/lv2-attack-light.png",
+        "darkBackground": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/edges/lv2-attack-dark.png",
+        "notes": "Character identity, expression, visible limbs and wings, safe margins, and light/dark cutout edges inspected by producing agent."
+      }
+    },
+    {
+      "variant": "pressure",
+      "attempt": 1,
+      "status": "produced-awaiting-independent-qa",
+      "fullPrompt": "Use case: stylized-concept.\nAsset type: ONE premium anime game cinematic character cut-in, true transparent alpha, landscape 1536 x 1024. This is a single new dynamic waist-up illustration, not a character sheet or a repeat of the static joy bust.\nInput images: Image 1 is the authoritative original character model sheet. Image 2 is the approved identity and modern facial rendering reference. Image 3 (Lv1 attack) is the approved cinematic illustration style, finish, composition density and dynamic gesture benchmark; use its rendering quality, not its pose or character colors for another level.\nPrimary request: Lv2 PRESSURE / startled defensive retreat. Three-quarter waist-up red young dragon recoiling slightly backward with tense raised shoulders, wide worried amber eyes, raised eyebrows and a small alarmed open mouth. One forepaw raised with palm outward, the other curled protectively against the chest, wings drawn inward in surprise. One or two small clear sweat drops at a temple. This spirited young dragon is suddenly in trouble but still trying to keep composure. No crying rivers, attacking, injury or angry roar; keep the youthful face and flame markings visible.\nIdentity: exact Lv2 RED young dragon from Image 1 and Image 2, red/orange scales, cream/light-gold lower muzzle and segmented belly, amber-orange eyes, two moderately long curved golden-brown banded horns, red flame-shaped crown of head spines with orange inner accents, golden forehead diamond and two separate small golden leaf marks, red cheek fins with gold accents. Distinct yellow flame-pattern markings on red upper arms and shoulders, two red-rimmed bat wings with orange-gold membranes. Lively young dragon, older/slightly leaner than Lv1 but still appealing and youthful. No crown, halo, jewelry, clothing or added decoration.\nComposition: centered isolated upper body, waist-up, a large clearly readable expressive face, BOTH correctly attached forearms and compact clawed paws. Show both wings behind the shoulders, fully contained, never cut off a horn, fin, wingtip, hand or effect. Keep every opaque and semitransparent pixel within at least 7% clear margin on all four sides of the 1536x1024 canvas. End the torso with a deliberate clean rounded lower silhouette above the bottom margin. No feet, ground, cropped limbs or excessively wide empty side areas.\nStyle: polished high-quality hand-drawn Japanese anime fantasy board-game illustration matching the approved examples, crisp varying dark outlines, appealing expressive face, structured soft cel shading, glossy restrained highlights, clean coherent scales and anatomy. Not photorealistic and not a 3D toy.\nBackground: genuine transparent alpha, empty space around and between limbs and wings. Do not paint a checkerboard. No matte, colored rectangle, white background, environment, floor, cast shadow, vignette or large aura. No cards, props, clothing, letters, numbers, text, symbols, border, logo, watermark, multiple views, extra characters, extra limbs or disconnected anatomy.",
+      "referencePaths": [
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/lv2_sheet_red.jpg",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/reactions-production/2026-09-12/cutouts/lv2/joy-key-v2.png",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv1/attack.webp"
+      ],
+      "originalPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/originals/lv2/pressure-attempt1.png",
+      "sourceOutput": "C:/Users/ray-0/.codex/generated_images/01a0d933-79fc-7113-9c8d-10a8bd87ccaa/exec-098aba6c-0d69-40c7-836f-5909f03a60ef.png",
+      "candidatePath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv2/pressure.webp",
+      "validationPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv2/pressure-v1-validation.json",
+      "sourceSha256": "5b7588e607b9228f6375d5d1e70d9f88179491c2c1b8cdf070f0c150dd10d3e8",
+      "candidateSha256": "371c4f426a2660d9003cf761fdad0054472e76aa5e526854257a22e4de25518f",
+      "producerReview": {
+        "status": "pass",
+        "lightBackground": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/edges/lv2-pressure-light.png",
+        "darkBackground": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/edges/lv2-pressure-dark.png",
+        "notes": "Character identity, expression, visible limbs and wings, safe margins, and light/dark cutout edges inspected by producing agent."
+      }
+    },
+    {
+      "variant": "victory",
+      "attempt": 1,
+      "status": "produced-awaiting-independent-qa",
+      "fullPrompt": "Use case: stylized-concept.\nAsset type: ONE premium anime game cinematic character cut-in, true transparent alpha, landscape 1536 x 1024. This is a single new dynamic waist-up illustration, not a character sheet or a repeat of the static joy bust.\nInput images: Image 1 is the authoritative original character model sheet. Image 2 is the approved identity and modern facial rendering reference. Image 3 (Lv1 attack) is the approved cinematic illustration style, finish, composition density and dynamic gesture benchmark; use its rendering quality, not its pose or character colors for another level.\nPrimary request: Lv2 VICTORY / excited triumphant celebration. Upright three-quarter waist-up young red dragon proudly raising one clenched forepaw above shoulder level while the other forms a celebratory fist close to its chest. Broad delighted smile with small visible teeth, brightly sparkling open amber eyes, head slightly tilted, chest lifted and wings opened in a proud balanced display. Youthful confident winner after a family board game. Clear lively raised-arm silhouette distinct from forward attack. Preserve flame-pattern arms; no trophy, confetti or added ornament.\nIdentity: exact Lv2 RED young dragon from Image 1 and Image 2, red/orange scales, cream/light-gold lower muzzle and segmented belly, amber-orange eyes, two moderately long curved golden-brown banded horns, red flame-shaped crown of head spines with orange inner accents, golden forehead diamond and two separate small golden leaf marks, red cheek fins with gold accents. Distinct yellow flame-pattern markings on red upper arms and shoulders, two red-rimmed bat wings with orange-gold membranes. Lively young dragon, older/slightly leaner than Lv1 but still appealing and youthful. No crown, halo, jewelry, clothing or added decoration.\nComposition: centered isolated upper body, waist-up, a large clearly readable expressive face, BOTH correctly attached forearms and compact clawed paws. Show both wings behind the shoulders, fully contained, never cut off a horn, fin, wingtip, hand or effect. Keep every opaque and semitransparent pixel within at least 7% clear margin on all four sides of the 1536x1024 canvas. End the torso with a deliberate clean rounded lower silhouette above the bottom margin. No feet, ground, cropped limbs or excessively wide empty side areas.\nStyle: polished high-quality hand-drawn Japanese anime fantasy board-game illustration matching the approved examples, crisp varying dark outlines, appealing expressive face, structured soft cel shading, glossy restrained highlights, clean coherent scales and anatomy. Not photorealistic and not a 3D toy.\nBackground: genuine transparent alpha, empty space around and between limbs and wings. Do not paint a checkerboard. No matte, colored rectangle, white background, environment, floor, cast shadow, vignette or large aura. No cards, props, clothing, letters, numbers, text, symbols, border, logo, watermark, multiple views, extra characters, extra limbs or disconnected anatomy.",
+      "referencePaths": [
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/lv2_sheet_red.jpg",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/reactions-production/2026-09-12/cutouts/lv2/joy-key-v2.png",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv1/attack.webp"
+      ],
+      "originalPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/originals/lv2/victory-attempt1.png",
+      "sourceOutput": "C:/Users/ray-0/.codex/generated_images/01a0d933-79fc-7113-9c8d-10a8bd87ccaa/exec-4b06494b-82da-4cf6-a5b3-e275eab05f26.png",
+      "candidatePath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv2/victory.webp",
+      "validationPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv2/victory-v1-validation.json",
+      "sourceSha256": "6fac61da148b97c2373a0fc414124b1bfab74f7aae93139ee23dd7d288a06a07",
+      "candidateSha256": "1c02f5ab10d67179180a5a6ac00e3bd32550e53a0fd11c4ce7ca8c0dbcf26fed",
+      "producerReview": {
+        "status": "pass",
+        "lightBackground": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/edges/lv2-victory-light.png",
+        "darkBackground": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/edges/lv2-victory-dark.png",
+        "notes": "Character identity, expression, visible limbs and wings, safe margins, and light/dark cutout edges inspected by producing agent."
+      }
+    },
+    {
+      "variant": "defeat",
+      "attempt": 1,
+      "status": "produced-awaiting-independent-qa",
+      "fullPrompt": "Use case: stylized-concept.\nAsset type: ONE premium anime game cinematic character cut-in, true transparent alpha, landscape 1536 x 1024. This is a single new dynamic waist-up illustration, not a character sheet or a repeat of the static joy bust.\nInput images: Image 1 is the authoritative original character model sheet. Image 2 is the approved identity and modern facial rendering reference. Image 3 (Lv1 attack) is the approved cinematic illustration style, finish, composition density and dynamic gesture benchmark; use its rendering quality, not its pose or character colors for another level.\nPrimary request: Lv2 DEFEAT / frustrated tearful loss. Three-quarter waist-up red young dragon hunching slightly forward, shoulders and wings drooping, two compact clenched forepaws pressed close to the chest as if trying not to cry. Large clear tears run down both cream cheeks, amber eyes look sad and frustrated, brows turned upward in the middle, trembling downturned mouth with tiny fangs. It has lost a family board game; expressive wounded pride without injury, anger, gore or violence. Face and eyes remain completely visible, preserve distinctive flame markings on the arms.\nIdentity: exact Lv2 RED young dragon from Image 1 and Image 2, red/orange scales, cream/light-gold lower muzzle and segmented belly, amber-orange eyes, two moderately long curved golden-brown banded horns, red flame-shaped crown of head spines with orange inner accents, golden forehead diamond and two separate small golden leaf marks, red cheek fins with gold accents. Distinct yellow flame-pattern markings on red upper arms and shoulders, two red-rimmed bat wings with orange-gold membranes. Lively young dragon, older/slightly leaner than Lv1 but still appealing and youthful. No crown, halo, jewelry, clothing or added decoration.\nComposition: centered isolated upper body, waist-up, a large clearly readable expressive face, BOTH correctly attached forearms and compact clawed paws. Show both wings behind the shoulders, fully contained, never cut off a horn, fin, wingtip, hand or effect. Keep every opaque and semitransparent pixel within at least 7% clear margin on all four sides of the 1536x1024 canvas. End the torso with a deliberate clean rounded lower silhouette above the bottom margin. No feet, ground, cropped limbs or excessively wide empty side areas.\nStyle: polished high-quality hand-drawn Japanese anime fantasy board-game illustration matching the approved examples, crisp varying dark outlines, appealing expressive face, structured soft cel shading, glossy restrained highlights, clean coherent scales and anatomy. Not photorealistic and not a 3D toy.\nBackground: genuine transparent alpha, empty space around and between limbs and wings. Do not paint a checkerboard. No matte, colored rectangle, white background, environment, floor, cast shadow, vignette or large aura. No cards, props, clothing, letters, numbers, text, symbols, border, logo, watermark, multiple views, extra characters, extra limbs or disconnected anatomy.",
+      "referencePaths": [
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/lv2_sheet_red.jpg",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/reactions-production/2026-09-12/cutouts/lv2/joy-key-v2.png",
+        "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv1/attack.webp"
+      ],
+      "originalPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/originals/lv2/defeat-attempt1.png",
+      "sourceOutput": "C:/Users/ray-0/.codex/generated_images/01a0d933-79fc-7113-9c8d-10a8bd87ccaa/exec-f08d88c3-1d68-4fab-a630-c8ee44889628.png",
+      "candidatePath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv2/defeat.webp",
+      "validationPath": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/candidates/lv2/defeat-v1-validation.json",
+      "sourceSha256": "1b9a99b02e189d50fe4878874a0f550a26fa4f0b1aa86a3fdc1ae3f96b2590a4",
+      "candidateSha256": "c8768108bb793c7b8004d9c416b2e5e99a37c09ba80bff43b4480d77ea1329fb",
+      "producerReview": {
+        "status": "pass",
+        "lightBackground": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/edges/lv2-defeat-light.png",
+        "darkBackground": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park/docs/design/dragons/cutins-production/2026-09-20/previews/edges/lv2-defeat-dark.png",
+        "notes": "Character identity, expression, visible limbs and wings, safe margins, and light/dark cutout edges inspected by producing agent."
+      }
+    }
+  ]
+}

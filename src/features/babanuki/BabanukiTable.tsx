@@ -1,7 +1,11 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import type { CSSProperties } from 'react';
+import { DragonReactionWipe } from '../../components/dragonReactions';
+import type { DragonPresentationPreference, DragonReactionEvent } from '../../components/dragonReactions';
 import type { BabanukiPlayer, BabanukiState, Card } from './babanukiTypes';
 import { isJoker } from './babanukiTypes';
 import { getCpuDisplayName } from './babanukiCpu';
+import './BabanukiTable.css';
 
 /**
  * 盤面の描画とカードの飛行アニメーション。
@@ -50,7 +54,11 @@ type Props = {
   onShuffle: () => void;
   /** 手札移動演出中の出目。盤面中央の見せ場演出に使う */
   shuffleDice?: number | null;
+  dragonReaction?: DragonReactionEvent | null;
+  dragonPreference?: DragonPresentationPreference;
 };
+
+const CPU_LEVELS = ['very-easy', 'easy', 'normal', 'hard', 'very-hard'] as const;
 
 const SUIT_MARK: Record<string, string> = {
   spade: '♠',
@@ -207,6 +215,8 @@ export function BabanukiTable({
   canShuffle,
   onShuffle,
   shuffleDice = null,
+  dragonReaction = null,
+  dragonPreference = 'lively',
 }: Props) {
   const hiddenIds = useMemo(() => new Set(hidden), [hidden]);
   const elsRef = useRef(new Map<string, HTMLElement>());
@@ -244,9 +254,9 @@ export function BabanukiTable({
   // 座席は楕円上に配置する。自分は常に下、左隣（次の手番）は画面左。
   const seatStyle = (index: number, total: number, pickable: boolean) => {
     const angle = (90 + ((index + 1) * 360) / total) * (Math.PI / 180);
-    // 横は 37% まで。4人のとき真横に座る席が画面からはみ出すのを防ぐ。
+    // 側席の札と小さなドラゴンが狭い画面からはみ出さない範囲に収める。
     // 引く相手の席は札を広げるぶん横幅が要るので、少し内側へ寄せる
-    const left = 50 + (pickable ? 29 : 37) * Math.cos(angle);
+    const left = 50 + (pickable ? 26 : 32.5) * Math.cos(angle);
     const top = 48 + (pickable ? 34 : 40) * Math.sin(angle);
     return { left: `${left}%`, top: `${top}%` };
   };
@@ -344,6 +354,7 @@ export function BabanukiTable({
         </button>
 
         {others.map((player, index) => {
+          const isTopSeat = state.seatOrder.length % 2 === 0 && index === state.seatOrder.length / 2 - 1;
           const isTarget = player.id === drawTargetId;
           const finished = player.finishedRank !== null;
           const showCount = Math.min(player.hand.length, 8);
@@ -373,6 +384,16 @@ export function BabanukiTable({
                 opacity: finished ? 0.45 : 1,
               }}
             >
+              {player.isCpu && CPU_LEVELS.indexOf(player.cpuLevel) >= 0 && (
+                <DragonReactionWipe
+                  cpu={{ id: player.id, name: player.name || getCpuDisplayName(player.cpuLevel), level: (CPU_LEVELS.indexOf(player.cpuLevel) + 1) as 1 | 2 | 3 | 4 | 5 }}
+                  event={dragonReaction}
+                  preference={dragonPreference}
+                  side="right"
+                  className={isTopSeat ? 'babanuki-top-dragon' : undefined}
+                  style={{ position: 'absolute', top: isTopSeat ? -12 : -24, right: isTopSeat ? -42 : 8, '--dragon-face-size': '32px' } as CSSProperties}
+                />
+              )}
               <div style={{ fontSize: 11, color: '#e0d3b8', marginBottom: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {player.name || (player.isCpu ? getCpuDisplayName(player.cpuLevel) : 'プレイヤー')}
               </div>

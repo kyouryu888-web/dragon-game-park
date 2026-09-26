@@ -1,0 +1,26 @@
+{
+  "phase": "runtime-integration-started",
+  "planApproved": true,
+  "representativeArtApproved": true,
+  "artApprovalEvidence": "User: 絵柄はいいのですがワイプの構図はもっと小さく表示してください。",
+  "layoutDirection": "Use the supplied reference: small white circular CPU portraits with thin green borders beside their seats; short white comic speech bubbles. Preserve actual UNO cards, table, hand layout and existing cut-in behavior. Replace only the cut-in interior image.",
+  "previousPlacementSuperseded": true,
+  "representativeProductionComplete": true,
+  "independentReview": "accepted_reference_fixture_preview",
+  "layoutRevisionCompleted": true,
+  "reviewEntryPoint": "ART_APPROVAL.md",
+  "remainingSixteenAuthorizedAfterArtApproval": true,
+  "representatives": [
+    "lv1/attack",
+    "lv3/pressure",
+    "lv4/defeat",
+    "lv5/victory"
+  ],
+  "layoutInstructionSource": "User-provided ワイプ設置イメージ.png on 2026-09-21",
+  "compactPlacementSuperseded": true,
+  "previewEntry": "previews/reference.html",
+  "runtimeIntegrated": false,
+  "deployed": false,
+  "userLayoutApproved": true,
+  "layoutApprovalEvidence": "User: いい感じです！"
+}

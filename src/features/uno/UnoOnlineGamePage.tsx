@@ -28,6 +28,10 @@ import { createInitialUnoState } from './createInitialUnoState';
 import { UnoCinematicOverlay } from './UnoCinematicOverlay';
 import { useUnoCinematics } from './useUnoCinematics';
 import { UNO_ROULETTE_STEP_MS } from './unoCinematics';
+import { useDragonReactionPreference, useDragonReactions, type PublicDragonReactionInput } from '../../components/dragonReactions';
+import { DragonPresentationControl } from '../../components/DragonPresentationControl';
+import { DragonResultArtwork } from '../../components/DragonResultArtwork';
+import { detectUnoDragonReactions } from './unoDragonReactions';
 import {
   canApplyUnoOnlineAction,
   countUnoJoined,
@@ -67,6 +71,15 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToSetup, onBackT
   const [rematchSeedGameId, setRematchSeedGameId] = useState<string | null>(null);
 
   const stateRef = useRef<UnoGameState | null>(null);
+  const [dragonInputs, setDragonInputs] = useState<PublicDragonReactionInput[]>([]);
+  const previousDragonStateRef = useRef<UnoGameState | null>(null);
+  useEffect(() => {
+    const previous = previousDragonStateRef.current;
+    previousDragonStateRef.current = gameState;
+    setDragonInputs(previous && gameState ? detectUnoDragonReactions(previous, gameState) : []);
+  }, [gameState]);
+  const { preference: dragonPreference } = useDragonReactionPreference();
+  const { active: dragonReaction } = useDragonReactions({ matchId: gameState?.gameId ?? roomCode, events: dragonInputs, preference: dragonPreference });
   const rowRef = useRef<UnoRoomRow | null>(null);
   const versionRef = useRef(0);
   const writingRef = useRef(false);
@@ -450,14 +463,16 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToSetup, onBackT
   }
 
   if (gameState.status === 'finished') {
+    const resultCpu = winner?.isCpu ? winner : rankings.find(entry => entry.player.isCpu)?.player;
     return (
       <Layout>
-        <UnoCinematicOverlay event={cinematicEvent} />
+        <UnoCinematicOverlay event={cinematicEvent} players={gameState.players} reactionInputs={dragonInputs} preference={dragonPreference} />
         <div style={{ paddingTop: 32, paddingBottom: 40, textAlign: 'center' }}>
           <div style={{ fontSize: 48, marginBottom: 10 }}>WIN</div>
           <h1 style={{ fontSize: 22, color: 'var(--brown)', marginBottom: 12 }}>
             {winner ? `${winner.name} の勝ち!` : 'ゲーム終了'}
           </h1>
+          <DragonResultArtwork actor={resultCpu} won={Boolean(resultCpu && winner?.id === resultCpu.id)} name={resultCpu?.name ?? ''} />
           <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 20 }}>
             ルーム: <strong style={{ fontFamily: 'monospace' }}>{roomCode}</strong>
           </p>
@@ -530,9 +545,10 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToSetup, onBackT
 
   return (
     <Layout>
-      <UnoCinematicOverlay event={cinematicEvent} />
+      <UnoCinematicOverlay event={cinematicEvent} players={gameState.players} reactionInputs={dragonInputs} preference={dragonPreference} />
       <div style={{ paddingTop: 'var(--game-page-pt)', paddingBottom: 'var(--game-page-pb)' }}>
-        <div style={{ textAlign: 'center', marginBottom: 12 }}>
+        <div style={{ position: 'relative', textAlign: 'center', marginBottom: 12 }}>
+          <DragonPresentationControl />
           <h1 style={{ fontSize: 18, color: 'var(--brown)', marginBottom: 3 }}>
             {gameState.variant === 'hard' ? 'ハード版 UNO オンライン' : '通常版 UNO オンライン'}
           </h1>
@@ -571,6 +587,8 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToSetup, onBackT
           canAct={canTakeTurn}
           isCpuThinking={isCpuThinking}
           message={message}
+          dragonReaction={dragonReaction}
+          dragonPreference={dragonPreference}
           viewPlayerId={myPlayerId}
           roulettePresentation={roulettePresentation}
           pendingOverlay={gameState.status === 'deciding-starter' || gameState.status === 'starter-ready' ? (
