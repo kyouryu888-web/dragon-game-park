@@ -85,7 +85,94 @@
   .dragon-reaction-wipe.is-right .dragon-reaction-speech::after { right: 14px; }
 }
 
+
+/* A short, emotion-specific gesture makes a new face readable without moving its seat. */
+.is-reacting[data-emotion="joy"] .dragon-reaction-face,
+.is-reacting[data-emotion="laughing"] .dragon-reaction-face { animation: dragon-face-pop 360ms ease-out both; }
+.is-reacting[data-emotion="smug"] .dragon-reaction-face { animation: dragon-face-nod 380ms ease-out both; }
+.is-reacting[data-emotion="scared"] .dragon-reaction-face { animation: dragon-face-startle 340ms ease-out both; }
+.is-reacting[data-emotion="crying"] .dragon-reaction-face { animation: dragon-face-droop 420ms ease-out both; }
+.is-reacting[data-emotion="angry"] .dragon-reaction-face { animation: dragon-face-shake 320ms ease-out both; }
+.is-reacting .dragon-reaction-speech,
+.is-reacting .dragon-narration-speech { animation: dragon-bubble-arrive 220ms ease-out both; }
+
+.dragon-reaction-narration {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 7;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: max-content;
+  max-width: min(210px, calc(100% - 16px));
+  min-width: 0;
+  pointer-events: none;
+  isolation: isolate;
+}
+.dragon-reaction-narration .dragon-reaction-face {
+  width: 44px;
+  height: 44px;
+  flex: none;
+}
+.dragon-narration-speech {
+  min-width: 0;
+  max-width: 154px;
+  padding: 5px 8px;
+  border: 1px solid #86a84b;
+  border-radius: 9px;
+  background: #fff;
+  color: #20351d;
+  font: 700 11px/1.35 'Yu Gothic UI', Meiryo, sans-serif;
+  overflow-wrap: anywhere;
+  box-shadow: 0 1px 3px #16391615;
+}
+.dragon-narration-label {
+  display: block;
+  margin-bottom: 1px;
+  color: #638246;
+  font-size: 9px;
+  font-weight: 600;
+}
+
+@keyframes dragon-face-pop {
+  0% { transform: scale(.94) translateY(2px); }
+  60% { transform: scale(1.04) translateY(-2px); }
+  100% { transform: none; }
+}
+@keyframes dragon-face-nod {
+  0%, 100% { transform: none; }
+  45% { transform: rotate(-4deg) translateY(-1px); }
+}
+@keyframes dragon-face-startle {
+  0% { transform: scale(.93); }
+  45% { transform: scale(1.04); }
+  100% { transform: none; }
+}
+@keyframes dragon-face-droop {
+  0% { transform: translateY(-1px); }
+  55% { transform: rotate(3deg) translateY(2px); }
+  100% { transform: none; }
+}
+@keyframes dragon-face-shake {
+  0%, 100% { transform: none; }
+  25% { transform: translateX(-2px); }
+  65% { transform: translateX(2px); }
+}
+@keyframes dragon-bubble-arrive {
+  from { opacity: .55; transform: translateY(3px); }
+  to { opacity: 1; transform: none; }
+}
+@media (max-width: 560px) {
+  .dragon-reaction-narration { max-width: min(184px, calc(100% - 16px)); }
+  .dragon-reaction-narration .dragon-reaction-face { width: 38px; height: 38px; }
+  .dragon-narration-speech { max-width: 140px; padding: 4px 6px; font-size: 10px; }
+}
 @media (prefers-reduced-motion: reduce) {
   .dragon-reaction-wipe,
-  .dragon-reaction-speech { animation: none; transition: none; }
+  .dragon-reaction-speech,
+  .dragon-reaction-narration,
+  .dragon-reaction-narration .dragon-reaction-face,
+  .dragon-reaction-wipe .dragon-reaction-face,
+  .dragon-narration-speech { animation: none !important; transition: none; }
 }

@@ -1,0 +1,126 @@
+{
+  "date": "2026-10-04",
+  "scope": "Local Vite runtime assets, not production deployment",
+  "checks": [
+    {
+      "path": "src/assets/dragons/presentation-v2/backdrops/babanuki.webp",
+      "status": 200,
+      "type": "image/webp",
+      "bytes": 142202,
+      "equal": true
+    },
+    {
+      "path": "src/assets/dragons/presentation-v2/backdrops/backgammon.webp",
+      "status": 200,
+      "type": "image/webp",
+      "bytes": 124776,
+      "equal": true
+    },
+    {
+      "path": "src/assets/dragons/presentation-v2/backdrops/bakuretsu-reversi.webp",
+      "status": 200,
+      "type": "image/webp",
+      "bytes": 142816,
+      "equal": true
+    },
+    {
+      "path": "src/assets/dragons/presentation-v2/backdrops/mancala.webp",
+      "status": 200,
+      "type": "image/webp",
+      "bytes": 127192,
+      "equal": true
+    },
+    {
+      "path": "src/assets/dragons/presentation-v2/backdrops/reversi.webp",
+      "status": 200,
+      "type": "image/webp",
+      "bytes": 116042,
+      "equal": true
+    },
+    {
+      "path": "src/assets/dragons/presentation-v2/backdrops/uno-counter.webp",
+      "status": 200,
+      "type": "image/webp",
+      "bytes": 143328,
+      "equal": true
+    },
+    {
+      "path": "src/assets/dragons/presentation-v2/backdrops/uno-draw-rain.webp",
+      "status": 200,
+      "type": "image/webp",
+      "bytes": 124846,
+      "equal": true
+    },
+    {
+      "path": "src/assets/dragons/presentation-v2/scenes/babanuki/lv1-shuffle.webp",
+      "status": 200,
+      "type": "image/webp",
+      "bytes": 200602,
+      "equal": true
+    },
+    {
+      "path": "src/assets/dragons/presentation-v2/scenes/babanuki/lv2-shuffle.webp",
+      "status": 200,
+      "type": "image/webp",
+      "bytes": 197898,
+      "equal": true
+    },
+    {
+      "path": "src/assets/dragons/presentation-v2/scenes/babanuki/lv3-shuffle.webp",
+      "status": 200,
+      "type": "image/webp",
+      "bytes": 200338,
+      "equal": true
+    },
+    {
+      "path": "src/assets/dragons/presentation-v2/scenes/babanuki/lv4-shuffle.webp",
+      "status": 200,
+      "type": "image/webp",
+      "bytes": 184450,
+      "equal": true
+    },
+    {
+      "path": "src/assets/dragons/presentation-v2/scenes/babanuki/lv5-shuffle.webp",
+      "status": 200,
+      "type": "image/webp",
+      "bytes": 217460,
+      "equal": true
+    },
+    {
+      "path": "src/assets/dragons/presentation-v2/scenes/uno/lv1-counter.webp",
+      "status": 200,
+      "type": "image/webp",
+      "bytes": 216882,
+      "equal": true
+    },
+    {
+      "path": "src/assets/dragons/presentation-v2/scenes/uno/lv2-counter.webp",
+      "status": 200,
+      "type": "image/webp",
+      "bytes": 211160,
+      "equal": true
+    },
+    {
+      "path": "src/assets/dragons/presentation-v2/scenes/uno/lv3-counter.webp",
+      "status": 200,
+      "type": "image/webp",
+      "bytes": 204398,
+      "equal": true
+    },
+    {
+      "path": "src/assets/dragons/presentation-v2/scenes/uno/lv4-counter.webp",
+      "status": 200,
+      "type": "image/webp",
+      "bytes": 209828,
+      "equal": true
+    },
+    {
+      "path": "src/assets/dragons/presentation-v2/scenes/uno/lv5-counter.webp",
+      "status": 200,
+      "type": "image/webp",
+      "bytes": 215784,
+      "equal": true
+    }
+  ],
+  "passed": 17
+}

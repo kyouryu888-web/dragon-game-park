@@ -1,0 +1,237 @@
+{
+  "tool": "built-in image_gen",
+  "date": "2026-10-04",
+  "assets": [
+    {
+      "key": "uno-counter",
+      "prompt": "Use case: stylized-concept. Asset type: painted game cinematic BACKDROP to sit BEHIND a separately composited existing dragon character. Input images are STYLE references only: glossy polished anime/cel-shaded illustration, dimensional game props, dramatic depth and lighting. Do NOT reproduce either dragon or any character. No people, creature or central subject. Keep upper-central 65% of the canvas DARK and low-detail, an open quiet deep-color region for a dragon to be composited later. Props concentrated at left and right edge and lower 20–35%; frame has energetic depth but NO UI frame. Crisp polished game illustration with soft depth of field on the nearest props. No lettering, logos, watermarks, numbers, readable ranks, icons representing secret game state, or interface. Full opaque painted background. Portrait 3:4 composition. UNO-like four-color (red, blue, yellow, green) playing CARD BACKS ONLY in a sweeping crest arc along the sides and bottom, warm golden light streaks and a little electric blue accent over a dark burgundy and navy background. All visible cards show a decorative abstract card back, never a face: no +2, no reverse icon, no rank, no action symbol, no numbers. A sense of cards surging toward the viewer, empty upper-middle for the dragon.",
+      "tool": "built-in image_gen",
+      "references": [
+        {
+          "path": "docs/design/dragons/presentation-v2/2026-10-04/images/uno-draw-counter-lv3-v2.png",
+          "sha256": "383f6882947d48905df9f354126ca9ecd8b0cdd5ae5534d185bb47670b8a3da1",
+          "role": "style reference only"
+        },
+        {
+          "path": "docs/design/dragons/presentation-v2/2026-10-04/images/babanuki-shuffle-lv3-v1.png",
+          "sha256": "6a41c35d6df922919c124c471c5f01479bffad1c7d84278294723cae81808438",
+          "role": "style reference only"
+        }
+      ],
+      "nativePath": "C:\\Users\\ray-0\\.codex\\generated_images\\01a105e7-6524-75a3-9275-b65e339ee93d\\exec-7e259b1b-e16b-49ab-b79c-76b4992426a3.png",
+      "original": {
+        "path": "docs/design/dragons/presentation-v2/2026-10-04/production-art/originals/backdrops/uno-counter.png",
+        "sha256": "d75e560bb48cefc70f6d983899280de3021dd690ef602992f8720f5ee66af31c",
+        "width": 1086,
+        "height": 1448,
+        "bytes": 2318120
+      },
+      "asset": {
+        "path": "src/assets/dragons/presentation-v2/backdrops/uno-counter.webp",
+        "sha256": "6a47b80d12f95a1348b954d54e0ef95bced284c0ba6d54c4c1be52992af9655b",
+        "width": 720,
+        "height": 960,
+        "bytes": 143328
+      },
+      "inspection": "Accepted: no people or central character; quiet upper central area; only decorative card backs; no ranks or actual state."
+    },
+    {
+      "key": "uno-draw-rain",
+      "prompt": "Use case: stylized-concept. Asset type: painted game cinematic BACKDROP to sit BEHIND a separately composited existing dragon character. Input images are STYLE references only: glossy polished anime/cel-shaded illustration, dimensional game props, dramatic depth and lighting. Do NOT reproduce either dragon or any character. No people, creature or central subject. Keep upper-central 65% of the canvas DARK and low-detail, an open quiet deep-color region for a dragon to be composited later. Props concentrated at left and right edge and lower 20–35%; frame has energetic depth but NO UI frame. Crisp polished game illustration with soft depth of field on the nearest props. No lettering, logos, watermarks, numbers, readable ranks, icons representing secret game state, or interface. Full opaque painted background. Portrait 3:4 composition. Four-color (red, blue, yellow, green) playing CARD BACKS ONLY raining down near both sides of the image toward a low pile of card backs across the bottom. Dark navy-violet upper-middle with quiet empty space, warm glints at card edges. Back faces have abstract decoration only; no numbers, ranks, +2, reverse symbols, action faces or readable marks. Dynamic depth with large cards toward bottom corners and small distant cards by far edges. Do not put bright props in the upper central region.",
+      "tool": "built-in image_gen",
+      "references": [
+        {
+          "path": "docs/design/dragons/presentation-v2/2026-10-04/images/uno-draw-counter-lv3-v2.png",
+          "sha256": "383f6882947d48905df9f354126ca9ecd8b0cdd5ae5534d185bb47670b8a3da1",
+          "role": "style reference only"
+        },
+        {
+          "path": "docs/design/dragons/presentation-v2/2026-10-04/images/babanuki-shuffle-lv3-v1.png",
+          "sha256": "6a41c35d6df922919c124c471c5f01479bffad1c7d84278294723cae81808438",
+          "role": "style reference only"
+        }
+      ],
+      "nativePath": "C:\\Users\\ray-0\\.codex\\generated_images\\01a105e7-6524-75a3-9275-b65e339ee93d\\exec-24a519fc-a1bd-43e4-a48b-f1802e4f3f06.png",
+      "original": {
+        "path": "docs/design/dragons/presentation-v2/2026-10-04/production-art/originals/backdrops/uno-draw-rain.png",
+        "sha256": "4324ca96d4826679316bf3f227656d92b500fae84168b4f1cfb1fa761e1add9f",
+        "width": 1086,
+        "height": 1448,
+        "bytes": 2196282
+      },
+      "asset": {
+        "path": "src/assets/dragons/presentation-v2/backdrops/uno-draw-rain.webp",
+        "sha256": "45c3fdcf8ef534d0a007776f0d9143e73ed85d25c4bfbc57ac084e98a62f8b1d",
+        "width": 720,
+        "height": 960,
+        "bytes": 124846
+      },
+      "inspection": "Accepted: no people or central character; quiet upper central area; only decorative card backs; no ranks or actual state."
+    },
+    {
+      "key": "babanuki",
+      "prompt": "Use case: stylized-concept. Asset type: painted game cinematic BACKDROP to sit BEHIND a separately composited existing dragon character. Input images are STYLE references only: glossy polished anime/cel-shaded illustration, dimensional game props, dramatic depth and lighting. Do NOT reproduce either dragon or any character. No people, creature or central subject. Keep upper-central 65% of the canvas DARK and low-detail, an open quiet deep-color region for a dragon to be composited later. Props concentrated at left and right edge and lower 20–35%; frame has energetic depth but NO UI frame. Crisp polished game illustration with soft depth of field on the nearest props. No lettering, logos, watermarks, numbers, readable ranks, icons representing secret game state, or interface. Full opaque painted background. Portrait 3:4 composition. A dramatic deep-purple palace-like backdrop with soft golden edge light and a vortex of IDENTICAL purple playing CARD BACKS sweeping along bottom and side edges. The backs have matching gold borders and identical subtle abstract crest decoration, without letters, numbers, rank, Joker, face, marked card, or distinguished secret target. No specific route points from one player to another, no people or hands. Purple-gold luminous swirl stays across lower 25% and side margins; upper-central 65% remains dark, calm and open for a separately composited dragon.",
+      "tool": "built-in image_gen",
+      "references": [
+        {
+          "path": "docs/design/dragons/presentation-v2/2026-10-04/images/uno-draw-counter-lv3-v2.png",
+          "sha256": "383f6882947d48905df9f354126ca9ecd8b0cdd5ae5534d185bb47670b8a3da1",
+          "role": "style reference only"
+        },
+        {
+          "path": "docs/design/dragons/presentation-v2/2026-10-04/images/babanuki-shuffle-lv3-v1.png",
+          "sha256": "6a41c35d6df922919c124c471c5f01479bffad1c7d84278294723cae81808438",
+          "role": "style reference only"
+        }
+      ],
+      "nativePath": "C:\\Users\\ray-0\\.codex\\generated_images\\01a105e7-6524-75a3-9275-b65e339ee93d\\exec-e36ce491-b5a0-45dc-a1ac-771ccc187542.png",
+      "original": {
+        "path": "docs/design/dragons/presentation-v2/2026-10-04/production-art/originals/backdrops/babanuki.png",
+        "sha256": "4ef37fd35f44363d120a4eb9403291f2d832946c6283b0eca38493272dcc33d0",
+        "width": 1086,
+        "height": 1448,
+        "bytes": 2300645
+      },
+      "asset": {
+        "path": "src/assets/dragons/presentation-v2/backdrops/babanuki.webp",
+        "sha256": "097e2612520acf827004fde0fc5a6136e9453d7fd7f7888115562c426447238f",
+        "width": 720,
+        "height": 960,
+        "bytes": 142202
+      },
+      "inspection": "Accepted: no character; identical purple backs only, no faces, Joker, marked card or destination routes; center quiet for dragon."
+    },
+    {
+      "key": "reversi",
+      "prompt": "Use case: stylized-concept. Asset type: painted game cinematic BACKDROP to sit BEHIND a separately composited existing dragon character. Input images are STYLE references only: glossy polished anime/cel-shaded illustration, dimensional game props, dramatic depth and lighting. Do NOT reproduce either dragon or any character. No people, creature or central subject. Keep upper-central 65% of the canvas DARK and low-detail, an open quiet deep-color region for a dragon to be composited later. Props concentrated at left and right edge and lower 20–35%; frame has energetic depth but NO UI frame. Crisp polished game illustration with soft depth of field on the nearest props. No lettering, logos, watermarks, numbers, readable ranks, icons representing secret game state, or interface. Full opaque painted background. Landscape 3:2 composition. Large glossy black and ivory Reversi discs with dramatic perspective, a wave of turning discs sweeping from lower-left along the lower edge to right. A fragment of rich green board corner at very bottom, not a full valid board or real game position, no count or score. Disc rotation is visible through varied edge-on views and subtle golden curved motion light. Quiet deep forest-green upper-middle with generous empty dark space for a character, large foreground discs at bottom corners, polished anime/cel-shaded dimensional material.",
+      "tool": "built-in image_gen",
+      "references": [
+        {
+          "path": "docs/design/dragons/presentation-v2/2026-10-04/images/uno-draw-counter-lv3-v2.png",
+          "sha256": "383f6882947d48905df9f354126ca9ecd8b0cdd5ae5534d185bb47670b8a3da1",
+          "role": "style reference only"
+        },
+        {
+          "path": "docs/design/dragons/presentation-v2/2026-10-04/images/babanuki-shuffle-lv3-v1.png",
+          "sha256": "6a41c35d6df922919c124c471c5f01479bffad1c7d84278294723cae81808438",
+          "role": "style reference only"
+        }
+      ],
+      "nativePath": "C:\\Users\\ray-0\\.codex\\generated_images\\01a105e7-6524-75a3-9275-b65e339ee93d\\exec-88d477c4-68f3-426e-83e5-ccf33d321cbf.png",
+      "original": {
+        "path": "docs/design/dragons/presentation-v2/2026-10-04/production-art/originals/backdrops/reversi.png",
+        "sha256": "afefa15d30be1360da8953385941a882834761fed8d45d4c282fb40d3cc3834a",
+        "width": 1536,
+        "height": 1024,
+        "bytes": 2009674
+      },
+      "asset": {
+        "path": "src/assets/dragons/presentation-v2/backdrops/reversi.webp",
+        "sha256": "75a10f1ba4ed608bced0ccc5bd5fd03987ec129f689845dc1e046369af333af6",
+        "width": 1200,
+        "height": 800,
+        "bytes": 116042
+      },
+      "inspection": "Accepted: no character; black/ivory rotating discs and partial green board; no exact position or score; center quiet for dragon."
+    },
+    {
+      "key": "bakuretsu-reversi",
+      "prompt": "Use case: stylized-concept. Asset type: painted game cinematic BACKDROP to sit BEHIND a separately composited existing dragon character. Input images are STYLE references only: glossy polished anime/cel-shaded illustration, dimensional game props, dramatic depth and lighting. Do NOT reproduce either dragon or any character. No people, creature or central subject. Keep upper-central 65% of the canvas DARK and low-detail, an open quiet deep-color region for a dragon to be composited later. Props concentrated at left and right edge and lower 20–35%; frame has energetic depth but NO UI frame. Crisp polished game illustration with soft depth of field on the nearest props. No lettering, logos, watermarks, numbers, readable ranks, icons representing secret game state, or interface. Full opaque painted background. Landscape 3:2 composition. A fragmented rich green game-board corner across the bottom, glossy black and white Reversi discs bursting in perspective near the bottom and side edges, purple and warm gold comic impact-smoke curls sweeping at the edges, a playful spectacular action moment. Upper center is dark deep-green/violet and quiet for the dragon foreground. The props are PURE GENERIC PUBLIC GAME ATMOSPHERE: absolutely NO bomb, fuse, shield, infection symbol, flame symbol, skull, special power icon, rank, exact board position or score. No complete board. No character.",
+      "tool": "built-in image_gen",
+      "references": [
+        {
+          "path": "docs/design/dragons/presentation-v2/2026-10-04/images/uno-draw-counter-lv3-v2.png",
+          "sha256": "383f6882947d48905df9f354126ca9ecd8b0cdd5ae5534d185bb47670b8a3da1",
+          "role": "style reference only"
+        },
+        {
+          "path": "docs/design/dragons/presentation-v2/2026-10-04/images/babanuki-shuffle-lv3-v1.png",
+          "sha256": "6a41c35d6df922919c124c471c5f01479bffad1c7d84278294723cae81808438",
+          "role": "style reference only"
+        }
+      ],
+      "nativePath": "C:\\Users\\ray-0\\.codex\\generated_images\\01a105e7-6524-75a3-9275-b65e339ee93d\\exec-5a239ee7-4535-48f6-8acf-e74a3aace572.png",
+      "original": {
+        "path": "docs/design/dragons/presentation-v2/2026-10-04/production-art/originals/backdrops/bakuretsu-reversi.png",
+        "sha256": "1d30f759d31f933f9bfad835728d431b6e0faf498abdea8b3585e10ddc59830f",
+        "width": 1536,
+        "height": 1024,
+        "bytes": 2131509
+      },
+      "asset": {
+        "path": "src/assets/dragons/presentation-v2/backdrops/bakuretsu-reversi.webp",
+        "sha256": "40270cf492567b637bf7df167cca895c7b94c9b9ba9bcdef7d825a7a2a1a4070",
+        "width": 1200,
+        "height": 800,
+        "bytes": 142816
+      },
+      "inspection": "Accepted: no character; generic comic smoke, green fragments and black/white discs; no bomb/shield/infection or unrevealed effect icon; quiet upper-center."
+    },
+    {
+      "key": "backgammon",
+      "prompt": "Use case: stylized-concept. Asset type: painted game cinematic BACKDROP to sit BEHIND a separately composited existing dragon character. Input images are STYLE references only: glossy polished anime/cel-shaded illustration, dimensional game props, dramatic depth and lighting. Do NOT reproduce either dragon or any character. No people, creature or central subject. Keep upper-central 65% of the canvas DARK and low-detail, an open quiet deep-color region for a dragon to be composited later. Props concentrated at left and right edge and lower 20–35%; frame has energetic depth but NO UI frame. Crisp polished game illustration with soft depth of field on the nearest props. No lettering, logos, watermarks, numbers, readable ranks, icons representing secret game state, or interface. Full opaque painted background. Landscape 3:2 composition. A warm wooden backgammon-board corner with distinctive alternating triangular points across the lower edge, rounded ivory and rich brown checkers surging in perspective toward both bottom corners. Large ivory dice and a small ivory doubling cube remain at far lower/side edges, but EVERY visible die/cube face is BLANK and unnumbered: no pips, values, marks or symbol. No actual game position or count. Dark deep walnut/copper upper-central 65% quiet with no busy props so a dragon can be composited. Golden motion ribbons suggest a dramatic checker strike, glossy polished anime game illustration.",
+      "tool": "built-in image_gen",
+      "references": [
+        {
+          "path": "docs/design/dragons/presentation-v2/2026-10-04/images/uno-draw-counter-lv3-v2.png",
+          "sha256": "383f6882947d48905df9f354126ca9ecd8b0cdd5ae5534d185bb47670b8a3da1",
+          "role": "style reference only"
+        },
+        {
+          "path": "docs/design/dragons/presentation-v2/2026-10-04/images/babanuki-shuffle-lv3-v1.png",
+          "sha256": "6a41c35d6df922919c124c471c5f01479bffad1c7d84278294723cae81808438",
+          "role": "style reference only"
+        }
+      ],
+      "nativePath": "C:\\Users\\ray-0\\.codex\\generated_images\\01a105e7-6524-75a3-9275-b65e339ee93d\\exec-f0c52b6f-1b3d-416d-a2d0-7613c544b95d.png",
+      "original": {
+        "path": "docs/design/dragons/presentation-v2/2026-10-04/production-art/originals/backdrops/backgammon.png",
+        "sha256": "f955f19a11cf83897f5917e4e9b577bcd6e3002e997c1ae8d5a8d891a886d90d",
+        "width": 1536,
+        "height": 1024,
+        "bytes": 2063443
+      },
+      "asset": {
+        "path": "src/assets/dragons/presentation-v2/backdrops/backgammon.webp",
+        "sha256": "5d2d53719a562a1779f16ded4f486916e1efb3061beef0b8c15428e71f620b46",
+        "width": 1200,
+        "height": 800,
+        "bytes": 124776
+      },
+      "inspection": "Accepted: no character; triangular board fragment, ivory/brown checkers and entirely blank dice/cube; no pips, values or actual position; quiet upper-center."
+    },
+    {
+      "key": "mancala",
+      "prompt": "Use case: stylized-concept. Asset type: painted game cinematic BACKDROP to sit BEHIND a separately composited existing dragon character. Input images are STYLE references only: glossy polished anime/cel-shaded illustration, dimensional game props, dramatic depth and lighting. Do NOT reproduce either dragon or any character. No people, creature or central subject. Keep upper-central 65% of the canvas DARK and low-detail, an open quiet deep-color region for a dragon to be composited later. Props concentrated at left and right edge and lower 20–35%; frame has energetic depth but NO UI frame. Crisp polished game illustration with soft depth of field on the nearest props. No lettering, logos, watermarks, numbers, readable ranks, icons representing secret game state, or interface. Full opaque painted background. Landscape 3:2 composition. A carved warm wooden Mancala board fragment with rounded shallow pits and a long carved store only across the bottom edge. Glossy colorful playing stones in turquoise, amber, coral, emerald and violet form a flowing trail curving toward the store along the lower edge and side edges, large close foreground stones at bottom corners and a little warm gold motion shimmer. No precise count, score or valid full board arrangement, no numbers or labels. Upper-central 65% dark quiet deep-teal and walnut with generous calm space for a separate dragon foreground. Polished anime/cel-shaded glossy materials and dimensional depth.",
+      "tool": "built-in image_gen",
+      "references": [
+        {
+          "path": "docs/design/dragons/presentation-v2/2026-10-04/images/uno-draw-counter-lv3-v2.png",
+          "sha256": "383f6882947d48905df9f354126ca9ecd8b0cdd5ae5534d185bb47670b8a3da1",
+          "role": "style reference only"
+        },
+        {
+          "path": "docs/design/dragons/presentation-v2/2026-10-04/images/babanuki-shuffle-lv3-v1.png",
+          "sha256": "6a41c35d6df922919c124c471c5f01479bffad1c7d84278294723cae81808438",
+          "role": "style reference only"
+        }
+      ],
+      "nativePath": "C:\\Users\\ray-0\\.codex\\generated_images\\01a105e7-6524-75a3-9275-b65e339ee93d\\exec-1a34ca5e-24b5-43c3-a57b-6432ea671e6e.png",
+      "original": {
+        "path": "docs/design/dragons/presentation-v2/2026-10-04/production-art/originals/backdrops/mancala.png",
+        "sha256": "5cfc89dc36b31ce742c21722c1f9f8e77137532e2db703e3bc1a97dfc2518ff5",
+        "width": 1536,
+        "height": 1024,
+        "bytes": 2029482
+      },
+      "asset": {
+        "path": "src/assets/dragons/presentation-v2/backdrops/mancala.webp",
+        "sha256": "d0123c02eefb903f18b683ff510b7f631e949882197e4ea2a25a5adf9278dd10",
+        "width": 1200,
+        "height": 800,
+        "bytes": 127192
+      },
+      "inspection": "Accepted: no character; carved pits/store board fragment and colorful glossy stones; no exact counts, score or valid complete board; quiet dark upper-center."
+    }
+  ]
+}

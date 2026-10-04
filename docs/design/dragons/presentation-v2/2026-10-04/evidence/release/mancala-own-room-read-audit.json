@@ -1,0 +1,44 @@
+[
+  {
+    "code": "UM5HCH",
+    "exists": true,
+    "created_at": "2026-10-04T14:38:57.896104+00:00",
+    "players": [
+      {
+        "id": "player-1",
+        "name": "公開QA主",
+        "isCpu": false
+      },
+      {
+        "id": "player-2",
+        "name": "公開QA客",
+        "isCpu": false
+      }
+    ],
+    "status": "playing",
+    "host_id": "d7cdb056-2f76-446d-84f4-2384bd182cc2",
+    "guest_id": "a040f677-b768-498c-90b5-d190c1170a72",
+    "error": null
+  },
+  {
+    "code": "KJ526N",
+    "exists": true,
+    "created_at": "2026-10-04T14:43:54.810067+00:00",
+    "players": [
+      {
+        "id": "player-1",
+        "name": "公開QA主",
+        "isCpu": false
+      },
+      {
+        "id": "player-2",
+        "name": "公開QA客",
+        "isCpu": false
+      }
+    ],
+    "status": "finished",
+    "host_id": "2c52400e-d81d-43d8-ada9-17f3469bd96d",
+    "guest_id": "6783bc7a-396f-4e31-b516-683b4659a844",
+    "error": null
+  }
+]

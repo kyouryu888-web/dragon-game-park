@@ -1,0 +1,12 @@
+import { chromium } from 'playwright-core';
+const browser = await chromium.launch({executablePath:'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',headless:true});
+const page = await browser.newPage({viewport:{width:390,height:844}});
+page.on('pageerror',e=>console.log('PAGEERROR',e.message));
+await page.goto('http://127.0.0.1:5178/docs/design/dragons/presentation-v2/2026-10-04/evidence/runtime-cards/fixture.html');
+await page.waitForTimeout(1200);
+console.log('FIXTURE',(await page.locator('body').innerText()).slice(0,1800));
+await page.screenshot({path:'docs/design/dragons/presentation-v2/2026-10-04/evidence/runtime-cards/fixture-probe.png'});
+await page.getByRole('button',{name:'baba-draw',exact:true}).click();
+await page.waitForTimeout(300);
+console.log('BABA',(await page.locator('body').innerText()).slice(0,1800));
+await browser.close();

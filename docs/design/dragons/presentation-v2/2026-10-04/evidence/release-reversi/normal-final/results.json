@@ -1,0 +1,2270 @@
+{
+  "environment": {
+    "target": "http://127.0.0.1:5178",
+    "browser": "Microsoft Edge headless",
+    "viewports": [
+      "390x844",
+      "900x700"
+    ],
+    "method": "Independent contexts. Live existing Supabase; actual UI create/join/legal clicks/reload/rejoin. No game state injection or new SQL."
+  },
+  "checks": [
+    {
+      "variant": "normal",
+      "passed": true,
+      "moves": [
+        {
+          "move": 1,
+          "actor": "host-normal",
+          "coordinate": "C4",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2355,
+          "nextEnabled": [
+            0,
+            3
+          ],
+          "final": false
+        },
+        {
+          "move": 2,
+          "actor": "guest-normal",
+          "coordinate": "C3",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2353,
+          "nextEnabled": [
+            4,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 3,
+          "actor": "host-normal",
+          "coordinate": "C2",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2470,
+          "nextEnabled": [
+            0,
+            6
+          ],
+          "final": false
+        },
+        {
+          "move": 4,
+          "actor": "guest-normal",
+          "coordinate": "B2",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2950,
+          "nextEnabled": [
+            4,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 5,
+          "actor": "host-normal",
+          "coordinate": "A2",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2929,
+          "nextEnabled": [
+            0,
+            7
+          ],
+          "final": false
+        },
+        {
+          "move": 6,
+          "actor": "guest-normal",
+          "coordinate": "A1",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 4282,
+          "nextEnabled": [
+            3,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 7,
+          "actor": "host-normal",
+          "coordinate": "D3",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2632,
+          "nextEnabled": [
+            0,
+            5
+          ],
+          "final": false
+        },
+        {
+          "move": 8,
+          "actor": "guest-normal",
+          "coordinate": "C5",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2442,
+          "nextEnabled": [
+            8,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 9,
+          "actor": "host-normal",
+          "coordinate": "C6",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3134,
+          "nextEnabled": [
+            0,
+            4
+          ],
+          "final": false
+        },
+        {
+          "move": 10,
+          "actor": "guest-normal",
+          "coordinate": "B5",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2752,
+          "nextEnabled": [
+            6,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 11,
+          "actor": "host-normal",
+          "coordinate": "E6",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2752,
+          "nextEnabled": [
+            0,
+            9
+          ],
+          "final": false
+        },
+        {
+          "move": 12,
+          "actor": "guest-normal",
+          "coordinate": "C1",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3305,
+          "nextEnabled": [
+            8,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 13,
+          "actor": "host-normal",
+          "coordinate": "A5",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2782,
+          "nextEnabled": [
+            0,
+            9
+          ],
+          "final": false
+        },
+        {
+          "move": 14,
+          "actor": "guest-normal",
+          "coordinate": "C7",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2887,
+          "nextEnabled": [
+            7,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 15,
+          "actor": "host-normal",
+          "coordinate": "B3",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2300,
+          "nextEnabled": [
+            0,
+            7
+          ],
+          "final": false
+        },
+        {
+          "move": 16,
+          "actor": "guest-normal",
+          "coordinate": "F5",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2993,
+          "nextEnabled": [
+            13,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 17,
+          "actor": "host-normal",
+          "coordinate": "G5",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 4099,
+          "nextEnabled": [
+            0,
+            8
+          ],
+          "final": false
+        },
+        {
+          "move": 18,
+          "actor": "guest-normal",
+          "coordinate": "A3",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3015,
+          "nextEnabled": [
+            9,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 19,
+          "actor": "host-normal",
+          "coordinate": "B1",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3258,
+          "nextEnabled": [
+            0,
+            7
+          ],
+          "final": false
+        },
+        {
+          "move": 20,
+          "actor": "guest-normal",
+          "coordinate": "F7",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3061,
+          "nextEnabled": [
+            8,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 21,
+          "actor": "host-normal",
+          "coordinate": "B4",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2737,
+          "nextEnabled": [
+            0,
+            8
+          ],
+          "final": false
+        },
+        {
+          "move": 22,
+          "actor": "guest-normal",
+          "coordinate": "D2",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2963,
+          "nextEnabled": [
+            9,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 23,
+          "actor": "host-normal",
+          "coordinate": "G8",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3156,
+          "nextEnabled": [
+            0,
+            8
+          ],
+          "final": false
+        },
+        {
+          "move": 24,
+          "actor": "guest-normal",
+          "coordinate": "A4",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2792,
+          "nextEnabled": [
+            6,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 25,
+          "actor": "host-normal",
+          "coordinate": "D1",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3005,
+          "nextEnabled": [
+            0,
+            10
+          ],
+          "final": false
+        },
+        {
+          "move": 26,
+          "actor": "guest-normal",
+          "coordinate": "H5",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 6566,
+          "nextEnabled": [
+            8,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 27,
+          "actor": "host-normal",
+          "coordinate": "C8",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 4678,
+          "nextEnabled": [
+            0,
+            10
+          ],
+          "final": false
+        },
+        {
+          "move": 28,
+          "actor": "guest-normal",
+          "coordinate": "E1",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3507,
+          "nextEnabled": [
+            6,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 29,
+          "actor": "host-normal",
+          "coordinate": "A6",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2469,
+          "nextEnabled": [
+            0,
+            9
+          ],
+          "final": false
+        },
+        {
+          "move": 30,
+          "actor": "guest-normal",
+          "coordinate": "D7",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3106,
+          "nextEnabled": [
+            7,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 31,
+          "actor": "host-normal",
+          "coordinate": "E7",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2874,
+          "nextEnabled": [
+            0,
+            8
+          ],
+          "final": false
+        },
+        {
+          "move": 32,
+          "actor": "guest-normal",
+          "coordinate": "F4",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3325,
+          "nextEnabled": [
+            6,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 33,
+          "actor": "host-normal",
+          "coordinate": "D6",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3004,
+          "nextEnabled": [
+            0,
+            8
+          ],
+          "final": false
+        },
+        {
+          "move": 34,
+          "actor": "guest-normal",
+          "coordinate": "D8",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 4171,
+          "nextEnabled": [
+            7,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 35,
+          "actor": "host-normal",
+          "coordinate": "E2",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3249,
+          "nextEnabled": [
+            0,
+            11
+          ],
+          "final": false
+        },
+        {
+          "move": 36,
+          "actor": "guest-normal",
+          "coordinate": "E8",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 4078,
+          "nextEnabled": [
+            5,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 37,
+          "actor": "host-normal",
+          "coordinate": "G4",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3566,
+          "nextEnabled": [
+            0,
+            12
+          ],
+          "final": false
+        },
+        {
+          "move": 38,
+          "actor": "guest-normal",
+          "coordinate": "H4",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 4321,
+          "nextEnabled": [
+            6,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 39,
+          "actor": "host-normal",
+          "coordinate": "F8",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2988,
+          "nextEnabled": [
+            0,
+            9
+          ],
+          "final": false
+        },
+        {
+          "move": 40,
+          "actor": "guest-normal",
+          "coordinate": "E3",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2473,
+          "nextEnabled": [
+            6,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 41,
+          "actor": "host-normal",
+          "coordinate": "F2",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2924,
+          "nextEnabled": [
+            0,
+            9
+          ],
+          "final": false
+        },
+        {
+          "move": 42,
+          "actor": "guest-normal",
+          "coordinate": "G2",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3873,
+          "nextEnabled": [
+            8,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 43,
+          "actor": "host-normal",
+          "coordinate": "F1",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3257,
+          "nextEnabled": [
+            0,
+            7
+          ],
+          "final": false
+        },
+        {
+          "move": 44,
+          "actor": "guest-normal",
+          "coordinate": "B6",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3496,
+          "nextEnabled": [
+            4,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 45,
+          "actor": "host-normal",
+          "coordinate": "F3",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2585,
+          "nextEnabled": [
+            0,
+            6
+          ],
+          "final": false
+        },
+        {
+          "move": 46,
+          "actor": "guest-normal",
+          "coordinate": "G3",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3383,
+          "nextEnabled": [
+            2,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 47,
+          "actor": "host-normal",
+          "coordinate": "H2",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3473,
+          "nextEnabled": [
+            0,
+            6
+          ],
+          "final": false
+        },
+        {
+          "move": 48,
+          "actor": "guest-normal",
+          "coordinate": "H1",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 5025,
+          "nextEnabled": [
+            5,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 49,
+          "actor": "host-normal",
+          "coordinate": "A7",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 4014,
+          "nextEnabled": [
+            0,
+            6
+          ],
+          "final": false
+        },
+        {
+          "move": 50,
+          "actor": "guest-normal",
+          "coordinate": "A8",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 5143,
+          "nextEnabled": [
+            4,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 51,
+          "actor": "host-normal",
+          "coordinate": "H3",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2324,
+          "nextEnabled": [
+            0,
+            4
+          ],
+          "final": false
+        },
+        {
+          "move": 52,
+          "actor": "guest-normal",
+          "coordinate": "G1",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 4372,
+          "nextEnabled": [
+            1,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 53,
+          "actor": "host-normal",
+          "coordinate": "H6",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2957,
+          "nextEnabled": [
+            0,
+            4
+          ],
+          "final": false
+        },
+        {
+          "move": 54,
+          "actor": "guest-normal",
+          "coordinate": "H7",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3628,
+          "nextEnabled": [
+            0,
+            3
+          ],
+          "final": false
+        },
+        {
+          "move": 55,
+          "actor": "guest-normal",
+          "coordinate": "F6",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2486,
+          "nextEnabled": [
+            0,
+            1
+          ],
+          "final": false
+        },
+        {
+          "move": 56,
+          "actor": "guest-normal",
+          "coordinate": "B8",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2421,
+          "nextEnabled": [
+            1,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 57,
+          "actor": "host-normal",
+          "coordinate": "B7",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2320,
+          "nextEnabled": [
+            0,
+            2
+          ],
+          "final": false
+        },
+        {
+          "move": 58,
+          "actor": "guest-normal",
+          "coordinate": "H8",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 36360,
+          "nextEnabled": [
+            0,
+            2
+          ],
+          "final": false
+        },
+        {
+          "move": 59,
+          "actor": "guest-normal",
+          "coordinate": "G7",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 10563,
+          "nextEnabled": [
+            0,
+            0
+          ],
+          "final": true
+        }
+      ],
+      "ackResponses": [],
+      "screenshots": [
+        {
+          "client": "guest-normal",
+          "kind": "reversi-cinematic is-standard is-corner",
+          "text": "角を制した\nQA Gが不落の角を獲得"
+        },
+        {
+          "client": "host-normal",
+          "kind": "reversi-cinematic is-standard is-corner",
+          "text": "角を制した\nQA Gが不落の角を獲得"
+        },
+        {
+          "client": "guest-normal",
+          "kind": "reversi-cinematic is-standard is-grand-flip",
+          "text": "大反転\n5枚を一気に覆した"
+        },
+        {
+          "client": "host-normal",
+          "kind": "reversi-cinematic is-standard is-grand-flip",
+          "text": "大反転\n5枚を一気に覆した"
+        },
+        {
+          "client": "guest-normal",
+          "kind": "reversi-cinematic is-standard is-finale",
+          "text": "決着\n最後の石まで返り終え、勝敗が定まった"
+        },
+        {
+          "client": "host-normal",
+          "kind": "reversi-cinematic is-standard is-finale",
+          "text": "決着\n最後の石まで返り終え、勝敗が定まった"
+        }
+      ],
+      "reconnect": {
+        "passed": true,
+        "afterMove": 8,
+        "elapsedMs": 2206,
+        "boardEqual": true,
+        "noOldSceneReplay": true
+      },
+      "cleanup": {
+        "ownQaRoomDeleted": true,
+        "method": "Existing deleteReversiRoom, only created QA code, after both UI exits"
+      },
+      "roomCode": "8HZX78",
+      "initialBoardEqual": true,
+      "final": {
+        "passed": true,
+        "actualPlacements": 59,
+        "scores": [
+          "黒炎\n2\n—\n白銀\n61",
+          "黒炎\n2\n—\n白銀\n61"
+        ],
+        "headings": [
+          "QA Gの勝利",
+          "QA Gの勝利"
+        ],
+        "publicBoard": [
+          {
+            "coordinate": "A1",
+            "owner": "white"
+          },
+          {
+            "coordinate": "A2",
+            "owner": "white"
+          },
+          {
+            "coordinate": "A3",
+            "owner": "white"
+          },
+          {
+            "coordinate": "A4",
+            "owner": "white"
+          },
+          {
+            "coordinate": "A5",
+            "owner": "white"
+          },
+          {
+            "coordinate": "A6",
+            "owner": "white"
+          },
+          {
+            "coordinate": "A7",
+            "owner": "white"
+          },
+          {
+            "coordinate": "A8",
+            "owner": "white"
+          },
+          {
+            "coordinate": "B1",
+            "owner": "white"
+          },
+          {
+            "coordinate": "B2",
+            "owner": "white"
+          },
+          {
+            "coordinate": "B3",
+            "owner": "white"
+          },
+          {
+            "coordinate": "B4",
+            "owner": "white"
+          },
+          {
+            "coordinate": "B5",
+            "owner": "white"
+          },
+          {
+            "coordinate": "B6",
+            "owner": "white"
+          },
+          {
+            "coordinate": "B7",
+            "owner": "white"
+          },
+          {
+            "coordinate": "B8",
+            "owner": "white"
+          },
+          {
+            "coordinate": "C1",
+            "owner": "white"
+          },
+          {
+            "coordinate": "C2",
+            "owner": "white"
+          },
+          {
+            "coordinate": "C3",
+            "owner": "white"
+          },
+          {
+            "coordinate": "C4",
+            "owner": "black"
+          },
+          {
+            "coordinate": "C5",
+            "owner": "white"
+          },
+          {
+            "coordinate": "C6",
+            "owner": "white"
+          },
+          {
+            "coordinate": "C7",
+            "owner": "white"
+          },
+          {
+            "coordinate": "C8",
+            "owner": "white"
+          },
+          {
+            "coordinate": "D1",
+            "owner": "white"
+          },
+          {
+            "coordinate": "D2",
+            "owner": "white"
+          },
+          {
+            "coordinate": "D3",
+            "owner": "white"
+          },
+          {
+            "coordinate": "D4",
+            "owner": "white"
+          },
+          {
+            "coordinate": "D5",
+            "owner": "white"
+          },
+          {
+            "coordinate": "D6",
+            "owner": "white"
+          },
+          {
+            "coordinate": "D7",
+            "owner": "white"
+          },
+          {
+            "coordinate": "D8",
+            "owner": "white"
+          },
+          {
+            "coordinate": "E1",
+            "owner": "white"
+          },
+          {
+            "coordinate": "E2",
+            "owner": "black"
+          },
+          {
+            "coordinate": "E3",
+            "owner": "white"
+          },
+          {
+            "coordinate": "E4",
+            "owner": "white"
+          },
+          {
+            "coordinate": "E5",
+            "owner": "white"
+          },
+          {
+            "coordinate": "E6",
+            "owner": "white"
+          },
+          {
+            "coordinate": "E7",
+            "owner": "white"
+          },
+          {
+            "coordinate": "E8",
+            "owner": "white"
+          },
+          {
+            "coordinate": "F1",
+            "owner": "white"
+          },
+          {
+            "coordinate": "F2",
+            "owner": "white"
+          },
+          {
+            "coordinate": "F3",
+            "owner": "white"
+          },
+          {
+            "coordinate": "F4",
+            "owner": "white"
+          },
+          {
+            "coordinate": "F5",
+            "owner": "white"
+          },
+          {
+            "coordinate": "F6",
+            "owner": "white"
+          },
+          {
+            "coordinate": "F7",
+            "owner": "white"
+          },
+          {
+            "coordinate": "F8",
+            "owner": "white"
+          },
+          {
+            "coordinate": "G1",
+            "owner": "white"
+          },
+          {
+            "coordinate": "G2",
+            "owner": "white"
+          },
+          {
+            "coordinate": "G3",
+            "owner": "white"
+          },
+          {
+            "coordinate": "G4",
+            "owner": "white"
+          },
+          {
+            "coordinate": "G5",
+            "owner": "white"
+          },
+          {
+            "coordinate": "G6",
+            "owner": "empty"
+          },
+          {
+            "coordinate": "G7",
+            "owner": "white"
+          },
+          {
+            "coordinate": "G8",
+            "owner": "white"
+          },
+          {
+            "coordinate": "H1",
+            "owner": "white"
+          },
+          {
+            "coordinate": "H2",
+            "owner": "white"
+          },
+          {
+            "coordinate": "H3",
+            "owner": "white"
+          },
+          {
+            "coordinate": "H4",
+            "owner": "white"
+          },
+          {
+            "coordinate": "H5",
+            "owner": "white"
+          },
+          {
+            "coordinate": "H6",
+            "owner": "white"
+          },
+          {
+            "coordinate": "H7",
+            "owner": "white"
+          },
+          {
+            "coordinate": "H8",
+            "owner": "white"
+          }
+        ]
+      },
+      "events": [
+        [
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制したQA Gが不落の角を獲得",
+            "classes": "reversi-cinematic is-standard is-corner",
+            "start": 24171.5,
+            "time": 1791125834164,
+            "end": 26101.400000002235,
+            "durationMs": 1930
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが2枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 31240.199999999255,
+            "time": 1791125841233,
+            "end": 32684.400000002235,
+            "durationMs": 1444
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 35355.199999999255,
+            "time": 1791125845348,
+            "end": 36778.10000000149,
+            "durationMs": 1423
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが2枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 39616,
+            "time": 1791125849609,
+            "end": 41023.5,
+            "durationMs": 1408
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが2枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 41023.60000000149,
+            "time": 1791125851016,
+            "end": 42439.5,
+            "durationMs": 1416
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 45738.5,
+            "time": 1791125855731,
+            "end": 47155.400000002235,
+            "durationMs": 1417
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが2枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 47166.10000000149,
+            "time": 1791125857159,
+            "end": 48590.10000000149,
+            "durationMs": 1424
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが2枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 51414.5,
+            "time": 1791125861407,
+            "end": 52839.199999999255,
+            "durationMs": 1425
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが2枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 52839.199999999255,
+            "time": 1791125862832,
+            "end": 54254.699999999255,
+            "durationMs": 1416
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 56749.800000000745,
+            "time": 1791125866743,
+            "end": 58169.300000000745,
+            "durationMs": 1420
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 58564.300000000745,
+            "time": 1791125868557,
+            "end": 59987.60000000149,
+            "durationMs": 1423
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 63879.400000002235,
+            "time": 1791125873872,
+            "end": 65300.60000000149,
+            "durationMs": 1421
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 65514.60000000149,
+            "time": 1791125875507,
+            "end": 66943.69999999925,
+            "durationMs": 1429
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 70223.80000000075,
+            "time": 1791125880217,
+            "end": 71639.5,
+            "durationMs": 1416
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 71677.19999999925,
+            "time": 1791125881670,
+            "end": 73096.90000000224,
+            "durationMs": 1420
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 75967.10000000149,
+            "time": 1791125885960,
+            "end": 77397.19999999925,
+            "durationMs": 1430
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 77608.60000000149,
+            "time": 1791125887601,
+            "end": 79021.69999999925,
+            "durationMs": 1413
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 81912.40000000224,
+            "time": 1791125891905,
+            "end": 83334.60000000149,
+            "durationMs": 1422
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 83585.40000000224,
+            "time": 1791125893578,
+            "end": 84995.19999999925,
+            "durationMs": 1410
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "大反転5枚を一気に覆した",
+            "classes": "reversi-cinematic is-standard is-grand-flip",
+            "start": 89478.10000000149,
+            "time": 1791125899471,
+            "end": 91395.80000000075,
+            "durationMs": 1918
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが6枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 93742.90000000224,
+            "time": 1791125903736,
+            "end": 95160.10000000149,
+            "durationMs": 1417
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが5枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 99615.5,
+            "time": 1791125909608,
+            "end": 101037.30000000075,
+            "durationMs": 1422
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 105347.30000000075,
+            "time": 1791125915340,
+            "end": 106771.5,
+            "durationMs": 1424
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 106815.69999999925,
+            "time": 1791125916808,
+            "end": 108237.60000000149,
+            "durationMs": 1422
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 111591,
+            "time": 1791125921584,
+            "end": 113009.40000000224,
+            "durationMs": 1418
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが2枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 113066,
+            "time": 1791125923059,
+            "end": 114486.69999999925,
+            "durationMs": 1421
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが5枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 118844.30000000075,
+            "time": 1791125928837,
+            "end": 120270.60000000149,
+            "durationMs": 1426
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 120459.10000000149,
+            "time": 1791125930452,
+            "end": 121867.60000000149,
+            "durationMs": 1409
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 126138.90000000224,
+            "time": 1791125936132,
+            "end": 127548.69999999925,
+            "durationMs": 1410
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが6枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 127816.19999999925,
+            "time": 1791125937809,
+            "end": 129243.19999999925,
+            "durationMs": 1427
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが5枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 134138.80000000075,
+            "time": 1791125944131,
+            "end": 135551.80000000075,
+            "durationMs": 1413
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 135551.80000000075,
+            "time": 1791125945544,
+            "end": 136964.90000000224,
+            "durationMs": 1413
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 139507.80000000075,
+            "time": 1791125949500,
+            "end": 140937,
+            "durationMs": 1429
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 141036.69999999925,
+            "time": 1791125951029,
+            "end": 142449.40000000224,
+            "durationMs": 1413
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 146318,
+            "time": 1791125956311,
+            "end": 147729.5,
+            "durationMs": 1412
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 148037.6000000015,
+            "time": 1791125958030,
+            "end": 149461.69999999925,
+            "durationMs": 1424
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 153188.30000000075,
+            "time": 1791125963181,
+            "end": 154605.69999999925,
+            "durationMs": 1417
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 154605.69999999925,
+            "time": 1791125964598,
+            "end": 156023.30000000075,
+            "durationMs": 1418
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが5枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 159094.90000000224,
+            "time": 1791125969088,
+            "end": 160504.30000000075,
+            "durationMs": 1409
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが5枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 160797.80000000075,
+            "time": 1791125970791,
+            "end": 162215.5,
+            "durationMs": 1418
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制したQA Gが不落の角を獲得",
+            "classes": "reversi-cinematic is-standard is-corner",
+            "start": 165789,
+            "time": 1791125975782,
+            "end": 167702.5,
+            "durationMs": 1914
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 169532.80000000075,
+            "time": 1791125979526,
+            "end": 170958.19999999925,
+            "durationMs": 1425
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制したQA Gが不落の角を獲得",
+            "classes": "reversi-cinematic is-standard is-corner",
+            "start": 174905,
+            "time": 1791125984898,
+            "end": 176820.80000000075,
+            "durationMs": 1916
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが2枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 178162.1000000015,
+            "time": 1791125988155,
+            "end": 179589.40000000224,
+            "durationMs": 1427
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが9枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 183580.19999999925,
+            "time": 1791125993573,
+            "end": 185001.40000000224,
+            "durationMs": 1421
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 185134.30000000075,
+            "time": 1791125995127,
+            "end": 186554.90000000224,
+            "durationMs": 1421
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hがパス",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 190631.90000000224,
+            "time": 1791126000625,
+            "end": 192059.80000000075,
+            "durationMs": 1428
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが6枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 193109.30000000075,
+            "time": 1791126003102,
+            "end": 194534.90000000224,
+            "durationMs": 1426
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hがパス",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 194534.90000000224,
+            "time": 1791126004528,
+            "end": 195947.1000000015,
+            "durationMs": 1412
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制したQA Gが不落の角を獲得",
+            "classes": "reversi-cinematic is-standard is-corner",
+            "start": 201829,
+            "time": 1791126011822,
+            "end": 203739.80000000075,
+            "durationMs": 1911
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hがパス",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 203739.80000000075,
+            "time": 1791126013733,
+            "end": 204661.69999999925,
+            "durationMs": 922
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "決着最後の石まで返り終え、勝敗が定まった",
+            "classes": "reversi-cinematic is-standard is-finale",
+            "start": 242451.1000000015,
+            "time": 1791126052444,
+            "end": 244382.5,
+            "durationMs": 1931
+          }
+        ],
+        [
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制したQA Gが不落の角を獲得",
+            "classes": "reversi-cinematic is-standard is-corner",
+            "start": 18086.699999999255,
+            "time": 1791125833164,
+            "end": 20034.29999999702,
+            "durationMs": 1948
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが2枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 25047.199999999255,
+            "time": 1791125840125,
+            "end": 26502.5,
+            "durationMs": 1455
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 4779.800000000745,
+            "time": 1791125846873,
+            "end": 6220.20000000298,
+            "durationMs": 1440
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが2枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 6220.20000000298,
+            "time": 1791125848313,
+            "end": 7640.10000000149,
+            "durationMs": 1420
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが2枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 10303.300000000745,
+            "time": 1791125852396,
+            "end": 11733.60000000149,
+            "durationMs": 1430
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 11952.10000000149,
+            "time": 1791125854045,
+            "end": 13376.5,
+            "durationMs": 1424
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが2枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 16434.800000000745,
+            "time": 1791125858528,
+            "end": 17874.10000000149,
+            "durationMs": 1439
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが2枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 17874.10000000149,
+            "time": 1791125859967,
+            "end": 19288.70000000298,
+            "durationMs": 1415
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが2枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 21511.10000000149,
+            "time": 1791125863604,
+            "end": 22921.400000002235,
+            "durationMs": 1410
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 23071.60000000149,
+            "time": 1791125865165,
+            "end": 24487.60000000149,
+            "durationMs": 1416
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 28634.20000000298,
+            "time": 1791125870727,
+            "end": 30061.5,
+            "durationMs": 1427
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 30204,
+            "time": 1791125872297,
+            "end": 31618.60000000149,
+            "durationMs": 1415
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 34930.60000000149,
+            "time": 1791125877023,
+            "end": 36357.300000000745,
+            "durationMs": 1427
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 36731.60000000149,
+            "time": 1791125878824,
+            "end": 38153.300000000745,
+            "durationMs": 1422
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 40894.400000002235,
+            "time": 1791125882987,
+            "end": 42317.20000000298,
+            "durationMs": 1423
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 42328.10000000149,
+            "time": 1791125884421,
+            "end": 43749.800000000745,
+            "durationMs": 1422
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 47059.400000002235,
+            "time": 1791125889152,
+            "end": 48498.70000000298,
+            "durationMs": 1439
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 48498.70000000298,
+            "time": 1791125890592,
+            "end": 49914.400000002235,
+            "durationMs": 1416
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 52893.20000000298,
+            "time": 1791125894986,
+            "end": 54312.60000000149,
+            "durationMs": 1419
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "大反転5枚を一気に覆した",
+            "classes": "reversi-cinematic is-standard is-grand-flip",
+            "start": 54862.10000000149,
+            "time": 1791125896955,
+            "end": 56778.60000000149,
+            "durationMs": 1917
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが6枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 64039.800000000745,
+            "time": 1791125906133,
+            "end": 65465.800000000745,
+            "durationMs": 1426
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが5枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 65774,
+            "time": 1791125907867,
+            "end": 67189.70000000298,
+            "durationMs": 1416
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 71581.40000000224,
+            "time": 1791125913674,
+            "end": 73004.5,
+            "durationMs": 1423
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 76169,
+            "time": 1791125918262,
+            "end": 77588.80000000075,
+            "durationMs": 1420
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 77815.60000000149,
+            "time": 1791125919909,
+            "end": 79236.5,
+            "durationMs": 1421
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが2枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 82459.10000000149,
+            "time": 1791125924552,
+            "end": 83875.40000000224,
+            "durationMs": 1416
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが5枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 84549.40000000224,
+            "time": 1791125926642,
+            "end": 85967.90000000224,
+            "durationMs": 1419
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 89928.40000000224,
+            "time": 1791125932021,
+            "end": 91358.30000000075,
+            "durationMs": 1430
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 91645,
+            "time": 1791125933738,
+            "end": 93066.70000000298,
+            "durationMs": 1422
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが6枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 97636.70000000298,
+            "time": 1791125939730,
+            "end": 99067.80000000075,
+            "durationMs": 1431
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが5枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 99692.5,
+            "time": 1791125941785,
+            "end": 101116.30000000075,
+            "durationMs": 1424
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 105011.40000000224,
+            "time": 1791125947104,
+            "end": 106426.5,
+            "durationMs": 1415
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 106426.5,
+            "time": 1791125948519,
+            "end": 107844.20000000298,
+            "durationMs": 1418
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 110355.30000000075,
+            "time": 1791125952448,
+            "end": 111780.20000000298,
+            "durationMs": 1425
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 112259.5,
+            "time": 1791125954352,
+            "end": 113680.80000000075,
+            "durationMs": 1421
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 117591.60000000149,
+            "time": 1791125959684,
+            "end": 119017,
+            "durationMs": 1425
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 119199,
+            "time": 1791125961292,
+            "end": 120608.40000000224,
+            "durationMs": 1409
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 123650.10000000149,
+            "time": 1791125965743,
+            "end": 125070.40000000224,
+            "durationMs": 1420
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが5枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 125318.40000000224,
+            "time": 1791125967411,
+            "end": 126742,
+            "durationMs": 1424
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが5枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 130541.60000000149,
+            "time": 1791125972635,
+            "end": 131824.40000000224,
+            "durationMs": 1283
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制したQA Gが不落の角を獲得",
+            "classes": "reversi-cinematic is-standard is-corner",
+            "start": 131824.40000000224,
+            "time": 1791125973917,
+            "end": 133756.90000000224,
+            "durationMs": 1933
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 139589.90000000224,
+            "time": 1791125981683,
+            "end": 141003.70000000298,
+            "durationMs": 1414
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制したQA Gが不落の角を獲得",
+            "classes": "reversi-cinematic is-standard is-corner",
+            "start": 141258.30000000075,
+            "time": 1791125983351,
+            "end": 143180.20000000298,
+            "durationMs": 1922
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが2枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 147135.30000000075,
+            "time": 1791125989228,
+            "end": 148558.1000000015,
+            "durationMs": 1423
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが9枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 149168.6000000015,
+            "time": 1791125991262,
+            "end": 150586.30000000075,
+            "durationMs": 1418
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 154508.80000000075,
+            "time": 1791125996602,
+            "end": 155938.20000000298,
+            "durationMs": 1429
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hがパス",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 156575.30000000075,
+            "time": 1791125998668,
+            "end": 158002,
+            "durationMs": 1427
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが6枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 159666.40000000224,
+            "time": 1791126001759,
+            "end": 161097.5,
+            "durationMs": 1431
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hがパス",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 161097.5,
+            "time": 1791126003190,
+            "end": 162509.40000000224,
+            "durationMs": 1412
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制したQA Gが不落の角を獲得",
+            "classes": "reversi-cinematic is-standard is-corner",
+            "start": 167464.70000000298,
+            "time": 1791126009558,
+            "end": 169383.6000000015,
+            "durationMs": 1919
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hがパス",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 169383.6000000015,
+            "time": 1791126011476,
+            "end": 170327,
+            "durationMs": 943
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "決着最後の石まで返り終え、勝敗が定まった",
+            "classes": "reversi-cinematic is-standard is-finale",
+            "start": 203837.6000000015,
+            "time": 1791126045930,
+            "end": 205754,
+            "durationMs": 1916
+          }
+        ]
+      ],
+      "neutralNarration": [
+        [
+          "ゲーム案内QA Gが2枚反転",
+          "ゲーム案内QA Hが4枚反転",
+          "ゲーム案内QA Gが2枚反転",
+          "ゲーム案内QA Hが2枚反転",
+          "ゲーム案内QA Gが3枚反転",
+          "ゲーム案内QA Hが2枚反転",
+          "ゲーム案内QA Gが2枚反転",
+          "ゲーム案内QA Hが2枚反転",
+          "ゲーム案内QA Gが4枚反転",
+          "ゲーム案内QA Hが4枚反転",
+          "ゲーム案内QA Gが3枚反転",
+          "ゲーム案内QA Hが3枚反転",
+          "ゲーム案内QA Gが3枚反転",
+          "ゲーム案内QA Hが3枚反転",
+          "ゲーム案内QA Gが4枚反転",
+          "ゲーム案内QA Hが3枚反転",
+          "ゲーム案内QA Gが4枚反転",
+          "ゲーム案内QA Hが4枚反転",
+          "ゲーム案内QA Hが6枚反転",
+          "ゲーム案内QA Gが5枚反転",
+          "ゲーム案内QA Gが3枚反転",
+          "ゲーム案内QA Hが3枚反転",
+          "ゲーム案内QA Gが3枚反転",
+          "ゲーム案内QA Hが2枚反転",
+          "ゲーム案内QA Gが5枚反転",
+          "ゲーム案内QA Hが4枚反転",
+          "ゲーム案内QA Gが3枚反転",
+          "ゲーム案内QA Hが6枚反転",
+          "ゲーム案内QA Gが5枚反転",
+          "ゲーム案内QA Hが4枚反転",
+          "ゲーム案内QA Gが3枚反転",
+          "ゲーム案内QA Hが4枚反転",
+          "ゲーム案内QA Gが4枚反転",
+          "ゲーム案内QA Hが3枚反転",
+          "ゲーム案内QA Gが4枚反転",
+          "ゲーム案内QA Hが3枚反転",
+          "ゲーム案内QA Gが5枚反転",
+          "ゲーム案内QA Hが5枚反転",
+          "ゲーム案内QA Hが4枚反転",
+          "ゲーム案内QA Hが2枚反転",
+          "ゲーム案内QA Gが9枚反転",
+          "ゲーム案内QA Hが3枚反転",
+          "ゲーム案内QA Hがパス",
+          "ゲーム案内QA Gが6枚反転",
+          "ゲーム案内QA Hがパス",
+          "ゲーム案内QA Hがパス"
+        ],
+        [
+          "ゲーム案内QA Gが2枚反転",
+          "ゲーム案内QA Hが4枚反転",
+          "ゲーム案内QA Gが2枚反転",
+          "ゲーム案内QA Hが2枚反転",
+          "ゲーム案内QA Gが3枚反転",
+          "ゲーム案内QA Hが2枚反転",
+          "ゲーム案内QA Gが2枚反転",
+          "ゲーム案内QA Hが2枚反転",
+          "ゲーム案内QA Gが4枚反転",
+          "ゲーム案内QA Hが4枚反転",
+          "ゲーム案内QA Gが3枚反転",
+          "ゲーム案内QA Hが3枚反転",
+          "ゲーム案内QA Gが3枚反転",
+          "ゲーム案内QA Hが3枚反転",
+          "ゲーム案内QA Gが4枚反転",
+          "ゲーム案内QA Hが3枚反転",
+          "ゲーム案内QA Gが4枚反転",
+          "ゲーム案内QA Hが4枚反転",
+          "ゲーム案内QA Hが6枚反転",
+          "ゲーム案内QA Gが5枚反転",
+          "ゲーム案内QA Gが3枚反転",
+          "ゲーム案内QA Hが3枚反転",
+          "ゲーム案内QA Gが3枚反転",
+          "ゲーム案内QA Hが2枚反転",
+          "ゲーム案内QA Gが5枚反転",
+          "ゲーム案内QA Hが4枚反転",
+          "ゲーム案内QA Gが3枚反転",
+          "ゲーム案内QA Hが6枚反転",
+          "ゲーム案内QA Gが5枚反転",
+          "ゲーム案内QA Hが4枚反転",
+          "ゲーム案内QA Gが3枚反転",
+          "ゲーム案内QA Hが4枚反転",
+          "ゲーム案内QA Gが4枚反転",
+          "ゲーム案内QA Hが3枚反転",
+          "ゲーム案内QA Gが4枚反転",
+          "ゲーム案内QA Hが3枚反転",
+          "ゲーム案内QA Gが5枚反転",
+          "ゲーム案内QA Hが5枚反転",
+          "ゲーム案内QA Hが4枚反転",
+          "ゲーム案内QA Hが2枚反転",
+          "ゲーム案内QA Gが9枚反転",
+          "ゲーム案内QA Hが3枚反転",
+          "ゲーム案内QA Hがパス",
+          "ゲーム案内QA Gが6枚反転",
+          "ゲーム案内QA Hがパス",
+          "ゲーム案内QA Hがパス"
+        ]
+      ],
+      "cinematics": [
+        [
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制したQA Gが不落の角を獲得",
+            "classes": "reversi-cinematic is-standard is-corner",
+            "start": 24171.5,
+            "time": 1791125834164,
+            "end": 26101.400000002235,
+            "durationMs": 1930
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "大反転5枚を一気に覆した",
+            "classes": "reversi-cinematic is-standard is-grand-flip",
+            "start": 89478.10000000149,
+            "time": 1791125899471,
+            "end": 91395.80000000075,
+            "durationMs": 1918
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制したQA Gが不落の角を獲得",
+            "classes": "reversi-cinematic is-standard is-corner",
+            "start": 165789,
+            "time": 1791125975782,
+            "end": 167702.5,
+            "durationMs": 1914
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制したQA Gが不落の角を獲得",
+            "classes": "reversi-cinematic is-standard is-corner",
+            "start": 174905,
+            "time": 1791125984898,
+            "end": 176820.80000000075,
+            "durationMs": 1916
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制したQA Gが不落の角を獲得",
+            "classes": "reversi-cinematic is-standard is-corner",
+            "start": 201829,
+            "time": 1791126011822,
+            "end": 203739.80000000075,
+            "durationMs": 1911
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "決着最後の石まで返り終え、勝敗が定まった",
+            "classes": "reversi-cinematic is-standard is-finale",
+            "start": 242451.1000000015,
+            "time": 1791126052444,
+            "end": 244382.5,
+            "durationMs": 1931
+          }
+        ],
+        [
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制したQA Gが不落の角を獲得",
+            "classes": "reversi-cinematic is-standard is-corner",
+            "start": 18086.699999999255,
+            "time": 1791125833164,
+            "end": 20034.29999999702,
+            "durationMs": 1948
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "大反転5枚を一気に覆した",
+            "classes": "reversi-cinematic is-standard is-grand-flip",
+            "start": 54862.10000000149,
+            "time": 1791125896955,
+            "end": 56778.60000000149,
+            "durationMs": 1917
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制したQA Gが不落の角を獲得",
+            "classes": "reversi-cinematic is-standard is-corner",
+            "start": 131824.40000000224,
+            "time": 1791125973917,
+            "end": 133756.90000000224,
+            "durationMs": 1933
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制したQA Gが不落の角を獲得",
+            "classes": "reversi-cinematic is-standard is-corner",
+            "start": 141258.30000000075,
+            "time": 1791125983351,
+            "end": 143180.20000000298,
+            "durationMs": 1922
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制したQA Gが不落の角を獲得",
+            "classes": "reversi-cinematic is-standard is-corner",
+            "start": 167464.70000000298,
+            "time": 1791126009558,
+            "end": 169383.6000000015,
+            "durationMs": 1919
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "決着最後の石まで返り終え、勝敗が定まった",
+            "classes": "reversi-cinematic is-standard is-finale",
+            "start": 203837.6000000015,
+            "time": 1791126045930,
+            "end": 205754,
+            "durationMs": 1916
+          }
+        ]
+      ],
+      "sceneFactsEqual": true,
+      "exits": {
+        "host-normal": true,
+        "guest-normal": true
+      },
+      "cleanupStarted": true
+    }
+  ],
+  "errors": [],
+  "warnings": [],
+  "cleanupDiagnostics": [
+    {
+      "label": "host-normal",
+      "message": "Failed to load resource: the server responded with a status of 406 ()"
+    }
+  ]
+}

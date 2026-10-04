@@ -1,0 +1,37 @@
+{
+  "id": "babanuki-lv3",
+  "game": "babanuki",
+  "lv": 3,
+  "prompt": "Use case: identity-preserve production game illustration, family-friendly Dragon Game Park. One finished portrait3:4 with FULL painted background, no alpha.\nReference1 EXACT required identity: silver/white adolescent dragon, BLUE eyes, etched SILVER horns, forehead diamond, SILVER collar with shield-shaped SUN medallion. Keep age/face/proportions/permanent ornaments strictly; ignore invisible-alpha RGB bars in its background.\nReference2 APPROVED staging/style/game props. Replace its silver dragon ONLY with reference1 identity, keeping the same recognizable silver character; don't inherit collar/crown/halo unless reference1 requires it.\nScene: BABANUKI SHUFFLE TIME dice3 central mixing: playful mischievous dragon spreads BOTH claws as shuffling conductor. Identical deep PURPLE card BACKS gather into luminous central vortex and fan outward, gold/violet trails, midnight-plum castle theatre. ALL card backs identical stripe+gold-border+dragon crest. NO face card, Joker, suits, ranks, marked card, dice, source/destination route or hidden exchange cues.\nMANDATORY framing: entire wing-to-wing dragon silhouette spans MAXIMUM70 percent canvas width, centered, with painted scenery visible beyond BOTH complete wing tips. All claws/horns/crown/halo COMPLETE,10percent top margin and8percent sides. Make body smaller than reference2 if necessary. Do not reuse cropped wings of reference2. Face upper-middle, props substantial sides/lower middle. Top12percent andbottom13percent DARK lowdetail breathing zones for HTML titles. Preserve rich sweeping action/depth while keeping face clear at phone size.\nPolished Japanese anime game splash, clean dark outlines, crisp cel shading, glossy scales, excellent expressive anatomy. ONE dragon. No captions/title/UI/speech/watermark/frame. No wrong level identity, missing ornaments, extra limbs/fingers, bright face clutter, photorealism or flat clipart.\nFraming refinement: Fold wings halfway behind shoulders, complete tips clearly inside frame; keep dragon wing-to-wing max70% of canvas; do not copy the large cropped character from reference2. Keep both wing tips and all horns/claws clearly complete with scenery separating them from every image edge. ",
+  "refs": [
+    "C:\\Users\\ray-0\\.codex\\worktrees\\dragon-presentation-v2\\Dragon-game-park\\src\\assets\\dragons\\cutins\\master\\lv3\\attack.webp",
+    "C:\\Users\\ray-0\\.codex\\worktrees\\dragon-presentation-v2\\Dragon-game-park\\docs\\design\\dragons\\presentation-v2\\2026-10-04\\images\\babanuki-shuffle-lv3-v1.png"
+  ],
+  "runtime": "src/assets/dragons/presentation-v2/scenes/babanuki/lv3-shuffle.webp",
+  "source": "image_gen",
+  "rawOutput": "C:\\Users\\ray-0\\.codex\\generated_images\\01a105e7-6524-75a3-9275-b65e339ee93d\\exec-b4eb25bb-2d86-4fca-8255-f00d88e4c1af.png",
+  "original": "docs/design/dragons/presentation-v2/2026-10-04/production-art/originals/scenes/babanuki-lv3.png",
+  "originalSha256": "af3eba2331c42cf2ac05ee07c565d86e9667db25848836a55a8fe01629a4dbb9",
+  "runtimeSha256": "214446578167e8986aa382e1149b43173031b18063c9678e8ea98be06e2ab110",
+  "dimensions": [
+    720,
+    960
+  ],
+  "bytes": 200338,
+  "references": [
+    {
+      "path": "src/assets/dragons/cutins/master/lv3/attack.webp",
+      "sha256": "9312bc58d5f2d85e402ae2859eb5cfb112ed44fefc3f6a24717689b9f855f5e2"
+    },
+    {
+      "path": "docs/design/dragons/presentation-v2/2026-10-04/images/babanuki-shuffle-lv3-v1.png",
+      "sha256": "6a41c35d6df922919c124c471c5f01479bffad1c7d84278294723cae81808438"
+    }
+  ],
+  "conversion": "resize inside 720x960, no crop, WebP quality88; no semantic editing",
+  "generatedAt": "2026-10-04T08:08:50.108Z",
+  "visualInspection": {
+    "accepted": true,
+    "note": "Both wing tips, horns and claws visibly complete inside frame. Silver collar and sun medallion present. All cards identical purple backs; no Joker, faces, routes or marked target. Numeric max70% was not matched exactly; dragon span is visually about mid80% but tips do not clip."
+  }
+}

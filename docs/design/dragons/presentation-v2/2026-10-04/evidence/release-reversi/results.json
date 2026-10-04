@@ -1,0 +1,3279 @@
+{
+  "environment": {
+    "target": "http://127.0.0.1:5178",
+    "browser": "Microsoft Edge headless",
+    "viewports": [
+      "390x844",
+      "900x700"
+    ],
+    "method": "Independent contexts. Live existing Supabase; actual UI create/join/legal clicks/reload/rejoin. No game state injection or new SQL."
+  },
+  "checks": [
+    {
+      "variant": "normal",
+      "passed": false,
+      "moves": [
+        {
+          "move": 1,
+          "actor": "host-normal",
+          "coordinate": "C4",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2704,
+          "nextEnabled": [
+            0,
+            3
+          ],
+          "final": false
+        },
+        {
+          "move": 2,
+          "actor": "guest-normal",
+          "coordinate": "C3",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2921,
+          "nextEnabled": [
+            4,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 3,
+          "actor": "host-normal",
+          "coordinate": "C2",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 13908,
+          "nextEnabled": [
+            0,
+            6
+          ],
+          "final": false
+        },
+        {
+          "move": 4,
+          "actor": "guest-normal",
+          "coordinate": "B2",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2661,
+          "nextEnabled": [
+            4,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 5,
+          "actor": "host-normal",
+          "coordinate": "A2",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2900,
+          "nextEnabled": [
+            0,
+            7
+          ],
+          "final": false
+        },
+        {
+          "move": 6,
+          "actor": "guest-normal",
+          "coordinate": "A1",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 5732,
+          "nextEnabled": [
+            3,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 7,
+          "actor": "host-normal",
+          "coordinate": "D3",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2746,
+          "nextEnabled": [
+            0,
+            5
+          ],
+          "final": false
+        },
+        {
+          "move": 8,
+          "actor": "guest-normal",
+          "coordinate": "C5",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3097,
+          "nextEnabled": [
+            8,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 9,
+          "actor": "host-normal",
+          "coordinate": "C6",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3864,
+          "nextEnabled": [
+            0,
+            4
+          ],
+          "final": false
+        },
+        {
+          "move": 10,
+          "actor": "guest-normal",
+          "coordinate": "B5",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3222,
+          "nextEnabled": [
+            6,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 11,
+          "actor": "host-normal",
+          "coordinate": "E6",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2961,
+          "nextEnabled": [
+            0,
+            9
+          ],
+          "final": false
+        },
+        {
+          "move": 12,
+          "actor": "guest-normal",
+          "coordinate": "C1",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3594,
+          "nextEnabled": [
+            8,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 13,
+          "actor": "host-normal",
+          "coordinate": "A5",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3316,
+          "nextEnabled": [
+            0,
+            9
+          ],
+          "final": false
+        },
+        {
+          "move": 14,
+          "actor": "guest-normal",
+          "coordinate": "C7",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3028,
+          "nextEnabled": [
+            7,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 15,
+          "actor": "host-normal",
+          "coordinate": "B3",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3003,
+          "nextEnabled": [
+            0,
+            7
+          ],
+          "final": false
+        },
+        {
+          "move": 16,
+          "actor": "guest-normal",
+          "coordinate": "F5",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 5222,
+          "nextEnabled": [
+            13,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 17,
+          "actor": "host-normal",
+          "coordinate": "G5",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3669,
+          "nextEnabled": [
+            0,
+            8
+          ],
+          "final": false
+        },
+        {
+          "move": 18,
+          "actor": "guest-normal",
+          "coordinate": "A3",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 14020,
+          "nextEnabled": [
+            9,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 19,
+          "actor": "host-normal",
+          "coordinate": "B1",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3231,
+          "nextEnabled": [
+            0,
+            7
+          ],
+          "final": false
+        },
+        {
+          "move": 20,
+          "actor": "guest-normal",
+          "coordinate": "F7",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3113,
+          "nextEnabled": [
+            8,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 21,
+          "actor": "host-normal",
+          "coordinate": "B4",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3410,
+          "nextEnabled": [
+            0,
+            8
+          ],
+          "final": false
+        },
+        {
+          "move": 22,
+          "actor": "guest-normal",
+          "coordinate": "D2",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 4228,
+          "nextEnabled": [
+            9,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 23,
+          "actor": "host-normal",
+          "coordinate": "G8",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3243,
+          "nextEnabled": [
+            0,
+            8
+          ],
+          "final": false
+        },
+        {
+          "move": 24,
+          "actor": "guest-normal",
+          "coordinate": "A4",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2795,
+          "nextEnabled": [
+            6,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 25,
+          "actor": "host-normal",
+          "coordinate": "D1",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3832,
+          "nextEnabled": [
+            0,
+            10
+          ],
+          "final": false
+        },
+        {
+          "move": 26,
+          "actor": "guest-normal",
+          "coordinate": "H5",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 5948,
+          "nextEnabled": [
+            8,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 27,
+          "actor": "host-normal",
+          "coordinate": "C8",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 4839,
+          "nextEnabled": [
+            0,
+            10
+          ],
+          "final": false
+        },
+        {
+          "move": 28,
+          "actor": "guest-normal",
+          "coordinate": "E1",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 4130,
+          "nextEnabled": [
+            6,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 29,
+          "actor": "host-normal",
+          "coordinate": "A6",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 4933,
+          "nextEnabled": [
+            0,
+            9
+          ],
+          "final": false
+        },
+        {
+          "move": 30,
+          "actor": "guest-normal",
+          "coordinate": "D7",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3916,
+          "nextEnabled": [
+            7,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 31,
+          "actor": "host-normal",
+          "coordinate": "E7",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2933,
+          "nextEnabled": [
+            0,
+            8
+          ],
+          "final": false
+        },
+        {
+          "move": 32,
+          "actor": "guest-normal",
+          "coordinate": "F4",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3129,
+          "nextEnabled": [
+            6,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 33,
+          "actor": "host-normal",
+          "coordinate": "D6",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2946,
+          "nextEnabled": [
+            0,
+            8
+          ],
+          "final": false
+        },
+        {
+          "move": 34,
+          "actor": "guest-normal",
+          "coordinate": "D8",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 4196,
+          "nextEnabled": [
+            7,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 35,
+          "actor": "host-normal",
+          "coordinate": "E2",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3647,
+          "nextEnabled": [
+            0,
+            11
+          ],
+          "final": false
+        },
+        {
+          "move": 36,
+          "actor": "guest-normal",
+          "coordinate": "E8",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3784,
+          "nextEnabled": [
+            5,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 37,
+          "actor": "host-normal",
+          "coordinate": "G4",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 4212,
+          "nextEnabled": [
+            0,
+            12
+          ],
+          "final": false
+        },
+        {
+          "move": 38,
+          "actor": "guest-normal",
+          "coordinate": "H4",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 4049,
+          "nextEnabled": [
+            6,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 39,
+          "actor": "host-normal",
+          "coordinate": "F8",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 4113,
+          "nextEnabled": [
+            0,
+            9
+          ],
+          "final": false
+        },
+        {
+          "move": 40,
+          "actor": "guest-normal",
+          "coordinate": "E3",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 4602,
+          "nextEnabled": [
+            6,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 41,
+          "actor": "host-normal",
+          "coordinate": "F2",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3111,
+          "nextEnabled": [
+            0,
+            9
+          ],
+          "final": false
+        },
+        {
+          "move": 42,
+          "actor": "guest-normal",
+          "coordinate": "G2",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 9622,
+          "nextEnabled": [
+            8,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 43,
+          "actor": "host-normal",
+          "coordinate": "F1",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3365,
+          "nextEnabled": [
+            0,
+            7
+          ],
+          "final": false
+        },
+        {
+          "move": 44,
+          "actor": "guest-normal",
+          "coordinate": "B6",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 5723,
+          "nextEnabled": [
+            4,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 45,
+          "actor": "host-normal",
+          "coordinate": "F3",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2544,
+          "nextEnabled": [
+            0,
+            6
+          ],
+          "final": false
+        },
+        {
+          "move": 46,
+          "actor": "guest-normal",
+          "coordinate": "G3",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3170,
+          "nextEnabled": [
+            0,
+            6
+          ],
+          "final": false
+        }
+      ],
+      "ackResponses": [],
+      "screenshots": [
+        {
+          "client": "guest-normal",
+          "kind": "reversi-cinematic is-standard is-corner",
+          "text": "角を制した\nQA Gが不落の角を獲得"
+        },
+        {
+          "client": "host-normal",
+          "kind": "reversi-cinematic is-standard is-corner",
+          "text": "角を制した\nQA Gが不落の角を獲得"
+        },
+        {
+          "client": "guest-normal",
+          "kind": "reversi-cinematic is-standard is-grand-flip",
+          "text": "大反転\n5枚を一気に覆した"
+        },
+        {
+          "client": "host-normal",
+          "kind": "reversi-cinematic is-standard is-grand-flip",
+          "text": "大反転\n5枚を一気に覆した"
+        }
+      ],
+      "reconnect": {
+        "passed": true,
+        "afterMove": 8,
+        "elapsedMs": 5477,
+        "boardEqual": true,
+        "noOldSceneReplay": true
+      },
+      "cleanup": {
+        "ownQaRoomDeleted": true,
+        "method": "Existing deleteReversiRoom, only created QA code, after both UI exits"
+      },
+      "roomCode": "QB5K6M",
+      "initialBoardEqual": true,
+      "error": "Online sync error shown",
+      "events": [
+        [
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制したQA Gが不落の角を獲得",
+            "classes": "reversi-cinematic is-standard is-corner",
+            "start": 47529,
+            "time": 1791125097030,
+            "end": 49500.10000000149,
+            "durationMs": 1971
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが2枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 55286.400000002235,
+            "time": 1791125104787,
+            "end": 56781.199999999255,
+            "durationMs": 1495
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 63208.699999999255,
+            "time": 1791125112709,
+            "end": 64647.699999999255,
+            "durationMs": 1439
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが2枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 68464.60000000149,
+            "time": 1791125117965,
+            "end": 69897.69999999925,
+            "durationMs": 1433
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが2枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 69997.90000000224,
+            "time": 1791125119499,
+            "end": 71434.5,
+            "durationMs": 1437
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 75196.30000000075,
+            "time": 1791125124697,
+            "end": 76625.40000000224,
+            "durationMs": 1429
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが2枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 76777.80000000075,
+            "time": 1791125126279,
+            "end": 78216.30000000075,
+            "durationMs": 1439
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが2枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 81528.30000000075,
+            "time": 1791125131029,
+            "end": 82966,
+            "durationMs": 1438
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが2枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 83044.10000000149,
+            "time": 1791125132545,
+            "end": 84495,
+            "durationMs": 1451
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 89958.10000000149,
+            "time": 1791125139459,
+            "end": 91386.10000000149,
+            "durationMs": 1428
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 91899.5,
+            "time": 1791125141400,
+            "end": 93345.30000000075,
+            "durationMs": 1446
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 107691.10000000149,
+            "time": 1791125157192,
+            "end": 109123.90000000224,
+            "durationMs": 1433
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 109389.80000000075,
+            "time": 1791125158890,
+            "end": 110815.10000000149,
+            "durationMs": 1425
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 114061.90000000224,
+            "time": 1791125163563,
+            "end": 115489.5,
+            "durationMs": 1428
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 115595.40000000224,
+            "time": 1791125165096,
+            "end": 117024.30000000075,
+            "durationMs": 1429
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 121723.40000000224,
+            "time": 1791125171224,
+            "end": 123153.19999999925,
+            "durationMs": 1430
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 123467.30000000075,
+            "time": 1791125172968,
+            "end": 124891.19999999925,
+            "durationMs": 1424
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 127803.10000000149,
+            "time": 1791125177304,
+            "end": 129231.30000000075,
+            "durationMs": 1428
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 129543.80000000075,
+            "time": 1791125179045,
+            "end": 130978.30000000075,
+            "durationMs": 1435
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "大反転5枚を一気に覆した",
+            "classes": "reversi-cinematic is-standard is-grand-flip",
+            "start": 135648.6000000015,
+            "time": 1791125185149,
+            "end": 137601.6000000015,
+            "durationMs": 1953
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが6枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 139937.30000000075,
+            "time": 1791125189438,
+            "end": 141365.90000000224,
+            "durationMs": 1429
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが5枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 146656,
+            "time": 1791125196157,
+            "end": 148089.6000000015,
+            "durationMs": 1434
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 155451.69999999925,
+            "time": 1791125204952,
+            "end": 156889.6000000015,
+            "durationMs": 1438
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 157116.1000000015,
+            "time": 1791125206617,
+            "end": 158552.90000000224,
+            "durationMs": 1437
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 161697.80000000075,
+            "time": 1791125211199,
+            "end": 163122.6000000015,
+            "durationMs": 1425
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが2枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 163222.19999999925,
+            "time": 1791125212723,
+            "end": 164661.6000000015,
+            "durationMs": 1439
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが5枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 168806.6000000015,
+            "time": 1791125218307,
+            "end": 170240.30000000075,
+            "durationMs": 1434
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 170602.30000000075,
+            "time": 1791125220103,
+            "end": 172054.5,
+            "durationMs": 1452
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 176317.5,
+            "time": 1791125225818,
+            "end": 177739,
+            "durationMs": 1422
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが6枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 178074,
+            "time": 1791125227575,
+            "end": 179508,
+            "durationMs": 1434
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが5枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 184645.80000000075,
+            "time": 1791125234147,
+            "end": 186060.1000000015,
+            "durationMs": 1414
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 186118.19999999925,
+            "time": 1791125235619,
+            "end": 187533.1000000015,
+            "durationMs": 1415
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 193362.5,
+            "time": 1791125242863,
+            "end": 194781.5,
+            "durationMs": 1419
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 194893,
+            "time": 1791125244394,
+            "end": 196320.30000000075,
+            "durationMs": 1427
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 206105.6000000015,
+            "time": 1791125255606,
+            "end": 207528.90000000224,
+            "durationMs": 1423
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 207844.19999999925,
+            "time": 1791125257345,
+            "end": 209268.69999999925,
+            "durationMs": 1425
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 215311.30000000075,
+            "time": 1791125264812,
+            "end": 216726,
+            "durationMs": 1415
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 216726,
+            "time": 1791125266227,
+            "end": 218145.30000000075,
+            "durationMs": 1419
+          }
+        ],
+        [
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制したQA Gが不落の角を獲得",
+            "classes": "reversi-cinematic is-standard is-corner",
+            "start": 37521.20000000298,
+            "time": 1791125094630,
+            "end": 39515.5,
+            "durationMs": 1994
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが2枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 46070.5,
+            "time": 1791125103179,
+            "end": 47551.60000000149,
+            "durationMs": 1481
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 8454.300000000745,
+            "time": 1791125114756,
+            "end": 9901.699999999255,
+            "durationMs": 1447
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが2枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 10154.199999999255,
+            "time": 1791125116456,
+            "end": 11599.5,
+            "durationMs": 1445
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが2枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 14713.099999997765,
+            "time": 1791125121015,
+            "end": 16158.89999999851,
+            "durationMs": 1446
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 16547.5,
+            "time": 1791125122849,
+            "end": 17983.5,
+            "durationMs": 1436
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが2枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 21656.199999999255,
+            "time": 1791125127958,
+            "end": 23099.5,
+            "durationMs": 1443
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが2枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 23401,
+            "time": 1791125129703,
+            "end": 24840,
+            "durationMs": 1439
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが2枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 27845.199999999255,
+            "time": 1791125134147,
+            "end": 29275.800000000745,
+            "durationMs": 1431
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 29457.5,
+            "time": 1791125135759,
+            "end": 30889.800000000745,
+            "durationMs": 1432
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 36774.89999999851,
+            "time": 1791125143077,
+            "end": 38204.699999999255,
+            "durationMs": 1430
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 38408.800000000745,
+            "time": 1791125144711,
+            "end": 39835.300000000745,
+            "durationMs": 1427
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 54071.199999999255,
+            "time": 1791125160373,
+            "end": 55514.599999997765,
+            "durationMs": 1443
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 55856.599999997765,
+            "time": 1791125162159,
+            "end": 57290,
+            "durationMs": 1433
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 60633.89999999851,
+            "time": 1791125166936,
+            "end": 62059.39999999851,
+            "durationMs": 1426
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 62231.599999997765,
+            "time": 1791125168533,
+            "end": 63663.099999997765,
+            "durationMs": 1432
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 68191,
+            "time": 1791125174493,
+            "end": 69614.59999999776,
+            "durationMs": 1424
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 69739.19999999925,
+            "time": 1791125176041,
+            "end": 71165.5,
+            "durationMs": 1426
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 74884.69999999925,
+            "time": 1791125181187,
+            "end": 76311.80000000075,
+            "durationMs": 1427
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "大反転5枚を一気に覆した",
+            "classes": "reversi-cinematic is-standard is-grand-flip",
+            "start": 76945.30000000075,
+            "time": 1791125183247,
+            "end": 78896,
+            "durationMs": 1951
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが6枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 85687.5,
+            "time": 1791125191989,
+            "end": 87124.19999999925,
+            "durationMs": 1437
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが5枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 87457.89999999851,
+            "time": 1791125193760,
+            "end": 88882.69999999925,
+            "durationMs": 1425
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 96356.89999999851,
+            "time": 1791125202659,
+            "end": 97787.69999999925,
+            "durationMs": 1431
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 101684.19999999925,
+            "time": 1791125207986,
+            "end": 103123.59999999776,
+            "durationMs": 1439
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 103529.89999999851,
+            "time": 1791125209832,
+            "end": 104960.09999999776,
+            "durationMs": 1430
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが2枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 107837.59999999776,
+            "time": 1791125214139,
+            "end": 109266.89999999851,
+            "durationMs": 1429
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが5枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 109970.09999999776,
+            "time": 1791125216272,
+            "end": 111391.19999999925,
+            "durationMs": 1421
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 115732.69999999925,
+            "time": 1791125222034,
+            "end": 117156.09999999776,
+            "durationMs": 1423
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 117461.19999999925,
+            "time": 1791125223763,
+            "end": 118889.5,
+            "durationMs": 1428
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが6枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 123682.89999999851,
+            "time": 1791125229985,
+            "end": 125100,
+            "durationMs": 1417
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが5枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 125863.09999999776,
+            "time": 1791125232165,
+            "end": 127283.89999999851,
+            "durationMs": 1421
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 131915.5,
+            "time": 1791125238217,
+            "end": 133351,
+            "durationMs": 1436
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 133351.09999999776,
+            "time": 1791125239653,
+            "end": 134770.59999999776,
+            "durationMs": 1420
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 139713.30000000075,
+            "time": 1791125246015,
+            "end": 141131.30000000075,
+            "durationMs": 1418
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 141580.69999999925,
+            "time": 1791125247883,
+            "end": 143010.8999999985,
+            "durationMs": 1430
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 152697.8999999985,
+            "time": 1791125259000,
+            "end": 154127.3999999985,
+            "durationMs": 1430
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが4枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 154492.19999999925,
+            "time": 1791125260794,
+            "end": 155909.3999999985,
+            "durationMs": 1417
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Hが3枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 161085.09999999776,
+            "time": 1791125267387,
+            "end": 162507.69999999925,
+            "durationMs": 1423
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内QA Gが5枚反転",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 162751.30000000075,
+            "time": 1791125269053,
+            "end": 164189.8999999985,
+            "durationMs": 1439
+          }
+        ]
+      ],
+      "exits": {
+        "host-normal": {
+          "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '設定に戻る', exact: true }).first()\u001b[22m\n"
+        },
+        "guest-normal": true
+      },
+      "cleanupStarted": true
+    },
+    {
+      "variant": "bakuretsu",
+      "passed": true,
+      "moves": [
+        {
+          "move": 1,
+          "actor": "host-bakuretsu",
+          "coordinate": "C4",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2703,
+          "nextEnabled": [
+            0,
+            3
+          ],
+          "final": false
+        },
+        {
+          "move": 2,
+          "actor": "guest-bakuretsu",
+          "coordinate": "C3",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2067,
+          "nextEnabled": [
+            4,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 3,
+          "actor": "host-bakuretsu",
+          "coordinate": "C2",
+          "placed": "爆弾",
+          "boardEqual": true,
+          "elapsedMs": 2773,
+          "nextEnabled": [
+            0,
+            6
+          ],
+          "final": false
+        },
+        {
+          "move": 4,
+          "actor": "guest-bakuretsu",
+          "coordinate": "B2",
+          "placed": "爆弾",
+          "boardEqual": true,
+          "elapsedMs": 1849,
+          "nextEnabled": [
+            4,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 5,
+          "actor": "host-bakuretsu",
+          "coordinate": "A2",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 8973,
+          "nextEnabled": [
+            0,
+            5
+          ],
+          "final": false
+        },
+        {
+          "move": 6,
+          "actor": "guest-bakuretsu",
+          "coordinate": "B4",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 1857,
+          "nextEnabled": [
+            5,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 7,
+          "actor": "host-bakuretsu",
+          "coordinate": "A4",
+          "placed": "盾",
+          "boardEqual": true,
+          "elapsedMs": 2906,
+          "nextEnabled": [
+            0,
+            3
+          ],
+          "final": false
+        },
+        {
+          "move": 8,
+          "actor": "guest-bakuretsu",
+          "coordinate": "C3",
+          "placed": "盾",
+          "boardEqual": true,
+          "elapsedMs": 1610,
+          "nextEnabled": [
+            5,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 9,
+          "actor": "host-bakuretsu",
+          "coordinate": "C2",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 6492,
+          "nextEnabled": [
+            0,
+            6
+          ],
+          "final": false
+        },
+        {
+          "move": 10,
+          "actor": "guest-bakuretsu",
+          "coordinate": "C5",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2411,
+          "nextEnabled": [
+            4,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 11,
+          "actor": "host-bakuretsu",
+          "coordinate": "C6",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3358,
+          "nextEnabled": [
+            0,
+            6
+          ],
+          "final": false
+        },
+        {
+          "move": 12,
+          "actor": "guest-bakuretsu",
+          "coordinate": "B5",
+          "placed": "感染",
+          "boardEqual": true,
+          "elapsedMs": 2669,
+          "nextEnabled": [
+            5,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 13,
+          "actor": "host-bakuretsu",
+          "coordinate": "E6",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2608,
+          "nextEnabled": [
+            0,
+            11
+          ],
+          "final": false
+        },
+        {
+          "move": 14,
+          "actor": "guest-bakuretsu",
+          "coordinate": "C1",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2280,
+          "nextEnabled": [
+            7,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 15,
+          "actor": "host-bakuretsu",
+          "coordinate": "A5",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 7525,
+          "nextEnabled": [
+            0,
+            9
+          ],
+          "final": false
+        },
+        {
+          "move": 16,
+          "actor": "guest-bakuretsu",
+          "coordinate": "F5",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2008,
+          "nextEnabled": [
+            6,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 17,
+          "actor": "host-bakuretsu",
+          "coordinate": "G5",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3171,
+          "nextEnabled": [
+            0,
+            9
+          ],
+          "final": false
+        },
+        {
+          "move": 18,
+          "actor": "guest-bakuretsu",
+          "coordinate": "H5",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3489,
+          "nextEnabled": [
+            4,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 19,
+          "actor": "host-bakuretsu",
+          "coordinate": "B3",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2089,
+          "nextEnabled": [
+            0,
+            9
+          ],
+          "final": false
+        },
+        {
+          "move": 20,
+          "actor": "guest-bakuretsu",
+          "coordinate": "A3",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 6766,
+          "nextEnabled": [
+            6,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 21,
+          "actor": "host-bakuretsu",
+          "coordinate": "A2",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2044,
+          "nextEnabled": [
+            0,
+            9
+          ],
+          "final": false
+        },
+        {
+          "move": 22,
+          "actor": "guest-bakuretsu",
+          "coordinate": "A1",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 5109,
+          "nextEnabled": [
+            6,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 23,
+          "actor": "host-bakuretsu",
+          "coordinate": "B6",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2716,
+          "nextEnabled": [
+            0,
+            9
+          ],
+          "final": false
+        },
+        {
+          "move": 24,
+          "actor": "guest-bakuretsu",
+          "coordinate": "F7",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2477,
+          "nextEnabled": [
+            7,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 25,
+          "actor": "host-bakuretsu",
+          "coordinate": "E3",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2377,
+          "nextEnabled": [
+            0,
+            9
+          ],
+          "final": false
+        },
+        {
+          "move": 26,
+          "actor": "guest-bakuretsu",
+          "coordinate": "B7",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2494,
+          "nextEnabled": [
+            8,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 27,
+          "actor": "host-bakuretsu",
+          "coordinate": "A8",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 5401,
+          "nextEnabled": [
+            0,
+            8
+          ],
+          "final": false
+        },
+        {
+          "move": 28,
+          "actor": "guest-bakuretsu",
+          "coordinate": "F2",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2218,
+          "nextEnabled": [
+            7,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 29,
+          "actor": "host-bakuretsu",
+          "coordinate": "B2",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3128,
+          "nextEnabled": [
+            0,
+            7
+          ],
+          "final": false
+        },
+        {
+          "move": 30,
+          "actor": "guest-bakuretsu",
+          "coordinate": "C7",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2650,
+          "nextEnabled": [
+            10,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 31,
+          "actor": "host-bakuretsu",
+          "coordinate": "D3",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2893,
+          "nextEnabled": [
+            0,
+            6
+          ],
+          "final": false
+        },
+        {
+          "move": 32,
+          "actor": "guest-bakuretsu",
+          "coordinate": "B1",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2562,
+          "nextEnabled": [
+            11,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 33,
+          "actor": "host-bakuretsu",
+          "coordinate": "C8",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2251,
+          "nextEnabled": [
+            0,
+            7
+          ],
+          "final": false
+        },
+        {
+          "move": 34,
+          "actor": "guest-bakuretsu",
+          "coordinate": "F4",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2148,
+          "nextEnabled": [
+            7,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 35,
+          "actor": "host-bakuretsu",
+          "coordinate": "A6",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2721,
+          "nextEnabled": [
+            0,
+            6
+          ],
+          "final": false
+        },
+        {
+          "move": 36,
+          "actor": "guest-bakuretsu",
+          "coordinate": "A7",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2342,
+          "nextEnabled": [
+            5,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 37,
+          "actor": "host-bakuretsu",
+          "coordinate": "G4",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2525,
+          "nextEnabled": [
+            0,
+            10
+          ],
+          "final": false
+        },
+        {
+          "move": 38,
+          "actor": "guest-bakuretsu",
+          "coordinate": "H4",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3307,
+          "nextEnabled": [
+            4,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 39,
+          "actor": "host-bakuretsu",
+          "coordinate": "G8",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2285,
+          "nextEnabled": [
+            0,
+            7
+          ],
+          "final": false
+        },
+        {
+          "move": 40,
+          "actor": "guest-bakuretsu",
+          "coordinate": "D7",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2663,
+          "nextEnabled": [
+            4,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 41,
+          "actor": "host-bakuretsu",
+          "coordinate": "H3",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2592,
+          "nextEnabled": [
+            0,
+            10
+          ],
+          "final": false
+        },
+        {
+          "move": 42,
+          "actor": "guest-bakuretsu",
+          "coordinate": "D2",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2525,
+          "nextEnabled": [
+            5,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 43,
+          "actor": "host-bakuretsu",
+          "coordinate": "D1",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2888,
+          "nextEnabled": [
+            0,
+            9
+          ],
+          "final": false
+        },
+        {
+          "move": 44,
+          "actor": "guest-bakuretsu",
+          "coordinate": "E1",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3149,
+          "nextEnabled": [
+            6,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 45,
+          "actor": "host-bakuretsu",
+          "coordinate": "E2",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2951,
+          "nextEnabled": [
+            0,
+            9
+          ],
+          "final": false
+        },
+        {
+          "move": 46,
+          "actor": "guest-bakuretsu",
+          "coordinate": "E7",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3267,
+          "nextEnabled": [
+            6,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 47,
+          "actor": "host-bakuretsu",
+          "coordinate": "F3",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2172,
+          "nextEnabled": [
+            0,
+            7
+          ],
+          "final": false
+        },
+        {
+          "move": 48,
+          "actor": "guest-bakuretsu",
+          "coordinate": "G3",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3377,
+          "nextEnabled": [
+            6,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 49,
+          "actor": "host-bakuretsu",
+          "coordinate": "E8",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2384,
+          "nextEnabled": [
+            0,
+            5
+          ],
+          "final": false
+        },
+        {
+          "move": 50,
+          "actor": "guest-bakuretsu",
+          "coordinate": "D6",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2805,
+          "nextEnabled": [
+            3,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 51,
+          "actor": "host-bakuretsu",
+          "coordinate": "F1",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2853,
+          "nextEnabled": [
+            0,
+            7
+          ],
+          "final": false
+        },
+        {
+          "move": 52,
+          "actor": "guest-bakuretsu",
+          "coordinate": "G2",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3078,
+          "nextEnabled": [
+            4,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 53,
+          "actor": "host-bakuretsu",
+          "coordinate": "H1",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 5903,
+          "nextEnabled": [
+            0,
+            7
+          ],
+          "final": false
+        },
+        {
+          "move": 54,
+          "actor": "guest-bakuretsu",
+          "coordinate": "F6",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3047,
+          "nextEnabled": [
+            3,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 55,
+          "actor": "host-bakuretsu",
+          "coordinate": "G6",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3543,
+          "nextEnabled": [
+            0,
+            8
+          ],
+          "final": false
+        },
+        {
+          "move": 56,
+          "actor": "guest-bakuretsu",
+          "coordinate": "H6",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3328,
+          "nextEnabled": [
+            4,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 57,
+          "actor": "host-bakuretsu",
+          "coordinate": "B8",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2678,
+          "nextEnabled": [
+            0,
+            5
+          ],
+          "final": false
+        },
+        {
+          "move": 58,
+          "actor": "guest-bakuretsu",
+          "coordinate": "G1",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2875,
+          "nextEnabled": [
+            4,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 59,
+          "actor": "host-bakuretsu",
+          "coordinate": "H7",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2674,
+          "nextEnabled": [
+            0,
+            3
+          ],
+          "final": false
+        },
+        {
+          "move": 60,
+          "actor": "guest-bakuretsu",
+          "coordinate": "F8",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2862,
+          "nextEnabled": [
+            3,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 61,
+          "actor": "host-bakuretsu",
+          "coordinate": "D8",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 3170,
+          "nextEnabled": [
+            0,
+            2
+          ],
+          "final": false
+        },
+        {
+          "move": 62,
+          "actor": "guest-bakuretsu",
+          "coordinate": "H8",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 5496,
+          "nextEnabled": [
+            2,
+            0
+          ],
+          "final": false
+        },
+        {
+          "move": 63,
+          "actor": "host-bakuretsu",
+          "coordinate": "H2",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 2594,
+          "nextEnabled": [
+            0,
+            1
+          ],
+          "final": false
+        },
+        {
+          "move": 64,
+          "actor": "guest-bakuretsu",
+          "coordinate": "G7",
+          "placed": "NORMAL",
+          "boardEqual": true,
+          "elapsedMs": 34966,
+          "nextEnabled": [
+            0,
+            0
+          ],
+          "final": true
+        }
+      ],
+      "ackResponses": [
+        {
+          "client": "guest-bakuretsu",
+          "status": 200,
+          "time": 1791125313603
+        },
+        {
+          "client": "host-bakuretsu",
+          "status": 200,
+          "time": 1791125315767
+        },
+        {
+          "client": "guest-bakuretsu",
+          "status": 200,
+          "time": 1791125318634
+        },
+        {
+          "client": "host-bakuretsu",
+          "status": 200,
+          "time": 1791125320781
+        },
+        {
+          "client": "guest-bakuretsu",
+          "status": 200,
+          "time": 1791125329885
+        },
+        {
+          "client": "host-bakuretsu",
+          "status": 200,
+          "time": 1791125331834
+        },
+        {
+          "client": "guest-bakuretsu",
+          "status": 200,
+          "time": 1791125334917
+        },
+        {
+          "client": "host-bakuretsu",
+          "status": 200,
+          "time": 1791125336736
+        },
+        {
+          "client": "guest-bakuretsu",
+          "status": 200,
+          "time": 1791125346376
+        },
+        {
+          "client": "host-bakuretsu",
+          "status": 200,
+          "time": 1791125348951
+        },
+        {
+          "client": "guest-bakuretsu",
+          "status": 200,
+          "time": 1791125352231
+        },
+        {
+          "client": "host-bakuretsu",
+          "status": 200,
+          "time": 1791125355039
+        },
+        {
+          "client": "guest-bakuretsu",
+          "status": 200,
+          "time": 1791125357907
+        },
+        {
+          "client": "host-bakuretsu",
+          "status": 200,
+          "time": 1791125360201
+        },
+        {
+          "client": "guest-bakuretsu",
+          "status": 200,
+          "time": 1791125367841
+        },
+        {
+          "client": "host-bakuretsu",
+          "status": 200,
+          "time": 1791125369960
+        },
+        {
+          "client": "guest-bakuretsu",
+          "status": 200,
+          "time": 1791125373270
+        },
+        {
+          "client": "host-bakuretsu",
+          "status": 200,
+          "time": 1791125376743
+        },
+        {
+          "client": "guest-bakuretsu",
+          "status": 200,
+          "time": 1791125378901
+        },
+        {
+          "client": "host-bakuretsu",
+          "status": 200,
+          "time": 1791125385799
+        },
+        {
+          "client": "guest-bakuretsu",
+          "status": 200,
+          "time": 1791125387751
+        },
+        {
+          "client": "host-bakuretsu",
+          "status": 200,
+          "time": 1791125393066
+        },
+        {
+          "client": "guest-bakuretsu",
+          "status": 200,
+          "time": 1791125395798
+        },
+        {
+          "client": "host-bakuretsu",
+          "status": 200,
+          "time": 1791125398353
+        },
+        {
+          "client": "guest-bakuretsu",
+          "status": 200,
+          "time": 1791125400816
+        },
+        {
+          "client": "host-bakuretsu",
+          "status": 200,
+          "time": 1791125403418
+        },
+        {
+          "client": "guest-bakuretsu",
+          "status": 200,
+          "time": 1791125408803
+        },
+        {
+          "client": "host-bakuretsu",
+          "status": 200,
+          "time": 1791125411177
+        },
+        {
+          "client": "guest-bakuretsu",
+          "status": 200,
+          "time": 1791125414246
+        },
+        {
+          "client": "host-bakuretsu",
+          "status": 200,
+          "time": 1791125417002
+        },
+        {
+          "client": "guest-bakuretsu",
+          "status": 200,
+          "time": 1791125420002
+        },
+        {
+          "client": "host-bakuretsu",
+          "status": 200,
+          "time": 1791125422620
+        },
+        {
+          "client": "guest-bakuretsu",
+          "status": 200,
+          "time": 1791125425031
+        },
+        {
+          "client": "host-bakuretsu",
+          "status": 200,
+          "time": 1791125427137
+        },
+        {
+          "client": "guest-bakuretsu",
+          "status": 200,
+          "time": 1791125430004
+        },
+        {
+          "client": "host-bakuretsu",
+          "status": 200,
+          "time": 1791125432277
+        },
+        {
+          "client": "guest-bakuretsu",
+          "status": 200,
+          "time": 1791125435122
+        },
+        {
+          "client": "host-bakuretsu",
+          "status": 200,
+          "time": 1791125438533
+        },
+        {
+          "client": "guest-bakuretsu",
+          "status": 200,
+          "time": 1791125440867
+        },
+        {
+          "client": "host-bakuretsu",
+          "status": 200,
+          "time": 1791125443667
+        },
+        {
+          "client": "guest-bakuretsu",
+          "status": 200,
+          "time": 1791125446225
+        },
+        {
+          "client": "host-bakuretsu",
+          "status": 200,
+          "time": 1791125448979
+        },
+        {
+          "client": "guest-bakuretsu",
+          "status": 200,
+          "time": 1791125451953
+        },
+        {
+          "client": "host-bakuretsu",
+          "status": 200,
+          "time": 1791125455142
+        },
+        {
+          "client": "guest-bakuretsu",
+          "status": 200,
+          "time": 1791125458212
+        },
+        {
+          "client": "host-bakuretsu",
+          "status": 200,
+          "time": 1791125461743
+        },
+        {
+          "client": "guest-bakuretsu",
+          "status": 200,
+          "time": 1791125464032
+        },
+        {
+          "client": "host-bakuretsu",
+          "status": 200,
+          "time": 1791125467582
+        },
+        {
+          "client": "guest-bakuretsu",
+          "status": 200,
+          "time": 1791125469884
+        },
+        {
+          "client": "host-bakuretsu",
+          "status": 200,
+          "time": 1791125473159
+        },
+        {
+          "client": "guest-bakuretsu",
+          "status": 200,
+          "time": 1791125476080
+        },
+        {
+          "client": "host-bakuretsu",
+          "status": 200,
+          "time": 1791125479261
+        },
+        {
+          "client": "guest-bakuretsu",
+          "status": 200,
+          "time": 1791125485412
+        },
+        {
+          "client": "host-bakuretsu",
+          "status": 200,
+          "time": 1791125488584
+        },
+        {
+          "client": "guest-bakuretsu",
+          "status": 200,
+          "time": 1791125492060
+        },
+        {
+          "client": "host-bakuretsu",
+          "status": 200,
+          "time": 1791125495690
+        },
+        {
+          "client": "guest-bakuretsu",
+          "status": 200,
+          "time": 1791125498317
+        },
+        {
+          "client": "host-bakuretsu",
+          "status": 200,
+          "time": 1791125501404
+        },
+        {
+          "client": "guest-bakuretsu",
+          "status": 200,
+          "time": 1791125504249
+        },
+        {
+          "client": "host-bakuretsu",
+          "status": 200,
+          "time": 1791125507141
+        },
+        {
+          "client": "guest-bakuretsu",
+          "status": 200,
+          "time": 1791125510517
+        },
+        {
+          "client": "host-bakuretsu",
+          "status": 200,
+          "time": 1791125515870
+        },
+        {
+          "client": "guest-bakuretsu",
+          "status": 200,
+          "time": 1791125518711
+        }
+      ],
+      "screenshots": [
+        {
+          "client": "host-bakuretsu",
+          "kind": "reversi-cinematic is-bomb",
+          "text": "爆裂魔法 発動！\n周囲のコマを消し飛ばす！"
+        },
+        {
+          "client": "guest-bakuretsu",
+          "kind": "reversi-cinematic is-bomb",
+          "text": "爆裂魔法 発動！\n周囲のコマを消し飛ばす！"
+        },
+        {
+          "client": "host-bakuretsu",
+          "kind": "reversi-cinematic is-shield",
+          "text": "防衛魔法 展開！\n反転魔法を一度だけ防ぐ！"
+        },
+        {
+          "client": "guest-bakuretsu",
+          "kind": "reversi-cinematic is-shield",
+          "text": "防衛魔法 展開！\n反転魔法を一度だけ防ぐ！"
+        },
+        {
+          "client": "host-bakuretsu",
+          "kind": "reversi-cinematic is-infection",
+          "text": "感染魔法 侵食！\n隣接コマを自軍へと染める！"
+        },
+        {
+          "client": "guest-bakuretsu",
+          "kind": "reversi-cinematic is-infection",
+          "text": "感染魔法 侵食！\n隣接コマを自軍へと染める！"
+        },
+        {
+          "client": "guest-bakuretsu",
+          "kind": "reversi-cinematic is-corner",
+          "text": "角を制した\n不落の角を獲得"
+        },
+        {
+          "client": "host-bakuretsu",
+          "kind": "reversi-cinematic is-corner",
+          "text": "角を制した\n不落の角を獲得"
+        },
+        {
+          "client": "guest-bakuretsu",
+          "kind": "reversi-cinematic is-finale",
+          "text": "決着\n最終盤面まで反転が完了"
+        },
+        {
+          "client": "host-bakuretsu",
+          "kind": "reversi-cinematic is-finale",
+          "text": "決着\n最終盤面まで反転が完了"
+        }
+      ],
+      "reconnect": {
+        "passed": true,
+        "afterMove": 8,
+        "elapsedMs": 2799,
+        "boardEqual": true,
+        "noOldSceneReplay": true
+      },
+      "cleanup": {
+        "ownQaRoomDeleted": true,
+        "method": "Existing host delete RPC, only created QA code, after both UI exits"
+      },
+      "roomCode": "X9H4Q7",
+      "initialBoardEqual": true,
+      "final": {
+        "passed": true,
+        "actualPlacements": 64,
+        "scores": [
+          "黒炎\n22\n—\n白銀\n42",
+          "黒炎\n22\n—\n白銀\n42"
+        ],
+        "headings": [
+          "QA Gの勝利",
+          "QA Gの勝利"
+        ],
+        "publicBoard": [
+          {
+            "coordinate": "A1",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "A2",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "A3",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "A4",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "A5",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "A6",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "A7",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "A8",
+            "owner": "BLACK"
+          },
+          {
+            "coordinate": "B1",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "B2",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "B3",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "B4",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "B5",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "B6",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "B7",
+            "owner": "BLACK"
+          },
+          {
+            "coordinate": "B8",
+            "owner": "BLACK"
+          },
+          {
+            "coordinate": "C1",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "C2",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "C3",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "C4",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "C5",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "C6",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "C7",
+            "owner": "BLACK"
+          },
+          {
+            "coordinate": "C8",
+            "owner": "BLACK"
+          },
+          {
+            "coordinate": "D1",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "D2",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "D3",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "D4",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "D5",
+            "owner": "BLACK"
+          },
+          {
+            "coordinate": "D6",
+            "owner": "BLACK"
+          },
+          {
+            "coordinate": "D7",
+            "owner": "BLACK"
+          },
+          {
+            "coordinate": "D8",
+            "owner": "BLACK"
+          },
+          {
+            "coordinate": "E1",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "E2",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "E3",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "E4",
+            "owner": "BLACK"
+          },
+          {
+            "coordinate": "E5",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "E6",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "E7",
+            "owner": "BLACK"
+          },
+          {
+            "coordinate": "E8",
+            "owner": "BLACK"
+          },
+          {
+            "coordinate": "F1",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "F2",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "F3",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "F4",
+            "owner": "BLACK"
+          },
+          {
+            "coordinate": "F5",
+            "owner": "BLACK"
+          },
+          {
+            "coordinate": "F6",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "F7",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "F8",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "G1",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "G2",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "G3",
+            "owner": "BLACK"
+          },
+          {
+            "coordinate": "G4",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "G5",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "G6",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "G7",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "G8",
+            "owner": "WHITE"
+          },
+          {
+            "coordinate": "H1",
+            "owner": "BLACK"
+          },
+          {
+            "coordinate": "H2",
+            "owner": "BLACK"
+          },
+          {
+            "coordinate": "H3",
+            "owner": "BLACK"
+          },
+          {
+            "coordinate": "H4",
+            "owner": "BLACK"
+          },
+          {
+            "coordinate": "H5",
+            "owner": "BLACK"
+          },
+          {
+            "coordinate": "H6",
+            "owner": "BLACK"
+          },
+          {
+            "coordinate": "H7",
+            "owner": "BLACK"
+          },
+          {
+            "coordinate": "H8",
+            "owner": "WHITE"
+          }
+        ]
+      },
+      "events": [
+        [
+          {
+            "selector": ".reversi-cinematic",
+            "text": "爆裂魔法 発動！周囲のコマを消し飛ばす！",
+            "classes": "reversi-cinematic is-bomb",
+            "start": 19837.20000000298,
+            "time": 1791125322347,
+            "end": 22645.900000002235,
+            "durationMs": 2809
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内爆弾で3枚破壊",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 23243.300000000745,
+            "time": 1791125325753,
+            "end": 24717.800000000745,
+            "durationMs": 1475
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内爆弾で2枚破壊",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 25475.20000000298,
+            "time": 1791125327985,
+            "end": 26916.400000002235,
+            "durationMs": 1441
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "防衛魔法 展開！反転魔法を一度だけ防ぐ！",
+            "classes": "reversi-cinematic is-shield",
+            "start": 38641.900000002235,
+            "time": 1791125341152,
+            "end": 41469.900000002235,
+            "durationMs": 2828
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "感染魔法 侵食！隣接コマを自軍へと染める！",
+            "classes": "reversi-cinematic is-infection",
+            "start": 59512,
+            "time": 1791125362022,
+            "end": 62298.70000000298,
+            "durationMs": 2787
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内感染で3枚奪取",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 62894.300000000745,
+            "time": 1791125365404,
+            "end": 64327.300000000745,
+            "durationMs": 1433
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "防衛魔法 展開！反転魔法を一度だけ防ぐ！",
+            "classes": "reversi-cinematic is-shield",
+            "start": 78077.40000000224,
+            "time": 1791125380587,
+            "end": 80879.30000000075,
+            "durationMs": 2802
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制した不落の角を獲得",
+            "classes": "reversi-cinematic is-corner",
+            "start": 86539.5,
+            "time": 1791125389049,
+            "end": 89332.5,
+            "durationMs": 2793
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制した不落の角を獲得",
+            "classes": "reversi-cinematic is-corner",
+            "start": 101619,
+            "time": 1791125404129,
+            "end": 104424.70000000298,
+            "durationMs": 2806
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制した不落の角を獲得",
+            "classes": "reversi-cinematic is-corner",
+            "start": 177843.70000000298,
+            "time": 1791125480354,
+            "end": 180651.40000000224,
+            "durationMs": 2808
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制した不落の角を獲得",
+            "classes": "reversi-cinematic is-corner",
+            "start": 209586.6000000015,
+            "time": 1791125512097,
+            "end": 212422.1000000015,
+            "durationMs": 2836
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "決着最終盤面まで反転が完了",
+            "classes": "reversi-cinematic is-finale",
+            "start": 218681.80000000075,
+            "time": 1791125521192,
+            "end": 221534.5,
+            "durationMs": 2853
+          }
+        ],
+        [
+          {
+            "selector": ".reversi-cinematic",
+            "text": "爆裂魔法 発動！周囲のコマを消し飛ばす！",
+            "classes": "reversi-cinematic is-bomb",
+            "start": 16840.300000000745,
+            "time": 1791125322497,
+            "end": 19629.800000000745,
+            "durationMs": 2790
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内爆弾で3枚破壊",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 20238.70000000298,
+            "time": 1791125325895,
+            "end": 21667.10000000149,
+            "durationMs": 1428
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内爆弾で2枚破壊",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 22467,
+            "time": 1791125328123,
+            "end": 23900.20000000298,
+            "durationMs": 1433
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "防衛魔法 展開！反転魔法を一度だけ防ぐ！",
+            "classes": "reversi-cinematic is-shield",
+            "start": 3180.5,
+            "time": 1791125341201,
+            "end": 5982,
+            "durationMs": 2802
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "感染魔法 侵食！隣接コマを自軍へと染める！",
+            "classes": "reversi-cinematic is-infection",
+            "start": 24628.10000000149,
+            "time": 1791125362648,
+            "end": 27425.60000000149,
+            "durationMs": 2798
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内感染で3枚奪取",
+            "classes": "dragon-reaction-narration is-reacting reversi-game-narration",
+            "start": 28017.10000000149,
+            "time": 1791125366037,
+            "end": 29446.699999999255,
+            "durationMs": 1430
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "防衛魔法 展開！反転魔法を一度だけ防ぐ！",
+            "classes": "reversi-cinematic is-shield",
+            "start": 42483.10000000149,
+            "time": 1791125380503,
+            "end": 45282,
+            "durationMs": 2799
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制した不落の角を獲得",
+            "classes": "reversi-cinematic is-corner",
+            "start": 50582.199999999255,
+            "time": 1791125388602,
+            "end": 53388.5,
+            "durationMs": 2806
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制した不落の角を獲得",
+            "classes": "reversi-cinematic is-corner",
+            "start": 66710.5,
+            "time": 1791125404731,
+            "end": 69515.5,
+            "durationMs": 2805
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制した不落の角を獲得",
+            "classes": "reversi-cinematic is-corner",
+            "start": 142733.90000000224,
+            "time": 1791125480754,
+            "end": 145540.19999999925,
+            "durationMs": 2806
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制した不落の角を獲得",
+            "classes": "reversi-cinematic is-corner",
+            "start": 173338.6000000015,
+            "time": 1791125511359,
+            "end": 176152,
+            "durationMs": 2813
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "決着最終盤面まで反転が完了",
+            "classes": "reversi-cinematic is-finale",
+            "start": 183051,
+            "time": 1791125521071,
+            "end": 185846.90000000224,
+            "durationMs": 2796
+          }
+        ]
+      ],
+      "neutralNarration": [
+        [
+          "ゲーム案内爆弾で3枚破壊",
+          "ゲーム案内爆弾で2枚破壊",
+          "ゲーム案内感染で3枚奪取"
+        ],
+        [
+          "ゲーム案内爆弾で3枚破壊",
+          "ゲーム案内爆弾で2枚破壊",
+          "ゲーム案内感染で3枚奪取"
+        ]
+      ],
+      "cinematics": [
+        [
+          {
+            "selector": ".reversi-cinematic",
+            "text": "爆裂魔法 発動！周囲のコマを消し飛ばす！",
+            "classes": "reversi-cinematic is-bomb",
+            "start": 19837.20000000298,
+            "time": 1791125322347,
+            "end": 22645.900000002235,
+            "durationMs": 2809
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "防衛魔法 展開！反転魔法を一度だけ防ぐ！",
+            "classes": "reversi-cinematic is-shield",
+            "start": 38641.900000002235,
+            "time": 1791125341152,
+            "end": 41469.900000002235,
+            "durationMs": 2828
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "感染魔法 侵食！隣接コマを自軍へと染める！",
+            "classes": "reversi-cinematic is-infection",
+            "start": 59512,
+            "time": 1791125362022,
+            "end": 62298.70000000298,
+            "durationMs": 2787
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "防衛魔法 展開！反転魔法を一度だけ防ぐ！",
+            "classes": "reversi-cinematic is-shield",
+            "start": 78077.40000000224,
+            "time": 1791125380587,
+            "end": 80879.30000000075,
+            "durationMs": 2802
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制した不落の角を獲得",
+            "classes": "reversi-cinematic is-corner",
+            "start": 86539.5,
+            "time": 1791125389049,
+            "end": 89332.5,
+            "durationMs": 2793
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制した不落の角を獲得",
+            "classes": "reversi-cinematic is-corner",
+            "start": 101619,
+            "time": 1791125404129,
+            "end": 104424.70000000298,
+            "durationMs": 2806
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制した不落の角を獲得",
+            "classes": "reversi-cinematic is-corner",
+            "start": 177843.70000000298,
+            "time": 1791125480354,
+            "end": 180651.40000000224,
+            "durationMs": 2808
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制した不落の角を獲得",
+            "classes": "reversi-cinematic is-corner",
+            "start": 209586.6000000015,
+            "time": 1791125512097,
+            "end": 212422.1000000015,
+            "durationMs": 2836
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "決着最終盤面まで反転が完了",
+            "classes": "reversi-cinematic is-finale",
+            "start": 218681.80000000075,
+            "time": 1791125521192,
+            "end": 221534.5,
+            "durationMs": 2853
+          }
+        ],
+        [
+          {
+            "selector": ".reversi-cinematic",
+            "text": "爆裂魔法 発動！周囲のコマを消し飛ばす！",
+            "classes": "reversi-cinematic is-bomb",
+            "start": 16840.300000000745,
+            "time": 1791125322497,
+            "end": 19629.800000000745,
+            "durationMs": 2790
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "防衛魔法 展開！反転魔法を一度だけ防ぐ！",
+            "classes": "reversi-cinematic is-shield",
+            "start": 3180.5,
+            "time": 1791125341201,
+            "end": 5982,
+            "durationMs": 2802
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "感染魔法 侵食！隣接コマを自軍へと染める！",
+            "classes": "reversi-cinematic is-infection",
+            "start": 24628.10000000149,
+            "time": 1791125362648,
+            "end": 27425.60000000149,
+            "durationMs": 2798
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "防衛魔法 展開！反転魔法を一度だけ防ぐ！",
+            "classes": "reversi-cinematic is-shield",
+            "start": 42483.10000000149,
+            "time": 1791125380503,
+            "end": 45282,
+            "durationMs": 2799
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制した不落の角を獲得",
+            "classes": "reversi-cinematic is-corner",
+            "start": 50582.199999999255,
+            "time": 1791125388602,
+            "end": 53388.5,
+            "durationMs": 2806
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制した不落の角を獲得",
+            "classes": "reversi-cinematic is-corner",
+            "start": 66710.5,
+            "time": 1791125404731,
+            "end": 69515.5,
+            "durationMs": 2805
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制した不落の角を獲得",
+            "classes": "reversi-cinematic is-corner",
+            "start": 142733.90000000224,
+            "time": 1791125480754,
+            "end": 145540.19999999925,
+            "durationMs": 2806
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "角を制した不落の角を獲得",
+            "classes": "reversi-cinematic is-corner",
+            "start": 173338.6000000015,
+            "time": 1791125511359,
+            "end": 176152,
+            "durationMs": 2813
+          },
+          {
+            "selector": ".reversi-cinematic",
+            "text": "決着最終盤面まで反転が完了",
+            "classes": "reversi-cinematic is-finale",
+            "start": 183051,
+            "time": 1791125521071,
+            "end": 185846.90000000224,
+            "durationMs": 2796
+          }
+        ]
+      ],
+      "sceneFactsEqual": true,
+      "exits": {
+        "host-bakuretsu": {
+          "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '設定に戻る', exact: true }).first()\u001b[22m\n"
+        },
+        "guest-bakuretsu": {
+          "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '設定に戻る', exact: true }).first()\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <div class=\"reversi-result-backdrop\">…</div> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <div class=\"reversi-result-backdrop\">…</div> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    56 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <div class=\"reversi-result-backdrop\">…</div> intercepts pointer events\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n"
+        }
+      },
+      "cleanupStarted": true
+    }
+  ],
+  "errors": [
+    {
+      "label": "guest-bakuretsu",
+      "message": "Failed to load resource: the server responded with a status of 406 ()"
+    },
+    {
+      "label": "guest-bakuretsu",
+      "message": "Failed to load resource: the server responded with a status of 406 ()"
+    }
+  ],
+  "warnings": [],
+  "cleanupDiagnostics": [
+    {
+      "label": "host-normal",
+      "message": "Failed to load resource: the server responded with a status of 406 ()"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+.mancala-capture-moment {
+  position: fixed;
+  z-index: 95;
+  left: 50%;
+  top: 19%;
+  transform: translateX(-50%);
+  width: min(72vw, 450px);
+  height: min(44vw, 250px);
+  overflow: hidden;
+  border: 2px solid #d5b16d;
+  border-radius: 18px;
+  box-shadow: 0 5px 24px #38240c66;
+  pointer-events: none;
+  animation: mancala-capture-moment 700ms ease-out both;
+}
+.mancala-capture-moment strong {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #302012dc;
+  color: #fff1c9;
+  padding: 7px 10px;
+  text-align: center;
+  font-size: clamp(12px, 3vw, 19px);
+}
+.mancala-game-narration {
+  position: fixed;
+  left: 50%;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: 90;
+  pointer-events: none;
+}
+@keyframes mancala-capture-moment {
+  0% { opacity: 0; scale: .96; }
+  14%, 77% { opacity: 1; scale: 1; }
+  100% { opacity: 0; scale: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mancala-capture-moment { animation: none; }
+}

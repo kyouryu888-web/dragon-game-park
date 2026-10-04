@@ -1,0 +1,7 @@
+{
+  "remainingProcesses": "Read-only task diff helpers only; no mutating Git operation",
+  "stopAttempt": "Host helper processes were not addressable from shell; no stop reported successful",
+  "preservedLock": "index.lock.preserved-release-20261005-150414",
+  "indexBackup": "index.before-release-lock-resolution-20261005",
+  "date": "2026-10-05T00:10:08.2500769+09:00"
+}

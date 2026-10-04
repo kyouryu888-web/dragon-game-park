@@ -1,0 +1,37 @@
+{
+  "id": "babanuki-lv1",
+  "game": "babanuki",
+  "lv": 1,
+  "prompt": "Use case: identity-preserve precise framing edit. Asset type: finished portrait3:4 game cinematic illustration, opaque painted background. Reference1 is the EDIT TARGET, the current turquoise baby-dragon Babanuki shuffle scene. Reference2 is EXACT IDENTITY reference only (turquoise/cyan baby, mint horns/spikes/wing membranes/belly, large green eyes, round young face, small cute proportions, no accessories); ignore its invisible alpha RGB bars. Change only the framing and wing pose: pull the entire scene back by20 percent, fold BOTH wings halfway behind the shoulders, and leave at least6 percent of painted background between each complete wing tip and each left/right canvas border. Both wing tips must be clearly visible, never clipped or touching an edge. Preserve the same face/expression, two outstretched claws, anatomy, bright glossy anime/cel-shaded style, purple castle theatre, identical purple stripe+gold-border+dragon-crest CARD BACKS, and central shuffle vortex. All card backs remain identical; no face card, Joker, suit/rank/number, marked card, dice, source/destination route or hidden state. Preserve two hands/claws only, no extra limbs, no crown/collar/halo. Keep top12 percent and bottom13 percent visually quiet dark breathing area for external HTML text. No letters, titles, captions, logo, watermark or UI.",
+  "refs": [
+    "C:\\Users\\ray-0\\.codex\\worktrees\\dragon-presentation-v2\\Dragon-game-park\\docs\\design\\dragons\\presentation-v2\\2026-10-04\\production-art\\attempts\\babanuki-lv1-before-wing-fit\\original.png",
+    "C:\\Users\\ray-0\\.codex\\worktrees\\dragon-presentation-v2\\Dragon-game-park\\src\\assets\\dragons\\cutins\\master\\lv1\\attack.webp"
+  ],
+  "runtime": "src/assets/dragons/presentation-v2/scenes/babanuki/lv1-shuffle.webp",
+  "source": "image_gen",
+  "rawOutput": "C:\\Users\\ray-0\\.codex\\generated_images\\01a105e7-6524-75a3-9275-b65e339ee93d\\exec-ae0ca452-b0f8-4dbe-a344-fd2823a0b959.png",
+  "original": "docs/design/dragons/presentation-v2/2026-10-04/production-art/originals/scenes/babanuki-lv1.png",
+  "originalSha256": "eb96d764f6f1fe2e4b97d955c3ec2ab95832e9888778ce1bf76609a4089ec1eb",
+  "runtimeSha256": "0233b5b803a447bb9f9ceb2dcb3c3932fccfb8651539878ac136ab82d1dd6b0c",
+  "dimensions": [
+    720,
+    960
+  ],
+  "bytes": 200602,
+  "references": [
+    {
+      "path": "docs/design/dragons/presentation-v2/2026-10-04/production-art/attempts/babanuki-lv1-before-wing-fit/original.png",
+      "sha256": "339ae9a810ef1c982a0b2735b8dfc7ac6c854fbc530d58c0c96ab5cafc55b08b"
+    },
+    {
+      "path": "src/assets/dragons/cutins/master/lv1/attack.webp",
+      "sha256": "0c016f438cdbd9e6832a7f84444b58becc0f0c240f413039748dd489a9529c7c"
+    }
+  ],
+  "conversion": "resize inside 720x960, no crop, WebP quality88; no semantic editing",
+  "generatedAt": "2026-10-04T08:15:09.266Z",
+  "visualInspection": {
+    "accepted": true,
+    "note": "One framing edit. Baby identity and two claws retained; both folded wing tips clearly inside with broad background margins, center vortex and identical purple backs preserved. Prior original, prompt, record and runtime retained under attempts/babanuki-lv1-before-wing-fit."
+  }
+}

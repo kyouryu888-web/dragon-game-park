@@ -1,0 +1,21 @@
+{
+  "base": "http://127.0.0.1:5178",
+  "method": "Live Supabase via actual app UI only; independent Edge contexts; no state injection",
+  "games": [
+    {
+      "game": "マンカラ",
+      "passed": false,
+      "moves": [],
+      "reconnect": false,
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:5178/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:5178/\", waiting until \"load\"\u001b[22m\n"
+    },
+    {
+      "game": "バックギャモン",
+      "passed": false,
+      "moves": [],
+      "reconnect": false,
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:5178/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:5178/\", waiting until \"load\"\u001b[22m\n"
+    }
+  ],
+  "errors": []
+}

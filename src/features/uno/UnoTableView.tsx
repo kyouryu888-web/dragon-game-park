@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
-import type { DragonPresentationPreference, DragonReactionEvent } from '../../components/dragonReactions';
+import { DragonReactionNarration, type DragonPresentationPreference, type DragonReactionEvent } from '../../components/dragonReactions';
 import { UnoSeatReactions, UnoSharedReaction } from './UnoSeatReactions';
+import './UnoPresentation.css';
 import type { UnoCard, UnoColor, UnoGameState, UnoPlayer, UnoPlayerId, UnoVariant } from './unoTypes';
 import { UNO_COLOR_LABELS } from './unoCardMeta';
 import { UnoCardView } from './UnoCardView';
@@ -135,6 +136,7 @@ export function UnoTableView({
       </div>
 
       <div className="uno-card-tools">
+        <DragonReactionNarration event={dragonReaction} preference={dragonPreference} className="uno-narration" style={{ position: 'absolute', top: 0, left: 0, right: 'auto' }} />
         {opponentSeats.length >= 5 && <UnoSharedReaction players={state.players} currentPlayerId={state.currentPlayerId} active={dragonReaction} preference={dragonPreference} />}
         <button type="button" className="uno-card-guide-button" onClick={() => setShowCardGuide((show) => !show)}>
           カード効果

@@ -20,6 +20,7 @@ import { useBabanukiPlayback } from './useBabanukiPlayback';
 import { BabanukiTable } from './BabanukiTable';
 import { BabanukiFinale } from './BabanukiFinale';
 import { DiceResultPanel } from './BabanukiShufflePanel';
+import { BabanukiShuffleCutin } from './BabanukiShuffleCutin';
 import { DragonPresentationControl } from '../../components/DragonPresentationControl';
 import { useDragonReactionPreference, useDragonReactions } from '../../components/dragonReactions';
 import type { PublicDragonReactionInput } from '../../components/dragonReactions';
@@ -41,6 +42,7 @@ export function BabanukiPlayScreen({ config, onBackToSetup, onBackToHome }: Prop
   const { display, isAnimating } = playback;
   const [reactionMatchId] = useState(() => `babanuki-local-${++localReactionSerial}`);
   const [dragonInputs, setDragonInputs] = useState<PublicDragonReactionInput[]>([]);
+  const [isShuffleCutinVisible, setShuffleCutinVisible] = useState(false);
   const { preference: dragonPreference } = useDragonReactionPreference();
   const { active: dragonReaction, clear: clearDragonReactions } = useDragonReactions({
     matchId: reactionMatchId, events: dragonInputs, preference: dragonPreference,
@@ -306,7 +308,7 @@ export function BabanukiPlayScreen({ config, onBackToSetup, onBackToHome }: Prop
         canShuffle={!isAnimating && canDeclareShuffle(logic, VIEWER_ID)}
         onShuffle={() => setLogic((s) => declareShuffle(s, VIEWER_ID))}
         shuffleDice={shufflePresentation?.stage === 'moving' ? shufflePresentation.dice : null}
-        dragonReaction={dragonReaction}
+        dragonReaction={dragonReaction?.kind === 'babanuki-shuffle-declared' || isShuffleCutinVisible ? null : dragonReaction}
         dragonPreference={dragonPreference}
       />
 
@@ -371,11 +373,24 @@ export function BabanukiPlayScreen({ config, onBackToSetup, onBackToHome }: Prop
         )}
       </div>
 
+      {activeShuffleEvent?.dice === 3 && (
+        <BabanukiShuffleCutin
+          key={playback.activeEventSequence}
+          dice={activeShuffleEvent.dice}
+          actor={shuffleDeclarer ? { isCpu: shuffleDeclarer.isCpu, cpuLevel: shuffleDeclarer.cpuLevel } : undefined}
+          preference={dragonPreference}
+          onVisibilityChange={setShuffleCutinVisible}
+        />
+      )}
+
       {shufflePresentation && (
         <DiceResultPanel
           dice={shufflePresentation.dice}
           declarerName={shuffleDeclarerName}
           stage={shufflePresentation.stage}
+          actor={shuffleDeclarer ? { isCpu: shuffleDeclarer.isCpu, cpuLevel: shuffleDeclarer.cpuLevel } : undefined}
+          reaction={dragonReaction}
+          preference={dragonPreference}
         />
       )}
 

@@ -3,6 +3,10 @@
  * ローカル対局・オンライン対局のどちらからも使う。
  */
 
+import { DragonReactionNarration, DragonReactionWipe, type DragonPresentationPreference, type DragonReactionEvent } from '../../components/dragonReactions';
+import './BabanukiPresentation.css';
+import type { CutinActor } from '../../assets/dragons/cutins/selectCutinImage';
+import { selectGameArt } from '../../assets/dragons/presentation-v2/selectGameArt';
 import { describeDice } from './babanukiShuffleDescription';
 
 const DICE_FACES = ['', '⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
@@ -46,13 +50,25 @@ export function DiceResultPanel({
   dice,
   declarerName,
   stage = 'dice',
+  actor,
+  reaction,
+  preference = 'lively',
 }: {
   dice: number;
   declarerName: string;
   stage?: 'dice' | 'moving';
+  actor?: CutinActor;
+  reaction?: DragonReactionEvent | null;
+  preference?: DragonPresentationPreference;
 }) {
   const { label, detail, route, symbol, note } = describeDice(dice);
+  // Fetch only this actor's scene during the existing public dice beat.
+  const preloadArt = stage === 'dice' && dice === 3 && preference === 'lively'
+    ? selectGameArt('babanuki', actor, 'attack', 'shuffle') : undefined;
+  const preloadUrls = [...new Set(Object.values(preloadArt ?? {}).filter((url): url is string => Boolean(url)))];
   return (
+    <>
+      {preloadUrls.map(url => <link key={url} rel="preload" as="image" href={url} />)}
     <div
       className={`babanuki-shuffle-showcase is-${stage} is-dice-${dice}`}
       role="status"
@@ -60,6 +76,12 @@ export function DiceResultPanel({
     >
       <div className="babanuki-shuffle-eyebrow">SHUFFLE TIME</div>
       <div className="babanuki-shuffle-declarer">{declarerName} がシャッフルタイムを宣言！</div>
+
+      {stage === 'dice' && reaction?.kind === 'babanuki-shuffle-declared' && (
+        reaction.presenter === 'narrator'
+          ? <DragonReactionNarration event={reaction} preference={preference} />
+          : <DragonReactionWipe cpu={reaction.cpu} event={reaction} preference={preference} className="babanuki-declaration-dragon" style={{ '--dragon-face-size': '32px' } as import('react').CSSProperties} />
+      )}
 
       <div className="babanuki-shuffle-steps" aria-hidden="true">
         <span className={stage === 'dice' ? 'is-active' : 'is-done'}>1　サイコロ判定</span>
@@ -88,5 +110,6 @@ export function DiceResultPanel({
       <div className="babanuki-shuffle-detail">{detail}</div>
       <div className="babanuki-shuffle-note">{note}</div>
     </div>
+    </>
   );
 }

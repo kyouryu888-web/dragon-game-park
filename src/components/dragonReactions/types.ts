@@ -8,6 +8,8 @@ export type DragonCutIn = 'attack' | 'pressure' | 'victory' | 'defeat';
 
 export type DragonPresentationPreference = 'lively' | 'subtle' | 'off';
 
+export type DragonReactionPresenter = 'cpu' | 'narrator';
+
 export type DragonCpu = Readonly<{
   id: string;
   name: string;
@@ -20,6 +22,7 @@ export type PublicDragonReactionInput = Readonly<{
   sequence: number;
   kind: string;
   cpu: DragonCpu;
+  presenter?: DragonReactionPresenter;
   outcome: DragonOutcome;
   factLabel: string;
   severity?: 'normal' | 'major';
@@ -39,6 +42,7 @@ export type DragonReactionEvent = Readonly<{
   sequence: number;
   kind: string;
   cpu: DragonCpu;
+  presenter?: DragonReactionPresenter;
   outcome: DragonOutcome;
   factLabel: string;
   acting: 'sincere' | 'bluff';

@@ -87,3 +87,38 @@ describe('爆裂リバーシーのドラゴン演出', () => {
     expect(bakuretsuCinematicImage(final, result.state, null)).toBeUndefined();
   });
 });
+
+describe('Bakuretsu human public presentation v2', () => {
+  it('announces only the exact revealed bomb frame with a separate neutral mascot', () => {
+    const previous = blank();
+    put(previous, 2, 4, 'BLACK');
+    put(previous, 3, 4, 'WHITE');
+    put(previous, 4, 4, 'WHITE', 'BOMB');
+    const result = applyMove(previous, { x: 5, y: 4, kind: 'NORMAL' }, DEFAULT_CONFIG);
+    const steps = createBakuretsuPlaybackSteps(previous, result);
+    const index = steps.findIndex(step => step.phase === 'special-resolve' && step.special === 'BOMB');
+    const at = (stepIndex: number) => detectBakuretsuDragonReactionForStep({
+      matchId: 'human-online', moveNo: result.state.moveNo, stepIndex, step: steps[stepIndex],
+      beforeBoard: stepIndex === 0 ? previous.board : steps[stepIndex - 1].board, cpu: null,
+    });
+    expect(at(index - 1)).toBeNull();
+    expect(at(index)).toMatchObject({
+      presenter: 'narrator', outcome: 'neutral', cpu: { id: 'dragon-narrator:revealed-board', name: 'ゲーム案内' },
+      kind: expect.stringMatching(/^bomb:/), factLabel: expect.stringMatching(/^爆弾で\d+枚破壊$/),
+    });
+    expect(at(index + 1)).toBeNull();
+  });
+
+  it('narrates the declared final winner without attributing a loss to the mascot', () => {
+    const previous = blank();
+    put(previous, 2, 4, 'BLACK');
+    put(previous, 3, 4, 'WHITE');
+    const result = applyMove(previous, { x: 4, y: 4, kind: 'NORMAL' }, DEFAULT_CONFIG);
+    const steps = createBakuretsuPlaybackSteps(previous, result);
+    const event = detectBakuretsuDragonReactionForStep({
+      matchId: 'human-online', moveNo: result.state.moveNo, stepIndex: steps.length - 1, step: steps.at(-1)!,
+      beforeBoard: steps.at(-2)?.board ?? previous.board, cpu: null, winner: 'WHITE',
+    });
+    expect(event).toMatchObject({ kind: 'result', presenter: 'narrator', outcome: 'neutral', factLabel: '白銀の勝利', cutIn: 'victory' });
+  });
+});

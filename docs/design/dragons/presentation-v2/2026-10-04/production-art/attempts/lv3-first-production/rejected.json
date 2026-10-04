@@ -1,0 +1,16 @@
+[
+  {
+    "id": "uno-lv3",
+    "rawOutput": "C:\\Users\\ray-0\\.codex\\generated_images\\01a0dd3a-cda2-7c01-8062-5164f1cd85d5\\exec-1f1afe55-2df3-4ddc-934f-ab847be8d5b9.png",
+    "reason": "Superseded first production attempt: wing tips touched/cropped at frame boundary. Exact first prompt was not persisted on disk; revised prompts are separate and must not be treated as these outputs' exact prompt.",
+    "retainedOriginal": "docs/design/dragons/presentation-v2/2026-10-04/production-art/attempts/lv3-first-production/uno-lv3.png",
+    "sha256": "8005c949edd1e39876e8fbcad37afcd7cf5fb48843c95e63a23c4d9f36a942ba"
+  },
+  {
+    "id": "babanuki-lv3",
+    "rawOutput": "C:\\Users\\ray-0\\.codex\\generated_images\\01a0dd3a-cda2-7c01-8062-5164f1cd85d5\\exec-a8e076f9-010d-4c38-8d2e-e2e7af90c1b8.png",
+    "reason": "Superseded first production attempt: wing tips touched/cropped at frame boundary. Exact first prompt was not persisted on disk; revised prompts are separate and must not be treated as these outputs' exact prompt.",
+    "retainedOriginal": "docs/design/dragons/presentation-v2/2026-10-04/production-art/attempts/lv3-first-production/babanuki-lv3.png",
+    "sha256": "1f0984b63cb0a6a95124b133f97e2ee79803d0486dabdd7e86cd46dd870fbe5a"
+  }
+]

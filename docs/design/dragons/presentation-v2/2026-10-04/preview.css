@@ -1,0 +1,88 @@
+:root { color-scheme: dark; font-family: "Yu Gothic UI", Meiryo, sans-serif; color: #ebe5da; background: #18171b; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+button, select, input { font: inherit; }
+button, select { color: inherit; }
+button { cursor: pointer; }
+button:focus-visible, select:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #d5bd86; outline-offset: 3px; }
+button:disabled { cursor: default; opacity: .42; }
+.review-shell { max-width: 1460px; margin: auto; padding: 34px 34px 50px; }
+.review-header { display: flex; justify-content: space-between; align-items: baseline; gap: 20px; border-bottom: 1px solid #413d37; padding-bottom: 22px; margin-bottom: 24px; }
+.review-header h1 { margin: 0 0 8px; font-size: clamp(25px, 3vw, 36px); font-weight: 700; letter-spacing: -.03em; }
+.review-header p { margin: 0; color: #bdb5a8; font-size: 14px; line-height: 1.8; }
+.review-header a, .review-links a { color: #d8c196; text-underline-offset: 4px; }
+.review-layout { display: grid; grid-template-columns: 270px minmax(0,1fr); gap: 30px; align-items: start; }
+.review-controls { display: flex; flex-direction: column; gap: 22px; position: sticky; top: 22px; }
+.control-group { border: 0; margin: 0; padding: 0; }
+.control-group legend, .control-label { display: block; color: #bdb5a8; font-size: 12px; margin-bottom: 10px; }
+.game-select { width: 100%; padding: 11px; border: 1px solid #51483d; border-radius: 7px; background: #242125; font-size: 15px; }
+.segments { display: flex; gap: 5px; }
+.segments button { flex: 1; padding: 10px 8px; border: 1px solid #49443e; border-radius: 7px; background: #211f23; color: #bdb5a8; font-size: 13px; }
+.segments button[aria-pressed="true"] { border-color: #c9b178; background: #3b3224; color: #f3ddb1; }
+.version-stack { display: grid; gap: 6px; }
+.version-stack button { text-align: left; border: 1px solid #49443e; background: transparent; border-radius: 7px; padding: 11px 13px; }
+.version-stack button[aria-pressed="true"] { border-color: #c9b178; background: #3b3224; }
+.version-stack strong { display: block; font-size: 14px; font-weight: 600; }
+.version-stack span { display: block; margin-top: 4px; color: #bdb5a8; font-size: 11px; }
+.motion-check { display: flex; align-items: center; gap: 8px; color: #bdb5a8; font-size: 12px; cursor: pointer; }
+.motion-check input { width: 16px; height: 16px; accent-color: #c9b178; }
+.replay { width: 100%; padding: 12px; border: 1px solid #d0b57e; background: #d0b57e; color: #251d13; font-size: 14px; font-weight: 700; border-radius: 7px; }
+.review-note { margin: 0; font-size: 12px; line-height: 1.8; color: #a9a398; }
+.preview-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 13px; }
+.preview-heading h2 { margin: 0; font-size: 17px; font-weight: 600; }
+.preview-heading span { color: #a9a398; font: 12px/1.5 "Yu Gothic UI", sans-serif; }
+.frame-scroll { overflow: auto; background: #121115; border: 1px solid #39343a; padding: 20px; border-radius: 10px; }
+.frame-holder { margin: auto; width: 390px; height: 844px; }
+.game-frame { display: block; border: 0; width: 100%; height: 100%; background: #15121a; box-shadow: 0 7px 40px #0005; }
+.preview-summary { margin: 16px 0 0; font-size: 14px; line-height: 1.8; color: #d4c9b6; }
+.review-links { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 16px; font-size: 12px; }
+.phase-row { display: flex; align-items: center; gap: 6px; margin-bottom: 11px; }
+.phase-row button { border: 0; background: transparent; color: #aaa396; border-bottom: 2px solid transparent; padding: 8px 9px; font-size: 12px; }
+.phase-row button[aria-pressed="true"] { color: #f3ddb1; border-bottom-color: #c9b178; }
+.phase-row .phase-time { margin-left: auto; color: #a9a398; font-size: 11px; }
+.asset-error { display: none; color: #f3c29e; margin: 13px 0 0; font-size: 13px; }
+.asset-error.is-visible { display: block; }
+@media(max-width: 1100px) { .review-shell { padding: 24px 18px 40px; } .review-layout { grid-template-columns: 230px minmax(0,1fr); gap: 20px; } }
+@media(max-width: 740px) { .review-header { display: block; } .review-header > a { display: inline-block; margin-top: 14px; font-size: 12px; } .review-layout { display: block; } .review-controls { position: static; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; margin-bottom: 26px; } .review-controls .version-group { grid-row: span 2; } .review-controls .review-note { grid-column: 1 / -1; } .frame-scroll { padding: 10px; } .preview-heading { align-items: start; } .preview-heading span { max-width: 120px; text-align: right; } }
+
+/* These styles only apply inside the isolated review iframe. The game components
+   and their normal styles are imported unchanged by preview.js. */
+body.demo-embed { margin: 0; overflow-x: hidden; min-height: 100vh; }
+.demo-game { min-height: 100vh; padding: 12px; }
+.demo-game-title { font-size: 20px; color: #e6c877; text-align: center; margin: 0 0 15px; letter-spacing: .02em; }
+.demo-banner { padding: 10px; text-align: center; font-size: 13px; color: #e6c877; border: 1px solid #847142; border-radius: 10px; margin-bottom: 18px; background: #292122; }
+.demo-game .uno-table-view { max-width: 100%; }
+.demo-game .uno-table-arena { min-height: 360px; }
+.demo-game .uno-table-caption { min-height: 24px; }
+.demo-game .uno-hand-area { pointer-events: none; }
+.demo-game .babanuki-table-surface { margin-top: 30px !important; }
+.demo-game .babanuki-shuffle-showcase { position: relative; margin: 16px auto; max-width: 500px; }
+.demo-embed .uno-cinematic-panel { width: min(100vw, calc(82dvh * .75), 720px); }
+.demo-embed .uno-cinematic-overlay.is-babanuki-shuffle { background: rgba(10,5,15,.92); }
+.demo-embed .is-babanuki-shuffle .uno-cinematic-side-lines { background: repeating-conic-gradient(from 255deg at 50% 50%, #9b73ce59 0deg 1.2deg, transparent 1.2deg 7deg); }
+.demo-embed .is-babanuki-shuffle .uno-cinematic-panel { border-color: #cfb6e8; box-shadow: 0 0 0 2px #160b20,0 24px 80px #000b,0 0 48px #ac7ddb4d; }
+.demo-embed .is-babanuki-shuffle .uno-cinematic-copy.is-bottom strong { -webkit-text-stroke-color: #422055; }
+.demo-embed .is-babanuki-shuffle .uno-cinematic-copy.is-bottom span { color: #ecd8ff; border-color: #b699d0; background: #20122be6; }
+.demo-embed.demo-static .uno-cinematic-overlay,
+.demo-embed.demo-static .uno-cinematic-panel,
+.demo-embed.demo-static .uno-cinematic-image,
+.demo-embed.demo-static .uno-cinematic-copy,
+.demo-embed.demo-static .uno-cinematic-side-lines { animation: none !important; opacity: 1 !important; transform: none !important; }
+.demo-embed.demo-static .uno-cinematic-flying-cards { display: none; }
+.demo-embed.demo-current .uno-cinematic-flying-cards { display: block; }
+.demo-embed.demo-current.demo-static .uno-cinematic-flying-cards { display: none; }
+.demo-embed.demo-reduced *, .demo-embed.demo-reduced *::before, .demo-embed.demo-reduced *::after { animation: none !important; transition: none !important; }
+.demo-embed.demo-reduced .uno-cinematic-overlay,
+.demo-embed.demo-reduced .uno-cinematic-panel,
+.demo-embed.demo-reduced .uno-cinematic-image,
+.demo-embed.demo-reduced .uno-cinematic-copy { opacity: 1 !important; transform: none !important; }
+.demo-proposed .dragon-reaction-face { animation: demo-face-pop 340ms ease-out; }
+.demo-proposed .dragon-reaction-speech { animation: demo-bubble-in 220ms ease-out; }
+@keyframes demo-face-pop { 0% { transform: scale(.92); } 65% { transform: scale(1.05); } 100% { transform: scale(1); } }
+@keyframes demo-bubble-in { from { opacity: 0; } to { opacity: 1; } }
+@media(min-width: 700px) { .demo-game { padding: 15px 12px; } .demo-game-title { margin-bottom: 12px; } .demo-banner { margin-bottom: 12px; } .demo-game .uno-table-arena { min-height: 410px; } }
+@media(prefers-reduced-motion: reduce) { .demo-embed *, .demo-embed *::before, .demo-embed *::after { animation: none !important; transition: none !important; } }
+
+.demo-embed .is-babanuki-shuffle .uno-cinematic-image { animation: none !important; transform: none !important; }
+
+.demo-embed.demo-proposed .uno-cinematic-flying-cards { display: none !important; }

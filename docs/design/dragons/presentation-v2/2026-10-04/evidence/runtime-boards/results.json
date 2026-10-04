@@ -1,0 +1,975 @@
+{
+  "environment": {
+    "url": "http://127.0.0.1:5178",
+    "browser": "Microsoft Edge headless",
+    "browserPlugin": "Browser plugin not available; authorized Playwright fallback",
+    "viewports": [
+      "375x844",
+      "390x844",
+      "900x700"
+    ],
+    "fixtureWarning": "Fixed public events exercise actual rendering/playback. They are not live Supabase matches."
+  },
+  "checks": [
+    {
+      "name": "actual entry and primary input mancala 390x844",
+      "passed": true,
+      "before": {
+        "title": "ドラゴンゲームパーク",
+        "text": 123,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 1
+      },
+      "after": {
+        "title": "ドラゴンゲームパーク",
+        "text": 135,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 1
+      },
+      "interaction": "Home -> game setup -> VS CPU -> start -> primary board input"
+    },
+    {
+      "name": "actual entry and primary input backgammon 390x844",
+      "passed": true,
+      "before": {
+        "title": "ドラゴンゲームパーク",
+        "text": 162,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 1
+      },
+      "after": {
+        "title": "ドラゴンゲームパーク",
+        "text": 152,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 1
+      },
+      "interaction": "Home -> game setup -> VS CPU -> start -> primary board input"
+    },
+    {
+      "name": "actual entry and primary input reversi 390x844",
+      "passed": true,
+      "before": {
+        "title": "ドラゴンゲームパーク",
+        "text": 95,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 2
+      },
+      "after": {
+        "title": "ドラゴンゲームパーク",
+        "text": 82,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 2
+      },
+      "interaction": "Home -> game setup -> VS CPU -> start -> primary board input"
+    },
+    {
+      "name": "actual entry and primary input bakuretsu 390x844",
+      "passed": true,
+      "before": {
+        "title": "ドラゴンゲームパーク",
+        "text": 240,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 2
+      },
+      "after": {
+        "title": "ドラゴンゲームパーク",
+        "text": 251,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 2
+      },
+      "interaction": "Home -> game setup -> VS CPU -> start -> primary board input"
+    },
+    {
+      "name": "Mancala actual completed major capture 375 lively",
+      "passed": false,
+      "error": "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "Mancala actual completed major capture 375 subtle",
+      "passed": true,
+      "plan": [
+        "p1-pit-4",
+        "p2-pit-0",
+        "p1-pit-0"
+      ],
+      "scenes": [
+        {
+          "selector": ".mancala-capture-moment",
+          "start": 9368.799999999814,
+          "text": "7石を捕獲",
+          "animation": "0.7s",
+          "end": 10079.199999999953,
+          "duration": 710.4000000001397
+        }
+      ],
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 147,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 1
+      },
+      "inputEnabledDuringScene": true
+    },
+    {
+      "name": "Mancala actual completed major capture 375 off",
+      "passed": true,
+      "plan": [
+        "p1-pit-4",
+        "p2-pit-0",
+        "p1-pit-0"
+      ],
+      "scenes": [],
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 142,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 0
+      },
+      "inputEnabledDuringScene": false
+    },
+    {
+      "name": "Mancala actual completed major capture 390 lively",
+      "passed": true,
+      "plan": [
+        "p1-pit-4",
+        "p2-pit-0",
+        "p1-pit-0"
+      ],
+      "scenes": [
+        {
+          "selector": ".mancala-capture-moment",
+          "start": 9728.699999999953,
+          "text": "7石を捕獲",
+          "animation": "0.7s",
+          "end": 10435.799999999814,
+          "duration": 707.0999999998603
+        }
+      ],
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 147,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 1
+      },
+      "inputEnabledDuringScene": true
+    },
+    {
+      "name": "Mancala actual completed major capture 390 subtle",
+      "passed": true,
+      "plan": [
+        "p1-pit-4",
+        "p2-pit-0",
+        "p1-pit-0"
+      ],
+      "scenes": [
+        {
+          "selector": ".mancala-capture-moment",
+          "start": 8868,
+          "text": "7石を捕獲",
+          "animation": "0.7s",
+          "end": 9571,
+          "duration": 703
+        }
+      ],
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 147,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 1
+      },
+      "inputEnabledDuringScene": true
+    },
+    {
+      "name": "Mancala actual completed major capture 390 off",
+      "passed": true,
+      "plan": [
+        "p1-pit-4",
+        "p2-pit-0",
+        "p1-pit-0"
+      ],
+      "scenes": [],
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 142,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 0
+      },
+      "inputEnabledDuringScene": false
+    },
+    {
+      "name": "Mancala actual completed major capture 900 lively",
+      "passed": true,
+      "plan": [
+        "p1-pit-4",
+        "p2-pit-0",
+        "p1-pit-0"
+      ],
+      "scenes": [
+        {
+          "selector": ".mancala-capture-moment",
+          "start": 8901.699999999953,
+          "text": "7石を捕獲",
+          "animation": "0.7s",
+          "end": 9608.699999999953,
+          "duration": 707
+        }
+      ],
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 147,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 1
+      },
+      "inputEnabledDuringScene": true
+    },
+    {
+      "name": "Mancala actual completed major capture 900 subtle",
+      "passed": true,
+      "plan": [
+        "p1-pit-4",
+        "p2-pit-0",
+        "p1-pit-0"
+      ],
+      "scenes": [
+        {
+          "selector": ".mancala-capture-moment",
+          "start": 8899.199999999953,
+          "text": "7石を捕獲",
+          "animation": "0.7s",
+          "end": 9596.899999999907,
+          "duration": 697.6999999999534
+        }
+      ],
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 147,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 1
+      },
+      "inputEnabledDuringScene": true
+    },
+    {
+      "name": "Mancala actual completed major capture 900 off",
+      "passed": true,
+      "plan": [
+        "p1-pit-4",
+        "p2-pit-0",
+        "p1-pit-0"
+      ],
+      "scenes": [],
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 142,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 0
+      },
+      "inputEnabledDuringScene": false
+    },
+    {
+      "name": "reversi-corner human public playback 390 lively",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 102,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 0
+      },
+      "scenes": [
+        {
+          "selector": ".reversi-cinematic",
+          "start": 2045.8999999999069,
+          "text": "角を制した黒の人間が不落の角を獲得",
+          "animation": "1.9s",
+          "end": 3989.1999999999534,
+          "duration": 1943.3000000000466
+        }
+      ],
+      "timers": [
+        {
+          "delay": 1900,
+          "scheduledAt": 2065.899999999907,
+          "firedAt": 3978.5
+        }
+      ]
+    },
+    {
+      "name": "reversi-light human public playback 390 lively",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 122,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 1
+      },
+      "scenes": [],
+      "timers": []
+    },
+    {
+      "name": "bakuretsu human public playback 390 lively",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 267,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 0
+      },
+      "scenes": [
+        {
+          "selector": ".reversi-cinematic",
+          "start": 2457.2999999998137,
+          "text": "爆裂魔法 発動！周囲のコマを消し飛ばす！",
+          "animation": "2.8s",
+          "end": 5252.59999999986,
+          "duration": 2795.3000000000466
+        }
+      ],
+      "timers": [
+        {
+          "delay": 2800,
+          "scheduledAt": 2432.399999999907,
+          "firedAt": 5234
+        }
+      ]
+    },
+    {
+      "name": "reversi-corner human public playback 390 subtle",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 102,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 0
+      },
+      "scenes": [
+        {
+          "selector": ".reversi-cinematic",
+          "start": 2327.0999999998603,
+          "text": "角を制した黒の人間が不落の角を獲得",
+          "animation": "1.9s",
+          "end": 4257.300000000047,
+          "duration": 1930.2000000001863
+        }
+      ],
+      "timers": [
+        {
+          "delay": 1900,
+          "scheduledAt": 2343.3000000000466,
+          "firedAt": 4246.300000000047
+        }
+      ]
+    },
+    {
+      "name": "reversi-light human public playback 390 subtle",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 106,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 0
+      },
+      "scenes": [],
+      "timers": []
+    },
+    {
+      "name": "bakuretsu human public playback 390 subtle",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 267,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 0
+      },
+      "scenes": [
+        {
+          "selector": ".reversi-cinematic",
+          "start": 2394,
+          "text": "爆裂魔法 発動！周囲のコマを消し飛ばす！",
+          "animation": "2.8s",
+          "end": 5189.5,
+          "duration": 2795.5
+        }
+      ],
+      "timers": [
+        {
+          "delay": 2800,
+          "scheduledAt": 2372.100000000093,
+          "firedAt": 5172.899999999907
+        }
+      ]
+    },
+    {
+      "name": "reversi-corner human public playback 390 off",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 102,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 0
+      },
+      "scenes": [
+        {
+          "selector": ".reversi-cinematic",
+          "start": 2085,
+          "text": "角を制した黒の人間が不落の角を獲得",
+          "animation": "1.9s",
+          "end": 3998.1999999999534,
+          "duration": 1913.1999999999534
+        }
+      ],
+      "timers": [
+        {
+          "delay": 1900,
+          "scheduledAt": 2088.899999999907,
+          "firedAt": 3989.399999999907
+        }
+      ]
+    },
+    {
+      "name": "reversi-light human public playback 390 off",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 106,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 0
+      },
+      "scenes": [],
+      "timers": []
+    },
+    {
+      "name": "bakuretsu human public playback 390 off",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 267,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 0
+      },
+      "scenes": [
+        {
+          "selector": ".reversi-cinematic",
+          "start": 2393.5,
+          "text": "爆裂魔法 発動！周囲のコマを消し飛ばす！",
+          "animation": "2.8s",
+          "end": 5193.100000000093,
+          "duration": 2799.600000000093
+        }
+      ],
+      "timers": [
+        {
+          "delay": 2800,
+          "scheduledAt": 2374.399999999907,
+          "firedAt": 5174.699999999953
+        }
+      ]
+    },
+    {
+      "name": "reversi-corner human public playback 900 lively",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 140,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 0
+      },
+      "scenes": [
+        {
+          "selector": ".reversi-cinematic",
+          "start": 2334.100000000093,
+          "text": "角を制した黒の人間が不落の角を獲得",
+          "animation": "1.9s",
+          "end": 4279.100000000093,
+          "duration": 1945
+        }
+      ],
+      "timers": [
+        {
+          "delay": 1900,
+          "scheduledAt": 2356.7000000001863,
+          "firedAt": 4268.200000000186
+        }
+      ]
+    },
+    {
+      "name": "reversi-light human public playback 900 lively",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 160,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 1
+      },
+      "scenes": [],
+      "timers": []
+    },
+    {
+      "name": "bakuretsu human public playback 900 lively",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 365,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 1
+      },
+      "scenes": [
+        {
+          "selector": ".reversi-cinematic",
+          "start": 2421.7999999998137,
+          "text": "爆裂魔法 発動！周囲のコマを消し飛ばす！",
+          "animation": "2.8s",
+          "end": 5233,
+          "duration": 2811.2000000001863
+        }
+      ],
+      "timers": [
+        {
+          "delay": 2800,
+          "scheduledAt": 2403.5999999996275,
+          "firedAt": 5217.299999999814
+        }
+      ]
+    },
+    {
+      "name": "reversi-corner human public playback 900 subtle",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 140,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 0
+      },
+      "scenes": [
+        {
+          "selector": ".reversi-cinematic",
+          "start": 2261.399999999907,
+          "text": "角を制した黒の人間が不落の角を獲得",
+          "animation": "1.9s",
+          "end": 4202.100000000093,
+          "duration": 1940.7000000001863
+        }
+      ],
+      "timers": [
+        {
+          "delay": 1900,
+          "scheduledAt": 2282.2000000001863,
+          "firedAt": 4194.399999999907
+        }
+      ]
+    },
+    {
+      "name": "reversi-light human public playback 900 subtle",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 144,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 0
+      },
+      "scenes": [],
+      "timers": []
+    },
+    {
+      "name": "bakuretsu human public playback 900 subtle",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 353,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 0
+      },
+      "scenes": [
+        {
+          "selector": ".reversi-cinematic",
+          "start": 2606.6999999997206,
+          "text": "爆裂魔法 発動！周囲のコマを消し飛ばす！",
+          "animation": "2.8s",
+          "end": 5403.100000000093,
+          "duration": 2796.4000000003725
+        }
+      ],
+      "timers": [
+        {
+          "delay": 2800,
+          "scheduledAt": 2581.6999999997206,
+          "firedAt": 5391.399999999907
+        }
+      ]
+    },
+    {
+      "name": "reversi-corner human public playback 900 off",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 140,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 0
+      },
+      "scenes": [
+        {
+          "selector": ".reversi-cinematic",
+          "start": 1855.3999999999069,
+          "text": "角を制した黒の人間が不落の角を獲得",
+          "animation": "1.9s",
+          "end": 3772.100000000093,
+          "duration": 1916.7000000001863
+        }
+      ],
+      "timers": [
+        {
+          "delay": 1900,
+          "scheduledAt": 1857.7999999998137,
+          "firedAt": 3759.1999999997206
+        }
+      ]
+    },
+    {
+      "name": "reversi-light human public playback 900 off",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 144,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 0
+      },
+      "scenes": [],
+      "timers": []
+    },
+    {
+      "name": "bakuretsu human public playback 900 off",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 353,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 0
+      },
+      "scenes": [
+        {
+          "selector": ".reversi-cinematic",
+          "start": 2424.5,
+          "text": "爆裂魔法 発動！周囲のコマを消し飛ばす！",
+          "animation": "2.8s",
+          "end": 5233.299999999814,
+          "duration": 2808.7999999998137
+        }
+      ],
+      "timers": [
+        {
+          "delay": 2800,
+          "scheduledAt": 2406.2999999998137,
+          "firedAt": 5219.799999999814
+        }
+      ]
+    },
+    {
+      "name": "Backgammon multi-hit 700ms and click-through 375 lively",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 185,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 1
+      },
+      "scenes": [
+        {
+          "selector": ".backgammon-hit-moment",
+          "start": 673.1000000000931,
+          "text": "人間2の駒を2個ヒット",
+          "animation": "0s",
+          "end": 1369.1000000000931,
+          "duration": 696
+        }
+      ]
+    },
+    {
+      "name": "Backgammon multi-hit 700ms and click-through 375 subtle",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 185,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 1
+      },
+      "scenes": [
+        {
+          "selector": ".backgammon-hit-moment",
+          "start": 850,
+          "text": "人間2の駒を2個ヒット",
+          "animation": "0s",
+          "end": 1549.2000000001863,
+          "duration": 699.2000000001863
+        }
+      ]
+    },
+    {
+      "name": "Backgammon multi-hit 700ms and click-through 375 off",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 167,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 0
+      },
+      "scenes": []
+    },
+    {
+      "name": "Backgammon multi-hit 700ms and click-through 900 lively",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 185,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 1
+      },
+      "scenes": [
+        {
+          "selector": ".backgammon-hit-moment",
+          "start": 985.0999999996275,
+          "text": "人間2の駒を2個ヒット",
+          "animation": "0s",
+          "end": 1693.1999999997206,
+          "duration": 708.1000000000931
+        }
+      ]
+    },
+    {
+      "name": "Backgammon multi-hit 700ms and click-through 900 subtle",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 185,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 1
+      },
+      "scenes": [
+        {
+          "selector": ".backgammon-hit-moment",
+          "start": 866.6000000000931,
+          "text": "人間2の駒を2個ヒット",
+          "animation": "0s",
+          "end": 1552.1000000000931,
+          "duration": 685.5
+        }
+      ]
+    },
+    {
+      "name": "Backgammon multi-hit 700ms and click-through 900 off",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 167,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 0
+      },
+      "scenes": []
+    },
+    {
+      "name": "Backgammon cube 2500ms offer + 2000ms accept",
+      "passed": true,
+      "timers": [
+        {
+          "delay": 2500,
+          "scheduledAt": 1092,
+          "firedAt": 3607.100000000093
+        },
+        {
+          "delay": 2000,
+          "scheduledAt": 3790.100000000093,
+          "firedAt": 5796.200000000186
+        }
+      ],
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 194,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 1
+      }
+    },
+    {
+      "name": "Backgammon cube 2500ms offer + 2000ms drop",
+      "passed": true,
+      "timers": [
+        {
+          "delay": 2500,
+          "scheduledAt": 1079,
+          "firedAt": 3589.899999999907
+        },
+        {
+          "delay": 2000,
+          "scheduledAt": 3790.5999999996275,
+          "firedAt": 5806
+        }
+      ],
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 195,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 1
+      }
+    },
+    {
+      "name": "Reduced-motion reversi-corner 390",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 121,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 1
+      },
+      "reducedMotion": true
+    },
+    {
+      "name": "Reduced-motion bakuretsu 390",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 277,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 0
+      },
+      "reducedMotion": true
+    },
+    {
+      "name": "Reduced-motion backgammon 390",
+      "passed": false,
+      "error": "warning: You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled"
+    },
+    {
+      "name": "Reduced-motion mancala 390",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 148,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 1
+      },
+      "reducedMotion": true
+    }
+  ],
+  "screenshots": [
+    "entry-mancala-390.png",
+    "entry-backgammon-390.png",
+    "entry-reversi-390.png",
+    "entry-bakuretsu-390.png",
+    "mancala-capture-375.png",
+    "mancala-capture-390.png",
+    "mancala-capture-900.png",
+    "reversi-corner-390.png",
+    "reversi-light-390.png",
+    "bakuretsu-390.png",
+    "reversi-corner-900.png",
+    "reversi-light-900.png",
+    "bakuretsu-900.png",
+    "backgammon-hit-375.png",
+    "backgammon-hit-900.png",
+    "reduced-reversi-corner-390.png",
+    "reduced-bakuretsu-390.png",
+    "reduced-backgammon-390.png",
+    "reduced-mancala-390.png"
+  ],
+  "errors": [
+    {
+      "message": "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "url": "http://127.0.0.1:5178/docs/design/dragons/presentation-v2/2026-10-04/evidence/runtime-boards/boards-fixture.html?scenario=mancala"
+    },
+    {
+      "message": "warning: You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled",
+      "url": "http://127.0.0.1:5178/docs/design/dragons/presentation-v2/2026-10-04/evidence/runtime-boards/boards-fixture.html?scenario=backgammon"
+    }
+  ],
+  "summary": {
+    "passed": 41,
+    "failed": 2,
+    "errorCount": 2
+  }
+}

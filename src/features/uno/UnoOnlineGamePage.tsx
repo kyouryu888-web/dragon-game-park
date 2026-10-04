@@ -26,6 +26,7 @@ import { PendingPanel, StarterDecisionPanel } from './UnoGamePage';
 import { UnoRulesPanel } from './UnoRulesPanel';
 import { createInitialUnoState } from './createInitialUnoState';
 import { UnoCinematicOverlay } from './UnoCinematicOverlay';
+import { UnoPresentationPreload } from './UnoPresentationPreload';
 import { useUnoCinematics } from './useUnoCinematics';
 import { UNO_ROULETTE_STEP_MS } from './unoCinematics';
 import { useDragonReactionPreference, useDragonReactions, type PublicDragonReactionInput } from '../../components/dragonReactions';
@@ -466,7 +467,8 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToSetup, onBackT
     const resultCpu = winner?.isCpu ? winner : rankings.find(entry => entry.player.isCpu)?.player;
     return (
       <Layout>
-        <UnoCinematicOverlay event={cinematicEvent} players={gameState.players} reactionInputs={dragonInputs} preference={dragonPreference} />
+        <UnoPresentationPreload players={gameState.players} preference={dragonPreference} />
+      <UnoCinematicOverlay event={cinematicEvent} players={gameState.players} reactionInputs={dragonInputs} preference={dragonPreference} />
         <div style={{ paddingTop: 32, paddingBottom: 40, textAlign: 'center' }}>
           <div style={{ fontSize: 48, marginBottom: 10 }}>WIN</div>
           <h1 style={{ fontSize: 22, color: 'var(--brown)', marginBottom: 12 }}>
@@ -545,6 +547,7 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToSetup, onBackT
 
   return (
     <Layout>
+      <UnoPresentationPreload players={gameState.players} preference={dragonPreference} />
       <UnoCinematicOverlay event={cinematicEvent} players={gameState.players} reactionInputs={dragonInputs} preference={dragonPreference} />
       <div style={{ paddingTop: 'var(--game-page-pt)', paddingBottom: 'var(--game-page-pb)' }}>
         <div style={{ position: 'relative', textAlign: 'center', marginBottom: 12 }}>
@@ -587,7 +590,7 @@ export function UnoOnlineGamePage({ roomCode, myPlayerId, onBackToSetup, onBackT
           canAct={canTakeTurn}
           isCpuThinking={isCpuThinking}
           message={message}
-          dragonReaction={dragonReaction}
+          dragonReaction={cinematicEvent ? null : dragonReaction}
           dragonPreference={dragonPreference}
           viewPlayerId={myPlayerId}
           roulettePresentation={roulettePresentation}

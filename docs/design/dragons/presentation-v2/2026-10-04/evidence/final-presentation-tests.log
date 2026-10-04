@@ -1,0 +1,8 @@
+
+ RUN  v4.1.9 C:/Users/ray-0/.codex/worktrees/dragon-presentation-v2/Dragon-game-park
+
+
+ Test Files  11 passed (11)
+      Tests  80 passed (80)
+   Start at  17:37:55
+   Duration  18.37s (transform 18.88s, setup 0ms, import 39.56s, tests 647ms, environment 2ms)

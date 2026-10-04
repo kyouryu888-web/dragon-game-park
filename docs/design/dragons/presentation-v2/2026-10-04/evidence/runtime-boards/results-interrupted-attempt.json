@@ -1,0 +1,277 @@
+{
+  "environment": {
+    "url": "http://127.0.0.1:5178",
+    "browser": "Microsoft Edge headless",
+    "browserPlugin": "Browser plugin not available; authorized Playwright fallback",
+    "viewports": [
+      "375x844",
+      "390x844",
+      "900x700"
+    ],
+    "fixtureWarning": "Fixed public events exercise actual rendering/playback. They are not live Supabase matches."
+  },
+  "checks": [
+    {
+      "name": "actual entry and primary input mancala 390x844",
+      "passed": true,
+      "before": {
+        "title": "ドラゴンゲームパーク",
+        "text": 123,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 1
+      },
+      "after": {
+        "title": "ドラゴンゲームパーク",
+        "text": 135,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 1
+      },
+      "interaction": "Home -> game setup -> VS CPU -> start -> primary board input"
+    },
+    {
+      "name": "actual entry and primary input backgammon 390x844",
+      "passed": true,
+      "before": {
+        "title": "ドラゴンゲームパーク",
+        "text": 162,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 1
+      },
+      "after": {
+        "title": "ドラゴンゲームパーク",
+        "text": 160,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 1
+      },
+      "interaction": "Home -> game setup -> VS CPU -> start -> primary board input"
+    },
+    {
+      "name": "actual entry and primary input reversi 390x844",
+      "passed": true,
+      "before": {
+        "title": "ドラゴンゲームパーク",
+        "text": 95,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 2
+      },
+      "after": {
+        "title": "ドラゴンゲームパーク",
+        "text": 82,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 2
+      },
+      "interaction": "Home -> game setup -> VS CPU -> start -> primary board input"
+    },
+    {
+      "name": "actual entry and primary input bakuretsu 390x844",
+      "passed": true,
+      "before": {
+        "title": "ドラゴンゲームパーク",
+        "text": 240,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 2
+      },
+      "after": {
+        "title": "ドラゴンゲームパーク",
+        "text": 251,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 2
+      },
+      "interaction": "Home -> game setup -> VS CPU -> start -> primary board input"
+    },
+    {
+      "name": "Mancala actual completed major capture 375 lively",
+      "passed": false,
+      "error": "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "name": "Mancala actual completed major capture 375 subtle",
+      "passed": true,
+      "plan": [
+        "p1-pit-4",
+        "p2-pit-0",
+        "p1-pit-0"
+      ],
+      "scenes": [
+        {
+          "selector": ".mancala-capture-moment",
+          "start": 8902.800000000047,
+          "text": "7石を捕獲",
+          "animation": "0.7s",
+          "end": 9607.699999999953,
+          "duration": 704.8999999999069
+        }
+      ],
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 147,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 1
+      },
+      "inputEnabledDuringScene": true
+    },
+    {
+      "name": "Mancala actual completed major capture 375 off",
+      "passed": true,
+      "plan": [
+        "p1-pit-4",
+        "p2-pit-0",
+        "p1-pit-0"
+      ],
+      "scenes": [],
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 142,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 0
+      },
+      "inputEnabledDuringScene": false
+    },
+    {
+      "name": "Mancala actual completed major capture 390 lively",
+      "passed": false,
+      "error": "locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.mancala-capture-moment') to be visible\u001b[22m\n"
+    },
+    {
+      "name": "Mancala actual completed major capture 390 subtle",
+      "passed": true,
+      "plan": [
+        "p1-pit-4",
+        "p2-pit-0",
+        "p1-pit-0"
+      ],
+      "scenes": [
+        {
+          "selector": ".mancala-capture-moment",
+          "start": 8990.899999999907,
+          "text": "7石を捕獲",
+          "animation": "0.7s",
+          "end": 9693,
+          "duration": 702.1000000000931
+        }
+      ],
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 147,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 1
+      },
+      "inputEnabledDuringScene": true
+    },
+    {
+      "name": "Mancala actual completed major capture 390 off",
+      "passed": true,
+      "plan": [
+        "p1-pit-4",
+        "p2-pit-0",
+        "p1-pit-0"
+      ],
+      "scenes": [],
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 142,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 0
+      },
+      "inputEnabledDuringScene": false
+    },
+    {
+      "name": "Mancala actual completed major capture 900 lively",
+      "passed": true,
+      "plan": [
+        "p1-pit-4",
+        "p2-pit-0",
+        "p1-pit-0"
+      ],
+      "scenes": [
+        {
+          "selector": ".mancala-capture-moment",
+          "start": 8881,
+          "text": "7石を捕獲",
+          "animation": "0.7s",
+          "end": 9589.699999999953,
+          "duration": 708.6999999999534
+        }
+      ],
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 147,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 1
+      },
+      "inputEnabledDuringScene": true
+    },
+    {
+      "name": "Mancala actual completed major capture 900 subtle",
+      "passed": true,
+      "plan": [
+        "p1-pit-4",
+        "p2-pit-0",
+        "p1-pit-0"
+      ],
+      "scenes": [
+        {
+          "selector": ".mancala-capture-moment",
+          "start": 8887.5,
+          "text": "7石を捕獲",
+          "animation": "0.7s",
+          "end": 9586.899999999907,
+          "duration": 699.3999999999069
+        }
+      ],
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 147,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 1
+      },
+      "inputEnabledDuringScene": true
+    }
+  ],
+  "screenshots": [
+    "entry-mancala-390.png",
+    "entry-backgammon-390.png",
+    "entry-reversi-390.png",
+    "entry-bakuretsu-390.png",
+    "mancala-capture-375.png",
+    "mancala-capture-900.png"
+  ],
+  "errors": [
+    {
+      "message": "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "url": "http://127.0.0.1:5178/docs/design/dragons/presentation-v2/2026-10-04/evidence/runtime-boards/boards-fixture.html?scenario=mancala"
+    },
+    {
+      "message": "error: You are calling ReactDOMClient.createRoot() on a container that has already been passed to createRoot() before. Instead, call root.render() on the existing root instead if you want to update it.",
+      "url": "http://127.0.0.1:5178/docs/design/dragons/presentation-v2/2026-10-04/evidence/runtime-boards/boards-fixture.html?scenario=mancala"
+    }
+  ]
+}

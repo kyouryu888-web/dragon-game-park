@@ -1,11 +1,12 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
-import { DragonReactionWipe } from '../../components/dragonReactions';
+import { DragonReactionNarration, DragonReactionWipe } from '../../components/dragonReactions';
 import type { DragonPresentationPreference, DragonReactionEvent } from '../../components/dragonReactions';
 import type { BabanukiPlayer, BabanukiState, Card } from './babanukiTypes';
 import { isJoker } from './babanukiTypes';
 import { getCpuDisplayName } from './babanukiCpu';
 import './BabanukiTable.css';
+import './BabanukiPresentation.css';
 
 /**
  * 盤面の描画とカードの飛行アニメーション。
@@ -283,6 +284,7 @@ export function BabanukiTable({
 
   return (
     <div style={{ position: 'relative' }}>
+      <div className="babanuki-public-commentary"><DragonReactionNarration event={dragonReaction} preference={dragonPreference} className="babanuki-game-narration" /></div>
       {/* ---- テーブル（他のプレイヤー＋中央の捨て札） ---- */}
       <div
         className={`babanuki-table-surface${shuffleDice !== null ? ` is-shuffling is-dice-${shuffleDice}` : ''}`}

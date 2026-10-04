@@ -1,0 +1,37 @@
+{
+  "id": "uno-lv4",
+  "game": "uno",
+  "lv": 4,
+  "prompt": "Use case: identity-preserve production game illustration, family-friendly Dragon Game Park. One finished portrait3:4 with FULL painted background, no alpha.\nReference1 EXACT required identity: charcoal BLACK king dragon, grey-white eyes, silver horns/forehead scales, small SILVER DARK CROWN between horns, grey belly, black wings; preserve crown. Keep age/face/proportions/permanent ornaments strictly; ignore invisible-alpha RGB bars in its background.\nReference2 APPROVED staging/style/game props. Replace its silver dragon ONLY with reference1 identity; don't inherit collar/crown/halo unless reference1 requires it.\nScene: DRAW-TWO COUNTER: confident joyful sweeping claw turns a vivid arc of RED/YELLOW/GREEN/BLUE cards back toward viewer, gold/cyan trails, burgundy/navy action background. Two prominent foreground red and blue face cards have cream oval with a +2 centre AND matching +2 corners. All other cards use dragon-crest BACKS only, no reverse/number cards to avoid mixed symbols. Card motion follows the dragon gesture. No official UNO logo. Symbolic props, no actual hidden hand.\nMANDATORY framing: entire wing-to-wing dragon silhouette spans MAXIMUM70 percent canvas width, centered, with painted scenery visible beyond BOTH complete wing tips. All claws/horns/crown/halo COMPLETE,10percent top margin and8percent sides. Make body smaller than reference2 if necessary. Do not reuse cropped wings of reference2. Face upper-middle, props substantial sides/lower middle. Top12percent andbottom13percent DARK lowdetail breathing zones for HTML titles. Preserve rich sweeping action/depth while keeping face clear at phone size.\nPolished Japanese anime game splash, clean dark outlines, crisp cel shading, glossy scales, excellent expressive anatomy. ONE dragon. No captions/title/UI/speech/watermark/frame. No wrong level identity, missing ornaments, extra limbs/fingers, bright face clutter, photorealism or flat clipart.\nFraming refinement: Fold wings halfway behind shoulders, complete tips clearly inside frame; keep dragon wing-to-wing max70% of canvas; do not copy the large cropped character from reference2. Keep both wing tips and all horns/claws clearly complete with scenery separating them from every image edge. The small silver dark crown between the horns is mandatory and fully visible.",
+  "refs": [
+    "C:\\Users\\ray-0\\.codex\\worktrees\\dragon-presentation-v2\\Dragon-game-park\\src\\assets\\dragons\\cutins\\master\\lv4\\attack.webp",
+    "C:\\Users\\ray-0\\.codex\\worktrees\\dragon-presentation-v2\\Dragon-game-park\\docs\\design\\dragons\\presentation-v2\\2026-10-04\\images\\uno-draw-counter-lv3-v2.png"
+  ],
+  "runtime": "src/assets/dragons/presentation-v2/scenes/uno/lv4-counter.webp",
+  "source": "image_gen",
+  "rawOutput": "C:\\Users\\ray-0\\.codex\\generated_images\\01a105e7-6524-75a3-9275-b65e339ee93d\\exec-7525e29f-53d3-41e0-986b-60090d92c4f3.png",
+  "original": "docs/design/dragons/presentation-v2/2026-10-04/production-art/originals/scenes/uno-lv4.png",
+  "originalSha256": "219bfd0cdfd150c0880dea3ac352747de2850a463e2f99b8ef492167586ff209",
+  "runtimeSha256": "e071770cd5a7e57dc8fde63ea0898bccf5ae247b0cebdb9e90465ff2e1eeeb37",
+  "dimensions": [
+    720,
+    960
+  ],
+  "bytes": 209828,
+  "references": [
+    {
+      "path": "src/assets/dragons/cutins/master/lv4/attack.webp",
+      "sha256": "aea1670f413246badd1aa2e409f899b849944248caf56cfd00948f01dc433727"
+    },
+    {
+      "path": "docs/design/dragons/presentation-v2/2026-10-04/images/uno-draw-counter-lv3-v2.png",
+      "sha256": "383f6882947d48905df9f354126ca9ecd8b0cdd5ae5534d185bb47670b8a3da1"
+    }
+  ],
+  "conversion": "resize inside 720x960, no crop, WebP quality88; no semantic editing",
+  "generatedAt": "2026-10-04T08:11:52.542Z",
+  "visualInspection": {
+    "accepted": true,
+    "note": "Both wing tips, horns and claws visibly complete inside frame. Small silver crown present. Foreground red and blue +2 cards consistent; other cards backs only. Numeric max70% was not matched exactly; dragon span is visually about mid80% but tips do not clip."
+  }
+}

@@ -1,0 +1,59 @@
+/* Below the public dice panel (9996) and real card flights (9998). */
+.babanuki-shuffle-cutin {
+  position: fixed;
+  inset: 0;
+  z-index: 9995;
+  pointer-events: none;
+  background: rgba(25, 11, 34, .68);
+  animation: babanuki-cutin-beat 700ms ease both;
+}
+/* Leave the factual die/route panel its own space; painted cards remain symbolic. */
+.babanuki-shuffle-cutin .game-cutin-art {
+  position: absolute;
+  inset: 48px 390px 48px 12px;
+  width: auto;
+  height: auto;
+}
+.babanuki-shuffle-cutin-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(20,8,28,.18), transparent 65%, rgba(20,8,28,.5));
+}
+.babanuki-shuffle-showcase .dragon-reaction-narration,
+.babanuki-shuffle-showcase .babanuki-declaration-dragon {
+  position: relative;
+  top: auto;
+  right: auto;
+  margin: 6px auto 0;
+  width: fit-content;
+}
+.babanuki-shuffle-showcase .babanuki-declaration-dragon .dragon-reaction-speech {
+  top: 50%;
+  bottom: auto;
+  right: calc(100% + 6px);
+  transform: translateY(-50%);
+  max-width: 130px;
+}
+.babanuki-public-commentary {
+  position: relative;
+  height: 44px;
+}
+.babanuki-game-narration {
+  top: 5px;
+  right: 8px;
+  max-width: calc(100% - 16px);
+}
+@keyframes babanuki-cutin-beat {
+  0% { opacity: 0; transform: scale(.97); }
+  14%, 76% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.015); }
+}
+@media (min-width: 431px) and (max-width: 700px) {
+  .babanuki-shuffle-cutin .game-cutin-art { inset: 360px 12px 12px; }
+}
+@media (max-width: 430px) {
+  .babanuki-shuffle-cutin .game-cutin-art { inset: 24px 8px 260px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .babanuki-shuffle-cutin { display: none; animation: none; }
+}

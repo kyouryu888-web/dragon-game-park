@@ -1,0 +1,325 @@
+{
+  "game": "uno",
+  "actions": [
+    {
+      "step": 1,
+      "side": "uno-host",
+      "kind": "draw-or-accept",
+      "elapsedMs": 8464
+    },
+    {
+      "step": 2,
+      "side": "uno-guest",
+      "kind": "played スキップ",
+      "elapsedMs": 9489
+    },
+    {
+      "step": 4,
+      "side": "uno-guest",
+      "kind": "played 7",
+      "elapsedMs": 11265
+    },
+    {
+      "step": 5,
+      "side": "uno-host",
+      "kind": "draw-or-accept",
+      "elapsedMs": 12302
+    },
+    {
+      "step": 6,
+      "side": "uno-host",
+      "kind": "played 2",
+      "elapsedMs": 13337
+    },
+    {
+      "step": 7,
+      "side": "uno-guest",
+      "kind": "played 8",
+      "elapsedMs": 14455
+    },
+    {
+      "step": 8,
+      "side": "uno-host",
+      "kind": "draw-or-accept",
+      "elapsedMs": 20367
+    },
+    {
+      "step": 9,
+      "side": "uno-guest",
+      "kind": "played 8",
+      "elapsedMs": 21470
+    },
+    {
+      "step": 10,
+      "side": "uno-host",
+      "kind": "played 9",
+      "elapsedMs": 22483
+    },
+    {
+      "step": 11,
+      "side": "uno-guest",
+      "kind": "played 4",
+      "elapsedMs": 23486
+    },
+    {
+      "step": 12,
+      "side": "uno-host",
+      "kind": "draw-or-accept",
+      "elapsedMs": 24461
+    },
+    {
+      "step": 13,
+      "side": "uno-host",
+      "kind": "played 0",
+      "elapsedMs": 25454
+    },
+    {
+      "step": 14,
+      "side": "uno-guest",
+      "kind": "played 8",
+      "elapsedMs": 26475
+    },
+    {
+      "step": 15,
+      "side": "uno-host",
+      "kind": "draw-or-accept",
+      "elapsedMs": 27544
+    },
+    {
+      "step": 16,
+      "side": "uno-guest",
+      "kind": "draw-or-accept",
+      "elapsedMs": 28586
+    },
+    {
+      "step": 17,
+      "side": "uno-host",
+      "kind": "draw-or-accept",
+      "elapsedMs": 30082
+    },
+    {
+      "step": 18,
+      "side": "uno-guest",
+      "kind": "draw-or-accept",
+      "elapsedMs": 31114
+    },
+    {
+      "step": 19,
+      "side": "uno-host",
+      "kind": "draw-or-accept",
+      "elapsedMs": 32157
+    },
+    {
+      "step": 20,
+      "side": "uno-guest",
+      "kind": "draw-or-accept",
+      "elapsedMs": 33467
+    },
+    {
+      "step": 21,
+      "side": "uno-guest",
+      "kind": "played 5",
+      "elapsedMs": 34717
+    },
+    {
+      "step": 22,
+      "side": "uno-host",
+      "kind": "played 5",
+      "elapsedMs": 35807
+    },
+    {
+      "step": 23,
+      "side": "uno-guest",
+      "kind": "played 7",
+      "elapsedMs": 37027
+    },
+    {
+      "step": 24,
+      "side": "uno-host",
+      "kind": "played リバース",
+      "elapsedMs": 38114
+    },
+    {
+      "step": 25,
+      "side": "uno-host",
+      "kind": "played 2",
+      "elapsedMs": 39142
+    },
+    {
+      "step": 26,
+      "side": "uno-guest",
+      "kind": "draw-or-accept",
+      "elapsedMs": 40383
+    },
+    {
+      "step": 27,
+      "side": "uno-host",
+      "kind": "played 3",
+      "elapsedMs": 41414
+    },
+    {
+      "step": 28,
+      "side": "uno-guest",
+      "kind": "draw-or-accept",
+      "elapsedMs": 42454
+    },
+    {
+      "step": 29,
+      "side": "uno-guest",
+      "kind": "played 7",
+      "elapsedMs": 43525
+    },
+    {
+      "step": 31,
+      "side": "uno-host",
+      "kind": "played 4",
+      "elapsedMs": 45829
+    },
+    {
+      "step": 32,
+      "side": "uno-guest",
+      "kind": "draw-or-accept",
+      "elapsedMs": 47440
+    },
+    {
+      "step": 33,
+      "side": "uno-guest",
+      "kind": "played 3",
+      "elapsedMs": 48487
+    },
+    {
+      "step": 36,
+      "side": "uno-host",
+      "kind": "played 5",
+      "elapsedMs": 51022
+    },
+    {
+      "step": 37,
+      "side": "uno-guest",
+      "kind": "played 5",
+      "elapsedMs": 52142
+    },
+    {
+      "step": 38,
+      "side": "uno-host",
+      "kind": "played 0",
+      "elapsedMs": 53169
+    },
+    {
+      "step": 39,
+      "side": "uno-guest",
+      "kind": "played 7",
+      "elapsedMs": 54565
+    },
+    {
+      "step": 40,
+      "side": "uno-host",
+      "kind": "played 2",
+      "elapsedMs": 55674
+    },
+    {
+      "step": 41,
+      "side": "uno-guest",
+      "kind": "draw-or-accept",
+      "elapsedMs": 56796
+    },
+    {
+      "step": 42,
+      "side": "uno-host",
+      "kind": "played 2",
+      "elapsedMs": 57836
+    },
+    {
+      "step": 43,
+      "side": "uno-guest",
+      "kind": "draw-or-accept",
+      "elapsedMs": 58958
+    },
+    {
+      "step": 44,
+      "side": "uno-guest",
+      "kind": "played 2",
+      "elapsedMs": 60124
+    },
+    {
+      "step": 45,
+      "side": "uno-host",
+      "kind": "draw-or-accept",
+      "elapsedMs": 61218
+    }
+  ],
+  "privacyChecks": 72,
+  "synchronizedEvents": [
+    {
+      "presenter": "narrator",
+      "actor": null,
+      "emotion": "smug",
+      "text": "ゲーム案内\nスキップ",
+      "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"smug\",\"text\":\"ゲーム案内\\nスキップ\"}"
+    },
+    {
+      "presenter": "narrator",
+      "actor": null,
+      "emotion": "joy",
+      "text": "ゲーム案内\n残り3まい",
+      "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"joy\",\"text\":\"ゲーム案内\\n残り3まい\"}"
+    },
+    {
+      "presenter": "narrator",
+      "actor": null,
+      "emotion": "joy",
+      "text": "ゲーム案内\n残り2まい",
+      "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"joy\",\"text\":\"ゲーム案内\\n残り2まい\"}"
+    },
+    {
+      "presenter": "narrator",
+      "actor": null,
+      "emotion": "laughing",
+      "text": "ゲーム案内\n残り1まい",
+      "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"laughing\",\"text\":\"ゲーム案内\\n残り1まい\"}"
+    },
+    {
+      "presenter": "narrator",
+      "actor": null,
+      "emotion": "smug",
+      "text": "ゲーム案内\n残り3まい",
+      "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"smug\",\"text\":\"ゲーム案内\\n残り3まい\"}"
+    },
+    {
+      "presenter": "narrator",
+      "actor": null,
+      "emotion": "smug",
+      "text": "ゲーム案内\n残り2まい",
+      "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"smug\",\"text\":\"ゲーム案内\\n残り2まい\"}"
+    },
+    {
+      "presenter": "narrator",
+      "actor": null,
+      "emotion": "smug",
+      "text": "ゲーム案内\nリバース・順番が逆に",
+      "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"smug\",\"text\":\"ゲーム案内\\nリバース・順番が逆に\"}"
+    },
+    {
+      "presenter": "narrator",
+      "actor": null,
+      "emotion": "laughing",
+      "text": "ゲーム案内\n残り2まい",
+      "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"laughing\",\"text\":\"ゲーム案内\\n残り2まい\"}"
+    },
+    {
+      "presenter": "narrator",
+      "actor": null,
+      "emotion": "laughing",
+      "text": "ゲーム案内\n残り3まい",
+      "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"laughing\",\"text\":\"ゲーム案内\\n残り3まい\"}"
+    }
+  ],
+  "createdRoom": "C9KHLW",
+  "reconnect": {
+    "networkOfflineMs": 1800,
+    "sameSessionParticipant": true,
+    "rejoinedRoom": "C9KHLW",
+    "bootstrapReactions": [],
+    "restRequestDelayMs": 120
+  }
+}

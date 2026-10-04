@@ -1,7 +1,7 @@
-import type { PublicDragonReactionInput } from '../../components/dragonReactions';
+import { publicReactionPresenter, type PublicDragonReactionInput } from '../../components/dragonReactions';
 import type { BabanukiEvent, BabanukiPlayer } from './babanukiTypes';
 
-const levels = ['very-easy', 'easy', 'normal', 'hard', 'very-hard'] as const;
+
 
 function cue(
   player: BabanukiPlayer | undefined,
@@ -12,12 +12,11 @@ function cue(
   factLabel: string,
   priority: PublicDragonReactionInput['priority'],
 ): PublicDragonReactionInput | null {
-  if (!player?.isCpu) return null;
-  const index = levels.indexOf(player.cpuLevel);
-  if (index < 0) return null;
+  if (!player) return null;
+  const presenter = publicReactionPresenter(player);
+  if (!presenter) return null;
   return {
-    matchId, sequence, kind,
-    cpu: { id: player.id, name: player.name, level: (index + 1) as 1 | 2 | 3 | 4 | 5 },
+    matchId, sequence, kind, ...presenter,
     outcome, factLabel, priority,
     severity: priority && priority >= 3 ? 'major' : 'normal',
   };
@@ -49,8 +48,10 @@ export function detectBabanukiDragonReactions(
     case 'game-end':
       reaction = cue(player(event.loserId), matchId, sequence, 'babanuki-loser', 'defeat', '最弱王が決定', 4);
       break;
-    // Drawing a particular card, even a Joker, must never signal its identity.
+    // React only to the public act of drawing, never the card or its position.
     case 'draw':
+      reaction = cue(player(event.toId), matchId, sequence, 'babanuki-draw', 'advantage', '1枚引きます', 1);
+      break;
     case 'initial-discard':
       break;
   }

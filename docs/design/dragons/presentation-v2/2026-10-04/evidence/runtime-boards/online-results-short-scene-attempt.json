@@ -1,0 +1,118 @@
+{
+  "environment": {
+    "url": "http://127.0.0.1:5178",
+    "browser": "Edge headless",
+    "hostViewport": "390x844",
+    "guestViewport": "900x700",
+    "connection": "Live existing Supabase via app UI. No seeded payload or private API writes."
+  },
+  "checks": [
+    {
+      "game": "マンカラ",
+      "passed": false,
+      "moves": [
+        {
+          "pit": "p1-pit-4",
+          "boardEqual": true
+        },
+        {
+          "pit": "p2-pit-0",
+          "boardEqual": true
+        }
+      ],
+      "error": "locator.innerText: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.mancala-capture-moment strong')\u001b[22m\n",
+      "publicEvents": [
+        [
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内DGP QA Hが4石を配った",
+            "time": 7316.799999999814
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内DGP QA Gが5石を配った",
+            "time": 11849.399999999907
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内7石を捕獲",
+            "time": 15891.200000000186
+          },
+          {
+            "selector": ".mancala-capture-moment",
+            "text": "7石を捕獲",
+            "time": 15904.899999999907
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内7石を捕獲",
+            "time": 16614.299999999814
+          }
+        ],
+        [
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内DGP QA Hが4石を配った",
+            "time": 5630.199999999721
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内DGP QA Gが5石を配った",
+            "time": 8419.19999999972
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内7石を捕獲",
+            "time": 13552
+          },
+          {
+            "selector": ".mancala-capture-moment",
+            "text": "7石を捕獲",
+            "time": 13573
+          },
+          {
+            "selector": ".dragon-reaction-narration",
+            "text": "ゲーム案内7石を捕獲",
+            "time": 14271.5
+          }
+        ]
+      ],
+      "exits": {
+        "host": {
+          "exited": true
+        },
+        "guest": {
+          "exited": true
+        }
+      }
+    },
+    {
+      "game": "バックギャモン",
+      "passed": false,
+      "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'ダブル提案', exact: true })\u001b[22m\n",
+      "publicEvents": [
+        [],
+        []
+      ],
+      "exits": {
+        "host": {
+          "exited": true
+        },
+        "guest": {
+          "exited": true
+        }
+      }
+    }
+  ],
+  "rooms": [
+    {
+      "game": "マンカラ",
+      "roomCode": "4DE7QE"
+    },
+    {
+      "game": "バックギャモン",
+      "roomCode": "W4BRHP"
+    }
+  ],
+  "errors": []
+}

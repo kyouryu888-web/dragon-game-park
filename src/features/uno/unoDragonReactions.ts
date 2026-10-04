@@ -1,14 +1,6 @@
-import type { PublicDragonReactionInput } from '../../components/dragonReactions';
+import { publicReactionPresenter, type PublicDragonReactionInput } from '../../components/dragonReactions';
+import { UNO_COLOR_LABELS } from './unoCardMeta';
 import type { UnoGameState, UnoPlayer } from './unoTypes';
-
-const CPU_LEVELS = ['very-easy', 'easy', 'normal', 'hard', 'very-hard'] as const;
-
-function actor(player: UnoPlayer | undefined) {
-  if (!player?.isCpu || !player.cpuLevel) return null;
-  const index = CPU_LEVELS.indexOf(player.cpuLevel);
-  if (index < 0) return null;
-  return { id: player.id, name: player.name, level: (index + 1) as 1 | 2 | 3 | 4 | 5 };
-}
 
 function count(state: UnoGameState, playerId: string): number {
   // A hand's length is already published next to every player. Its contents
@@ -26,18 +18,19 @@ function make(
   severity: PublicDragonReactionInput['severity'] = 'normal',
   cutIn?: PublicDragonReactionInput['cutIn'],
 ): PublicDragonReactionInput | null {
-  const cpu = actor(player);
-  return cpu ? { matchId: next.gameId, sequence: next.turnCount, cpu, kind, outcome, factLabel, priority, severity, cutIn } : null;
+  if (!player) return null;
+  const presenter = publicReactionPresenter(player);
+  return presenter ? { matchId: next.gameId, sequence: next.turnCount, ...presenter, kind, outcome, factLabel, priority, severity, cutIn } : null;
 }
 
 /** Derive acting cues from the same published transition seen by both viewers. */
 export function detectUnoDragonReactions(previous: UnoGameState, next: UnoGameState): PublicDragonReactionInput[] {
-  if (previous.gameId !== next.gameId || next.turnCount < previous.turnCount) return [];
+  if (previous.gameId !== next.gameId || next.turnCount < previous.turnCount || previous.status !== 'playing') return [];
   // After a reconnect or a dropped update the intermediate play is unknown.
   // Do not pretend that a specific card or draw happened in that gap.
   if (next.turnCount > previous.turnCount + 1) return [];
 
-  if (previous.status !== 'finished' && next.status === 'finished') {
+  if (next.status === 'finished') {
     const winner = next.players.find(player => player.id === next.winnerPlayerId);
     const event = make(next, winner, 'uno-victory', 'victory', `${winner?.name ?? 'プレイヤー'}の勝ち`, 4, 'major', 'victory');
     if (event) return [event];
@@ -72,6 +65,29 @@ export function detectUnoDragonReactions(previous: UnoGameState, next: UnoGameSt
     const before = previous.pendingAction.drawnCount ?? 0;
     const now = next.pendingAction?.kind === 'color-roulette' ? next.pendingAction.drawnCount ?? 0 : before;
     if (now > before) add(make(next, next.players.find(player => player.id === targetId), `uno-roulette:${now}`, 'disadvantage', `ルーレットで${now}まい引いた`, 2));
+    // The stop is public; the final card's identity remains private.
+    if (next.pendingAction?.kind !== 'color-roulette' && count(next, targetId) > count(previous, targetId)) {
+      add(make(next, next.players.find(player => player.id === targetId), 'uno-roulette-stop', 'advantage', `ルーレットが止まった・${before + 1}まい`, 3));
+    }
+  }
+
+  const beforeCard = previous.discardPile[0], afterCard = next.discardPile[0];
+  if (beforeCard?.id !== afterCard?.id && afterCard?.kind === 'action' && afterCard.symbol === 'skip') {
+    add(make(next, previous.players.find(player => player.id === previous.currentPlayerId), 'uno-skip', 'advantage', 'スキップ', 2));
+  }
+
+  if (previous.direction !== next.direction) {
+    const playerId = previous.pendingAction?.kind === 'color-pick'
+      ? previous.pendingAction.chooserPlayerId : previous.currentPlayerId;
+    add(make(next, next.players.find(player => player.id === playerId), 'uno-reverse', 'advantage', 'リバース・順番が逆に', 2));
+  }
+
+  // Wait for the chooser's public confirmation, including choosing the same
+  // colour. Merely placing a wild or opening the colour picker is not a cue.
+  if (previous.pendingAction?.kind === 'color-pick' && next.pendingAction?.kind !== 'color-pick') {
+    const chooserId = previous.pendingAction.chooserPlayerId;
+    add(make(next, next.players.find(player => player.id === chooserId),
+      'uno-color-picked', 'advantage', `${UNO_COLOR_LABELS[next.activeColor]}に決定`, 2));
   }
 
   for (const player of next.players) {
@@ -81,11 +97,7 @@ export function detectUnoDragonReactions(previous: UnoGameState, next: UnoGameSt
       add(make(next, player, `uno-${after}-cards`, 'advantage', `残り${after}まい`, after === 1 ? 3 : 2));
     }
   }
-
-  const beforeCard = previous.discardPile[0], afterCard = next.discardPile[0];
-  if (beforeCard?.id !== afterCard?.id && afterCard?.kind === 'action' && afterCard.symbol === 'skip') {
-    add(make(next, previous.players.find(player => player.id === previous.currentPlayerId), 'uno-skip', 'advantage', 'スキップ', 2));
-  }
-
-  return events;
+  // One brief beat per update; major public moments take precedence over
+  // remaining-card or colour chatter that would otherwise arrive too late.
+  return events.sort((a, b) => (b.priority ?? 1) - (a.priority ?? 1)).slice(0, 1);
 }

@@ -1,18 +1,8 @@
 import type { CSSProperties } from 'react';
-import drawCounterImage from './assets/draw-counter.webp';
-import forcedDrawImage from './assets/forced-draw.webp';
-import knockoutImage from './assets/knockout.webp';
-import { selectDragonCutinImage } from '../../assets/dragons/cutins/selectCutinImage';
-import { decideDragonReaction, type DragonPresentationPreference, type PublicDragonReactionInput } from '../../components/dragonReactions';
+import { decideDragonReaction, GameCutinArt, type DragonPresentationPreference, type PublicDragonReactionInput } from '../../components/dragonReactions';
 import { getUnoCinematicDuration, type UnoFullScreenCinematicEvent } from './unoCinematics';
 import type { UnoPlayer } from './unoTypes';
-
-const IMAGE_BY_KIND = {
-  'draw-counter': drawCounterImage,
-  'forced-draw': forcedDrawImage,
-  knockout: knockoutImage,
-} as const;
-
+import './UnoPresentation.css';
 export function UnoCinematicOverlay({ event, players, reactionInputs = [], preference = 'lively' }: {
   event: UnoFullScreenCinematicEvent | null;
   players?: UnoPlayer[];
@@ -25,9 +15,11 @@ export function UnoCinematicOverlay({ event, players, reactionInputs = [], prefe
   const scene = event.kind === 'draw-counter' ? 'attack' : event.kind === 'forced-draw' ? 'pressure' : 'defeat';
   const matchingKind = event.kind === 'draw-counter' ? 'uno-draw-counter'
     : event.kind === 'forced-draw' ? 'uno-forced-draw' : 'uno-knockout';
-  const matchingReaction = reactionInputs.find(input => input.cpu.id === event.playerId && input.kind === matchingKind);
+  const matchingReaction = reactionInputs.find(input => input.presenter !== 'narrator' && input.cpu.id === event.playerId && input.kind === matchingKind);
   const actedScene = matchingReaction ? decideDragonReaction(matchingReaction).cutIn : undefined;
-  const image = (preference === 'off' ? undefined : selectDragonCutinImage(actor, actedScene ?? scene, 'uno')) ?? IMAGE_BY_KIND[event.kind];
+  const variant = event.kind === 'draw-counter'
+    ? event.addedCount === 2 ? 'counter-draw2' : 'counter'
+    : event.kind === 'forced-draw' ? 'draw-rain' : 'knockout-pile';
   const isCounter = event.kind === 'draw-counter';
   const isForcedDraw = event.kind === 'forced-draw';
   const eyebrow = isCounter
@@ -51,13 +43,14 @@ export function UnoCinematicOverlay({ event, players, reactionInputs = [], prefe
       key={event.key}
       className={`uno-cinematic-overlay is-${event.kind}`}
       style={({ '--uno-cinematic-duration': `${getUnoCinematicDuration(event)}ms` } as CSSProperties)}
+      data-preference={preference}
       role="status"
       aria-live="assertive"
       aria-atomic="true"
     >
       <div className="uno-cinematic-side-lines" aria-hidden="true" />
       <div className="uno-cinematic-panel">
-        <img src={image} alt="" className="uno-cinematic-image" />
+        <GameCutinArt game="uno" actor={actor} scene={actedScene ?? scene} variant={variant} preference={preference} className="uno-cinematic-image" />
         <div className="uno-cinematic-shade" aria-hidden="true" />
         <div className="uno-cinematic-copy is-top">
           <span>{eyebrow}</span>

@@ -1,0 +1,101 @@
+{
+  "environment": {
+    "url": "http://127.0.0.1:5178",
+    "browser": "Edge headless",
+    "hostViewport": "390x844",
+    "guestViewport": "900x700",
+    "connection": "Live existing Supabase via app UI. No seeded payload or private API writes."
+  },
+  "check": {
+    "game": "マンカラ",
+    "passed": true,
+    "moves": [
+      {
+        "pit": "p1-pit-4",
+        "boardEqual": true
+      },
+      {
+        "pit": "p2-pit-0",
+        "boardEqual": true
+      },
+      {
+        "pit": "p1-pit-0",
+        "boardEqual": true
+      }
+    ],
+    "publicFacts": [
+      "7石を捕獲",
+      "7石を捕獲"
+    ],
+    "noCpuSeats": true,
+    "publicEvents": [
+      [
+        {
+          "selector": ".dragon-reaction-narration",
+          "text": "ゲーム案内DGP QA Hが4石を配った",
+          "time": 22855.099999999627
+        },
+        {
+          "selector": ".dragon-reaction-narration",
+          "text": "ゲーム案内DGP QA Gが5石を配った",
+          "time": 26832.099999999627
+        },
+        {
+          "selector": ".dragon-reaction-narration",
+          "text": "ゲーム案内7石を捕獲",
+          "time": 30901.299999999814
+        },
+        {
+          "selector": ".mancala-capture-moment",
+          "text": "7石を捕獲",
+          "time": 30917.799999999814
+        },
+        {
+          "selector": ".dragon-reaction-narration",
+          "text": "ゲーム案内7石を捕獲",
+          "time": 31636.099999999627
+        }
+      ],
+      [
+        {
+          "selector": ".dragon-reaction-narration",
+          "text": "ゲーム案内DGP QA Hが4石を配った",
+          "time": 5711.899999999907
+        },
+        {
+          "selector": ".dragon-reaction-narration",
+          "text": "ゲーム案内DGP QA Gが5石を配った",
+          "time": 8600.700000000186
+        },
+        {
+          "selector": ".dragon-reaction-narration",
+          "text": "ゲーム案内7石を捕獲",
+          "time": 13653.399999999907
+        },
+        {
+          "selector": ".mancala-capture-moment",
+          "text": "7石を捕獲",
+          "time": 13685.200000000186
+        },
+        {
+          "selector": ".dragon-reaction-narration",
+          "text": "ゲーム案内7石を捕獲",
+          "time": 14389.200000000186
+        }
+      ]
+    ],
+    "exits": {
+      "host": {
+        "exited": true
+      },
+      "guest": {
+        "exited": true
+      }
+    }
+  },
+  "room": {
+    "game": "マンカラ",
+    "roomCode": "YXHMMV"
+  },
+  "errors": []
+}

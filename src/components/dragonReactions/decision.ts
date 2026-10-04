@@ -1,3 +1,4 @@
+import { eventSpecificSpeech } from './speech';
 import type {
   DragonEmotion,
   DragonLevel,
@@ -98,9 +99,10 @@ function pick<T>(choices: readonly T[], seed: string): T {
 
 export function decideDragonReaction(input: PublicDragonReactionInput): DragonReactionEvent {
   const key = dragonReactionKey(input);
+  const presenter = input.presenter ?? 'cpu';
   const terminal = input.outcome === 'victory' || input.outcome === 'defeat';
   const bluffEligible = input.outcome === 'advantage' || input.outcome === 'disadvantage';
-  const acting = !terminal && bluffEligible && hash32(`${key}|bluff`) % 100 < DRAGON_BLUFF_PERCENT[input.cpu.level]
+  const acting = presenter === 'cpu' && !terminal && bluffEligible && hash32(`${key}|bluff`) % 100 < DRAGON_BLUFF_PERCENT[input.cpu.level]
     ? 'bluff' as const
     : 'sincere' as const;
   const lines = LINES[input.cpu.level];
@@ -134,7 +136,7 @@ export function decideDragonReaction(input: PublicDragonReactionInput): DragonRe
 
   const firstStage: DragonReactionStage = {
     emotion: pick(emotionChoices, `${key}|emotion`),
-    speech: pick(speechChoices, `${key}|speech`),
+    speech: presenter === 'narrator' ? input.factLabel : eventSpecificSpeech(input.kind, input.cpu.level, input.outcome, acting) ?? pick(speechChoices, `${key}|speech`),
   };
   const needsTearfulSecondStage = acting === 'bluff'
     && input.outcome === 'disadvantage'
@@ -156,6 +158,7 @@ export function decideDragonReaction(input: PublicDragonReactionInput): DragonRe
     sequence: input.sequence,
     kind: input.kind,
     cpu: input.cpu,
+    presenter,
     outcome: input.outcome,
     factLabel: input.factLabel,
     acting,

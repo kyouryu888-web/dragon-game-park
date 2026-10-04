@@ -8,10 +8,12 @@ import { Layout } from '../../components/Layout';
 import { Button } from '../../components/Button';
 import { MancalaBoard, PLANK_POSITIONS } from './MancalaBoard';
 import type { PlankSlideEntry } from './MancalaBoard';
-import { useDragonReactionPreference, useDragonReactions } from '../../components/dragonReactions';
+import { DragonReactionNarration, useDragonReactionPreference, useDragonReactions } from '../../components/dragonReactions';
 import type { PublicDragonReactionInput } from '../../components/dragonReactions';
 import { MancalaDragonPortrait } from './MancalaDragonPortrait';
 import { detectMancalaDragonReactions } from './mancalaDragonReactions';
+import type { CompletedMancalaPlayback } from './mancalaDragonReactions';
+import { MancalaCaptureMoment, useMancalaCaptureMoment } from './MancalaCaptureMoment';
 import { DragonPresentationControl } from '../../components/DragonPresentationControl';
 import { DragonResultArtwork } from '../../components/DragonResultArtwork';
 import { PLAYER_ACCENT_COLORS } from './MancalaPit';
@@ -138,18 +140,24 @@ export function MancalaOnlineGamePage({
   gameStateRef.current = gameState;
   const { preference } = useDragonReactionPreference();
   const previousReactionState = useRef<GameState | null>(null);
+  const completedReactionPlayback = useRef<CompletedMancalaPlayback | undefined>(undefined);
+  const playbackPitRef = useRef<string | null>(null);
   const [dragonInputs, setDragonInputs] = useState<PublicDragonReactionInput[]>([]);
   useEffect(() => {
     const previous = previousReactionState.current;
     previousReactionState.current = gameState;
     if (!previous || !gameState) return;
-    const events = detectMancalaDragonReactions(previous, gameState);
+    const events = detectMancalaDragonReactions(previous, gameState, completedReactionPlayback.current);
+    completedReactionPlayback.current = undefined;
     if (events.length) setDragonInputs(events);
     else if (previous.gameId !== gameState.gameId) setDragonInputs([]);
   }, [gameState]);
   const { active: dragonReaction } = useDragonReactions({
     matchId: gameState?.gameId ?? roomCode, events: dragonInputs, preference,
   });
+
+  const captureMoment = useMancalaCaptureMoment(dragonReaction, preference);
+  const wipeReaction = captureMoment ? null : dragonReaction;
 
   // ── 石アニメーション ──
   const [animSteps,     setAnimSteps]     = useState<GameState[]>([]);
@@ -244,6 +252,7 @@ export function MancalaOnlineGamePage({
           setTimeout(() => setShowExtraTurn(false), 1700);
         }
         pendingFinalStateRef.current = gs;
+        playbackPitRef.current = gs.lastMovePitId;
         setCaptureAnimInfo(ci ?? null);
         setCapturePhase(null);
         setAnimSteps(steps);
@@ -454,6 +463,7 @@ export function MancalaOnlineGamePage({
     }
 
     pendingFinalStateRef.current = finalState;
+    playbackPitRef.current = pitId;
     setCaptureAnimInfo(ci ?? null);
     setCapturePhase(null);
     setAnimSteps(steps);
@@ -476,6 +486,8 @@ export function MancalaOnlineGamePage({
         return;
       }
       if (pendingFinalStateRef.current) {
+        completedReactionPlayback.current = playbackPitRef.current ? { pitId: playbackPitRef.current, captureCompleted: false } : undefined;
+        playbackPitRef.current = null;
         setGameState(pendingFinalStateRef.current);
         pendingFinalStateRef.current = null;
       }
@@ -500,6 +512,8 @@ export function MancalaOnlineGamePage({
         setCapturePhase('to-store');
       } else {
         if (pendingFinalStateRef.current) {
+          completedReactionPlayback.current = playbackPitRef.current ? { pitId: playbackPitRef.current, captureCompleted: true } : undefined;
+          playbackPitRef.current = null;
           setGameState(pendingFinalStateRef.current);
           pendingFinalStateRef.current = null;
         }
@@ -771,6 +785,8 @@ export function MancalaOnlineGamePage({
 
   return (
     <Layout>
+      <MancalaCaptureMoment event={captureMoment} preference={preference} />
+      <DragonReactionNarration event={wipeReaction} preference={preference} className="mancala-game-narration" />
       {/* ヘッダー */}
       <div style={{ position: 'relative', textAlign: 'center', marginBottom: 8 }}>
         <DragonPresentationControl />
@@ -835,7 +851,7 @@ export function MancalaOnlineGamePage({
           padding: '3px 8px', marginBottom: 2,
         }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 'bold', color: PLAYER_ACCENT_COLORS[topPlayerIdx] }}>
-            <MancalaDragonPortrait player={topPlayer} reaction={dragonReaction} preference={preference} side="right" />
+            <MancalaDragonPortrait player={topPlayer} reaction={wipeReaction} preference={preference} side="right" />
             {topPlayer.name}{topId === myPlayerId ? '（あなた）' : '（相手）'}
           </div>
           <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
@@ -871,7 +887,7 @@ export function MancalaOnlineGamePage({
           padding: '3px 8px', marginTop: 2,
         }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 'bold', color: PLAYER_ACCENT_COLORS[bottomPlayerIdx] }}>
-            <MancalaDragonPortrait player={bottomPlayer} reaction={dragonReaction} preference={preference} />
+            <MancalaDragonPortrait player={bottomPlayer} reaction={wipeReaction} preference={preference} />
             {bottomPlayer.name}{bottomId === myPlayerId ? '（あなた）' : '（相手）'}
           </div>
           <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
@@ -885,7 +901,7 @@ export function MancalaOnlineGamePage({
         <div style={{ textAlign: 'center', marginTop: 8, fontSize: 12, color: 'var(--text-muted)' }}>
           🌐 対戦相手：{opponents.map(p => (
             <div key={p.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 3, marginRight: 7 }}>
-              <MancalaDragonPortrait player={p} reaction={dragonReaction} preference={preference} speechPlacement="left" />
+              <MancalaDragonPortrait player={p} reaction={wipeReaction} preference={preference} speechPlacement="left" />
               {p.name}
             </div>
           ))}

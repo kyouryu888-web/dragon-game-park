@@ -1,0 +1,33 @@
+{
+  "id": "babanuki-lv1",
+  "game": "babanuki",
+  "lv": 1,
+  "prompt": "Use case: identity-preserve production game illustration, family-friendly Dragon Game Park. One finished portrait3:4 with FULL painted background, no alpha.\nReference1 EXACT required identity: cyan/turquoise BABY dragon, mint horns/spikes/wing membranes/belly, large GREEN eyes, round young face, small cute build; no accessories. Keep age/face/proportions/permanent ornaments strictly; ignore invisible-alpha RGB bars in its background.\nReference2 APPROVED staging/style/game props. Replace its silver dragon ONLY with reference1 identity; don't inherit collar/crown/halo unless reference1 requires it.\nScene: BABANUKI SHUFFLE TIME dice3 central mixing: playful mischievous dragon spreads BOTH claws as shuffling conductor. Identical deep PURPLE card BACKS gather into luminous central vortex and fan outward, gold/violet trails, midnight-plum castle theatre. ALL card backs identical stripe+gold-border+dragon crest. NO face card, Joker, suits, ranks, marked card, dice, source/destination route or hidden exchange cues.\nMANDATORY framing: entire wing-to-wing dragon silhouette spans MAXIMUM78 percent canvas width, centered, with painted scenery visible beyond BOTH complete wing tips. All claws/horns/crown/halo COMPLETE,10percent top margin and8percent sides. Make body smaller than reference2 if necessary. Do not reuse cropped wings of reference2. Face upper-middle, props substantial sides/lower middle. Top12percent andbottom13percent DARK lowdetail breathing zones for HTML titles. Preserve rich sweeping action/depth while keeping face clear at phone size.\nPolished Japanese anime game splash, clean dark outlines, crisp cel shading, glossy scales, excellent expressive anatomy. ONE dragon. No captions/title/UI/speech/watermark/frame. No wrong level identity, missing ornaments, extra limbs/fingers, bright face clutter, photorealism or flat clipart.",
+  "refs": [
+    "C:\\Users\\ray-0\\.codex\\worktrees\\dragon-presentation-v2\\Dragon-game-park\\src\\assets\\dragons\\cutins\\master\\lv1\\attack.webp",
+    "C:\\Users\\ray-0\\.codex\\worktrees\\dragon-presentation-v2\\Dragon-game-park\\docs\\design\\dragons\\presentation-v2\\2026-10-04\\images\\babanuki-shuffle-lv3-v1.png"
+  ],
+  "runtime": "src/assets/dragons/presentation-v2/scenes/babanuki/lv1-shuffle.webp",
+  "source": "image_gen",
+  "rawOutput": "C:\\Users\\ray-0\\.codex\\generated_images\\01a0dd3a-cda2-7c01-8062-5164f1cd85d5\\exec-e5734a91-fd07-4fd4-9843-34e84867292f.png",
+  "original": "docs/design/dragons/presentation-v2/2026-10-04/production-art/originals/scenes/babanuki-lv1.png",
+  "originalSha256": "339ae9a810ef1c982a0b2735b8dfc7ac6c854fbc530d58c0c96ab5cafc55b08b",
+  "runtimeSha256": "4b21bdbbf41218481a3afbd01292b8199e0d5c595c4699426ea281c757573890",
+  "dimensions": [
+    720,
+    960
+  ],
+  "bytes": 207662,
+  "references": [
+    {
+      "path": "src/assets/dragons/cutins/master/lv1/attack.webp",
+      "sha256": "0c016f438cdbd9e6832a7f84444b58becc0f0c240f413039748dd489a9529c7c"
+    },
+    {
+      "path": "docs/design/dragons/presentation-v2/2026-10-04/images/babanuki-shuffle-lv3-v1.png",
+      "sha256": "6a41c35d6df922919c124c471c5f01479bffad1c7d84278294723cae81808438"
+    }
+  ],
+  "conversion": "resize inside 720x960, no crop, WebP quality88; no semantic editing",
+  "generatedAt": "2026-10-04T08:03:56.860Z"
+}

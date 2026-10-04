@@ -1,4 +1,5 @@
 import { selectDragonCutinImage } from '../../assets/dragons/cutins/selectCutinImage';
+import { publicReactionPresenter } from '../../components/dragonReactions';
 import type { DragonCpu, PublicDragonReactionInput } from '../../components/dragonReactions';
 import { isCornerMove } from './reversiRules';
 import type { DiscColor, ReversiGameState, ReversiPlayer } from './reversiTypes';
@@ -25,7 +26,12 @@ function reaction(
   cutIn?: PublicDragonReactionInput['cutIn'],
 ): PublicDragonReactionInput | null {
   const cpu = reversiDragonCpu(state.players[color]);
-  return cpu ? { matchId: state.gameId, sequence, kind, cpu, outcome, factLabel, priority, severity, cutIn } : null;
+  if (cpu) return { matchId: state.gameId, sequence, kind, cpu, outcome, factLabel, priority, severity, cutIn };
+  // Human seats keep their identity; one separate mascot narrates the public action.
+  if (Object.values(state.players).some(player => player.isCpu)) return null;
+  return { matchId: state.gameId, sequence, kind,
+    ...publicReactionPresenter({ id: color, name: state.players[color].name, isCpu: false }),
+    outcome: 'neutral', factLabel, priority, severity, cutIn };
 }
 
 /** Only revealed board changes and the public winner enter the cosmetic decision layer. */
@@ -42,6 +48,7 @@ export function detectReversiDragonReactions(
 
   if (next.status === 'finished') {
     for (const color of ['black', 'white'] as const) {
+      if (!Object.values(next.players).some(player => player.isCpu) && color !== actor) continue;
       const outcome = next.winner === 'draw' ? 'neutral' : next.winner === color ? 'victory' : 'defeat';
       add(reaction(next, color, sequence + 9, 'result', outcome,
         next.winner === 'draw' ? '引き分け' : `${next.players[next.winner!].name}の勝利`, 4,
@@ -50,27 +57,33 @@ export function detectReversiDragonReactions(
     return events;
   }
 
-  if (next.lastFlipCount >= 3) {
+  if (next.lastFlipCount >= 2) {
     const count = next.lastFlipCount;
     const fact = `${previous.players[actor].name}が${count}枚反転`;
     const major = count >= 6;
     add(reaction(next, actor, sequence + 1, 'large-flip', 'advantage', fact, major ? 3 : 1,
       major ? 'major' : 'normal', count >= 5 ? 'attack' : undefined));
-    add(reaction(next, opponent, sequence + 1, 'large-flip', 'disadvantage', fact, major ? 3 : 1,
-      major ? 'major' : 'normal', count >= 5 ? 'pressure' : undefined));
+    if (Object.values(next.players).some(player => player.isCpu)) {
+      add(reaction(next, opponent, sequence + 1, 'large-flip', 'disadvantage', fact, major ? 3 : 1,
+        major ? 'major' : 'normal', count >= 5 ? 'pressure' : undefined));
+    }
   }
 
   if (isCornerMove(next.lastMove)) {
     const fact = `${previous.players[actor].name}が角を獲得`;
     add(reaction(next, actor, sequence + 2, 'corner', 'advantage', fact, 3, 'major', 'attack'));
-    add(reaction(next, opponent, sequence + 2, 'corner', 'disadvantage', fact, 3, 'major', 'pressure'));
+    if (Object.values(next.players).some(player => player.isCpu)) {
+      add(reaction(next, opponent, sequence + 2, 'corner', 'disadvantage', fact, 3, 'major', 'pressure'));
+    }
   }
 
   if (next.passedColor) {
     const passed = next.passedColor;
     const fact = `${next.players[passed].name}がパス`;
     add(reaction(next, passed, sequence + 3, 'pass', 'disadvantage', fact, 2));
-    add(reaction(next, opposite(passed), sequence + 3, 'pass', 'advantage', fact, 2));
+    if (Object.values(next.players).some(player => player.isCpu)) {
+      add(reaction(next, opposite(passed), sequence + 3, 'pass', 'advantage', fact, 2));
+    }
   }
   return events;
 }
@@ -88,4 +101,14 @@ export function reversiCinematicImage(
   if (actor.isCpu) return selectDragonCutinImage(actor, 'attack', 'landscape');
   const opponent = previous.players[opposite(actor.color)];
   return opponent.isCpu ? selectDragonCutinImage(opponent, 'pressure', 'landscape') : undefined;
+}
+
+export function reversiCinematicPresentation(previous: ReversiGameState, next: ReversiGameState) {
+  const actor = previous.players[next.lastMoveColor ?? previous.currentColor];
+  const cpu = Object.values(previous.players).find(player => player.isCpu);
+  if (next.status === 'finished') {
+    return { artActor: cpu, artScene: next.winner === 'draw' ? 'attack' as const
+      : cpu && next.winner !== cpu.color ? 'defeat' as const : 'victory' as const };
+  }
+  return { artActor: cpu ?? actor, artScene: cpu && cpu.color !== actor.color ? 'pressure' as const : 'attack' as const };
 }

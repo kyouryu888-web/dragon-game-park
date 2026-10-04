@@ -1,0 +1,424 @@
+{
+  "game": "uno",
+  "actions": [
+    {
+      "step": 1,
+      "side": "uno-host",
+      "kind": "played ドロー4",
+      "elapsedMs": 13371
+    },
+    {
+      "step": 2,
+      "side": "uno-guest",
+      "kind": "played ワイルド ドロー4",
+      "elapsedMs": 14907
+    },
+    {
+      "step": 7,
+      "side": "uno-guest",
+      "kind": "public-color-blue",
+      "elapsedMs": 19094
+    },
+    {
+      "step": 8,
+      "side": "uno-guest",
+      "kind": "public-color-blue",
+      "elapsedMs": 20112
+    },
+    {
+      "step": 9,
+      "side": "uno-guest",
+      "kind": "public-color-blue",
+      "elapsedMs": 21116
+    },
+    {
+      "step": 12,
+      "side": "uno-host",
+      "kind": "draw-or-accept",
+      "elapsedMs": 24375
+    },
+    {
+      "step": 13,
+      "side": "uno-guest",
+      "kind": "played ドロー2",
+      "elapsedMs": 33788
+    },
+    {
+      "step": 14,
+      "side": "uno-host",
+      "kind": "draw-or-accept",
+      "elapsedMs": 34878
+    },
+    {
+      "step": 18,
+      "side": "uno-guest",
+      "kind": "draw-or-accept",
+      "elapsedMs": 38697
+    },
+    {
+      "step": 19,
+      "side": "uno-host",
+      "kind": "played ドロー2",
+      "elapsedMs": 39812
+    },
+    {
+      "step": 20,
+      "side": "uno-guest",
+      "kind": "draw-or-accept",
+      "elapsedMs": 41044
+    },
+    {
+      "step": 24,
+      "side": "uno-host",
+      "kind": "played リバース",
+      "elapsedMs": 44811
+    },
+    {
+      "step": 25,
+      "side": "uno-host",
+      "kind": "played リバース",
+      "elapsedMs": 45943
+    },
+    {
+      "step": 26,
+      "side": "uno-host",
+      "kind": "played みんなスキップ",
+      "elapsedMs": 47074
+    },
+    {
+      "step": 27,
+      "side": "uno-host",
+      "kind": "public-color-blue",
+      "elapsedMs": 48086
+    },
+    {
+      "step": 28,
+      "side": "uno-host",
+      "kind": "played 3",
+      "elapsedMs": 49210
+    },
+    {
+      "step": 32,
+      "side": "uno-guest",
+      "kind": "draw-or-accept",
+      "elapsedMs": 52526
+    },
+    {
+      "step": 33,
+      "side": "uno-host",
+      "kind": "played 4",
+      "elapsedMs": 53704
+    },
+    {
+      "step": 34,
+      "side": "uno-guest",
+      "kind": "played 4",
+      "elapsedMs": 54855
+    },
+    {
+      "step": 35,
+      "side": "uno-host",
+      "kind": "played 0",
+      "elapsedMs": 55908
+    },
+    {
+      "step": 37,
+      "side": "uno-guest",
+      "kind": "played 2",
+      "elapsedMs": 57803
+    },
+    {
+      "step": 38,
+      "side": "uno-host",
+      "kind": "played ドロー2",
+      "elapsedMs": 59085
+    },
+    {
+      "step": 39,
+      "side": "uno-guest",
+      "kind": "draw-or-accept",
+      "elapsedMs": 60271
+    },
+    {
+      "step": 43,
+      "side": "uno-host",
+      "kind": "played 6",
+      "elapsedMs": 63886
+    },
+    {
+      "step": 44,
+      "side": "uno-guest",
+      "kind": "played ぜんぶすてる",
+      "elapsedMs": 65067
+    },
+    {
+      "step": 45,
+      "side": "uno-host",
+      "kind": "played 7",
+      "elapsedMs": 66152
+    },
+    {
+      "step": 46,
+      "side": "uno-host",
+      "kind": "public-hand-swap",
+      "elapsedMs": 67170
+    },
+    {
+      "step": 47,
+      "side": "uno-guest",
+      "kind": "draw-or-accept",
+      "elapsedMs": 68422
+    },
+    {
+      "step": 48,
+      "side": "uno-host",
+      "kind": "played 7",
+      "elapsedMs": 69531
+    },
+    {
+      "step": 49,
+      "side": "uno-host",
+      "kind": "public-hand-swap",
+      "elapsedMs": 70619
+    },
+    {
+      "step": 50,
+      "side": "uno-guest",
+      "kind": "played 1",
+      "elapsedMs": 71896
+    },
+    {
+      "step": 51,
+      "side": "uno-host",
+      "kind": "played リバース",
+      "elapsedMs": 73294
+    },
+    {
+      "step": 52,
+      "side": "uno-host",
+      "kind": "played 5",
+      "elapsedMs": 74358
+    },
+    {
+      "step": 53,
+      "side": "uno-guest",
+      "kind": "played 2",
+      "elapsedMs": 75521
+    },
+    {
+      "step": 54,
+      "side": "uno-host",
+      "kind": "draw-or-accept",
+      "elapsedMs": 76942
+    },
+    {
+      "step": 55,
+      "side": "uno-host",
+      "kind": "played ワイルド",
+      "elapsedMs": 78326
+    },
+    {
+      "step": 56,
+      "side": "uno-host",
+      "kind": "public-color-blue",
+      "elapsedMs": 79549
+    },
+    {
+      "step": 57,
+      "side": "uno-guest",
+      "kind": "played 1",
+      "elapsedMs": 80714
+    },
+    {
+      "step": 58,
+      "side": "uno-host",
+      "kind": "played 1",
+      "elapsedMs": 81816
+    },
+    {
+      "step": 65,
+      "side": "uno-guest",
+      "kind": "played 9",
+      "elapsedMs": 87412
+    },
+    {
+      "step": 66,
+      "side": "uno-host",
+      "kind": "played 4",
+      "elapsedMs": 88533
+    },
+    {
+      "step": 67,
+      "side": "uno-guest",
+      "kind": "played カラー ルーレット",
+      "elapsedMs": 89837
+    },
+    {
+      "step": 68,
+      "side": "uno-guest",
+      "kind": "public-color-blue",
+      "elapsedMs": 91149
+    },
+    {
+      "step": 86,
+      "side": "uno-guest",
+      "kind": "played ぜんぶすてる",
+      "elapsedMs": 106344
+    },
+    {
+      "step": 87,
+      "side": "uno-host",
+      "kind": "played ワイルド ドロー4",
+      "elapsedMs": 107411
+    },
+    {
+      "step": 88,
+      "side": "uno-host",
+      "kind": "public-color-blue",
+      "elapsedMs": 108422
+    },
+    {
+      "step": 89,
+      "side": "uno-guest",
+      "kind": "draw-or-accept",
+      "elapsedMs": 109536
+    }
+  ],
+  "privacyChecks": 156,
+  "synchronizedEvents": [
+    {
+      "presenter": "narrator",
+      "actor": null,
+      "emotion": "smug",
+      "text": "ゲーム案内\nリバース・順番が逆に",
+      "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"smug\",\"text\":\"ゲーム案内\\nリバース・順番が逆に\"}"
+    },
+    {
+      "presenter": "narrator",
+      "actor": null,
+      "emotion": "laughing",
+      "text": "ゲーム案内\nリバース・順番が逆に",
+      "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"laughing\",\"text\":\"ゲーム案内\\nリバース・順番が逆に\"}"
+    },
+    {
+      "presenter": "narrator",
+      "actor": null,
+      "emotion": "laughing",
+      "text": "ゲーム案内\n青に決定",
+      "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"laughing\",\"text\":\"ゲーム案内\\n青に決定\"}"
+    },
+    {
+      "presenter": "narrator",
+      "actor": null,
+      "emotion": "joy",
+      "text": "ゲーム案内\nリバース・順番が逆に",
+      "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"joy\",\"text\":\"ゲーム案内\\nリバース・順番が逆に\"}"
+    },
+    {
+      "presenter": "narrator",
+      "actor": null,
+      "emotion": "smug",
+      "text": "ゲーム案内\n青に決定",
+      "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"smug\",\"text\":\"ゲーム案内\\n青に決定\"}"
+    },
+    {
+      "presenter": "narrator",
+      "actor": null,
+      "emotion": "smug",
+      "text": "ゲーム案内\n残り3まい",
+      "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"smug\",\"text\":\"ゲーム案内\\n残り3まい\"}"
+    },
+    {
+      "presenter": "narrator",
+      "actor": null,
+      "emotion": "laughing",
+      "text": "ゲーム案内\n残り2まい",
+      "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"laughing\",\"text\":\"ゲーム案内\\n残り2まい\"}"
+    },
+    {
+      "presenter": "narrator",
+      "actor": null,
+      "emotion": "laughing",
+      "text": "ゲーム案内\n残り3まい",
+      "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"laughing\",\"text\":\"ゲーム案内\\n残り3まい\"}"
+    },
+    {
+      "presenter": "narrator",
+      "actor": null,
+      "emotion": "scared",
+      "text": "ゲーム案内\nルーレットで1まい引いた",
+      "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"scared\",\"text\":\"ゲーム案内\\nルーレットで1まい引いた\"}"
+    },
+    {
+      "presenter": "narrator",
+      "actor": null,
+      "emotion": "crying",
+      "text": "ゲーム案内\nルーレットで2まい引いた",
+      "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"crying\",\"text\":\"ゲーム案内\\nルーレットで2まい引いた\"}"
+    },
+    {
+      "presenter": "narrator",
+      "actor": null,
+      "emotion": "angry",
+      "text": "ゲーム案内\nルーレットで4まい引いた",
+      "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"angry\",\"text\":\"ゲーム案内\\nルーレットで4まい引いた\"}"
+    },
+    {
+      "presenter": "narrator",
+      "actor": null,
+      "emotion": "crying",
+      "text": "ゲーム案内\nルーレットで6まい引いた",
+      "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"crying\",\"text\":\"ゲーム案内\\nルーレットで6まい引いた\"}"
+    },
+    {
+      "presenter": "narrator",
+      "actor": null,
+      "emotion": "scared",
+      "text": "ゲーム案内\nルーレットで7まい引いた",
+      "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"scared\",\"text\":\"ゲーム案内\\nルーレットで7まい引いた\"}"
+    },
+    {
+      "presenter": "narrator",
+      "actor": null,
+      "emotion": "crying",
+      "text": "ゲーム案内\nルーレットで8まい引いた",
+      "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"crying\",\"text\":\"ゲーム案内\\nルーレットで8まい引いた\"}"
+    },
+    {
+      "presenter": "narrator",
+      "actor": null,
+      "emotion": "scared",
+      "text": "ゲーム案内\nルーレットで9まい引いた",
+      "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"scared\",\"text\":\"ゲーム案内\\nルーレットで9まい引いた\"}"
+    },
+    {
+      "presenter": "narrator",
+      "actor": null,
+      "emotion": "scared",
+      "text": "ゲーム案内\nルーレットで11まい引いた",
+      "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"scared\",\"text\":\"ゲーム案内\\nルーレットで11まい引いた\"}"
+    },
+    {
+      "presenter": "narrator",
+      "actor": null,
+      "emotion": "joy",
+      "text": "ゲーム案内\nルーレットが止まった・12まい",
+      "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"joy\",\"text\":\"ゲーム案内\\nルーレットが止まった・12まい\"}"
+    },
+    {
+      "presenter": "narrator",
+      "actor": null,
+      "emotion": "joy",
+      "text": "ゲーム案内\n残り2まい",
+      "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"joy\",\"text\":\"ゲーム案内\\n残り2まい\"}"
+    }
+  ],
+  "createdRoom": "FPVQ2A",
+  "reconnect": {
+    "networkOfflineMs": 1800,
+    "sameSessionParticipant": true,
+    "rejoinedRoom": "FPVQ2A",
+    "bootstrapReactions": [],
+    "restRequestDelayMs": 120
+  }
+}
