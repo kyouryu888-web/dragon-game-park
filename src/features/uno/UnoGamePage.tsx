@@ -27,6 +27,7 @@ import { UnoTableView } from './UnoTableView';
 import { getUnoRankings, type UnoRankingEntry } from './unoScoring';
 import { UnoCardView } from './UnoCardView';
 import { UnoCinematicOverlay } from './UnoCinematicOverlay';
+import { UnoPresentationPreload } from './UnoPresentationPreload';
 import { useUnoCinematics } from './useUnoCinematics';
 import { UNO_ROULETTE_STEP_MS } from './unoCinematics';
 import { useDragonReactionPreference, useDragonReactions, type PublicDragonReactionInput } from '../../components/dragonReactions';
@@ -253,6 +254,7 @@ export function UnoGamePage({ config, onBackToSetup, onBackToHome }: UnoGamePage
 
   return (
     <Layout>
+      <UnoPresentationPreload players={gameState.players} preference={dragonPreference} />
       <UnoCinematicOverlay event={cinematicEvent} players={gameState.players} reactionInputs={dragonInputs} preference={dragonPreference} />
       <div style={{ paddingTop: 'var(--game-page-pt)', paddingBottom: 'var(--game-page-pb)' }}>
         <div style={{ position: 'relative', textAlign: 'center', marginBottom: 12 }}>
@@ -303,7 +305,7 @@ export function UnoGamePage({ config, onBackToSetup, onBackToHome }: UnoGamePage
               canAct={canHumanAct}
               isCpuThinking={isCpuThinking}
               message={message}
-              dragonReaction={dragonReaction}
+              dragonReaction={cinematicEvent ? null : dragonReaction}
               dragonPreference={dragonPreference}
               roulettePresentation={roulettePresentation}
               pendingOverlay={gameState.status === 'deciding-starter' || gameState.status === 'starter-ready' ? (

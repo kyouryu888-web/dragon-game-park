@@ -47,7 +47,7 @@ describe('通常リバーシーのドラゴン演出', () => {
     expect(detectReversiDragonReactions(previous, { ...next, gameId: 'rematch' })).toEqual([]);
   });
 
-  it('人間同士の対戦にドラゴンを出さず、CPUレベルと画像を対応させる', () => {
+  it('CPUレベルと画像を対応させ、人間同士は別の中立案内役を使う', () => {
     const previous = state();
     expect(reversiDragonCpu(previous.players.black)).toMatchObject({ id: 'black', level: 4 });
     expect(reversiCinematicImage(previous, {
@@ -62,7 +62,21 @@ describe('通常リバーシーのドラゴン演出', () => {
       },
     };
     const next = { ...humans, turnCount: 1, lastMove: { row: 0, col: 0 }, lastMoveColor: 'black' as const, lastFlipCount: 6 };
-    expect(detectReversiDragonReactions(humans, next)).toEqual([]);
+    const narration = detectReversiDragonReactions(humans, next);
+    expect(narration).toMatchObject([
+      { kind: 'large-flip', presenter: 'narrator', outcome: 'neutral', cpu: { id: 'dragon-narrator:black', name: 'ゲーム案内' } },
+      { kind: 'corner', presenter: 'narrator', outcome: 'neutral' },
+    ]);
+    expect(narration.every(event => event.cpu.id !== humans.players.black.color)).toBe(true);
     expect(reversiCinematicImage(humans, next)).toBeUndefined();
   });
+});
+
+it('adds a brief neutral human wipe for a revealed two-disc flip', () => {
+  const previous = createInitialReversiState({ ...CONFIG, mode: 'online' }, () => 0.25);
+  const next = { ...previous, turnCount: 1, lastMove: { row: 2, col: 3 }, lastMoveColor: 'black' as const, lastFlipCount: 2 };
+  expect(detectReversiDragonReactions(previous, next)).toMatchObject([{
+    kind: 'large-flip', presenter: 'narrator', outcome: 'neutral', priority: 1,
+    factLabel: `${previous.players.black.name}が2枚反転`,
+  }]);
 });

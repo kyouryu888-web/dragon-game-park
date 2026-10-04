@@ -1,6 +1,6 @@
-import cornerCaptureImage from './assets/corner-capture.png';
-import grandFlipImage from './assets/grand-flip.png';
-import finaleImage from './assets/finale.png';
+import { GameCutinArt } from '../../components/dragonReactions';
+import type { DragonPresentationPreference } from '../../components/dragonReactions';
+import type { CutinActor, DragonCutinScene } from '../../assets/dragons/cutins/selectCutinImage';
 
 export type ReversiCinematicEvent = {
   key: string;
@@ -8,19 +8,15 @@ export type ReversiCinematicEvent = {
   title: string;
   detail: string;
   imageUrl?: string;
+  artActor?: CutinActor;
+  artScene?: DragonCutinScene;
 };
 
-const IMAGE_BY_KIND = {
-  corner: cornerCaptureImage,
-  'grand-flip': grandFlipImage,
-  finale: finaleImage,
-} satisfies Record<ReversiCinematicEvent['kind'], string>;
-
-export function ReversiCinematicOverlay({ event }: { event: ReversiCinematicEvent }) {
+export function ReversiCinematicOverlay({ event, preference = 'lively' }: { event: ReversiCinematicEvent; preference?: DragonPresentationPreference }) {
   return (
-    <div className={`reversi-cinematic is-${event.kind}`} role="status" aria-live="assertive">
+    <div className={`reversi-cinematic is-standard is-${event.kind}`} role="status" aria-live="assertive">
       <div className="reversi-cinematic-vignette" />
-      <img src={event.imageUrl ?? IMAGE_BY_KIND[event.kind]} alt="" aria-hidden="true" />
+      <GameCutinArt game="reversi" actor={event.artActor} scene={event.artScene ?? 'attack'} variant={event.kind} preference={preference} className="reversi-game-cutin-art" />
       <div className="reversi-cinematic-copy">
         <strong>{event.title}</strong>
         <span>{event.detail}</span>

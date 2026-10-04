@@ -9,6 +9,12 @@
 .reversi-dragon-desktop-face.is-black { left: 12px; }
 .reversi-dragon-desktop-face.is-white { right: 12px; }
 
+.reversi-game-cutin-art { width: min(100vw, 1500px); height: min(70vh, 840px); }
+.reversi-game-cutin-art img { animation: none; aspect-ratio: auto; }
+.reversi-cinematic.is-standard,
+.reversi-cinematic.is-standard .reversi-cinematic-copy { animation-duration: 1.9s; }
+.reversi-game-narration { position: fixed; left: 50%; bottom: max(18px, env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 120; pointer-events: none; }
+
 .reversi-game-tools select[aria-label="ドラゴン演出"] {
   position: static !important;
   width: 78px !important;

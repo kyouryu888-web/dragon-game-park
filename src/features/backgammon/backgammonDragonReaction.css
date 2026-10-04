@@ -53,3 +53,11 @@
   .backgammon-dragon-slot { width: 109px; }
   .backgammon-dragon-slot .dragon-reaction-speech { width: 64px; }
 }
+
+.backgammon-cube-art { position: absolute; inset: 0; }
+.backgammon-cube-art::after { content: ''; position: absolute; inset: 0; background: linear-gradient(transparent 45%, rgba(19,7,6,.85)); }
+.backgammon-hit-moment { position: absolute; top: 70px; right: 12px; width: min(44vw, 220px); height: min(30vw, 145px); z-index: 25; border: 1px solid #e0b060; border-radius: 12px; overflow: hidden; pointer-events: none; box-shadow: 0 3px 18px #0008; }
+.backgammon-hit-moment > .game-cutin-art { position: absolute; inset: 0; }
+.backgammon-hit-moment strong { position: absolute; left: 0; right: 0; bottom: 0; padding: 5px; background: #140a14d9; color: #fff2c7; text-align: center; font-size: 11px; }
+.backgammon-game-narration { top: 8px; right: 100px; }
+@media (max-width: 560px) { .backgammon-game-narration { top: 38px; right: 8px; } .backgammon-hit-moment { top: 84px; right: 8px; } }

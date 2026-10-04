@@ -52,13 +52,13 @@ export function BackgammonLocalGame({ config, showToast, onExitToSettings, onBac
   useEffect(() => {
     const previous = previousReactionState.current;
     previousReactionState.current = state;
-    if (!isCpuMode || previous === state) return;
+    if (previous === state) return;
     const sequence = reactionSequence.current + 1;
-    const found = detectBackgammonDragonReactions(previous, state, { matchId: reactionMatchId, sequence, cpu });
+    const found = detectBackgammonDragonReactions(previous, state, { matchId: reactionMatchId, sequence, cpu: isCpuMode ? cpu : undefined, names: { white: pName, black: cName } });
     if (!found.length) return;
     reactionSequence.current = sequence;
     setReactionEvents(events => [...events, ...found].slice(-16));
-  }, [state, isCpuMode, reactionMatchId, cpu]);
+  }, [state, isCpuMode, reactionMatchId, cpu, pName, cName]);
 
   const legalMoves = useMemo(
     () => (state.phase === 'moving' ? getLegalMoves(state) : []),
@@ -407,6 +407,7 @@ export function BackgammonLocalGame({ config, showToast, onExitToSettings, onBac
     <BackgammonPlayScreen
       state={state}
       cpuReaction={isCpuMode ? { cpu, event: dragonReaction, preference } : undefined}
+      publicReaction={{ event: dragonReaction, preference }}
       selectedFrom={effectiveSelected}
       destinations={isHumanTurn ? destinations : new Set()}
       chainDestinations={isHumanTurn ? chainDestinations : new Set()}

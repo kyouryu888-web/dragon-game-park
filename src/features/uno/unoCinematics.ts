@@ -104,7 +104,8 @@ export function detectUnoCinematicEvents(
   previous: UnoGameState,
   next: UnoGameState,
 ): UnoCinematicEvent[] {
-  if (previous.gameId !== next.gameId) return [];
+  if (previous.gameId !== next.gameId || previous.status !== 'playing'
+    || next.turnCount < previous.turnCount || next.turnCount > previous.turnCount + 1) return [];
 
   const newlyEliminated = next.players.filter((player) => {
     const before = getPlayer(previous, player.id);

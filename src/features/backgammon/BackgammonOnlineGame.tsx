@@ -10,6 +10,9 @@ import { chooseCpuMoveSequence } from './backgammonCpu';
 import { BackgammonPlayScreen } from './BackgammonPlayScreen';
 import { type BackgammonRoomInfo, type OnlinePayload, pushPayload, subscribeRoom } from './backgammonOnline';
 import { createInitialBackgammonState } from './createInitialBackgammonState';
+import { useDragonReactionPreference, useDragonReactions } from '../../components/dragonReactions';
+import type { PublicDragonReactionInput } from '../../components/dragonReactions';
+import { detectBackgammonDragonReactions } from './backgammonDragonReactions';
 
 type BackgammonOnlineGameProps = {
   room: BackgammonRoomInfo;
@@ -36,6 +39,29 @@ export function BackgammonOnlineGame({
   const hostName = payload.hostName || 'ルームの主';
   const guestName = payload.guestName || '挑戦者';
   const oppName = iAmHost ? guestName : hostName;
+  const { preference } = useDragonReactionPreference();
+  const [reactionEvents, setReactionEvents] = useState<PublicDragonReactionInput[]>([]);
+  const previousReactionPayload = useRef(initialPayload);
+  const { active: dragonReaction, clear: clearDragonReactions } = useDragonReactions({
+    matchId: `backgammon:${room.roomCode}`, events: reactionEvents, preference,
+  });
+  useEffect(() => {
+    const previous = previousReactionPayload.current;
+    previousReactionPayload.current = payload;
+    if (previous === payload) return;
+    if (previous.state.phase === 'finished' && state.phase === 'opening-roll') {
+      setReactionEvents([]);
+      clearDragonReactions();
+      return;
+    }
+    // Reconnect snapshots initialize the board without replaying missed actions.
+    if (payload.seq !== previous.seq + 1) return;
+    const found = detectBackgammonDragonReactions(previous.state, state, {
+      matchId: `backgammon:${room.roomCode}`, sequence: payload.seq,
+      names: { white: hostName, black: guestName },
+    });
+    if (found.length) setReactionEvents(events => [...events, ...found].slice(-16));
+  }, [payload, state, room.roomCode, hostName, guestName, clearDragonReactions]);
 
   // ---- 受信 ----
   useEffect(() => {
@@ -316,6 +342,7 @@ export function BackgammonOnlineGame({
   return (
     <BackgammonPlayScreen
       state={state}
+      publicReaction={{ event: dragonReaction, preference }}
       selectedFrom={isMyTurn ? effectiveSelected : null}
       destinations={isMyTurn ? destinations : new Set()}
       chainDestinations={isMyTurn ? chainDestinations : new Set()}

@@ -9,10 +9,12 @@ import { GameEndActions } from '../../components/GameEndActions';
 import { MancalaBoard, PLANK_POSITIONS } from './MancalaBoard';
 import type { PlankSlideEntry } from './MancalaBoard';
 import { PLAYER_ACCENT_COLORS } from './MancalaPit';
-import { useDragonReactionPreference, useDragonReactions } from '../../components/dragonReactions';
+import { DragonReactionNarration, useDragonReactionPreference, useDragonReactions } from '../../components/dragonReactions';
 import type { DragonPresentationPreference, DragonReactionEvent, PublicDragonReactionInput } from '../../components/dragonReactions';
 import { MancalaDragonPortrait } from './MancalaDragonPortrait';
 import { detectMancalaDragonReactions } from './mancalaDragonReactions';
+import type { CompletedMancalaPlayback } from './mancalaDragonReactions';
+import { MancalaCaptureMoment, useMancalaCaptureMoment } from './MancalaCaptureMoment';
 import { DragonPresentationControl } from '../../components/DragonPresentationControl';
 import { DragonResultArtwork } from '../../components/DragonResultArtwork';
 
@@ -219,17 +221,22 @@ export function MancalaGamePage({ config, onBackToSetup, onBackToHome }: Mancala
 
   const { preference } = useDragonReactionPreference();
   const previousReactionState = useRef<GameState>(gameState);
+  const completedReactionPlayback = useRef<CompletedMancalaPlayback | undefined>(undefined);
   const [dragonInputs, setDragonInputs] = useState<PublicDragonReactionInput[]>([]);
   useEffect(() => {
     const previous = previousReactionState.current;
     previousReactionState.current = gameState;
-    const events = detectMancalaDragonReactions(previous, gameState);
+    const events = detectMancalaDragonReactions(previous, gameState, completedReactionPlayback.current);
+    completedReactionPlayback.current = undefined;
     if (events.length) setDragonInputs(events);
     else if (previous.gameId !== gameState.gameId) setDragonInputs([]);
   }, [gameState]);
   const { active: dragonReaction } = useDragonReactions({
     matchId: gameState.gameId, events: dragonInputs, preference,
   });
+
+  const captureMoment = useMancalaCaptureMoment(dragonReaction, preference);
+  const wipeReaction = captureMoment ? null : dragonReaction;
 
   const isAnimating = animSteps.length > 0;
 
@@ -269,6 +276,7 @@ export function MancalaGamePage({ config, onBackToSetup, onBackToHome }: Mancala
         return;
       }
       if (pendingMove) {
+        completedReactionPlayback.current = { pitId: pendingMove, captureCompleted: false };
         setGameState(prev => applyMove(prev, pendingMove));
         setPendingMove(null);
       }
@@ -293,6 +301,7 @@ export function MancalaGamePage({ config, onBackToSetup, onBackToHome }: Mancala
         setCapturePhase('to-store');
       } else {
         if (pendingMove) {
+          completedReactionPlayback.current = { pitId: pendingMove, captureCompleted: true };
           setGameState(prev => applyMove(prev, pendingMove));
           setPendingMove(null);
         }
@@ -534,6 +543,8 @@ export function MancalaGamePage({ config, onBackToSetup, onBackToHome }: Mancala
 
   return (
     <Layout>
+      <MancalaCaptureMoment event={captureMoment} preference={preference} />
+      <DragonReactionNarration event={wipeReaction} preference={preference} className="mancala-game-narration" />
       <div style={{ paddingTop: 'var(--game-page-pt)', paddingBottom: 'var(--game-page-pb)' }}>
 
         {/* ヘッダー */}
@@ -564,7 +575,7 @@ export function MancalaGamePage({ config, onBackToSetup, onBackToHome }: Mancala
             isCurrentTurn={!isFinished && currentPlayerId === topPlayerId}
             side="top"
             colorIdx={topPlayerIdx}
-            reaction={dragonReaction}
+            reaction={wipeReaction}
             preference={preference}
           />
         )}
@@ -608,7 +619,7 @@ export function MancalaGamePage({ config, onBackToSetup, onBackToHome }: Mancala
             isCurrentTurn={!isFinished && currentPlayerId === bottomPlayerId}
             side="bottom"
             colorIdx={bottomPlayerIdx}
-            reaction={dragonReaction}
+            reaction={wipeReaction}
             preference={preference}
           />
         )}
@@ -635,7 +646,7 @@ export function MancalaGamePage({ config, onBackToSetup, onBackToHome }: Mancala
                   opacity: isActive ? 1 : 0.45,
                 }}>
                   {!isActive && <span style={{ fontSize: 9, color: '#999' }}>✗</span>}
-                  {player.isCpu && isActive && <MancalaDragonPortrait player={player} reaction={dragonReaction} preference={preference} />}
+                  {player.isCpu && isActive && <MancalaDragonPortrait player={player} reaction={wipeReaction} preference={preference} />}
                   {isCurrentTurn && <span style={{ fontSize: 9, color: colors.text }}>▶</span>}
                   <span style={{
                     fontSize: 11,

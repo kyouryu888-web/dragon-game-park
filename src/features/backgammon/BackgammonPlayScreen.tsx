@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { useCheckerIds } from './useCheckerIds';
 import { useEffect, useRef } from 'react';
 import type { CSSProperties } from 'react';
 import type { GameState, PlayerId } from './backgammonTypes';
 import { BG, Brand, ChevronLeft, DragonIcon } from './BackgammonUi';
 import { GameEndActions } from '../../components/GameEndActions';
-import { DragonReactionWipe } from '../../components/dragonReactions';
+import { DragonReactionWipe, DragonReactionNarration, GameCutinArt } from '../../components/dragonReactions';
 import type { DragonCpu, DragonPresentationPreference, DragonReactionEvent } from '../../components/dragonReactions';
 import { DragonPresentationControl } from '../../components/DragonPresentationControl';
 import { selectDragonCutinImage } from '../../assets/dragons/cutins/selectCutinImage';
@@ -54,6 +54,7 @@ type PlayerPlaqueInfo = {
 export type BackgammonPlayScreenProps = {
   state: GameState;
   cpuReaction?: { cpu: DragonCpu; event: DragonReactionEvent | null; preference: DragonPresentationPreference };
+  publicReaction?: { event: DragonReactionEvent | null; preference: DragonPresentationPreference };
   selectedFrom: 'bar' | number | null;
   destinations: Set<number>;
   /** サイコロ2個分を一度に動かす到達点（緋色マーカーで表示） */
@@ -116,6 +117,7 @@ function Checker({
 
 export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
   const { state } = props;
+  const reducedMotion = useReducedMotion();
   const prevState = usePrevious(state);
   const checkerIds = useCheckerIds(state);
 
@@ -123,11 +125,23 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
   const cpuActor = props.cpuReaction && props.cpuReaction.preference !== 'off'
     ? { isCpu: true, cpuLevel: props.cpuReaction.cpu.level } : undefined;
   const cutinScene = cutin === 'offer'
-    ? state.doubleOfferedBy === 'black' ? 'attack' : 'pressure'
+    ? !props.cpuReaction || state.doubleOfferedBy === 'black' ? 'attack' : 'pressure'
     : cutin === 'accept' ? 'attack'
-    : cutin === 'drop' ? state.winner === 'black' ? 'victory' : 'defeat'
+    : cutin === 'drop' ? !props.cpuReaction || state.winner === 'black' ? 'victory' : 'defeat'
     : undefined;
-  const cutinImage = cutinScene ? selectDragonCutinImage(cpuActor, cutinScene, 'landscape') : undefined;
+  const presentationPreference = props.publicReaction?.preference ?? props.cpuReaction?.preference ?? 'lively';
+  const activeReaction = props.publicReaction?.event ?? props.cpuReaction?.event ?? null;
+  const [timedHitMoment, setTimedHitMoment] = useState<DragonReactionEvent | null>(null);
+  useEffect(() => {
+    if (!activeReaction?.kind.includes('hit') || activeReaction.priority < 3 || presentationPreference === 'off') {
+      setTimedHitMoment(null);
+      return;
+    }
+    setTimedHitMoment(activeReaction);
+    const timer = window.setTimeout(() => setTimedHitMoment(null), 700);
+    return () => window.clearTimeout(timer);
+  }, [activeReaction, presentationPreference]);
+  const hitMoment = presentationPreference !== 'off' && timedHitMoment?.key === activeReaction?.key ? timedHitMoment : null;
   const resultImage = state.winner
     ? selectDragonCutinImage(cpuActor, state.winner === 'black' ? 'victory' : 'defeat', 'landscape')
     : undefined;
@@ -359,7 +373,7 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
           <div className="backgammon-dragon-slot">
             <DragonReactionWipe
               cpu={props.cpuReaction.cpu}
-              event={props.cpuReaction.event}
+              event={cutin || hitMoment ? null : props.cpuReaction.event}
               preference={props.cpuReaction.preference}
               side="left"
               style={{ '--dragon-face-size': '38px' } as CSSProperties}
@@ -450,7 +464,7 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
             position: 'absolute', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap', zIndex: 5, pointerEvents: 'none'
           }}>BACKGAMMON</div>
         <div className="backgammon-header-actions">
-          {props.cpuReaction && <div className="backgammon-reaction-control"><DragonPresentationControl /></div>}
+          {<div className="backgammon-reaction-control"><DragonPresentationControl /></div>}
           <button
             onClick={props.onBackToHome}
             style={{
@@ -671,6 +685,13 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
           </div>
         </div>
       )}
+      <DragonReactionNarration event={cutin || hitMoment ? null : activeReaction} preference={presentationPreference} className="backgammon-game-narration" />
+      {hitMoment && !cutin && (
+        <div key={hitMoment.key} className="backgammon-hit-moment" role="status">
+          <GameCutinArt game="backgammon" actor={cpuActor} scene={hitMoment.outcome === 'disadvantage' ? 'pressure' : 'attack'} variant="hit" preference={presentationPreference} />
+          <strong>{hitMoment.factLabel}</strong>
+        </div>
+      )}
       {/* Cinematic Cutins */}
       <AnimatePresence>
         {cutin && (
@@ -686,9 +707,9 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
             }}
           >
             <motion.div
-              initial={{ scale: 0.8, x: -100, rotate: -5, opacity: 0 }}
+              initial={reducedMotion ? { opacity: 0 } : { scale: 0.8, x: -100, rotate: -5, opacity: 0 }}
               animate={{ scale: 1, x: 0, rotate: 0, opacity: 1 }}
-              exit={{ scale: 1.1, x: 100, rotate: 5, opacity: 0 }}
+              exit={reducedMotion ? { opacity: 0 } : { scale: 1.1, x: 100, rotate: 5, opacity: 0 }}
               transition={{ type: 'spring', damping: 15, stiffness: 150 }}
               style={{
                 background: 'linear-gradient(135deg, rgba(200,150,50,0.9), rgba(100,20,10,0.9))',
@@ -697,11 +718,14 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
                 padding: '24px 48px',
                 boxShadow: '0 0 40px rgba(224,115,58,0.6)',
                 textAlign: 'center',
-                transformStyle: 'preserve-3d',
+                transformStyle: 'preserve-3d', position: 'relative', overflow: 'hidden',
+                minHeight: 'min(58vh, 360px)', width: 'min(92vw, 640px)', boxSizing: 'border-box',
+                display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
               }}
             >
-              {cutinImage && <img src={cutinImage} alt="" style={{ display: 'block', width: 'min(46vw, 180px)', height: 'min(27vh, 112px)', objectFit: 'contain', margin: '0 auto 8px' }} />}
+              {cutinScene && <GameCutinArt game="backgammon" actor={cpuActor} scene={cutinScene} variant="cube" preference={presentationPreference} className="backgammon-cube-art" />}
               <h2 style={{ 
+                position: 'relative', zIndex: 1,
                 fontSize: 'clamp(24px, 6vw, 36px)', 
                 margin: 0, 
                 color: '#fff', 
@@ -711,6 +735,7 @@ export function BackgammonPlayScreen(props: BackgammonPlayScreenProps) {
                 {cutin === 'offer' ? 'DOUBLE OFFERED!' : cutin === 'accept' ? 'DOUBLE ACCEPTED!!' : 'DOUBLE DROPPED...'}
               </h2>
               <p style={{ 
+                position: 'relative', zIndex: 1,
                 fontSize: 'clamp(12px, 3vw, 16px)', 
                 color: '#f0dfae', 
                 marginTop: 8,

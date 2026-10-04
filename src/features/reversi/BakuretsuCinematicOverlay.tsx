@@ -1,8 +1,6 @@
-import cornerCaptureImage from './assets/corner-capture.png';
-import finaleImage from './assets/finale.png';
-import specialBombImage from './assets/special-bomb.jpg';
-import specialShieldImage from './assets/special-shield.jpg';
-import specialInfectionImage from './assets/special-infection.jpg';
+import { GameCutinArt } from '../../components/dragonReactions';
+import type { DragonPresentationPreference } from '../../components/dragonReactions';
+import type { CutinActor, DragonCutinScene } from '../../assets/dragons/cutins/selectCutinImage';
 
 export type BakuretsuCinematicEvent = {
   key: string;
@@ -10,21 +8,15 @@ export type BakuretsuCinematicEvent = {
   title: string;
   detail: string;
   imageUrl?: string;
+  artActor?: CutinActor;
+  artScene?: DragonCutinScene;
 };
 
-const IMAGE_BY_KIND = {
-  corner: cornerCaptureImage,
-  finale: finaleImage,
-  bomb: specialBombImage,
-  shield: specialShieldImage,
-  infection: specialInfectionImage,
-} satisfies Record<BakuretsuCinematicEvent['kind'], string>;
-
-export function BakuretsuCinematicOverlay({ event }: { event: BakuretsuCinematicEvent }) {
+export function BakuretsuCinematicOverlay({ event, preference = 'lively' }: { event: BakuretsuCinematicEvent; preference?: DragonPresentationPreference }) {
   return (
     <div className={`reversi-cinematic is-${event.kind}`} role="status" aria-live="assertive">
       <div className="reversi-cinematic-vignette" />
-      <img src={event.imageUrl ?? IMAGE_BY_KIND[event.kind]} alt="" aria-hidden="true" />
+      <GameCutinArt game="bakuretsu-reversi" actor={event.artActor} scene={event.artScene ?? 'attack'} variant={event.kind} preference={preference} className="reversi-game-cutin-art" />
       <div className="reversi-cinematic-copy">
         <strong>{event.title}</strong>
         <span>{event.detail}</span>

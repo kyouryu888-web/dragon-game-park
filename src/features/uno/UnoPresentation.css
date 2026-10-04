@@ -1,0 +1,21 @@
+/* Keep the established card/table geometry and 2400 ms presentation window. */
+.uno-cinematic-panel .uno-cinematic-image.game-cutin-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.uno-cinematic-overlay[data-preference="subtle"] .uno-cinematic-flying-cards,
+.uno-cinematic-overlay[data-preference="off"] .uno-cinematic-flying-cards,
+.uno-cinematic-overlay[data-preference="subtle"] .uno-cinematic-side-lines,
+.uno-cinematic-overlay[data-preference="off"] .uno-cinematic-side-lines { display: none; }
+.uno-cinematic-overlay[data-preference="subtle"] .uno-cinematic-image,
+.uno-cinematic-overlay[data-preference="off"] .uno-cinematic-image,
+.uno-cinematic-overlay[data-preference="subtle"] .uno-cinematic-copy,
+.uno-cinematic-overlay[data-preference="off"] .uno-cinematic-copy { animation: none; }
+.uno-narration {
+  margin-right: auto;
+  max-width: calc(100% - 104px);
+}
+.uno-narration .dragon-narration-speech { max-width: min(160px, 38vw); }
+.uno-card-tools { position: relative; }

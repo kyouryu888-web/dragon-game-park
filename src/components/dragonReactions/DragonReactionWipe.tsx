@@ -22,7 +22,8 @@ export function DragonReactionWipe({
   className = '',
   style,
 }: DragonReactionWipeProps) {
-  const reaction = event?.cpu.id === cpu.id ? event : null;
+  const reaction = event?.presenter !== 'narrator' && event?.cpu.id === cpu.id
+    && (preference !== 'subtle' || event.priority >= 3) ? event : null;
   const reactionKey = reaction?.key;
   const hasSecondStage = (reaction?.stages.length ?? 0) > 1;
   const [stageState, setStageState] = useState<{ key: string; index: number }>({ key: '', index: 0 });
@@ -49,15 +50,17 @@ export function DragonReactionWipe({
       className={`dragon-reaction-wipe is-${side}${reaction ? ' is-reacting' : ''}${className ? ` ${className}` : ''}`}
       data-cpu-id={cpu.id}
       data-cpu-level={cpu.level}
+      data-emotion={emotion}
+      data-presenter="cpu"
       style={style}
       aria-label={`${cpu.name} Lv${cpu.level}${reaction ? `: ${stage?.speech ?? reaction.speech}` : ''}`}
     >
       {stage?.speech && (
-        <div className="dragon-reaction-speech" role="status" aria-live="polite">
+        <div key={`${reactionKey}:speech:${stageIndex}`} className="dragon-reaction-speech" role="status" aria-live="polite">
           {stage.speech}
         </div>
       )}
-      <div className="dragon-reaction-face">
+      <div key={`${reactionKey ?? "idle"}:face:${stageIndex}`} className="dragon-reaction-face">
         {imageFailed ? <span className="dragon-reaction-image-fallback">Lv{cpu.level}</span> : (
           <img src={imageUrl} alt="" onError={() => setFailedUrl(imageUrl)} />
         )}

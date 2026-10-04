@@ -1,4 +1,5 @@
 import { selectDragonCutinImage } from '../../assets/dragons/cutins/selectCutinImage';
+import { publicReactionPresenter } from '../../components/dragonReactions';
 import type { DragonCpu, PublicDragonReactionInput } from '../../components/dragonReactions';
 import type { BoardCell, GameState, PlayerId, Side } from './bakuretsu/types.ts';
 import type { BakuretsuPlaybackStep } from './bakuretsuPlayback';
@@ -38,25 +39,33 @@ function event(
   priority: PublicDragonReactionInput['priority'] = 3,
   cutIn?: PublicDragonReactionInput['cutIn'],
 ): PublicDragonReactionInput | null {
-  if (!context.cpu) return null;
+  const presenter = context.cpu ? { cpu: context.cpu, presenter: 'cpu' as const }
+    : publicReactionPresenter({ id: 'revealed-board', name: '公開盤面', isCpu: false });
   return {
     matchId: context.matchId,
     sequence: context.moveNo * 10_000 + context.stepIndex,
     kind,
-    cpu: context.cpu,
-    outcome,
+    ...presenter,
+    outcome: context.cpu ? outcome : 'neutral',
     factLabel,
     priority,
     severity: priority && priority >= 3 ? 'major' : 'normal',
-    cutIn,
+    cutIn: !context.cpu && kind === 'result' ? context.winner === 'NONE' ? undefined : 'victory' : cutIn,
   };
 }
 
 /** Called only when the exact playback frame is painted. No unrevealed chain result is examined. */
 export function detectBakuretsuDragonReactionForStep(context: PublicStepContext): PublicDragonReactionInput | null {
   const { step, beforeBoard, cpu } = context;
-  if (!cpu) return null;
-  const cpuSide = cpu.id as Side;
+  const cpuSide = (cpu?.id ?? 'BLACK') as Side;
+
+  if (step.phase === 'flipping' && step.activeIndices.length >= 2) {
+    const changed = step.activeIndices.filter(index => visibleOwner(beforeBoard[index]) !== visibleOwner(step.board[index])).length;
+    if (changed >= 2) {
+      const owner = effectOwner(step);
+      return event(context, 'flip', owner === cpuSide ? 'advantage' : 'disadvantage', `${changed}枚を反転`, 1);
+    }
+  }
 
   if (step.phase === 'placing' && step.cinematic === 'corner') {
     const owner = visibleOwner(step.board[step.placedIdx]);
