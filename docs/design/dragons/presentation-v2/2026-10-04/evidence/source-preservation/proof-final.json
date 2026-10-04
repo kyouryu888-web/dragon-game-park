@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-04",
+  "primaryHead": "b29972cbb56d544b231341f968920483dc41e6e1",
+  "originMain": "b29972cbb56d544b231341f968920483dc41e6e1",
+  "primaryTrackedStatusBefore": "M CLAUDE_HANDOFF_CURRENT.md",
+  "primaryUntrackedBefore": 798,
+  "handoffs": {
+    "primary": {
+      "root": "G:/マイドライブ/02_AI・開発・プロンプト/Dragon-game-park",
+      "backup": "docs/design/dragons/presentation-v2/2026-10-04/evidence/source-preservation/primary-handoff-before.md",
+      "beforeSha256": "ee70884f152fbe938e099ff8d23932374296974c2eb8cfef2a7b5cd395fd597f",
+      "beforeBytes": 106612,
+      "restorableBackup": "docs/design/dragons/presentation-v2/2026-10-04/evidence/source-preservation/primary-handoff-before.md.gz",
+      "backupGzipSha256": "c2b5d237aa536ca5017ce3feb69d98fa1523785a155949ea334045123ca25610",
+      "afterSha256": "f7b939668478e06604c7028a21f267b5320c90517438ec308df2dc735dda5019",
+      "prefixBytes": 3901,
+      "originalSuffixVerified": true
+    },
+    "implementation": {
+      "root": "C:\\Users\\ray-0\\.codex\\worktrees\\dragon-presentation-v2\\Dragon-game-park",
+      "backup": "docs/design/dragons/presentation-v2/2026-10-04/evidence/source-preservation/implementation-handoff-before.md",
+      "beforeSha256": "cd6f708b3e91acbe38b1a2f828869323066242329d3267ee4d3bd3aaff1a8c25",
+      "beforeBytes": 100723,
+      "restorableBackup": "docs/design/dragons/presentation-v2/2026-10-04/evidence/source-preservation/implementation-handoff-before.md.gz",
+      "backupGzipSha256": "7ea9d264d7f330eecee5d0e8230a5f70460585f2f0446caeeff77cb2f8f233df",
+      "afterSha256": "412368030fbc7b23557a54147e85e107c071dceefaea7a0708ba3ebab90b6123",
+      "prefixBytes": 3901,
+      "originalSuffixVerified": true
+    }
+  },
+  "primaryUntrackedAfter": 798,
+  "codeCommit": "41656173dd4b2c48c3eb2d48d49d4f32ba46a55a",
+  "lockPreservation": {
+    "original": ".git/packed-refs.lock",
+    "retained": ".git/packed-refs.lock.preserved-dragon-v2-20261004-025807",
+    "length": 0,
+    "originalWriteUtc": "2026-10-04T02:58:07.255Z",
+    "gitProcessesAtAudit": 0,
+    "emptySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

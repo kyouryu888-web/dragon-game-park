@@ -1,0 +1,2 @@
+*-handoff-before.md -text -diff
+*.gz -text -diff

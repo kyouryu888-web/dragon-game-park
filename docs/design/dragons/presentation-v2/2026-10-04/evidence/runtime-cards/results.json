@@ -1,0 +1,528 @@
+{
+  "date": "2026-10-04",
+  "browser": "Microsoft Edge via playwright-core",
+  "browserPath": "Browser plugin not available",
+  "base": "http://127.0.0.1:5178",
+  "viewports": [
+    {
+      "width": 375,
+      "height": 844
+    },
+    {
+      "width": 390,
+      "height": 844
+    },
+    {
+      "width": 900,
+      "height": 700
+    }
+  ],
+  "checks": [
+    {
+      "label": "real-uno-375x844",
+      "pageIdentity": {
+        "url": "http://127.0.0.1:5178/",
+        "title": "ドラゴンゲームパーク"
+      },
+      "nonBlank": true,
+      "frameworkOverlay": false,
+      "documentOverflow": {
+        "width": 375,
+        "scroll": 375
+      },
+      "brokenImages": []
+    },
+    {
+      "label": "real-babanuki-375x844",
+      "pageIdentity": {
+        "url": "http://127.0.0.1:5178/",
+        "title": "ドラゴンゲームパーク"
+      },
+      "nonBlank": true,
+      "frameworkOverlay": false,
+      "documentOverflow": {
+        "width": 375,
+        "scroll": 375
+      },
+      "brokenImages": []
+    },
+    {
+      "label": "real-controls-375x844",
+      "unoStarterAndHelp": true,
+      "babanukiDrawConfirmation": true,
+      "persistedPreferences": [
+        "off",
+        "subtle",
+        "lively"
+      ]
+    },
+    {
+      "label": "fixture-uno-narrator-375x844",
+      "pageIdentity": {
+        "url": "http://127.0.0.1:5178/docs/design/dragons/presentation-v2/2026-10-04/evidence/runtime-cards/fixture.html",
+        "title": "Card presentation public fixtures"
+      },
+      "nonBlank": true,
+      "frameworkOverlay": false,
+      "documentOverflow": {
+        "width": 375,
+        "scroll": 375
+      },
+      "brokenImages": []
+    },
+    {
+      "label": "narrator-face-fallback-375x844",
+      "failedPortraitPreservesMascotAndPublicFact": true
+    },
+    {
+      "label": "fixture-babanuki-narrator-375x844",
+      "pageIdentity": {
+        "url": "http://127.0.0.1:5178/docs/design/dragons/presentation-v2/2026-10-04/evidence/runtime-cards/fixture.html",
+        "title": "Card presentation public fixtures"
+      },
+      "nonBlank": true,
+      "frameworkOverlay": false,
+      "documentOverflow": {
+        "width": 375,
+        "scroll": 375
+      },
+      "brokenImages": []
+    },
+    {
+      "label": "cold-preload-375x844",
+      "coldCondition": "Fresh isolated browser context; scene not mounted before public dice-stage preload",
+      "scene": "/src/assets/dragons/presentation-v2/scenes/babanuki/lv3-shuffle.webp",
+      "timings": [
+        {
+          "initiator": "link",
+          "duration": 5,
+          "transferSize": 200638,
+          "encodedBodySize": 200338
+        }
+      ]
+    },
+    {
+      "label": "warm-fallback-375x844",
+      "warmCondition": "Same actor scene and fallback fetched by dice-stage preload before cutin mount; fixture waits load completion (real game dice stage is1700ms)",
+      "sceneErrorDispatched": true,
+      "fallbackBackdropAndCharacter": true,
+      "offLivelyHookOrderStable": true
+    },
+    {
+      "label": "shuffle-wipe-restore-and-persistent-hook-375x844",
+      "reactionRestoredAt700": true,
+      "subtlePriority3ReactionVisible": true,
+      "offHidesReaction": true,
+      "unoPersistentArtHookOrderAndFallback": true
+    },
+    {
+      "label": "fixture-contracts-375x844",
+      "humanOnlyNeutralNarration": true,
+      "unoGuideNoOverlap": true,
+      "preferencesHideLightNarration": true,
+      "shuffleTimerVisibleAt699": true,
+      "shuffleTimerAbsentAt700": true,
+      "shuffleLayering": {
+        "art": 9995,
+        "panel": 9996,
+        "panelOpacity": "1",
+        "flights": [
+          {
+            "z": 9998,
+            "hiddenFace": true
+          },
+          {
+            "z": 9998,
+            "hiddenFace": true
+          },
+          {
+            "z": 9998,
+            "hiddenFace": true
+          }
+        ],
+        "artRect": {
+          "x": 8,
+          "y": 24,
+          "width": 359,
+          "height": 560,
+          "top": 24,
+          "right": 367,
+          "bottom": 584,
+          "left": 8
+        },
+        "panelRect": {
+          "x": 10,
+          "y": 595.5,
+          "width": 355,
+          "height": 238.5,
+          "top": 595.5,
+          "right": 365,
+          "bottom": 834,
+          "left": 10
+        }
+      },
+      "subtleOffNoShuffleCutin": true,
+      "dice4NoShuffleCutinOrFlight": true,
+      "reducedMotionHidesShuffleCutin": true
+    },
+    {
+      "label": "real-uno-390x844",
+      "pageIdentity": {
+        "url": "http://127.0.0.1:5178/",
+        "title": "ドラゴンゲームパーク"
+      },
+      "nonBlank": true,
+      "frameworkOverlay": false,
+      "documentOverflow": {
+        "width": 390,
+        "scroll": 390
+      },
+      "brokenImages": []
+    },
+    {
+      "label": "real-babanuki-390x844",
+      "pageIdentity": {
+        "url": "http://127.0.0.1:5178/",
+        "title": "ドラゴンゲームパーク"
+      },
+      "nonBlank": true,
+      "frameworkOverlay": false,
+      "documentOverflow": {
+        "width": 390,
+        "scroll": 390
+      },
+      "brokenImages": []
+    },
+    {
+      "label": "real-controls-390x844",
+      "unoStarterAndHelp": true,
+      "babanukiDrawConfirmation": true,
+      "persistedPreferences": [
+        "off",
+        "subtle",
+        "lively"
+      ]
+    },
+    {
+      "label": "fixture-uno-narrator-390x844",
+      "pageIdentity": {
+        "url": "http://127.0.0.1:5178/docs/design/dragons/presentation-v2/2026-10-04/evidence/runtime-cards/fixture.html",
+        "title": "Card presentation public fixtures"
+      },
+      "nonBlank": true,
+      "frameworkOverlay": false,
+      "documentOverflow": {
+        "width": 390,
+        "scroll": 390
+      },
+      "brokenImages": []
+    },
+    {
+      "label": "narrator-face-fallback-390x844",
+      "failedPortraitPreservesMascotAndPublicFact": true
+    },
+    {
+      "label": "fixture-babanuki-narrator-390x844",
+      "pageIdentity": {
+        "url": "http://127.0.0.1:5178/docs/design/dragons/presentation-v2/2026-10-04/evidence/runtime-cards/fixture.html",
+        "title": "Card presentation public fixtures"
+      },
+      "nonBlank": true,
+      "frameworkOverlay": false,
+      "documentOverflow": {
+        "width": 390,
+        "scroll": 390
+      },
+      "brokenImages": []
+    },
+    {
+      "label": "cold-preload-390x844",
+      "coldCondition": "Fresh isolated browser context; scene not mounted before public dice-stage preload",
+      "scene": "/src/assets/dragons/presentation-v2/scenes/babanuki/lv3-shuffle.webp",
+      "timings": [
+        {
+          "initiator": "link",
+          "duration": 9.600000000093132,
+          "transferSize": 200638,
+          "encodedBodySize": 200338
+        }
+      ]
+    },
+    {
+      "label": "warm-fallback-390x844",
+      "warmCondition": "Same actor scene and fallback fetched by dice-stage preload before cutin mount; fixture waits load completion (real game dice stage is1700ms)",
+      "sceneErrorDispatched": true,
+      "fallbackBackdropAndCharacter": true,
+      "offLivelyHookOrderStable": true
+    },
+    {
+      "label": "shuffle-wipe-restore-and-persistent-hook-390x844",
+      "reactionRestoredAt700": true,
+      "subtlePriority3ReactionVisible": true,
+      "offHidesReaction": true,
+      "unoPersistentArtHookOrderAndFallback": true
+    },
+    {
+      "label": "fixture-contracts-390x844",
+      "humanOnlyNeutralNarration": true,
+      "unoGuideNoOverlap": true,
+      "preferencesHideLightNarration": true,
+      "shuffleTimerVisibleAt699": true,
+      "shuffleTimerAbsentAt700": true,
+      "shuffleLayering": {
+        "art": 9995,
+        "panel": 9996,
+        "panelOpacity": "1",
+        "flights": [
+          {
+            "z": 9998,
+            "hiddenFace": true
+          },
+          {
+            "z": 9998,
+            "hiddenFace": true
+          },
+          {
+            "z": 9998,
+            "hiddenFace": true
+          }
+        ],
+        "artRect": {
+          "x": 8,
+          "y": 24,
+          "width": 374,
+          "height": 560,
+          "top": 24,
+          "right": 382,
+          "bottom": 584,
+          "left": 8
+        },
+        "panelRect": {
+          "x": 10,
+          "y": 595.5,
+          "width": 370,
+          "height": 238.5,
+          "top": 595.5,
+          "right": 380,
+          "bottom": 834,
+          "left": 10
+        }
+      },
+      "subtleOffNoShuffleCutin": true,
+      "dice4NoShuffleCutinOrFlight": true,
+      "reducedMotionHidesShuffleCutin": true
+    },
+    {
+      "label": "real-uno-900x700",
+      "pageIdentity": {
+        "url": "http://127.0.0.1:5178/",
+        "title": "ドラゴンゲームパーク"
+      },
+      "nonBlank": true,
+      "frameworkOverlay": false,
+      "documentOverflow": {
+        "width": 900,
+        "scroll": 900
+      },
+      "brokenImages": []
+    },
+    {
+      "label": "real-babanuki-900x700",
+      "pageIdentity": {
+        "url": "http://127.0.0.1:5178/",
+        "title": "ドラゴンゲームパーク"
+      },
+      "nonBlank": true,
+      "frameworkOverlay": false,
+      "documentOverflow": {
+        "width": 900,
+        "scroll": 900
+      },
+      "brokenImages": []
+    },
+    {
+      "label": "real-controls-900x700",
+      "unoStarterAndHelp": true,
+      "babanukiDrawConfirmation": true,
+      "persistedPreferences": [
+        "off",
+        "subtle",
+        "lively"
+      ]
+    },
+    {
+      "label": "fixture-uno-narrator-900x700",
+      "pageIdentity": {
+        "url": "http://127.0.0.1:5178/docs/design/dragons/presentation-v2/2026-10-04/evidence/runtime-cards/fixture.html",
+        "title": "Card presentation public fixtures"
+      },
+      "nonBlank": true,
+      "frameworkOverlay": false,
+      "documentOverflow": {
+        "width": 900,
+        "scroll": 900
+      },
+      "brokenImages": []
+    },
+    {
+      "label": "narrator-face-fallback-900x700",
+      "failedPortraitPreservesMascotAndPublicFact": true
+    },
+    {
+      "label": "fixture-babanuki-narrator-900x700",
+      "pageIdentity": {
+        "url": "http://127.0.0.1:5178/docs/design/dragons/presentation-v2/2026-10-04/evidence/runtime-cards/fixture.html",
+        "title": "Card presentation public fixtures"
+      },
+      "nonBlank": true,
+      "frameworkOverlay": false,
+      "documentOverflow": {
+        "width": 900,
+        "scroll": 900
+      },
+      "brokenImages": []
+    },
+    {
+      "label": "cold-preload-900x700",
+      "coldCondition": "Fresh isolated browser context; scene not mounted before public dice-stage preload",
+      "scene": "/src/assets/dragons/presentation-v2/scenes/babanuki/lv3-shuffle.webp",
+      "timings": [
+        {
+          "initiator": "link",
+          "duration": 4.7000000001862645,
+          "transferSize": 200638,
+          "encodedBodySize": 200338
+        }
+      ]
+    },
+    {
+      "label": "warm-fallback-900x700",
+      "warmCondition": "Same actor scene and fallback fetched by dice-stage preload before cutin mount; fixture waits load completion (real game dice stage is1700ms)",
+      "sceneErrorDispatched": true,
+      "fallbackBackdropAndCharacter": true,
+      "offLivelyHookOrderStable": true
+    },
+    {
+      "label": "shuffle-wipe-restore-and-persistent-hook-900x700",
+      "reactionRestoredAt700": true,
+      "subtlePriority3ReactionVisible": true,
+      "offHidesReaction": true,
+      "unoPersistentArtHookOrderAndFallback": true
+    },
+    {
+      "label": "fixture-contracts-900x700",
+      "humanOnlyNeutralNarration": true,
+      "unoGuideNoOverlap": true,
+      "preferencesHideLightNarration": true,
+      "shuffleTimerVisibleAt699": true,
+      "shuffleTimerAbsentAt700": true,
+      "shuffleLayering": {
+        "art": 9995,
+        "panel": 9996,
+        "panelOpacity": "1",
+        "flights": [
+          {
+            "z": 9998,
+            "hiddenFace": true
+          },
+          {
+            "z": 9998,
+            "hiddenFace": true
+          },
+          {
+            "z": 9998,
+            "hiddenFace": true
+          }
+        ],
+        "artRect": {
+          "x": 12,
+          "y": 48,
+          "width": 498,
+          "height": 604,
+          "top": 48,
+          "right": 510,
+          "bottom": 652,
+          "left": 12
+        },
+        "panelRect": {
+          "x": 534,
+          "y": 88,
+          "width": 350,
+          "height": 266.9375,
+          "top": 88,
+          "right": 884,
+          "bottom": 354.9375,
+          "left": 534
+        }
+      },
+      "subtleOffNoShuffleCutin": true,
+      "dice4NoShuffleCutinOrFlight": true,
+      "reducedMotionHidesShuffleCutin": true
+    }
+  ],
+  "console": [
+    {
+      "label": "375x844",
+      "level": "warning",
+      "message": "The resource http://127.0.0.1:5178/src/assets/dragons/presentation-v2/scenes/uno/lv3-counter.webp was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally."
+    },
+    {
+      "label": "375x844",
+      "level": "warning",
+      "message": "The resource http://127.0.0.1:5178/src/assets/dragons/presentation-v2/backdrops/uno-counter.webp was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally."
+    },
+    {
+      "label": "375x844",
+      "level": "warning",
+      "message": "The resource http://127.0.0.1:5178/src/assets/dragons/cutins/uno/lv3-attack.webp was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally."
+    },
+    {
+      "label": "900x700",
+      "level": "warning",
+      "message": "The resource http://127.0.0.1:5178/src/assets/dragons/presentation-v2/scenes/uno/lv3-counter.webp was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally."
+    },
+    {
+      "label": "900x700",
+      "level": "warning",
+      "message": "The resource http://127.0.0.1:5178/src/assets/dragons/presentation-v2/backdrops/uno-counter.webp was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally."
+    },
+    {
+      "label": "900x700",
+      "level": "warning",
+      "message": "The resource http://127.0.0.1:5178/src/assets/dragons/cutins/uno/lv3-attack.webp was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally."
+    },
+    {
+      "label": "900x700",
+      "level": "warning",
+      "message": "The resource http://127.0.0.1:5178/src/assets/dragons/presentation-v2/scenes/uno/lv3-counter.webp was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally."
+    },
+    {
+      "label": "900x700",
+      "level": "warning",
+      "message": "The resource http://127.0.0.1:5178/src/assets/dragons/presentation-v2/backdrops/uno-counter.webp was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally."
+    },
+    {
+      "label": "900x700",
+      "level": "warning",
+      "message": "The resource http://127.0.0.1:5178/src/assets/dragons/cutins/uno/lv3-attack.webp was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally."
+    }
+  ],
+  "failures": [],
+  "screenshots": [
+    "docs/design/dragons/presentation-v2/2026-10-04/evidence/runtime-cards/real-uno-375x844.png",
+    "docs/design/dragons/presentation-v2/2026-10-04/evidence/runtime-cards/real-babanuki-375x844.png",
+    "docs/design/dragons/presentation-v2/2026-10-04/evidence/runtime-cards/fixture-uno-narrator-375x844.png",
+    "docs/design/dragons/presentation-v2/2026-10-04/evidence/runtime-cards/fixture-babanuki-narrator-375x844.png",
+    "docs/design/dragons/presentation-v2/2026-10-04/evidence/runtime-cards/fixture-babanuki-shuffle-375x844.png",
+    "docs/design/dragons/presentation-v2/2026-10-04/evidence/runtime-cards/real-uno-390x844.png",
+    "docs/design/dragons/presentation-v2/2026-10-04/evidence/runtime-cards/real-babanuki-390x844.png",
+    "docs/design/dragons/presentation-v2/2026-10-04/evidence/runtime-cards/fixture-uno-narrator-390x844.png",
+    "docs/design/dragons/presentation-v2/2026-10-04/evidence/runtime-cards/fixture-babanuki-narrator-390x844.png",
+    "docs/design/dragons/presentation-v2/2026-10-04/evidence/runtime-cards/fixture-babanuki-shuffle-390x844.png",
+    "docs/design/dragons/presentation-v2/2026-10-04/evidence/runtime-cards/real-uno-900x700.png",
+    "docs/design/dragons/presentation-v2/2026-10-04/evidence/runtime-cards/real-babanuki-900x700.png",
+    "docs/design/dragons/presentation-v2/2026-10-04/evidence/runtime-cards/fixture-uno-narrator-900x700.png",
+    "docs/design/dragons/presentation-v2/2026-10-04/evidence/runtime-cards/fixture-babanuki-narrator-900x700.png",
+    "docs/design/dragons/presentation-v2/2026-10-04/evidence/runtime-cards/fixture-babanuki-shuffle-900x700.png"
+  ]
+}

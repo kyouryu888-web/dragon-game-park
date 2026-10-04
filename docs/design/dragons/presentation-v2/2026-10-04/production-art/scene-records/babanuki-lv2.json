@@ -1,0 +1,33 @@
+{
+  "id": "babanuki-lv2",
+  "game": "babanuki",
+  "lv": 2,
+  "prompt": "Use case: identity-preserve production game illustration, family-friendly Dragon Game Park. One finished portrait3:4 with FULL painted background, no alpha.\nReference1 EXACT required identity: orange-red youthful dragon, GOLD horns/spikes, cream belly, orange wings, AMBER eyes; no accessories. Keep age/face/proportions/permanent ornaments strictly; ignore invisible-alpha RGB bars in its background.\nReference2 APPROVED staging/style/game props. Replace its silver dragon ONLY with reference1 identity; don't inherit collar/crown/halo unless reference1 requires it.\nScene: BABANUKI SHUFFLE TIME dice3 central mixing: playful mischievous dragon spreads BOTH claws as shuffling conductor. Identical deep PURPLE card BACKS gather into luminous central vortex and fan outward, gold/violet trails, midnight-plum castle theatre. ALL card backs identical stripe+gold-border+dragon crest. NO face card, Joker, suits, ranks, marked card, dice, source/destination route or hidden exchange cues.\nMANDATORY framing: entire wing-to-wing dragon silhouette spans MAXIMUM78 percent canvas width, centered, with painted scenery visible beyond BOTH complete wing tips. All claws/horns/crown/halo COMPLETE,10percent top margin and8percent sides. Make body smaller than reference2 if necessary. Do not reuse cropped wings of reference2. Face upper-middle, props substantial sides/lower middle. Top12percent andbottom13percent DARK lowdetail breathing zones for HTML titles. Preserve rich sweeping action/depth while keeping face clear at phone size.\nPolished Japanese anime game splash, clean dark outlines, crisp cel shading, glossy scales, excellent expressive anatomy. ONE dragon. No captions/title/UI/speech/watermark/frame. No wrong level identity, missing ornaments, extra limbs/fingers, bright face clutter, photorealism or flat clipart.\nCritical composition override: Fold both wings halfway behind the shoulders rather than spreading them horizontally. FULL dragon wing-to-wing occupies at most70 percent canvas width, with entire tips clearly inside painted scenery. Keep all crown/halo parts within central70 percent. Do not copy the large cropped dragon composition from reference2; preserve its game props and colors only.",
+  "refs": [
+    "C:\\Users\\ray-0\\.codex\\worktrees\\dragon-presentation-v2\\Dragon-game-park\\src\\assets\\dragons\\cutins\\master\\lv2\\attack.webp",
+    "C:\\Users\\ray-0\\.codex\\worktrees\\dragon-presentation-v2\\Dragon-game-park\\docs\\design\\dragons\\presentation-v2\\2026-10-04\\images\\babanuki-shuffle-lv3-v1.png"
+  ],
+  "runtime": "src/assets/dragons/presentation-v2/scenes/babanuki/lv2-shuffle.webp",
+  "source": "image_gen",
+  "rawOutput": "C:\\Users\\ray-0\\.codex\\generated_images\\01a0dd3a-cda2-7c01-8062-5164f1cd85d5\\exec-d493f8e9-0223-4947-b17b-42adba94d38b.png",
+  "original": "docs/design/dragons/presentation-v2/2026-10-04/production-art/originals/scenes/babanuki-lv2.png",
+  "originalSha256": "0878c7bce1e0d8805f7bbbdb0bb4bdc228ade94b30c6053e1deb55867660103e",
+  "runtimeSha256": "7afc0656a18f0d269b749a27c779d2f4c91c085a5295b9e2877b62d21f0b5fe2",
+  "dimensions": [
+    720,
+    960
+  ],
+  "bytes": 197898,
+  "references": [
+    {
+      "path": "src/assets/dragons/cutins/master/lv2/attack.webp",
+      "sha256": "5f56c560a0c03a9845aa5132958c2711fc9e83ef75ce6b5bf93d60c60c7d4ae7"
+    },
+    {
+      "path": "docs/design/dragons/presentation-v2/2026-10-04/images/babanuki-shuffle-lv3-v1.png",
+      "sha256": "6a41c35d6df922919c124c471c5f01479bffad1c7d84278294723cae81808438"
+    }
+  ],
+  "conversion": "resize inside 720x960, no crop, WebP quality88; no semantic editing",
+  "generatedAt": "2026-10-04T08:06:55.823Z"
+}

@@ -1,0 +1,3 @@
+import {chromium} from 'playwright-core';const browser=await chromium.launch({channel:'msedge',headless:true});const page=await browser.newPage({viewport:{width:390,height:844}});
+for(const game of ['バックギャモン','マンカラ']){await page.goto('http://127.0.0.1:5178');await page.getByRole('button',{name:`${game}の盤へ進む`}).click();await page.getByRole('button',{name:'ルームを作成',exact:true}).click();console.log(JSON.stringify({game,buttons:await page.getByRole('button').allTextContents(),inputs:await page.locator('input').evaluateAll(nodes=>nodes.map(node=>({placeholder:node.placeholder,type:node.type,value:node.value}))),text:(await page.locator('body').innerText()).slice(-1400)}));}
+await browser.close();

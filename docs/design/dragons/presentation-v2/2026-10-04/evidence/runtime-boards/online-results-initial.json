@@ -1,0 +1,50 @@
+{
+  "environment": {
+    "url": "http://127.0.0.1:5178",
+    "browser": "Edge headless",
+    "hostViewport": "390x844",
+    "guestViewport": "900x700",
+    "connection": "Live existing Supabase via app UI. No seeded payload or private API writes."
+  },
+  "checks": [
+    {
+      "game": "マンカラ",
+      "passed": false,
+      "error": "locator.waitFor: Error: strict mode violation: locator('.pit-btn.is-selectable') resolved to 6 elements:\n    1) <button aria-label=\"4個の石（選択可能）\" class=\"pit-btn is-selectable\">…</button> aka getByRole('button', { name: '個の石（選択可能）' }).first()\n    2) <button aria-label=\"4個の石（選択可能）\" class=\"pit-btn is-selectable\">…</button> aka getByRole('button', { name: '個の石（選択可能）' }).nth(1)\n    3) <button aria-label=\"4個の石（選択可能）\" class=\"pit-btn is-selectable\">…</button> aka getByRole('button', { name: '個の石（選択可能）' }).nth(2)\n    4) <button aria-label=\"4個の石（選択可能）\" class=\"pit-btn is-selectable\">…</button> aka getByRole('button', { name: '個の石（選択可能）' }).nth(3)\n    5) <button aria-label=\"4個の石（選択可能）\" class=\"pit-btn is-selectable\">…</button> aka getByRole('button', { name: '個の石（選択可能）' }).nth(4)\n    6) <button aria-label=\"4個の石（選択可能）\" class=\"pit-btn is-selectable\">…</button> aka getByRole('button', { name: '個の石（選択可能）' }).nth(5)\n\nCall log:\n\u001b[2m  - waiting for locator('.pit-btn.is-selectable') to be visible\u001b[22m\n",
+      "exits": {
+        "host": {
+          "exited": true
+        },
+        "guest": {
+          "exited": true
+        }
+      }
+    },
+    {
+      "game": "バックギャモン",
+      "passed": true,
+      "proposer": "guest",
+      "sameCubeFacts": true,
+      "noCpuSeats": true,
+      "exits": {
+        "host": {
+          "exited": true
+        },
+        "guest": {
+          "exited": false
+        }
+      }
+    }
+  ],
+  "rooms": [
+    {
+      "game": "マンカラ",
+      "roomCode": "L5HQ7C"
+    },
+    {
+      "game": "バックギャモン",
+      "roomCode": "RJTVX7"
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,33 @@
+{
+  "id": "uno-lv1",
+  "game": "uno",
+  "lv": 1,
+  "prompt": "Use case: identity-preserve production game illustration, family-friendly Dragon Game Park. One finished portrait3:4 with FULL painted background, no alpha.\nReference1 EXACT required identity: cyan/turquoise BABY dragon, mint horns/spikes/wing membranes/belly, large GREEN eyes, round young face, small cute build; no accessories. Keep age/face/proportions/permanent ornaments strictly; ignore invisible-alpha RGB bars in its background.\nReference2 APPROVED staging/style/game props. Replace its silver dragon ONLY with reference1 identity; don't inherit collar/crown/halo unless reference1 requires it.\nScene: DRAW-TWO COUNTER: confident joyful sweeping claw turns a vivid arc of RED/YELLOW/GREEN/BLUE cards back toward viewer, gold/cyan trails, burgundy/navy action background. Two prominent foreground red and blue face cards have cream oval with a +2 centre AND matching +2 corners. All other cards use dragon-crest BACKS only, no reverse/number cards to avoid mixed symbols. Card motion follows the dragon gesture. No official UNO logo. Symbolic props, no actual hidden hand.\nMANDATORY framing: entire wing-to-wing dragon silhouette spans MAXIMUM78 percent canvas width, centered, with painted scenery visible beyond BOTH complete wing tips. All claws/horns/crown/halo COMPLETE,10percent top margin and8percent sides. Make body smaller than reference2 if necessary. Do not reuse cropped wings of reference2. Face upper-middle, props substantial sides/lower middle. Top12percent andbottom13percent DARK lowdetail breathing zones for HTML titles. Preserve rich sweeping action/depth while keeping face clear at phone size.\nPolished Japanese anime game splash, clean dark outlines, crisp cel shading, glossy scales, excellent expressive anatomy. ONE dragon. No captions/title/UI/speech/watermark/frame. No wrong level identity, missing ornaments, extra limbs/fingers, bright face clutter, photorealism or flat clipart.",
+  "refs": [
+    "C:\\Users\\ray-0\\.codex\\worktrees\\dragon-presentation-v2\\Dragon-game-park\\src\\assets\\dragons\\cutins\\master\\lv1\\attack.webp",
+    "C:\\Users\\ray-0\\.codex\\worktrees\\dragon-presentation-v2\\Dragon-game-park\\docs\\design\\dragons\\presentation-v2\\2026-10-04\\images\\uno-draw-counter-lv3-v2.png"
+  ],
+  "runtime": "src/assets/dragons/presentation-v2/scenes/uno/lv1-counter.webp",
+  "source": "image_gen",
+  "rawOutput": "C:\\Users\\ray-0\\.codex\\generated_images\\01a0dd3a-cda2-7c01-8062-5164f1cd85d5\\exec-4da98a4a-40c9-4d6e-8957-4eeba4131c8e.png",
+  "original": "docs/design/dragons/presentation-v2/2026-10-04/production-art/originals/scenes/uno-lv1.png",
+  "originalSha256": "92bab899456452780ad7e91909010db77cbb5ad7308696147cbe6d4c3aba6de6",
+  "runtimeSha256": "b372abc5050129fe5833b678891c04b2d12c480827a87c28524bdba65d341f67",
+  "dimensions": [
+    720,
+    960
+  ],
+  "bytes": 216882,
+  "references": [
+    {
+      "path": "src/assets/dragons/cutins/master/lv1/attack.webp",
+      "sha256": "0c016f438cdbd9e6832a7f84444b58becc0f0c240f413039748dd489a9529c7c"
+    },
+    {
+      "path": "docs/design/dragons/presentation-v2/2026-10-04/images/uno-draw-counter-lv3-v2.png",
+      "sha256": "383f6882947d48905df9f354126ca9ecd8b0cdd5ae5534d185bb47670b8a3da1"
+    }
+  ],
+  "conversion": "resize inside 720x960, no crop, WebP quality88; no semantic editing",
+  "generatedAt": "2026-10-04T08:03:56.794Z"
+}

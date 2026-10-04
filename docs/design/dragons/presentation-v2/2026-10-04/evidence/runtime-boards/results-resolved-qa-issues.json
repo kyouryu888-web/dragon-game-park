@@ -1,0 +1,126 @@
+{
+  "environment": {
+    "url": "http://127.0.0.1:5178",
+    "browser": "Microsoft Edge headless",
+    "browserPlugin": "Browser plugin not available; authorized Playwright fallback",
+    "viewports": [
+      "375x844",
+      "390x844",
+      "900x700"
+    ],
+    "fixtureWarning": "Fixed public events exercise actual rendering/playback. They are not live Supabase matches."
+  },
+  "checks": [
+    {
+      "name": "Mancala actual completed major capture 375 lively",
+      "passed": true,
+      "plan": [
+        "p1-pit-4",
+        "p2-pit-0",
+        "p1-pit-0"
+      ],
+      "scenes": [
+        {
+          "selector": ".mancala-capture-moment",
+          "start": 9599.5,
+          "text": "7石を捕獲",
+          "animation": "0.7s",
+          "end": 10297.700000000186,
+          "duration": 698.2000000001863
+        }
+      ],
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 147,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 1
+      },
+      "inputEnabledDuringScene": true
+    },
+    {
+      "name": "reversi-corner human public playback 390 lively",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 102,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 0
+      },
+      "scenes": [
+        {
+          "selector": ".reversi-cinematic",
+          "start": 1491,
+          "text": "角を制した黒の人間が不落の角を獲得",
+          "animation": "1.9s",
+          "end": 3405.1999999997206,
+          "duration": 1914.1999999997206
+        }
+      ],
+      "timers": [
+        {
+          "delay": 1900,
+          "scheduledAt": 1492.6999999997206,
+          "firedAt": 3399.7999999998137
+        }
+      ]
+    },
+    {
+      "name": "bakuretsu human public playback 390 lively",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 267,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 0
+      },
+      "scenes": [
+        {
+          "selector": ".reversi-cinematic",
+          "start": 1496.3999999999069,
+          "text": "爆裂魔法 発動！周囲のコマを消し飛ばす！",
+          "animation": "2.8s",
+          "end": 4300.899999999907,
+          "duration": 2804.5
+        }
+      ],
+      "timers": [
+        {
+          "delay": 2800,
+          "scheduledAt": 1488.5999999996275,
+          "firedAt": 4289.0999999996275
+        }
+      ]
+    },
+    {
+      "name": "Reduced-motion backgammon 390",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 179,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 1
+      },
+      "reducedMotion": true
+    }
+  ],
+  "screenshots": [
+    "mancala-capture-375.png",
+    "reversi-corner-390.png",
+    "bakuretsu-390.png",
+    "reduced-backgammon-390.png"
+  ],
+  "errors": [],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "errorCount": 0
+  }
+}

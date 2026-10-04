@@ -1,0 +1,33 @@
+{
+  "id": "uno-lv5",
+  "game": "uno",
+  "lv": 5,
+  "prompt": "Use case: identity-preserve production game illustration, family-friendly Dragon Game Park. One finished portrait3:4 with FULL painted background, no alpha.\nReference1 EXACT required identity: GOLD god dragon, amber-gold eyes, gold wings/horns, cream belly, oval GOLD HALO with THREE STARS and SMALL SIDE WING ORNAMENTS; full halo and ornaments. Keep age/face/proportions/permanent ornaments strictly; ignore invisible-alpha RGB bars in its background.\nReference2 APPROVED staging/style/game props. Replace its silver dragon ONLY with reference1 identity; don't inherit collar/crown/halo unless reference1 requires it.\nScene: DRAW-TWO COUNTER: confident joyful sweeping claw turns a vivid arc of RED/YELLOW/GREEN/BLUE cards back toward viewer, gold/cyan trails, burgundy/navy action background. Two prominent foreground red and blue face cards have cream oval with a +2 centre AND matching +2 corners. All other cards use dragon-crest BACKS only, no reverse/number cards to avoid mixed symbols. Card motion follows the dragon gesture. No official UNO logo. Symbolic props, no actual hidden hand.\nMANDATORY framing: entire wing-to-wing dragon silhouette spans MAXIMUM78 percent canvas width, centered, with painted scenery visible beyond BOTH complete wing tips. All claws/horns/crown/halo COMPLETE,10percent top margin and8percent sides. Make body smaller than reference2 if necessary. Do not reuse cropped wings of reference2. Face upper-middle, props substantial sides/lower middle. Top12percent andbottom13percent DARK lowdetail breathing zones for HTML titles. Preserve rich sweeping action/depth while keeping face clear at phone size.\nPolished Japanese anime game splash, clean dark outlines, crisp cel shading, glossy scales, excellent expressive anatomy. ONE dragon. No captions/title/UI/speech/watermark/frame. No wrong level identity, missing ornaments, extra limbs/fingers, bright face clutter, photorealism or flat clipart.\nCritical composition override: Fold both wings halfway behind the shoulders rather than spreading them horizontally. FULL dragon wing-to-wing occupies at most70 percent canvas width, with entire tips clearly inside painted scenery. Keep all crown/halo parts within central70 percent. Do not copy the large cropped dragon composition from reference2; preserve its game props and colors only.",
+  "refs": [
+    "C:\\Users\\ray-0\\.codex\\worktrees\\dragon-presentation-v2\\Dragon-game-park\\src\\assets\\dragons\\cutins\\master\\lv5\\attack.webp",
+    "C:\\Users\\ray-0\\.codex\\worktrees\\dragon-presentation-v2\\Dragon-game-park\\docs\\design\\dragons\\presentation-v2\\2026-10-04\\images\\uno-draw-counter-lv3-v2.png"
+  ],
+  "runtime": "src/assets/dragons/presentation-v2/scenes/uno/lv5-counter.webp",
+  "source": "image_gen",
+  "rawOutput": "C:\\Users\\ray-0\\.codex\\generated_images\\01a0dd3a-cda2-7c01-8062-5164f1cd85d5\\exec-6c37460e-420e-48df-94d2-3865c92a9d2d.png",
+  "original": "docs/design/dragons/presentation-v2/2026-10-04/production-art/originals/scenes/uno-lv5.png",
+  "originalSha256": "9c9a74c3022a0f7116c29142697a6bac219a5fe516a7a1e41766c8720fdb99b2",
+  "runtimeSha256": "b06d199e2d7d06f41eb2ca95cd9a8021446f7dd9f79c0a2cbf7757c83c84cee3",
+  "dimensions": [
+    720,
+    960
+  ],
+  "bytes": 215784,
+  "references": [
+    {
+      "path": "src/assets/dragons/cutins/master/lv5/attack.webp",
+      "sha256": "2a706392104bbf84fb3799b5534bbe564d9d54396bb29a1aadfb8f774f889108"
+    },
+    {
+      "path": "docs/design/dragons/presentation-v2/2026-10-04/images/uno-draw-counter-lv3-v2.png",
+      "sha256": "383f6882947d48905df9f354126ca9ecd8b0cdd5ae5534d185bb47670b8a3da1"
+    }
+  ],
+  "conversion": "resize inside 720x960, no crop, WebP quality88; no semantic editing",
+  "generatedAt": "2026-10-04T08:08:44.812Z"
+}

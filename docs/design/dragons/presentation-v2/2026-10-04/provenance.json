@@ -1,0 +1,73 @@
+{
+  "created": "2026-10-04",
+  "stage": "design-candidates",
+  "approval": "pending-user-visual-review",
+  "character": "Lv3 Super Dragon",
+  "generator": "built-in image_gen",
+  "transparentBackground": false,
+  "assets": [
+    {
+      "id": "uno-draw-counter-lv3-v1",
+      "file": "images/uno-draw-counter-lv3-v1.png",
+      "rawOutput": "C:\\Users\\ray-0\\.codex\\generated_images\\01a0dd3a-cda2-7c01-8062-5164f1cd85d5\\exec-faebec70-c48f-4b98-8fb6-5279355a76a2.png",
+      "references": [
+        "G:\\マイドライブ\\02_AI・開発・プロンプト\\Dragon-game-park\\src\\assets\\dragons\\cutins\\master\\lv3\\attack.webp",
+        "G:\\マイドライブ\\02_AI・開発・プロンプト\\Dragon-game-park\\src\\features\\uno\\assets\\draw-counter.webp"
+      ],
+      "prompt": "Use case: production-quality CONCEPT ART candidate for a family-friendly Japanese browser card game Dragon Game Park. Asset: one cinematic illustration, portrait 3:4, full painted background, no transparency. This is the UNO-style DRAW COUNTER scene.\nReference image 1 is the exact required Lv3 character identity: silver/white adolescent dragon, bright blue eyes, etched silver horns, forehead diamond scale, silver wing membranes, metal collar with shield-shaped sun medallion. Preserve its species, maturity, face, proportions, horns, markings, collar and medallion; do not turn it into the orange dragon.\nReference image 2 is ONLY the preferred game-specific staging and richness: cards flying in a wide action arc, dramatic perspective, light trails and a dark background. Do not copy its orange dragon identity.\nPrimary scene: The silver Lv3 dragon joyfully and confidently counters an incoming draw-card attack with a sweeping claw-and-body twist. Three-quarter dynamic figure, focused face looking toward the counter direction; wings and tail participate in the gesture. A large ribbon of RED, YELLOW, GREEN, BLUE game cards bends around the dragon and blasts back outward toward the viewer from bottom-right, clearly tying the card direction to the counterattack. Include several recognizable colored card FACES with cream oval, a large +2 symbol on two prominent red and blue cards; other cards use simple reverse arrow or number style, and some ornate dragon-crest backs resembling reference 2. Cards must be substantial readable props rather than tiny background particles. No official UNO logo. They are symbolic scene props, not a depiction of an actual hidden hand.\nComposition: dragon face and sun medallion dominate center, full head/horns/wings within image, dramatic foreground card at lower right, sweeping counter arc at middle and sides. Keep the central dragon readable at small phone size. Leave top 12 percent and bottom 13 percent as darker low-detail breathing areas for HTML titles over the image. Generous 6 percent safe margin around character features. Avoid cutting horns, claw tips or wings.\nStyle: polished Japanese anime game illustration, clean dark outlines, controlled crisp cel shading, glossy silver scales, bold expressive anatomy, exciting and playful rather than threatening. Dark burgundy/navy radial action background, golden and cyan curved light trails, restrained impact sparks. Rich depth and atmosphere with a strong clear focal hierarchy, like a collectible high-quality game event splash. One dragon only. Exactly one finished illustration.\nText: no captions, no UI, no speech bubbles, no title, no watermark, no border; only small card face symbols as described.\nAvoid: a standalone dragon pose on empty background, barely visible cards, photorealism, flat childish clipart, extra fingers, extra limbs, orange character, altered permanent ornaments, bright clutter behind the face.",
+      "sha256": "EB424A2ADE6006C853DFFBDDDC2E59ED6B29658006F76262B57E91E720BB072B",
+      "status": "superseded-symbol-fix-retained",
+      "dimensions": {
+        "width": 1086,
+        "height": 1448
+      }
+    },
+    {
+      "id": "babanuki-shuffle-lv3-v1",
+      "file": "images/babanuki-shuffle-lv3-v1.png",
+      "rawOutput": "C:\\Users\\ray-0\\.codex\\generated_images\\01a0dd3a-cda2-7c01-8062-5164f1cd85d5\\exec-47f804fe-384e-4dd3-bbeb-8302393b8490.png",
+      "references": [
+        "G:\\マイドライブ\\02_AI・開発・プロンプト\\Dragon-game-park\\src\\assets\\dragons\\cutins\\master\\lv3\\attack.webp",
+        "G:\\マイドライブ\\02_AI・開発・プロンプト\\Dragon-game-park\\src\\assets\\dragons\\reactions\\lv3\\smug.webp"
+      ],
+      "prompt": "Use case: production-quality CONCEPT ART candidate for family-friendly Japanese browser game Dragon Game Park, \"最弱王ババ抜き\" Babanuki old maid card game. Asset: one portrait 3:4 cinematic scene with a full painted background, no transparency.\nReference 1 defines the exact Lv3 silver dragon identity, proportions and permanent ornaments. Reference 2 defines its face and playful smug personality. Preserve silver/white scales, bright blue eyes, etched silver horns, forehead diamond, silver wing membranes, metal collar with a shield-shaped SUN medallion. Same recognizable adolescent dragon, exactly one dragon.\nScene: SHUFFLE TIME. The dragon spreads both claws in a dramatic mischievous card-shuffling conductor gesture, body turning gently, eyes bright, small competitive grin. A spectacular vortex of identical PURPLE CARD BACKS gathers into a tight luminous whirl at the middle-lower center before scattering outward in a swirling fan. Clear illustrated action: cards converge, mix, then fan outward with depth and curved violet/gold trails; no seat-to-seat routes. Large tilted foreground cards and a dense small central mixing cloud make the shuffle itself the star alongside the dragon's face.\nAll cards MUST show their identical BACK SIDE ONLY: deep aubergine purple, elegant narrow diagonal stripe pattern, thin gold/cream border, subtle small stylized dragon crest. NO face-up card. NO Joker, no suits, no card ranks, no marked special card, no hidden exchange direction, no source/destination cues. Every visible card identical design; the scene must never imply where a hidden Joker is. No die or numbered result in this general shuffle scene.\nComposition: face at upper-middle, collar emblem visible, hands framing the central card vortex, sweeping wing shapes create a strong silhouette. Fully preserve head, both horn tips, claws and wing tips with at least 6 percent margins; symbolic cards may overlap outer scene. Keep top 12 percent and bottom 13 percent dark and relatively uncluttered for HTML overlay titles. Phone-size legibility is essential. Confident playful presentation; no scary skull, no horror.\nStyle: polished Japanese anime game splash illustration, crisp dark linework and sophisticated cel shading matching the refs. Silver scales glow against deep plum and midnight-purple theatre background; warm golden specks and violet ribbon-shaped light trails, readable depth, elegant atmosphere, rhythmic card motion. Rich game-specific scenery and props, not just a dragon pose. Exactly one finished image.\nNo lettering, no captions, no logo, no watermark, no border, no UI, no speech bubble. Avoid photorealism, flat clipart, excessive tiny particles, extra limbs/fingers, changed collar, random new accessories, cards covering the eyes.",
+      "sha256": "6A41C35D6DF922919C124C471C5F01479BFFAD1C7D84278294723CAE81808438",
+      "dimensions": {
+        "width": 1086,
+        "height": 1448
+      },
+      "scope": "Babanuki dice3 central shuffle; not dice4"
+    },
+    {
+      "id": "uno-draw-counter-lv3-v2",
+      "file": "images/uno-draw-counter-lv3-v2.png",
+      "rawOutput": "C:\\Users\\ray-0\\.codex\\generated_images\\01a0dd3a-cda2-7c01-8062-5164f1cd85d5\\exec-fff86055-ca42-4442-9fc6-a25f81be36e4.png",
+      "references": [
+        "G:\\マイドライブ\\02_AI・開発・プロンプト\\Dragon-game-park\\docs\\design\\dragons\\presentation-v2\\2026-10-04\\images\\uno-draw-counter-lv3-v1.png"
+      ],
+      "prompt": "Edit the supplied illustration VERY LOCALLY. Preserve the silver Lv3 dragon, face, anatomy, exact pose, ornaments, wings, collar sun medallion, all lighting, card positions, action arcs, background, colors and overall composition.\nCorrect the inaccurate PRINTING on the two REVERSE cards at the TOP LEFT of the image:\n1. The upper-left red card currently has a white \"+2\" corner label but its center is a double-arrow REVERSE symbol. Remove that \"+2\" corner text. Make this a consistent RED REVERSE card: use a single clockwise curved arrow (↻) at its center and matching small corners, with NO numerals and NO plus sign on that card.\n2. The green card immediately behind/right of that red top-left card currently has a small 2-like corner label but a center REVERSE symbol. Remove any numerals/plus from this GREEN REVERSE card and repeat only the same clockwise curved arrow (↻) if a corner mark is necessary.\nAudit all other REVERSE cards, including the foreground red and green cards, to ensure they contain only a matching clockwise curved arrow (↻) at center and corners, never a +2 or number. Preserve the actual draw-two cards at the LOWER RIGHT and bottom foreground with a large +2 center and matching +2 corner. Preserve yellow number-2 cards with a simple 2 and matching 2 corners. Dragon-crest card backs remain unchanged.\nNo official logo, no new text, no UI. Keep the same portrait 3:4 full painted background, no transparency. This is a card-symbol correction, not a scene redesign. Exactly one output image.",
+      "status": "current-review-candidate",
+      "sha256": "383F6882947D48905DF9F354126CA9ECD8B0CDD5AE5534D185BB47670B8A3DA1",
+      "dimensions": {
+        "width": 1086,
+        "height": 1448
+      },
+      "scope": "UNO public draw-two counter, not all draw-card kinds"
+    }
+  ],
+  "constraints": {
+    "runtimeFilesChanged": false,
+    "publicInformationOnly": true,
+    "babanukiCards": "identical backs only, no Joker or exchange source/destination"
+  },
+  "currentReviewAssets": [
+    "uno-draw-counter-lv3-v2",
+    "babanuki-shuffle-lv3-v1"
+  ],
+  "knownReviewConditions": [
+    "Wing tips reach canvas edges; production expansion must improve margins per level.",
+    "Babanuki horn upper margin is narrow; avoid zoom-in.",
+    "Existing public factual labels remain HTML, scene props are illustrative.",
+    "Concept PNGs are not yet production-size optimized."
+  ]
+}

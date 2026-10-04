@@ -1,3 +1,26 @@
+<!-- dragon-presentation-v2-20261004-4165617 -->
+## 2026-10-04: ドラゴン演出v2 実装・ローカル確認完了（未公開）
+
+- ユーザー承認済みの「全対局で表示」「ワイプ多め、全画面は要所」を実装。UNO・最弱王ババ抜き・通常/爆裂リバーシ・バックギャモン・マンカラの公開場面を接続し、CPUの短い一言/表情変化、人間のみの中立案内、ゲーム固有のカード/駒/石の背景を追加した。
+- 実装ブランチ: `codex/dragon-presentation-v2`。実装コミット: `41656173dd4b2c48c3eb2d48d49d4f32ba46a55a`。作業ツリー: `C:\Users\ray-0\.codex\worktrees\dragon-presentation-v2\Dragon-game-park`。
+- UNOの+2返しとババ抜き出目3の専用絵10枚（5段位）、背景7枚を生成。元のドラゴンの冠・光輪等を維持。原本/参照ハッシュ/採用プロンプト/不採用試行も保存した。実行WebP17枚で2,980,002bytes、HTTP17/17とハッシュ一致を確認。
+- 既存のルール、共通キュー上限2/1,400ms、ババ抜き3,000ms再生、通常1,900ms/爆裂2,800ms、BGダブル2,500/2,000ms、オンラインACK/SQLを維持。新700ms場面はゲーム待機を追加しない。秘密の札/ジョーカー所在/CPU評価を演技へ流さない。
+- 全体48ファイル451テスト成功。その後の独立レビュー修正を含む最終関連11ファイル80テストと、最終 `npm run build`（音声100件＋tsc -b＋Vite）成功。tsc --noEmit単独では参照先の本番型検証にならない。chunk-size警告は記録済み。
+- Edge375/390×844・900×700でカード30項目、盤面52項目成功。画像失敗fallback、700ms境界/ワイプ復帰、重なり、設定、入力可能性を確認。実オンライン独立2contextでUNO/Baba/BG/マンカラの短い対局と共有公開反応を確認し、QAルームを退出/後片付けした。通常/爆裂リバーシの実2タブ、全対局完走/遅延/再接続は今回未検証。
+- 実装/検証の正は C作業ツリー内 `docs/design/dragons/presentation-v2/2026-10-04/IMPLEMENTATION_REVIEW.md`。公開イベントfixtureと実接続の証拠を区別している。実ゲームプレビューは `http://127.0.0.1:5178/`。
+- G主作業ツリーは fetch後の公開済みmain `b29972c` とorigin/mainが一致。ゲームコードには今回の差分を入れていない。Gの残る追跡差分はこの引き継ぎ文書のみ、未追跡798ファイル（元の787＋前段の設計11）を保全。bakuretsu-referenceや旧制作作業を削除/一括stash/resetしていない。
+- 引き継ぎの既存本文はバイト単位で保全して先頭へ本節を追加。復元用gzipとSHA-256証跡は C作業ツリーの `evidence/source-preservation`。古い空のpacked-refs.lockはGitプロセス不在/時刻を確認し、同じ.git内へ改名保全した。
+- Cの依存関係は既存G/node_modulesへのjunction。再準備が必要ならGの指定prepare-dependenciesスクリプトを使う。G上の直接npm install/ciは行わない。
+- ローカルコミットのみ。push・PR・mainへのマージ・再公開は行っていない。
+
+### 次の担当へのチェックリスト
+
+1. Gと上記C作業ツリーのgit status/branchを別々に確認する。Gの既存作業を混ぜず、Cの実装ブランチを引き継ぐ。
+2. IMPLEMENTATION_REVIEW.md、EVENT_MATRIX.md、evidence/runtime-cards/SUMMARY.md、runtime-boards/SUMMARY.md、review.mdを読む。
+3. ローカル版を実際に遊び、演出量を確認する。必要ならCで `npm run dev -- --host 127.0.0.1 --port 5178`。既存.env.localの秘密値をログに出さない。
+4. 公開を指示された場合だけPUBLISHING.mdを読み、未検証範囲と最新CI/Vercelを確認して進む。mainへのマージは即本番公開。
+
+---
 ## 2026-09-26: ドラゴン演出の全ゲーム組み込み・本番公開完了
 
 - 作業ブランチ: `codex/dragon-reactions-bluff`。隔離ワークツリーは `C:\Users\ray-0\.codex\worktrees\dragon-reactions-integration\Dragon-game-park`。Gドライブの元チェックアウトにある未コミット変更は混ぜていない。

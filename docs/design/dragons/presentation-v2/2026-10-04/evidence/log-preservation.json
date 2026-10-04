@@ -1,0 +1,20 @@
+{
+  "scope": "Whitespace-only display normalization. Exact tool stdout bytes preserved in gzip.",
+  "records": [
+    {
+      "display": "docs/design/dragons/presentation-v2/2026-10-04/evidence/full-tests.log",
+      "rawArchive": "docs/design/dragons/presentation-v2/2026-10-04/evidence/full-tests.log.raw.gz",
+      "rawSha256": "ed369961d73a4bfc1eb4a22174f7cd3e627b38b922a782f8c76431cc5e9236d2"
+    },
+    {
+      "display": "docs/design/dragons/presentation-v2/2026-10-04/evidence/final-presentation-tests.log",
+      "rawArchive": "docs/design/dragons/presentation-v2/2026-10-04/evidence/final-presentation-tests.log.raw.gz",
+      "rawSha256": "ae5ed61ea231e33f48fe217af17e564119e49a3d23f931c397dba85d5b46231a"
+    },
+    {
+      "display": "docs/design/dragons/presentation-v2/2026-10-04/evidence/production-build-final.log",
+      "rawArchive": "docs/design/dragons/presentation-v2/2026-10-04/evidence/production-build-final.log.raw.gz",
+      "rawSha256": "7f5923faead6b1be61e84294780e536d6ee71c3ad4e5344c039b5c8f03a6e7ce"
+    }
+  ]
+}

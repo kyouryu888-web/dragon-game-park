@@ -1,0 +1,51 @@
+{
+  "environment": {
+    "url": "http://127.0.0.1:5178",
+    "browser": "Edge headless",
+    "hostViewport": "390x844",
+    "guestViewport": "900x700",
+    "connection": "Live existing Supabase via app UI. No seeded payload or private API writes."
+  },
+  "checks": [
+    {
+      "game": "マンカラ",
+      "passed": false,
+      "moves": [],
+      "error": "page.waitForFunction: Timeout 30000ms exceeded.",
+      "exits": {
+        "host": {
+          "exited": true
+        },
+        "guest": {
+          "exited": true
+        }
+      }
+    },
+    {
+      "game": "バックギャモン",
+      "passed": true,
+      "proposer": "guest",
+      "sameCubeFacts": true,
+      "noCpuSeats": true,
+      "exits": {
+        "host": {
+          "exited": true
+        },
+        "guest": {
+          "exited": false
+        }
+      }
+    }
+  ],
+  "rooms": [
+    {
+      "game": "マンカラ",
+      "roomCode": "UWWBXH"
+    },
+    {
+      "game": "バックギャモン",
+      "roomCode": "X7VAHT"
+    }
+  ],
+  "errors": []
+}

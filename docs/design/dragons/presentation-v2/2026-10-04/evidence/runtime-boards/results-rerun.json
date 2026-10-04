@@ -1,0 +1,242 @@
+{
+  "environment": {
+    "url": "http://127.0.0.1:5178",
+    "browser": "Microsoft Edge headless",
+    "browserPlugin": "Browser plugin not available; authorized Playwright fallback",
+    "viewports": [
+      "375x844",
+      "390x844",
+      "900x700"
+    ],
+    "fixtureWarning": "Fixed public events exercise actual rendering/playback. They are not live Supabase matches."
+  },
+  "checks": [
+    {
+      "name": "reversi-corner human public playback 375 lively",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 102,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 0
+      },
+      "scenes": [
+        {
+          "selector": ".reversi-cinematic",
+          "start": 2529.0999999996275,
+          "text": "角を制した黒の人間が不落の角を獲得",
+          "animation": "1.9s",
+          "end": 4450.199999999721,
+          "duration": 1921.1000000000931
+        }
+      ],
+      "timers": [
+        {
+          "delay": 1900,
+          "scheduledAt": 2540.5999999996275,
+          "firedAt": 4441.899999999907
+        }
+      ]
+    },
+    {
+      "name": "reversi-light human public playback 375 lively",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 122,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 1
+      },
+      "scenes": [],
+      "timers": []
+    },
+    {
+      "name": "bakuretsu human public playback 375 lively",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 267,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 0
+      },
+      "scenes": [
+        {
+          "selector": ".reversi-cinematic",
+          "start": 1926.6000000000931,
+          "text": "爆裂魔法 発動！周囲のコマを消し飛ばす！",
+          "animation": "2.8s",
+          "end": 4726,
+          "duration": 2799.399999999907
+        }
+      ],
+      "timers": [
+        {
+          "delay": 2800,
+          "scheduledAt": 1917,
+          "firedAt": 4717.800000000279
+        }
+      ]
+    },
+    {
+      "name": "reversi-corner human public playback 375 subtle",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 102,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 0
+      },
+      "scenes": [
+        {
+          "selector": ".reversi-cinematic",
+          "start": 1487.1000000000931,
+          "text": "角を制した黒の人間が不落の角を獲得",
+          "animation": "1.9s",
+          "end": 3405.600000000093,
+          "duration": 1918.5
+        }
+      ],
+      "timers": [
+        {
+          "delay": 1900,
+          "scheduledAt": 1488.8999999999069,
+          "firedAt": 3394.8000000002794
+        }
+      ]
+    },
+    {
+      "name": "reversi-light human public playback 375 subtle",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 106,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 0
+      },
+      "scenes": [],
+      "timers": []
+    },
+    {
+      "name": "bakuretsu human public playback 375 subtle",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 267,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 0
+      },
+      "scenes": [
+        {
+          "selector": ".reversi-cinematic",
+          "start": 2235.6999999997206,
+          "text": "爆裂魔法 発動！周囲のコマを消し飛ばす！",
+          "animation": "2.8s",
+          "end": 5052.399999999907,
+          "duration": 2816.7000000001863
+        }
+      ],
+      "timers": [
+        {
+          "delay": 2800,
+          "scheduledAt": 2220.2999999998137,
+          "firedAt": 5034
+        }
+      ]
+    },
+    {
+      "name": "reversi-corner human public playback 375 off",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 102,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 0
+      },
+      "scenes": [
+        {
+          "selector": ".reversi-cinematic",
+          "start": 2643.3000000002794,
+          "text": "角を制した黒の人間が不落の角を獲得",
+          "animation": "1.9s",
+          "end": 4573.800000000279,
+          "duration": 1930.5
+        }
+      ],
+      "timers": [
+        {
+          "delay": 1900,
+          "scheduledAt": 2658.100000000093,
+          "firedAt": 4562.4000000003725
+        }
+      ]
+    },
+    {
+      "name": "reversi-light human public playback 375 off",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 106,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 0
+      },
+      "scenes": [],
+      "timers": []
+    },
+    {
+      "name": "bakuretsu human public playback 375 off",
+      "passed": true,
+      "state": {
+        "title": "ボード演出 v2 固定公開イベント検証",
+        "text": 267,
+        "overlay": false,
+        "overflow": 0,
+        "broken": [],
+        "imageCount": 0
+      },
+      "scenes": [
+        {
+          "selector": ".reversi-cinematic",
+          "start": 2315.600000000093,
+          "text": "爆裂魔法 発動！周囲のコマを消し飛ばす！",
+          "animation": "2.8s",
+          "end": 5113,
+          "duration": 2797.399999999907
+        }
+      ],
+      "timers": [
+        {
+          "delay": 2800,
+          "scheduledAt": 2302.1999999997206,
+          "firedAt": 5103.899999999907
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    "reversi-corner-375.png",
+    "reversi-light-375.png",
+    "bakuretsu-375.png"
+  ],
+  "errors": [],
+  "summary": {
+    "passed": 9,
+    "failed": 0,
+    "errorCount": 0
+  }
+}

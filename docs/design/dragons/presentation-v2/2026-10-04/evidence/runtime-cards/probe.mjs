@@ -1,0 +1,15 @@
+import { chromium } from 'playwright-core';
+const browser = await chromium.launch({executablePath:'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',headless:true});
+const page = await browser.newPage({viewport:{width:390,height:844}});
+page.on('pageerror',e=>console.log('PAGEERROR',e.message));
+await page.goto('http://127.0.0.1:5178/');
+await page.waitForTimeout(1200);
+console.log('TITLE',await page.title());
+console.log((await page.locator('body').innerText()).slice(0,6000));
+await page.getByRole('button',{name:'UNOの盤へ進む',exact:true}).click();
+await page.getByRole('button',{name:'ドラゴンと対戦'}).click();
+await page.getByRole('button',{name:'この設定で対戦する',exact:true}).click();
+await page.waitForTimeout(2000);
+console.log('UNOSCREEN',(await page.locator('body').innerText()).slice(0,4000));
+console.log('BUTTONS',await page.getByRole('button').allTextContents());
+await browser.close();

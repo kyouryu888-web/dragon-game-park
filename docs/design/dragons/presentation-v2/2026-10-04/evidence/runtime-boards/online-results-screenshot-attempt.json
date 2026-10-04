@@ -1,0 +1,64 @@
+{
+  "environment": {
+    "url": "http://127.0.0.1:5178",
+    "browser": "Edge headless",
+    "hostViewport": "390x844",
+    "guestViewport": "900x700",
+    "connection": "Live existing Supabase via app UI. No seeded payload or private API writes."
+  },
+  "checks": [
+    {
+      "game": "マンカラ",
+      "passed": false,
+      "moves": [
+        {
+          "pit": "p1-pit-4",
+          "boardEqual": true
+        },
+        {
+          "pit": "p2-pit-0",
+          "boardEqual": true
+        },
+        {
+          "pit": "p1-pit-0",
+          "boardEqual": true
+        }
+      ],
+      "error": "locator.waitFor: Timeout 3000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.mancala-capture-moment') to be visible\u001b[22m\n",
+      "exits": {
+        "host": {
+          "exited": true
+        },
+        "guest": {
+          "exited": true
+        }
+      }
+    },
+    {
+      "game": "バックギャモン",
+      "passed": true,
+      "proposer": "host",
+      "sameCubeFacts": true,
+      "noCpuSeats": true,
+      "exits": {
+        "host": {
+          "exited": true
+        },
+        "guest": {
+          "exited": true
+        }
+      }
+    }
+  ],
+  "rooms": [
+    {
+      "game": "マンカラ",
+      "roomCode": "KJS2TE"
+    },
+    {
+      "game": "バックギャモン",
+      "roomCode": "BYP58Z"
+    }
+  ],
+  "errors": []
+}

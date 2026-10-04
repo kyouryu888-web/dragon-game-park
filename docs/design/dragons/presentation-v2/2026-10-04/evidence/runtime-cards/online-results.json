@@ -1,0 +1,231 @@
+{
+  "date": "2026-10-04",
+  "scope": "Real existing Supabase with two isolated Edge contexts; no fabricated state",
+  "games": [
+    {
+      "game": "uno",
+      "actions": [
+        {
+          "step": 1,
+          "side": "uno-host",
+          "kind": "play-public-card",
+          "label": "リバース"
+        },
+        {
+          "step": 2,
+          "side": "uno-host",
+          "kind": "play-public-card",
+          "label": "リバース"
+        },
+        {
+          "step": 3,
+          "side": "uno-host",
+          "kind": "play-public-card",
+          "label": "ワイルド ドロー4"
+        },
+        {
+          "step": 4,
+          "side": "uno-host",
+          "kind": "public-color-confirm",
+          "color": "blue"
+        }
+      ],
+      "synchronizedEvents": [
+        {
+          "presenter": "narrator",
+          "actor": null,
+          "emotion": "smug",
+          "text": "ゲーム案内\nリバース・順番が逆に",
+          "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"smug\",\"text\":\"ゲーム案内\\nリバース・順番が逆に\"}"
+        },
+        {
+          "presenter": "narrator",
+          "actor": null,
+          "emotion": "laughing",
+          "text": "ゲーム案内\nリバース・順番が逆に",
+          "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"laughing\",\"text\":\"ゲーム案内\\nリバース・順番が逆に\"}"
+        },
+        {
+          "presenter": "narrator",
+          "actor": null,
+          "emotion": "joy",
+          "text": "ゲーム案内\n青に決定",
+          "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"joy\",\"text\":\"ゲーム案内\\n青に決定\"}"
+        }
+      ],
+      "createdRoom": "XGJ3SW",
+      "hostReactions": [
+        {
+          "presenter": "narrator",
+          "actor": null,
+          "emotion": "smug",
+          "text": "ゲーム案内\nリバース・順番が逆に",
+          "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"smug\",\"text\":\"ゲーム案内\\nリバース・順番が逆に\"}"
+        },
+        {
+          "presenter": "narrator",
+          "actor": null,
+          "emotion": "laughing",
+          "text": "ゲーム案内\nリバース・順番が逆に",
+          "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"laughing\",\"text\":\"ゲーム案内\\nリバース・順番が逆に\"}"
+        },
+        {
+          "presenter": "narrator",
+          "actor": null,
+          "emotion": "joy",
+          "text": "ゲーム案内\n青に決定",
+          "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"joy\",\"text\":\"ゲーム案内\\n青に決定\"}"
+        }
+      ],
+      "guestReactions": [
+        {
+          "presenter": "narrator",
+          "actor": null,
+          "emotion": "smug",
+          "text": "ゲーム案内\nリバース・順番が逆に",
+          "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"smug\",\"text\":\"ゲーム案内\\nリバース・順番が逆に\"}"
+        },
+        {
+          "presenter": "narrator",
+          "actor": null,
+          "emotion": "laughing",
+          "text": "ゲーム案内\nリバース・順番が逆に",
+          "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"laughing\",\"text\":\"ゲーム案内\\nリバース・順番が逆に\"}"
+        },
+        {
+          "presenter": "narrator",
+          "actor": null,
+          "emotion": "joy",
+          "text": "ゲーム案内\n青に決定",
+          "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"joy\",\"text\":\"ゲーム案内\\n青に決定\"}"
+        }
+      ],
+      "cleanup": {
+        "deleted": true,
+        "remaining": 0,
+        "error": null
+      }
+    },
+    {
+      "game": "babanuki",
+      "actions": [
+        {
+          "step": 0,
+          "side": "babanuki-host",
+          "kind": "public-shuffle-declaration"
+        },
+        {
+          "step": 4,
+          "side": "babanuki-host",
+          "kind": "public-draw"
+        }
+      ],
+      "synchronizedEvents": [
+        {
+          "presenter": "narrator",
+          "actor": null,
+          "emotion": "laughing",
+          "text": "ゲーム案内\nシャッフル宣言",
+          "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"laughing\",\"text\":\"ゲーム案内\\nシャッフル宣言\"}"
+        },
+        {
+          "presenter": "narrator",
+          "actor": null,
+          "emotion": "laughing",
+          "text": "ゲーム案内\n出目2でシャッフル",
+          "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"laughing\",\"text\":\"ゲーム案内\\n出目2でシャッフル\"}"
+        },
+        {
+          "presenter": "cpu",
+          "actor": "player-3",
+          "emotion": "joy",
+          "text": "1枚引いてみよう",
+          "key": "{\"presenter\":\"cpu\",\"actor\":\"player-3\",\"emotion\":\"joy\",\"text\":\"1枚引いてみよう\"}"
+        },
+        {
+          "presenter": "narrator",
+          "actor": null,
+          "emotion": "laughing",
+          "text": "ゲーム案内\n1枚引きます",
+          "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"laughing\",\"text\":\"ゲーム案内\\n1枚引きます\"}"
+        }
+      ],
+      "createdRoom": "TZXCEG",
+      "opponentCardsPrivate": true,
+      "hostReactions": [
+        {
+          "presenter": "narrator",
+          "actor": null,
+          "emotion": "laughing",
+          "text": "ゲーム案内\nシャッフル宣言",
+          "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"laughing\",\"text\":\"ゲーム案内\\nシャッフル宣言\"}"
+        },
+        {
+          "presenter": "narrator",
+          "actor": null,
+          "emotion": "laughing",
+          "text": "ゲーム案内\n出目2でシャッフル",
+          "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"laughing\",\"text\":\"ゲーム案内\\n出目2でシャッフル\"}"
+        },
+        {
+          "presenter": "cpu",
+          "actor": "player-3",
+          "emotion": "joy",
+          "text": "1枚引いてみよう",
+          "key": "{\"presenter\":\"cpu\",\"actor\":\"player-3\",\"emotion\":\"joy\",\"text\":\"1枚引いてみよう\"}"
+        },
+        {
+          "presenter": "narrator",
+          "actor": null,
+          "emotion": "laughing",
+          "text": "ゲーム案内\n1枚引きます",
+          "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"laughing\",\"text\":\"ゲーム案内\\n1枚引きます\"}"
+        },
+        {
+          "presenter": "narrator",
+          "actor": null,
+          "emotion": "smug",
+          "text": "ゲーム案内\nQAホストがペア成立",
+          "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"smug\",\"text\":\"ゲーム案内\\nQAホストがペア成立\"}"
+        }
+      ],
+      "guestReactions": [
+        {
+          "presenter": "narrator",
+          "actor": null,
+          "emotion": "laughing",
+          "text": "ゲーム案内\nシャッフル宣言",
+          "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"laughing\",\"text\":\"ゲーム案内\\nシャッフル宣言\"}"
+        },
+        {
+          "presenter": "narrator",
+          "actor": null,
+          "emotion": "laughing",
+          "text": "ゲーム案内\n出目2でシャッフル",
+          "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"laughing\",\"text\":\"ゲーム案内\\n出目2でシャッフル\"}"
+        },
+        {
+          "presenter": "cpu",
+          "actor": "player-3",
+          "emotion": "joy",
+          "text": "1枚引いてみよう",
+          "key": "{\"presenter\":\"cpu\",\"actor\":\"player-3\",\"emotion\":\"joy\",\"text\":\"1枚引いてみよう\"}"
+        },
+        {
+          "presenter": "narrator",
+          "actor": null,
+          "emotion": "laughing",
+          "text": "ゲーム案内\n1枚引きます",
+          "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"laughing\",\"text\":\"ゲーム案内\\n1枚引きます\"}"
+        }
+      ],
+      "cleanup": {
+        "deleted": true,
+        "remaining": 0,
+        "error": null
+      }
+    }
+  ],
+  "console": [],
+  "failures": []
+}
