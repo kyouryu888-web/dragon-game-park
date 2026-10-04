@@ -1,0 +1,67 @@
+{
+  "date": "2026-10-04T23:40:15.0494658+09:00",
+  "primary": "G:\\マイドライブ\\02_AI・開発・プロンプト\\Dragon-game-park",
+  "primaryHead": "b29972cbb56d544b231341f968920483dc41e6e1",
+  "implementationHead": "73fe5d4141d7f7e996326a3fa140b05242dd0cde",
+  "trackedModified": [
+    "CLAUDE_HANDOFF_CURRENT.md"
+  ],
+  "untrackedCount": 798,
+  "overlaps": [
+    {
+      "path": "docs/design/dragons/presentation-v2/2026-10-04/EVENT_MATRIX.md",
+      "primarySha256": "6108C38EF4F1E9F35A4694A8BA4135865109DFBDF574D56ECADD6B8188E035B7",
+      "implementationSha256": "6108C38EF4F1E9F35A4694A8BA4135865109DFBDF574D56ECADD6B8188E035B7"
+    },
+    {
+      "path": "docs/design/dragons/presentation-v2/2026-10-04/README.md",
+      "primarySha256": "642A36C6140E2A7D9760419673D94FD8CDC947CC2752B074A7FAE80BEF9DACC9",
+      "implementationSha256": "642A36C6140E2A7D9760419673D94FD8CDC947CC2752B074A7FAE80BEF9DACC9"
+    },
+    {
+      "path": "docs/design/dragons/presentation-v2/2026-10-04/evidence/art-review.md",
+      "primarySha256": "2917325D0D41EA4EEAA9398A73900EB7FF5CE1DD7B097B04C97DFC1F4FDC906B",
+      "implementationSha256": "2917325D0D41EA4EEAA9398A73900EB7FF5CE1DD7B097B04C97DFC1F4FDC906B"
+    },
+    {
+      "path": "docs/design/dragons/presentation-v2/2026-10-04/evidence/reference-hashes.json",
+      "primarySha256": "333D7957A06144E5C1F5AD1A88875DD4E18E2B59BFED978A2FB503D7B436D8B7",
+      "implementationSha256": "333D7957A06144E5C1F5AD1A88875DD4E18E2B59BFED978A2FB503D7B436D8B7"
+    },
+    {
+      "path": "docs/design/dragons/presentation-v2/2026-10-04/images/babanuki-shuffle-lv3-v1.png",
+      "primarySha256": "6A41C35D6DF922919C124C471C5F01479BFFAD1C7D84278294723CAE81808438",
+      "implementationSha256": "6A41C35D6DF922919C124C471C5F01479BFFAD1C7D84278294723CAE81808438"
+    },
+    {
+      "path": "docs/design/dragons/presentation-v2/2026-10-04/images/uno-draw-counter-lv3-v1.png",
+      "primarySha256": "EB424A2ADE6006C853DFFBDDDC2E59ED6B29658006F76262B57E91E720BB072B",
+      "implementationSha256": "EB424A2ADE6006C853DFFBDDDC2E59ED6B29658006F76262B57E91E720BB072B"
+    },
+    {
+      "path": "docs/design/dragons/presentation-v2/2026-10-04/images/uno-draw-counter-lv3-v2.png",
+      "primarySha256": "383F6882947D48905DF9F354126CA9ECD8B0CDD5AE5534D185BB47670B8A3DA1",
+      "implementationSha256": "383F6882947D48905DF9F354126CA9ECD8B0CDD5AE5534D185BB47670B8A3DA1"
+    },
+    {
+      "path": "docs/design/dragons/presentation-v2/2026-10-04/preview.css",
+      "primarySha256": "8AE921378A6CEDC4B246869B6024DC713E6BF76C0FBE8ACBDBA9A590FEFB4F09",
+      "implementationSha256": "8AE921378A6CEDC4B246869B6024DC713E6BF76C0FBE8ACBDBA9A590FEFB4F09"
+    },
+    {
+      "path": "docs/design/dragons/presentation-v2/2026-10-04/preview.html",
+      "primarySha256": "AD47252E0AD225068A1A165CDEC3B142C9D9E7C8D1239DE310EA49FB14C76C40",
+      "implementationSha256": "AD47252E0AD225068A1A165CDEC3B142C9D9E7C8D1239DE310EA49FB14C76C40"
+    },
+    {
+      "path": "docs/design/dragons/presentation-v2/2026-10-04/preview.js",
+      "primarySha256": "40301D258768E27D03DC44EB82E4656C9BA2BA06E0B3089877AF3D197BFBCB8D",
+      "implementationSha256": "40301D258768E27D03DC44EB82E4656C9BA2BA06E0B3089877AF3D197BFBCB8D"
+    },
+    {
+      "path": "docs/design/dragons/presentation-v2/2026-10-04/provenance.json",
+      "primarySha256": "A857685826B48A82E0ED6F7A60F15D5E87CF47412BAAEBB47ECB60FBAD343E87",
+      "implementationSha256": "A857685826B48A82E0ED6F7A60F15D5E87CF47412BAAEBB47ECB60FBAD343E87"
+    }
+  ]
+}

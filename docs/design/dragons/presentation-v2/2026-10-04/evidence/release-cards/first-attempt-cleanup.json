@@ -1,0 +1,16 @@
+[
+  {
+    "table": "uno_rooms",
+    "roomCode": "9EP526",
+    "deleted": true,
+    "remaining": 0,
+    "error": null
+  },
+  {
+    "table": "babanuki_rooms",
+    "roomCode": "FWFH5S",
+    "deleted": true,
+    "remaining": 0,
+    "error": null
+  }
+]

@@ -1,0 +1,238 @@
+{
+  "date": "2026-10-04T14:39:08.348Z",
+  "scope": "Real existing Supabase, independent Edge contexts, UI actions only; no fixtures or game-state injection",
+  "browser": "Playwright + Edge; Browser skill absent, delegated task explicitly permits fallback",
+  "base": "http://127.0.0.1:5178",
+  "games": [
+    {
+      "game": "babanuki",
+      "actions": [
+        {
+          "step": 0,
+          "side": "babanuki-host",
+          "kind": "public-shuffle-declaration",
+          "elapsedMs": 12090
+        },
+        {
+          "step": 5,
+          "side": "babanuki-host",
+          "kind": "public-draw",
+          "elapsedMs": 16736
+        },
+        {
+          "step": 7,
+          "side": "babanuki-guest",
+          "kind": "public-draw",
+          "elapsedMs": 19129
+        },
+        {
+          "step": 15,
+          "side": "babanuki-host",
+          "kind": "public-draw",
+          "elapsedMs": 25960
+        },
+        {
+          "step": 17,
+          "side": "babanuki-guest",
+          "kind": "public-draw",
+          "elapsedMs": 28429
+        },
+        {
+          "step": 24,
+          "side": "babanuki-host",
+          "kind": "public-draw",
+          "elapsedMs": 34882
+        },
+        {
+          "step": 25,
+          "side": "babanuki-guest",
+          "kind": "public-draw",
+          "elapsedMs": 40562
+        },
+        {
+          "step": 26,
+          "side": "babanuki-guest",
+          "kind": "public-shuffle-declaration",
+          "elapsedMs": 41574
+        },
+        {
+          "step": 40,
+          "side": "babanuki-host",
+          "kind": "public-draw",
+          "elapsedMs": 52446
+        },
+        {
+          "step": 44,
+          "side": "babanuki-guest",
+          "kind": "public-draw",
+          "elapsedMs": 56894
+        }
+      ],
+      "privacyChecks": 99,
+      "synchronizedEvents": [
+        {
+          "presenter": "narrator",
+          "actor": null,
+          "emotion": "smug",
+          "text": "ゲーム案内\nシャッフル宣言",
+          "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"smug\",\"text\":\"ゲーム案内\\nシャッフル宣言\"}"
+        },
+        {
+          "presenter": "narrator",
+          "actor": null,
+          "emotion": "crying",
+          "text": "ゲーム案内\n出目4、札の移動なし",
+          "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"crying\",\"text\":\"ゲーム案内\\n出目4、札の移動なし\"}"
+        },
+        {
+          "presenter": "narrator",
+          "actor": null,
+          "emotion": "joy",
+          "text": "ゲーム案内\n1枚引きます",
+          "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"joy\",\"text\":\"ゲーム案内\\n1枚引きます\"}"
+        },
+        {
+          "presenter": "narrator",
+          "actor": null,
+          "emotion": "smug",
+          "text": "ゲーム案内\n1枚引きます",
+          "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"smug\",\"text\":\"ゲーム案内\\n1枚引きます\"}"
+        },
+        {
+          "presenter": "narrator",
+          "actor": null,
+          "emotion": "smug",
+          "text": "ゲーム案内\nQAゲストがペア成立",
+          "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"smug\",\"text\":\"ゲーム案内\\nQAゲストがペア成立\"}"
+        },
+        {
+          "presenter": "cpu",
+          "actor": "player-3",
+          "emotion": "laughing",
+          "text": "1枚引いてみよう",
+          "key": "{\"presenter\":\"cpu\",\"actor\":\"player-3\",\"emotion\":\"laughing\",\"text\":\"1枚引いてみよう\"}"
+        },
+        {
+          "presenter": "cpu",
+          "actor": "player-3",
+          "emotion": "joy",
+          "text": "ペア成立だね",
+          "key": "{\"presenter\":\"cpu\",\"actor\":\"player-3\",\"emotion\":\"joy\",\"text\":\"ペア成立だね\"}"
+        },
+        {
+          "presenter": "narrator",
+          "actor": null,
+          "emotion": "laughing",
+          "text": "ゲーム案内\n1枚引きます",
+          "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"laughing\",\"text\":\"ゲーム案内\\n1枚引きます\"}"
+        },
+        {
+          "presenter": "narrator",
+          "actor": null,
+          "emotion": "laughing",
+          "text": "ゲーム案内\nQAホストがペア成立",
+          "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"laughing\",\"text\":\"ゲーム案内\\nQAホストがペア成立\"}"
+        },
+        {
+          "presenter": "narrator",
+          "actor": null,
+          "emotion": "joy",
+          "text": "ゲーム案内\nQAゲストがペア成立",
+          "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"joy\",\"text\":\"ゲーム案内\\nQAゲストがペア成立\"}"
+        },
+        {
+          "presenter": "cpu",
+          "actor": "player-3",
+          "emotion": "scared",
+          "text": "1枚引く、焦るね",
+          "key": "{\"presenter\":\"cpu\",\"actor\":\"player-3\",\"emotion\":\"scared\",\"text\":\"1枚引く、焦るね\"}"
+        },
+        {
+          "presenter": "narrator",
+          "actor": null,
+          "emotion": "smug",
+          "text": "ゲーム案内\nQAホストがペア成立",
+          "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"smug\",\"text\":\"ゲーム案内\\nQAホストがペア成立\"}"
+        },
+        {
+          "presenter": "narrator",
+          "actor": null,
+          "emotion": "laughing",
+          "text": "ゲーム案内\n出目3でシャッフル",
+          "key": "{\"presenter\":\"narrator\",\"actor\":null,\"emotion\":\"laughing\",\"text\":\"ゲーム案内\\n出目3でシャッフル\"}"
+        },
+        {
+          "presenter": "cpu",
+          "actor": "player-3",
+          "emotion": "smug",
+          "text": "1枚引いてみよう",
+          "key": "{\"presenter\":\"cpu\",\"actor\":\"player-3\",\"emotion\":\"smug\",\"text\":\"1枚引いてみよう\"}"
+        },
+        {
+          "presenter": "cpu",
+          "actor": "player-3",
+          "emotion": "scared",
+          "text": "ペア、焦るね",
+          "key": "{\"presenter\":\"cpu\",\"actor\":\"player-3\",\"emotion\":\"scared\",\"text\":\"ペア、焦るね\"}"
+        },
+        {
+          "presenter": "cpu",
+          "actor": "player-3",
+          "emotion": "laughing",
+          "text": "勝ち抜けたね",
+          "key": "{\"presenter\":\"cpu\",\"actor\":\"player-3\",\"emotion\":\"laughing\",\"text\":\"勝ち抜けたね\"}"
+        }
+      ],
+      "createdRoom": "FWFH5S",
+      "reconnect": {
+        "networkOfflineMs": 1800,
+        "sameSessionParticipant": true,
+        "rejoinedRoom": "FWFH5S",
+        "bootstrapReactions": [],
+        "restRequestDelayMs": 120
+      },
+      "result": [
+        "最弱王",
+        "最弱王"
+      ],
+      "rankings": [
+        [
+          "🏆スーパードラゴン1位",
+          "2QAゲスト2位",
+          "💀QAホスト （あなた）最弱王"
+        ],
+        [
+          "🏆スーパードラゴン1位",
+          "2QAゲスト （あなた）2位",
+          "💀QAホスト最弱王"
+        ]
+      ],
+      "error": {
+        "message": "Both contexts must show same final rank/counts\n+ actual - expected\n\n  [\n    '🏆スーパードラゴン1位',\n+   '2QAゲスト2位',\n+   '💀QAホスト 最弱王'\n-   '2QAゲスト 2位',\n-   '💀QAホスト最弱王'\n  ]\n",
+        "stack": "AssertionError [ERR_ASSERTION]: Both contexts must show same final rank/counts\n+ actual - expected\n\n  [\n    '🏆スーパードラゴン1位',\n+   '2QAゲスト2位',\n+   '💀QAホスト 最弱王'\n-   '2QAゲスト 2位',\n-   '💀QAホスト最弱王'\n  ]\n\n    at runGame (file:///C:/Users/ray-0/.codex/worktrees/dragon-presentation-v2/Dragon-game-park/docs/design/dragons/presentation-v2/2026-10-04/evidence/release-cards/full-matches.mjs:137:10)\n    at async Promise.all (index 1)\n    at async file:///C:/Users/ray-0/.codex/worktrees/dragon-presentation-v2/Dragon-game-park/docs/design/dragons/presentation-v2/2026-10-04/evidence/release-cards/full-matches.mjs:153:1"
+      },
+      "bodies": [
+        "ゲーム設定に戻る\nBABANUKI ONLINE\n🎭 にぎやか\n🎭 控えめ\n🎭 オフ\nゲーム選択に戻る\n決着\n🗑\n52\n🎲\n使用済\nQAゲスト\n2位 ぬけ\nスーパードラゴン\n1位 ぬけ\nあなたの手札 1枚\n🃏\nタップで選ぶ → もう1枚タップでその位置へ移動　／　ダブルタップでブラフ\n💀\n🃏\nTHE WEAKEST KING\n最弱王\nQAホスト\nジョーカーを抱えたまま、玉座に取り残された。\nけっか\n🏆\nスーパードラゴン\n1位\n2\nQAゲスト\n2位\n💀\nQAホスト （あなた）\n最弱王\n再戦する\nゲーム設定に戻る\nゲーム選択に戻る\n\n「設定を変更して再戦する」で人数やドラゴンの強さを選び直せます",
+        "ゲーム設定に戻る\nBABANUKI ONLINE\n🎭 にぎやか\n🎭 控えめ\n🎭 オフ\nゲーム選択に戻る\n決着\n🗑\n52\n🎲\n使用済\nスーパードラゴン\n1位 ぬけ\nQAホスト\n🐉\n1枚\nあなたの手札 0枚 ・ 2位で勝ち抜け\nタップで選ぶ → もう1枚タップでその位置へ移動　／　ダブルタップでブラフ\n💀\n🃏\nTHE WEAKEST KING\n最弱王\nQAホスト\nQAホスト がジョーカーを引き受けた。\nけっか\n🏆\nスーパードラゴン\n1位\n2\nQAゲスト （あなた）\n2位\n💀\nQAホスト\n最弱王\n再戦する\nゲーム設定に戻る\nゲーム選択に戻る\n\nホストが再戦を選ぶと、このまま自動で次の対局が始まります。"
+      ],
+      "cleanup": {
+        "error": "locator.isVisible: Error: strict mode violation: getByRole('button', { name: 'ゲーム選択に戻る', exact: true }) resolved to 2 elements:\n    1) <button type=\"button\" class=\"btn babanuki-home-button\">ゲーム選択に戻る</button> aka getByRole('button', { name: 'ゲーム選択に戻る' }).first()\n    2) <button class=\"btn btn-ghost\">ゲーム選択に戻る</button> aka getByLabel('ゲーム終了後の操作').getByRole('button', { name: 'ゲーム選択に戻る' })\n\nCall log:\n\u001b[2m    - checking visibility of getByRole('button', { name: 'ゲーム選択に戻る', exact: true })\u001b[22m\n"
+      }
+    }
+  ],
+  "console": [
+    {
+      "label": "babanuki-guest",
+      "level": "error",
+      "message": "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "expectedOffline": true
+    }
+  ],
+  "failures": [
+    {
+      "game": "babanuki",
+      "message": "Both contexts must show same final rank/counts\n+ actual - expected\n\n  [\n    '🏆スーパードラゴン1位',\n+   '2QAゲスト2位',\n+   '💀QAホスト 最弱王'\n-   '2QAゲスト 2位',\n-   '💀QAホスト最弱王'\n  ]\n",
+      "stack": "AssertionError [ERR_ASSERTION]: Both contexts must show same final rank/counts\n+ actual - expected\n\n  [\n    '🏆スーパードラゴン1位',\n+   '2QAゲスト2位',\n+   '💀QAホスト 最弱王'\n-   '2QAゲスト 2位',\n-   '💀QAホスト最弱王'\n  ]\n\n    at runGame (file:///C:/Users/ray-0/.codex/worktrees/dragon-presentation-v2/Dragon-game-park/docs/design/dragons/presentation-v2/2026-10-04/evidence/release-cards/full-matches.mjs:137:10)\n    at async Promise.all (index 1)\n    at async file:///C:/Users/ray-0/.codex/worktrees/dragon-presentation-v2/Dragon-game-park/docs/design/dragons/presentation-v2/2026-10-04/evidence/release-cards/full-matches.mjs:153:1"
+    }
+  ]
+}

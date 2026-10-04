@@ -1,3 +1,14 @@
+<!-- dragon-presentation-v2-release-preparation-20261005 -->
+## 2026-10-05: ドラゴン演出v2 公開準備完了・PR #49
+
+- ユーザーから公開へ進む指示あり。PUBLISHING.mdを読み、型→本番ビルド→全49ファイル456テストが成功。
+- PR #49: https://github.com/kyouryu888-web/dragon-game-park/pull/49 。最初のhead 73fe5d4のCI/Vercel Preview成功。証跡追加後の最新headを確認してからマージする。
+- 実独立2contextでUNO通常/ハード、Baba、通常/爆裂リバーシ、マンカラを完走し結果一致、再参加成功。BGはダブル→Takeと別対局Drop終了を確認、ベアオフ完走は未検証。爆裂ACK63件すべて200。カード相手札DOM442観察で露出0。
+- 画像17枚/2,980,002bytesがdistとハッシュ一致、制作原本のruntime混入なし。独立差分レビューで未解決P1/P2なし。
+- 詳細の正: docs/design/dragons/presentation-v2/2026-10-04/RELEASE_PREPARATION.md。初回QAの誤判定やHTTP406、実出目3未観測、Mancala検証用2ルーム削除0件の限界を明記。
+- Gの未コミット文書・未追跡798・bakuretsu-reference ignored込みを隣接Dragon-game-park_release-backup_20261004_2345へ全2,993件/492,102,439bytesハッシュ照合保全。11重複は内容一致。
+- 次: 最新head CI/Preview → PR49のexpected head付きmerge → merge SHA CI/Production/実画面/17画像 → G文書保全ブランチと同一重複退避後のff同期 → 残る差分・検証・公開済み引き継ぎ更新。
+
 <!-- dragon-presentation-v2-20261004-4165617 -->
 ## 2026-10-04: ドラゴン演出v2 実装・ローカル確認完了（未公開）
 

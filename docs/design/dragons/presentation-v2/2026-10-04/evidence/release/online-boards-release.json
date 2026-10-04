@@ -1,0 +1,297 @@
+{
+  "base": "http://127.0.0.1:5178",
+  "method": "Live Supabase via actual app UI only; independent Edge contexts; no state injection",
+  "games": [
+    {
+      "game": "マンカラ",
+      "passed": true,
+      "moves": [
+        {
+          "side": 0,
+          "label": "4個の石（選択可能）"
+        },
+        {
+          "side": 1,
+          "label": "4個の石（選択可能）"
+        },
+        {
+          "side": 0,
+          "label": "5個の石（選択可能）"
+        },
+        {
+          "side": 1,
+          "label": "5個の石（選択可能）"
+        },
+        {
+          "side": 0,
+          "label": "5個の石（選択可能）"
+        },
+        {
+          "side": 1,
+          "label": "6個の石（選択可能）"
+        },
+        {
+          "side": 0,
+          "label": "7個の石（選択可能）"
+        },
+        {
+          "side": 1,
+          "label": "6個の石（選択可能）"
+        },
+        {
+          "side": 0,
+          "label": "7個の石（選択可能）"
+        },
+        {
+          "side": 1,
+          "label": "2個の石（選択可能）"
+        },
+        {
+          "side": 0,
+          "label": "3個の石（選択可能）"
+        },
+        {
+          "side": 1,
+          "label": "4個の石（選択可能）"
+        },
+        {
+          "side": 0,
+          "label": "4個の石（選択可能）"
+        },
+        {
+          "side": 1,
+          "label": "9個の石（選択可能）"
+        },
+        {
+          "side": 0,
+          "label": "2個の石（選択可能）"
+        },
+        {
+          "side": 1,
+          "label": "4個の石（選択可能）"
+        },
+        {
+          "side": 0,
+          "label": "12個の石（選択可能）"
+        },
+        {
+          "side": 1,
+          "label": "1個の石（選択可能）"
+        },
+        {
+          "side": 1,
+          "label": "2個の石（選択可能）"
+        },
+        {
+          "side": 0,
+          "label": "5個の石（選択可能）"
+        },
+        {
+          "side": 1,
+          "label": "12個の石（選択可能）"
+        },
+        {
+          "side": 0,
+          "label": "4個の石（選択可能）"
+        },
+        {
+          "side": 1,
+          "label": "3個の石（選択可能）"
+        },
+        {
+          "side": 0,
+          "label": "2個の石（選択可能）"
+        },
+        {
+          "side": 0,
+          "label": "2個の石（選択可能）"
+        },
+        {
+          "side": 1,
+          "label": "1個の石（選択可能）"
+        },
+        {
+          "side": 0,
+          "label": "3個の石（選択可能）"
+        },
+        {
+          "side": 1,
+          "label": "5個の石（選択可能）"
+        },
+        {
+          "side": 0,
+          "label": "7個の石（選択可能）"
+        },
+        {
+          "side": 1,
+          "label": "3個の石（選択可能）"
+        },
+        {
+          "side": 0,
+          "label": "2個の石（選択可能）"
+        },
+        {
+          "side": 1,
+          "label": "1個の石（選択可能）"
+        },
+        {
+          "side": 0,
+          "label": "1個の石（選択可能）"
+        },
+        {
+          "side": 1,
+          "label": "6個の石（選択可能）"
+        },
+        {
+          "side": 0,
+          "label": "1個の石（選択可能）"
+        },
+        {
+          "side": 0,
+          "label": "2個の石（選択可能）"
+        },
+        {
+          "side": 0,
+          "label": "1個の石（選択可能）"
+        },
+        {
+          "side": 1,
+          "label": "4個の石（選択可能）"
+        },
+        {
+          "side": 0,
+          "label": "6個の石（選択可能）"
+        },
+        {
+          "side": 1,
+          "label": "3個の石（選択可能）"
+        },
+        {
+          "side": 0,
+          "label": "2個の石（選択可能）"
+        },
+        {
+          "side": 1,
+          "label": "1個の石（選択可能）"
+        },
+        {
+          "side": 0,
+          "label": "1個の石（選択可能）"
+        },
+        {
+          "side": 1,
+          "label": "2個の石（選択可能）"
+        },
+        {
+          "side": 0,
+          "label": "5個の石（選択可能）"
+        },
+        {
+          "side": 0,
+          "label": "1個の石（選択可能）"
+        },
+        {
+          "side": 1,
+          "label": "1個の石（選択可能）"
+        },
+        {
+          "side": 0,
+          "label": "3個の石（選択可能）"
+        },
+        {
+          "side": 1,
+          "label": "4個の石（選択可能）"
+        },
+        {
+          "side": 0,
+          "label": "4個の石（選択可能）"
+        },
+        {
+          "side": 1,
+          "label": "1個の石（選択可能）"
+        },
+        {
+          "side": 0,
+          "label": "1個の石（選択可能）"
+        },
+        {
+          "side": 0,
+          "label": "2個の石（選択可能）"
+        },
+        {
+          "side": 1,
+          "label": "5個の石（選択可能）"
+        },
+        {
+          "side": 0,
+          "label": "1個の石（選択可能）"
+        },
+        {
+          "side": 1,
+          "label": "1個の石（選択可能）"
+        },
+        {
+          "side": 0,
+          "label": "1個の石（選択可能）"
+        },
+        {
+          "side": 1,
+          "label": "1個の石（選択可能）"
+        },
+        {
+          "side": 1,
+          "label": "1個の石（選択可能）"
+        },
+        {
+          "side": 0,
+          "label": "2個の石（選択可能）"
+        },
+        {
+          "side": 1,
+          "label": "1個の石（選択可能）"
+        }
+      ],
+      "reconnect": true,
+      "room": "KJ526N",
+      "finalText": [
+        "🏆\n勝利！\n🥇 公開QA主（あなた）\n25石\n🥈 公開QA客\n23石\n再戦する\nゲーム設定に戻る\nゲーム選択に戻る",
+        "🎮\n対戦終了\n🥇 公開QA主\n25石\n🥈 公開QA客（あなた）\n23石\n\nルームの主が「もう一度遊ぶ」を押すと、このまま新しいゲームに切り替わります。\n\n再戦する\nゲーム設定に戻る\nゲーム選択に戻る"
+      ],
+      "points": [
+        [
+          25,
+          23
+        ],
+        [
+          25,
+          23
+        ]
+      ],
+      "finalScoresEqual": true,
+      "cleanup": {
+        "deleted": true,
+        "remaining": 1,
+        "error": null
+      }
+    },
+    {
+      "game": "バックギャモン",
+      "passed": true,
+      "moves": [],
+      "reconnect": true,
+      "room": "DFCYVR",
+      "finalText": [
+        "盤を離れる\nBACKGAMMON\n🎭 にぎやか\n🎭 控えめ\n🎭 オフ\nゲーム選択に戻る\n公\n公開QA客\nPip: 167\n緋のコマ\n上がり\n0 /15\n1\n公\n公開QA主\nPip: 167\n金のコマ（あなた）\n上がり\n0 /15\nDRAGON-GAME-PARK\nDEFEAT\n敗北…\n降り（ドロップ） 公開QA客が勝利した。「また挑むがよい」\n再戦する\nゲーム設定に戻る\nゲーム選択に戻る",
+        "盤を離れる\nBACKGAMMON\n🎭 にぎやか\n🎭 控えめ\n🎭 オフ\nゲーム選択に戻る\n公\n公開QA客\nPip: 167\n緋のコマ（あなた）\n上がり\n0 /15\n1\n公\n公開QA主\nPip: 167\n金のコマ\n上がり\n0 /15\nDRAGON-GAME-PARK\nVICTORY\n勝利!\n降り（ドロップ） 見事なり。遠方の相手を下した。 ルームの主が次へ進むと自動で切り替わります。\n再戦する\nゲーム設定に戻る\nゲーム選択に戻る\nDOUBLE DROPPED...\n\n勝負から降りた…"
+      ],
+      "finish": "Real double offer and Drop; terminal round, not a full bear-off game",
+      "proposer": 1,
+      "cleanup": {
+        "deleted": true,
+        "remaining": 0,
+        "error": null
+      }
+    }
+  ],
+  "errors": []
+}
